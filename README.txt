@@ -9,12 +9,19 @@
 1. node.js — https://github.com/joyent/node/wiki/Installation
 2. npm (node package manager) — http://npmjs.org/doc/README.html
 
-Теперь надо куда-то склонировать репоиторий, перейти в этом где-то в папочку node и установить необходимые пакеты.
+Теперь надо куда-то склонировать репозиторий, перейти в этом где-то в папочку node и установить необходимые пакеты.
 Можно попробовать сделать в директории с app.js "npm install -d" (то есть установить все зависимости из package.json), а можно все поставить руками:
 
 3. express.js (является node package'ом) — http://expressjs.com/guide.html, 
 4. jade "npm install jade"
 5. now.js http://nowjs.com/download, нас интересует "Install From npm", то есть "npm install now"
+
+Так или иначе, все зависимости установлены, можно запускать сервер:
 6. Теперь пишем "node app.js" и наблюдаем надпись "Express server listening on port 8080 in development mode"
-7. ???
-8. PROFIT!!11
+7. Открываем браузер, пишем localhost:8080, появляется надпись, мол, Express вас приветствует.
+
+# Что можно посмотреть?
+Как организуется работа с запросами и передачей json'а в шаблон.
+/templates/testCase/
+/templates/testCase/0/
+

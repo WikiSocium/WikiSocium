@@ -40,15 +40,16 @@ app.dynamicHelpers({
 
 app.get('/', function(req, res){
   res.render('index', {
-    title: 'Express'
+    title: 'Express',
+    scripts: []
   });
 });
 
 // uh, well, let this is out case
 
 var allTemplates = {
-"trafficViolation": {
-    "title" : "trafficViolation",
+"testCase": {
+    "title" : "testCase",
     "description" : "Некое описание",
     "data" :
     {
@@ -100,6 +101,13 @@ app.get('/templates/:caseName/', function(req, res){
         res.render('caseOverview', {
                    title: "overview of selected case",
                    selectedCase: allTemplates[caseName],
+                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+                             '/javascripts/Curry-1.0.1.js',
+                             '/javascripts/raphael-min.js',
+                             '/javascripts/dracula_algorithms.js',
+                             '/javascripts/dracula_graffle.js',
+                             '/javascripts/dracula_graph.js',
+                             '/javascripts/seedrandom.js']
                    });
 });
 
@@ -119,7 +127,8 @@ app.get('/templates/:caseName/:step', function(req, res){
         res.render('case', {
                    title: "view of selected case",
                    selectedCase: allTemplates[caseName],
-                   step: allTemplates[caseName].currentStep
+                   step: allTemplates[caseName].currentStep,
+                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
                });        
 }); 
 
@@ -131,7 +140,8 @@ app.post('/templates/:caseName/next', function(req, res){
          res.render('case', {
                     title: "view of selected case",
                     selectedCase: allTemplates[caseName],
-                    step: allTemplates[caseName].currentStep
+                    step: allTemplates[caseName].currentStep,
+                    scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
                     });        
 });
 
