@@ -9,7 +9,8 @@
 1. node.js — https://github.com/joyent/node/wiki/Installation
 2. npm (node package manager) — http://npmjs.org/doc/README.html
 
-Теперь надо куда-то склонировать репоиторий, перейти в этом где-то в папочку node и установить необходимые пакеты:
+Теперь надо куда-то склонировать репоиторий, перейти в этом где-то в папочку node и установить необходимые пакеты.
+Можно попробовать сделать в директории с app.js "npm install -d" (то есть установить все зависимости из package.json), а можно все поставить руками:
 
 3. express.js (является node package'ом) — http://expressjs.com/guide.html, 
 4. jade "npm install jade"
