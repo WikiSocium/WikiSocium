@@ -34,9 +34,9 @@ app.configure(function(){
               app.use(express.static(__dirname + '/public'));
               });
 
-app.get('/example/', function(req, res){
-        res.render('example', {
-                   title: "overview of selected case",
+app.get('/nowjs', function(req, res){
+        res.render('nowjs', {
+                   title: "Now.js sandbox server",
                    scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
                              '/nowjs/now.js']
                    });
