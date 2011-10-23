@@ -36,7 +36,7 @@ app.configure(function(){
 
 app.get('/nowjs', function(req, res){
         res.render('nowjs', {
-                   title: "Now.js sandbox server",
+                   title: "Now.js sandbox server in it's own local branch",
                    scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
                              '/nowjs/now.js']
                    });
