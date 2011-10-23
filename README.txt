@@ -15,6 +15,6 @@
 3. express.js (является node package'ом) — http://expressjs.com/guide.html, 
 4. jade "npm install jade"
 5. now.js http://nowjs.com/download, нас интересует "Install From npm", то есть "npm install now"
-6. Теперь пишем "node app.js" и наблюдаем надпись "Express server listening on port 3000 in development mode" (ну если у вас свободен 3000 порт)
+6. Теперь пишем "node app.js" и наблюдаем надпись "Express server listening on port 8080 in development mode"
 7. ???
 8. PROFIT!!11
