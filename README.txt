@@ -25,3 +25,5 @@
 /templates/testCase/
 /templates/testCase/0/
 
+# Как работать?
+Git устроен таким образом, чтобы минимизировать интерференцию от чужого кода до момента мерджа. Поэтому нужно делать бранчи. Если вы работаете над какой-то фичей — делайте для нее бранч. О том как это делать — http://book.git-scm.com/3_basic_branching_and_merging.html, http://book.git-scm.com/3_distributed_workflows.html.
