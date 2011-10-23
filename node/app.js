@@ -4,7 +4,7 @@
  */
 
 var express = require('express');
-var nowjs = require("now");
+var nowjs = require("now"); // now.js почему-то в таком виде не работает, это тема для ближайшего исследования
 
 var app = module.exports = express.createServer();
 var everyone = nowjs.initialize(app);
