@@ -1,0 +1,42 @@
+script(type='text/javascript')
+  $(document).ready(function(){console.log(now.testData);});
+
+script(type='text/javascript')
+  var stepsTitles = [];
+  var stepsEdges = [];
+  var nextSteps = [];
+
+- each step in selectedCase.steps
+  script(type='text/javascript')
+    stepsTitles.push("#{step.title}");
+
+- each step in selectedCase.steps
+  - each connection in step.next_steps
+    script(type='text/javascript')
+      stepsEdges.push(["#{step.title}", "#{selectedCase.steps[connection].title}"]);
+
+script(type='text/javascript')
+  $(document).ready(function()
+  {
+  var width = 500;
+  var height = 500;
+  var g = new Graph();
+  g.edgeFactory.template.style.directed = true;
+  for(var i = 0; i < stepsTitles.length; i++)
+    g.addNode(stepsTitles[i]);
+  for(var i = 0; i < stepsEdges.length; i++)
+    g.addEdge(stepsEdges[i][0], stepsEdges[i][1]);
+  var layouter = new Graph.Layout.Ordered(g, topological_sort(g));
+  var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
+  });
+
+h1= title
+p #{selectedCase.title}
+p #{selectedCase.description}
+
+#canvas
+
+#steps
+  - each step in selectedCase.steps
+    !=partial('step', {step:step})
+
