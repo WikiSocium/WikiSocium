@@ -4,10 +4,8 @@
  */
 
 var express = require('express');
-var nowjs = require("now"); // now.js почему-то в таком виде не работает, это тема для ближайшего исследования
 
 var app = module.exports = express.createServer();
-var everyone = nowjs.initialize(app);
 
 // Configuration
 
@@ -105,6 +103,14 @@ app.get('/templates/:caseName/', function(req, res){
                    });
 });
 
+app.get('/example/', function(req, res){
+        res.render('example', {
+                   title: "overview of selected case",
+                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+                             '/nowjs/now.js']
+               });
+        });
+
 app.get('/templates/:caseName/:step', function(req, res){
         var caseName = req.param('caseName', null);
         var step = req.param('step', null);
@@ -129,7 +135,13 @@ app.post('/templates/:caseName/next', function(req, res){
                     });        
 });
 
-app.listen(3000);
+app.listen(8080);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
+var everyone = require("now").initialize(app);
+//everyone.now.testFunction = function(){ console.log("test function called"); };
 everyone.now.testData = "testString";
+everyone.now.checkData = function()
+{
+    console.log(this.now.testData);
+}
