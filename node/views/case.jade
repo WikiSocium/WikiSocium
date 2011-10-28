@@ -1,9 +1,0 @@
-h1= title
-p #{selectedCase.title}
-p #{selectedCase.description}
-
-#steps
-  !=partial('step', {step:selectedCase.steps[step]})
-
-form(method='post', action='next')
-  button(type='submit') Next
