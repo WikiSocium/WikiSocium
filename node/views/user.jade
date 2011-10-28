@@ -1,0 +1,10 @@
+div(class="userFullName")
+  #{requestedUser.fullName}
+
+div(class="userStuff")
+  div= requestedUser.id
+  div= requestedUser.cases.length
+
+#cases
+  - each aCase in requestedUser.cases
+    !=partial('aCase', {user:requestedUser.id, aCase:aCase})

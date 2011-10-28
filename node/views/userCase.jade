@@ -1,0 +1,11 @@
+div(class="caseName")
+  #{requestedCase.name}
+
+div(class="caseDescription")
+  #{requestedCase.description}
+
+#steps
+  - each step in requestedCase.steps
+    !=partial('aStep', {step:step})
+
+div(id="nextStepButton") Следующий шаг

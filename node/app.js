@@ -1,13 +1,29 @@
+/*
+    Functions
+ */
+
+function Render404(res, err)
+{
+    res.render('404', {
+                   'title':'404',
+                   'err': err,
+                   'scripts':[]
+               });
+}
 
 /**
  * Module dependencies.
  */
 
 var express = require('express');
+var fs = require('fs');
+var jQ = require('jquery');
 
 var app = module.exports = express.createServer();
 
 // Configuration
+// [RESEARCH] Не имею ни малейшего понятия что происходит в этом конфигурировании,
+// если кто-нибудь разберется и расскажет — будет круто.
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -38,120 +54,74 @@ app.dynamicHelpers({
 
 // Routes
 
-app.get('/', function(req, res){
-  res.render('index', {
-    title: 'Express',
-    scripts: []
-  });
-});
+//app.get('/templates/:caseName/', function(req, res){
+//        var caseName = req.param('caseName', null);
+//        res.render('caseOverview', {
+//                   title: "overview of selected case",
+//                   selectedCase: allTemplates[caseName],
+//                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+//                             '/javascripts/Curry-1.0.1.js',
+//                             '/javascripts/raphael-min.js',
+//                             '/javascripts/dracula_algorithms.js',
+//                             '/javascripts/dracula_graffle.js',
+//                             '/javascripts/dracula_graph.js',
+//                             '/javascripts/seedrandom.js']
+//                   });
+//});
 
-// uh, well, let this is out case
+// [FYI]
+// req <=> request
+// res <=> response
 
-var allTemplates = {
-"testCase": {
-    "title" : "testCase",
-    "description" : "Некое описание",
-    "data" :
-    {
-        "law_doc" : "описание зконодательной базы",
-        "photo" : "url://"
-    },
-    "currentStep":"0",
-    "steps" :
-    [
-        {
-            "title" : "step 0",
-            "type" : "step_type_0",
-            "state" : "0",
-            "next_steps" : ["1", "2"],            
-            "widgets" : 
-            {
-                "widget_type_0" : { "data": "aData" },
-                "widget_type_1" : { "data": "anotherData" }
-            }
-        },
-        {   
-            "title" : "step 1",
-            "type" : "step_type_0",
-            "state" : "0",
-            "next_steps" : [],            
-            "widgets" : 
-            {
-                "widget_type_0" : { "data": "aData" },
-                "widget_type_1" : { "data": "anotherData" }
-            }
-        },
-        {            
-            "title" : "step 2",     
-            "type" : "step_type_0",
-            "state" : "0",
-            "next_steps" : [],            
-            "widgets" : 
-            {
-                "widget_type_0" : { "data": "aData" },
-                "widget_type_1" : { "data": "anotherData" }
-            }
-        }
-    ]
-}
-}
-
-app.get('/templates/:caseName/', function(req, res){
-        var caseName = req.param('caseName', null);
-        res.render('caseOverview', {
-                   title: "overview of selected case",
-                   selectedCase: allTemplates[caseName],
-                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                             '/javascripts/Curry-1.0.1.js',
-                             '/javascripts/raphael-min.js',
-                             '/javascripts/dracula_algorithms.js',
-                             '/javascripts/dracula_graffle.js',
-                             '/javascripts/dracula_graph.js',
-                             '/javascripts/seedrandom.js']
-                   });
-});
-
-app.get('/example/', function(req, res){
-        res.render('example', {
-                   title: "overview of selected case",
-                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                             '/nowjs/now.js']
-               });
+//
+// Обработка корня
+app.get('/', function(req, res) {
+        res.render('index', {'title':"Usage", scripts:[]});
         });
 
-app.get('/templates/:caseName/:step', function(req, res){
-        var caseName = req.param('caseName', null);
-        var step = req.param('step', null);
-        allTemplates[caseName].currentStep = step;           
+//
+// Обработка запроса на показ конкретного кейса конкретного пользователя
+app.get('/UserData/:UserName/:CaseId', function(req, res) {
+         var userName = req.param('UserName', null);
+         var caseId = req.param('CaseId', null);
 
-        res.render('case', {
-                   title: "view of selected case",
-                   selectedCase: allTemplates[caseName],
-                   step: allTemplates[caseName].currentStep,
-                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
-               });        
-}); 
+         fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data){                     
+             if(!err)
+             {
+                var requestedCase = jQ.parseJSON(data);
+                res.render('userCase', {
+                               'title': userName + " : " + caseId,
+                               'requestedCase' : requestedCase,
+                               'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+                                            '/javascripts/controllers/' + requestedCase.id + '.js',
+                                            '/javascripts/StepsController.js']
+                           });
+             }
+             else
+                    Render404(res, err);
+            });
+        });
 
-app.post('/templates/:caseName/next', function(req, res){
-         var caseName = req.param('caseName', null);
-         var nextStep = parseInt(allTemplates[caseName].currentStep) + 1;
-         allTemplates[caseName].currentStep = nextStep;        
-         
-         res.render('case', {
-                    title: "view of selected case",
-                    selectedCase: allTemplates[caseName],
-                    step: allTemplates[caseName].currentStep,
-                    scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
-                    });        
-});
+//
+// Обработка запроса на показ информации о пользователе и списка всех его кейсов
+app.get('/UserData/:UserName', function(req, res){
+            var userName = req.param('UserName', null);
+            
+            fs.readFile('data/'+userName+'/user.json', "utf-8", function(err, data){
+                if(!err)
+                {
+                    var requestedUser = jQ.parseJSON(data);
+                        res.render('user', {
+                                'title': userName,
+                                'requestedUser': requestedUser,
+                                'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+                           });
+                }
+                else
+                    Render404(res, err);                  
+            });
+        });
 
-app.listen(8080);
+app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
-var everyone = require("now").initialize(app);
-//everyone.now.testFunction = function(){ console.log("test function called"); };
-everyone.now.testData = "testString";
-everyone.now.checkData = function()
-{
-    console.log(this.now.testData);
-}

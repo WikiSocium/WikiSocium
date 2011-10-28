@@ -1,0 +1,9 @@
+div(class="step isInvisible", id="step_#{step.id}")
+  div(class="stepTitle")
+    #{step.title}
+  div(class="stepType")
+    #{step.type}
+  br
+  #widgets
+    - each aWidget in step.widgets
+      !=partial('aWidget', {aWidget:aWidget})
