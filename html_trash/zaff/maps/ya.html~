@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Тратата!!!!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw=="
+	type="text/javascript"></script>
+	
+    <script type="text/javascript">
+	var YaMap, geoResult;
+        window.onload = function ()
+		{
+            YaMap = new YMaps.Map(document.getElementById("YMapsID"));
+            YaMap.setCenter(new YMaps.GeoPoint(37.64, 55.76), 10);
+			YaMap.addControl(new YMaps.TypeControl());
+			YaMap.addControl(new YMaps.ToolBar());
+			YaMap.addControl(new YMaps.Zoom());
+			YaMap.addControl(new YMaps.MiniMap());
+			YaMap.addControl(new YMaps.ScaleLine());
+			YaMap.enableScrollZoom();
+			var template = new YMaps.Template(
+				"<b><span style=\"color:red\">Я</span> - $[name|объект]</b>	<div>$[description|Информация недоступна]</div> <div><img alt=\"\" src=\"http://cdn.smosh.com/sites/default/files/bloguploads/batman-roxbury.gif\"></div>");
+			var s = new YMaps.Style();
+			s.balloonContentStyle = new YMaps.BalloonContentStyle(template);
+			
+			var myEventListener = YMaps.Events.observe(YaMap, YaMap.Events.Click, function (YaMap, mEvent) {
+							var placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {style: s, draggable: true});
+							placemark.name = "Batman!!!";
+							placemark.description = "";
+							YaMap.addOverlay(placemark);
+				}, this);
+		}
+			// Функция для отображения результата геокодирования
+			// Параметр value - адрес объекта для поиска
+			function showAddress (value) {
+				// Удаление предыдущего результата поиска
+				YaMap.removeOverlay(geoResult);
+
+				// Запуск процесса геокодирования
+				var geocoder = new YMaps.Geocoder(value, {results: 1, boundedBy: YaMap.getBounds()});
+
+				// Создание обработчика для успешного завершения геокодирования
+				YMaps.Events.observe(geocoder, geocoder.Events.Load, function () {
+					// Если объект был найден, то добавляем его на карту
+					// и центрируем карту по области обзора найденного объекта
+					if (this.length()) {
+						geoResult = this.get(0);
+						YaMap.addOverlay(geoResult);
+						YaMap.setBounds(geoResult.getBounds());
+					}else {
+						alert("Ничего не найдено")
+					}
+				});
+
+				// Процесс геокодирования завершен неудачно
+				YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (geocoder, error) {
+					alert("Произошла ошибка: " + error);
+				})
+			}
+
+    </script>
+
+
+
+</head>
+<body>
+    <form action="#" onsubmit="showAddress(this.address.value);return false;">
+        <p>
+            <input type="text" id="address" style="width:525px;" value="Москва" />
+            <input type="submit" value="Искать" />
+        </p>
+        <div id="YMapsID" style="width:800px;height:600px"></div>
+    </form>
+</body>
+</html>					
