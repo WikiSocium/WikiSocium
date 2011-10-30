@@ -11,14 +11,14 @@ function ShowPoperStep()
     $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
 }
 
+// Обработчик нажатия кнопки следующего шага
+function NextStep()
+{
+    temporaryCurrentStep = requestedCaseController.GetNextStepForStep(temporaryCurrentStep);
+    ShowPoperStep();
+}
+
 $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
-    ShowPoperStep();
-    
-    // Вешаем обработчик нажатия на кнопку "Показать следующий шаг"
-    $("#nextStepButton").click(function(){
-        // [TODO] Этот код будет заменен на динамическую синхронизацию данных с сервером
-        temporaryCurrentStep = requestedCaseController.GetNextStepForStep(temporaryCurrentStep);
-        ShowPoperStep();
-    });
+    ShowPoperStep();    
 });
