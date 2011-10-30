@@ -1,0 +1,6 @@
+{
+    "id" : "TestProblem",
+    "description" : "Test problem description",
+    
+    "solutions": ["TestProblemSolution1"]
+}

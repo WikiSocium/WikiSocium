@@ -1,0 +1,9 @@
+div(class="problemId")
+  #{problem.id}
+
+div(class="problemDescription")
+  #{problem.description}
+
+#solutions
+  - each aSolution in problem.solutions
+    !=partial('aSolution', {aSolution:aSolution})

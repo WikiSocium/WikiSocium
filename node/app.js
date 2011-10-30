@@ -80,6 +80,44 @@ app.get('/', function(req, res) {
         });
 
 //
+// Обработка запроса на показ списка проблем
+app.get('/Problems', function(req, res){
+        fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+                        if(!err)
+                        {
+                            var problemsList = jQ.parseJSON(data);
+                            res.render('problems', {
+                                       'title' : "Problems list",
+                                       'problemsList' : problemsList.problemsList,
+                                       'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+                                       });
+                        }
+                        else
+                            Render404(res, err);
+                    });
+        });
+
+//
+// Обработка запроса на показ проблемы и списка ее решений
+app.get('/Problems/:ProblemName', function(req, res){
+        var problemName = req.param('ProblemName', null);
+        
+        fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
+                    if(!err)
+                    {
+                        var problem = jQ.parseJSON(data);
+                        res.render('problem', {
+                                       'title' : problemName,
+                                       'problem' : problem,
+                                       'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+                           });
+                    }
+                    else
+                        Render404(res, err);
+                });
+        });
+
+//
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/UserData/:UserName/:CaseId', function(req, res) {
          var userName = req.param('UserName', null);
