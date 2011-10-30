@@ -8,4 +8,4 @@ div(class="caseDescription")
   - each step in requestedCase.steps
     !=partial('aStep', {step:step})
 
-div(onClick="NextStep()") Следующий шаг
+div(class="nextStepButton", onClick="NextStep()") Следующий шаг

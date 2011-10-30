@@ -52,7 +52,7 @@ a
     color: #aaa;
 }
 
-#nextStepButton
+.nextStepButton
 {
     display: inline-block;
     position: relative;
@@ -73,12 +73,12 @@ a
     cursor: pointer;
 }
 
-#nextStepButton:hover
+.nextStepButton:hover
 {
     background-color: #e4e4d9;
 }
 
-#nextStepButton:active
+.nextStepButton:active
 {
     background-color: #f0f0f0;
 }

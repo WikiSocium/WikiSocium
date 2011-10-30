@@ -4,6 +4,9 @@ var requestedCaseController =
 {
     GetNextStepForStep: function(currentStep)
     {
-        return (parseInt(currentStep) + 1);
+        if(parseInt(currentStep) == 2)
+            return 0;
+        else            
+            return (parseInt(currentStep) + 1);
     }
 }
