@@ -1,8 +1,6 @@
 div(class="step isInvisible", id="step_#{step.id}")
   div(class="stepTitle")
-    #{step.title}
-  div(class="stepType")
-    #{step.type}
+    #{step.caption}
   br
   #widgets
     - each widget,widget_id in step.widgets

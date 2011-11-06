@@ -71,12 +71,24 @@
 					"widget_type": "StaticTextWidget"
 				,	"text": "Аккуратно и тщательно упакуйте продукт и посторонние продукты и поместите их в холодильник или морозилку" 
 				}
+			,	{
+					"widget_type": "RadioGroupWidget"
+				,	"initial": 1
+				,	"value_list": [ 1, 2, 3 ]
+				}
 			]
 		,	"next" :
 			[
 				{
-					"id": 4
-				,	"predicates": [ "true" ]
+					"id": 7
+				,	"predicates":
+					[
+						{ 
+							"wid": "\"step_3_widget_1\""
+						,	"cond": "\"==\""
+						,	"value": 2
+						}
+					]
 				}
 			]
 		}

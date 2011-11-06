@@ -9,7 +9,8 @@ function CaseController()
 	}
 
 	this.CheckPredicate = function(predicate) {
-		var value = $("#" + predicate.wid).children(".textFieldWidgetInput").data("my_value");
+		var value = $("#" + predicate.wid).data("my_value");
+		
 		return eval(value + predicate.cond + predicate.value);
 	}
 
@@ -44,7 +45,9 @@ $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
 	textFieldController = new TextFieldController();
 	selectListController = new SelectListController();
+	radioGroupController = new RadioGroupController();
 	textFieldController.InitFields();
 	selectListController.InitFields();
+	radioGroupController.InitFields();
 	caseController.ShowProperStep();    
 });

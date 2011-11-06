@@ -2,23 +2,19 @@ function DataFieldController () {
 }
 
 DataFieldController.prototype.InitValue = function () {
-	var id = $(this).parent().attr("id");
+	var baseWidget = $(this).parent();
+	var id = baseWidget.attr("id");
 	var value = localStorage.getItem(id);
 	if (value) {
 		$(this).attr("value", value);
-		$(this).data("my_value", value);
+		baseWidget.data("my_value", value);
 	}
-	else {
-		$(this).attr("value", 0);
-		$(this).data("my_value", 0);
-	}
-	return this;
 }
 
 DataFieldController.prototype.UpdateValue = function () {
-	localStorage.setItem($(this).parent().attr("id"), $(this).val());
-	$(this).data("my_value", $(this).val());
-	return this;
+	var baseWidget = $(this).parent();
+	localStorage.setItem(baseWidget.attr("id"), $(this).val());
+	baseWidget.data("my_value", $(this).val());
 }
 
 DataFieldController.prototype.InitFields = function (collection, updateFn, initFn) {
@@ -47,26 +43,44 @@ SelectListController.prototype.constructor = SelectListController;
 function SelectListController() {
 }
 	
-SelectListController.prototype.InitValue = function() {
-	var id = $(this).parent().attr("id");
-	var value = localStorage.getItem(id);
-	if (value) {
-		$(this).attr("value", value);
-		$(this).data("my_value", value);
-	}
-	else {
-		$(this).data("my_value", $(this).val());
-	}
-}
 
 SelectListController.prototype.InitFields = function () {
 	DataFieldController.prototype.InitFields.call(this,  $(".infoListWidgetList"), 
 												DataFieldController.prototype.UpdateValue, 
-												SelectListController.prototype.InitValue);
+												DataFieldController.prototype.InitValue);
 }
 
 SelectListController.prototype.ShowInfo = function(step_id, widget_id) {
-	alert(step_id);
-	alert(widget_id);
-	alert($("#step_" + step_id + "_widget_" + widget_id).children(".infoListWidgetList").data("my_value"));
+	alert($("#step_" + step_id + "_widget_" + widget_id).data("my_value"));
+}
+
+RadioGroupController.prototype = new DataFieldController();
+RadioGroupController.prototype.constructor = RadioGroupController;
+
+function RadioGroupController() {
+}
+
+RadioGroupController.prototype.InitValue = function() {
+	var baseWidget = $(this).parent();
+	var id = baseWidget.attr("id");
+	var value = localStorage.getItem(id);
+	$(this).attr("checked", false);
+	if ($(this).val() == value) {
+		$(this).attr("checked", true);
+		baseWidget.data("my_value", value);
+	}
+}
+
+RadioGroupController.prototype.UpdateValue = function() {
+	if ($(this).attr("checked") == true) {
+		$(this).parent().data("my_value", $(this).val());
+		localStorage.setItem($(this).parent().attr("id"), $(this).val());
+		$(this).siblings().attr("checked", false);
+	}
+}
+
+RadioGroupController.prototype.InitFields = function () {
+	DataFieldController.prototype.InitFields.call(this,  $(".radioGroupWidgetButton"), 
+												RadioGroupController.prototype.UpdateValue, 
+												RadioGroupController.prototype.InitValue);
 }
