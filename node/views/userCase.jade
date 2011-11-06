@@ -1,3 +1,22 @@
+!="<script type='text/javascript'>"
+!="var caseNextPredicates = [];"
+- each step in requestedCase.steps
+  != "var stepNextPredicates = [];"
+  - each next in step.next
+    != "var next = {};"
+    != "next.id = " + next.id + ";"
+    != "var nextPredicates = [];"
+    - each predicate in next.predicates
+      - if (predicate == "true")
+        != "var predicate = \"true\";"
+      - else
+        != "var predicate = {}; predicate.wid = " + predicate.wid + "; predicate.cond = " + predicate.cond + "; predicate.value = " + predicate.value + ";"
+      != "nextPredicates.push(predicate);"
+    != "next.predicates = nextPredicates;"
+    != "stepNextPredicates.push(next);"
+  != "caseNextPredicates.push(stepNextPredicates);"
+!="</script>"
+
 div(class="caseName")
   #{requestedCase.name}
 
@@ -8,4 +27,4 @@ div(class="caseDescription")
   - each step in requestedCase.steps
     !=partial('aStep', {step:step})
 
-div(class="nextStepButton", onClick="NextStep()") Следующий шаг
+div(class="nextStepButton", onClick="caseController.GetNextStep();") Следующий шаг

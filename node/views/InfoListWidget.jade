@@ -1,0 +1,8 @@
+extends BaseWidget
+
+block content
+  select(class="infoListWidgetList")
+    - each item, i in widget.item_list
+      option(value="#{widget.value_list[i]}")= widget.item_list[i]
+  br
+  input(clase="infoListWidgetButton", type="button", value="Show info", onClick="selectListController.ShowInfo(#{step_id}, #{widget_id})")

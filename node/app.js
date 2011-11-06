@@ -1,14 +1,14 @@
 /*
-    Functions
+	Functions
  */
 
 function Render404(res, err)
 {
-    res.render('404', {
-                   'title':'404',
-                   'err': err,
-                   'scripts':[]
-               });
+	res.render('404', {
+				   'title':'404',
+				   'err': err,
+				   'scripts':[]
+			   });
 }
 
 /**
@@ -55,18 +55,18 @@ app.dynamicHelpers({
 // Routes
 
 //app.get('/templates/:caseName/', function(req, res){
-//        var caseName = req.param('caseName', null);
-//        res.render('caseOverview', {
-//                   title: "overview of selected case",
-//                   selectedCase: allTemplates[caseName],
-//                   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-//                             '/javascripts/Curry-1.0.1.js',
-//                             '/javascripts/raphael-min.js',
-//                             '/javascripts/dracula_algorithms.js',
-//                             '/javascripts/dracula_graffle.js',
-//                             '/javascripts/dracula_graph.js',
-//                             '/javascripts/seedrandom.js']
-//                   });
+//		var caseName = req.param('caseName', null);
+//		res.render('caseOverview', {
+//				   title: "overview of selected case",
+//				   selectedCase: allTemplates[caseName],
+//				   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+//							 '/javascripts/Curry-1.0.1.js',
+//							 '/javascripts/raphael-min.js',
+//							 '/javascripts/dracula_algorithms.js',
+//							 '/javascripts/dracula_graffle.js',
+//							 '/javascripts/dracula_graph.js',
+//							 '/javascripts/seedrandom.js']
+//				   });
 //});
 
 // [FYI]
@@ -76,89 +76,89 @@ app.dynamicHelpers({
 //
 // Обработка корня
 app.get('/', function(req, res) {
-        res.render('index', {'title':"Usage", scripts:[]});
-        });
+		res.render('index', {'title':"Usage", scripts:[]});
+		});
 
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', function(req, res){
-        fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-                        if(!err)
-                        {
-                            var problemsList = jQ.parseJSON(data);
-                            res.render('problems', {
-                                       'title' : "Problems list",
-                                       'problemsList' : problemsList.problemsList,
-                                       'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
-                                       });
-                        }
-                        else
-                            Render404(res, err);
-                    });
-        });
+		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var problemsList = jQ.parseJSON(data);
+							res.render('problems', {
+									   'title' : "Problems list",
+									   'problemsList' : problemsList.problemsList,
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+									   });
+						}
+						else
+							Render404(res, err);
+					});
+		});
 
 //
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', function(req, res){
-        var problemName = req.param('ProblemName', null);
-        
-        fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
-                    if(!err)
-                    {
-                        var problem = jQ.parseJSON(data);
-                        res.render('problem', {
-                                       'title' : problemName,
-                                       'problem' : problem,
-                                       'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
-                           });
-                    }
-                    else
-                        Render404(res, err);
-                });
-        });
+		var problemName = req.param('ProblemName', null);
+		
+		fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
+					if(!err)
+					{
+						var problem = jQ.parseJSON(data);
+						res.render('problem', {
+									   'title' : problemName,
+									   'problem' : problem,
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+						   });
+					}
+					else
+						Render404(res, err);
+				});
+		});
 
 //
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/UserData/:UserName/:CaseId', function(req, res) {
-         var userName = req.param('UserName', null);
-         var caseId = req.param('CaseId', null);
+		 var userName = req.param('UserName', null);
+		 var caseId = req.param('CaseId', null);
 
-         fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data){                     
-             if(!err)
-             {
-                var requestedCase = jQ.parseJSON(data);
-                res.render('userCase', {
-                               'title': userName + " : " + caseId,
-                               'requestedCase' : requestedCase,
-                               'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                                            '/javascripts/controllers/' + requestedCase.id + '.js',
-                                            '/javascripts/StepsController.js']
-                           });
-             }
-             else
-                    Render404(res, err);
-            });
-        });
+		 fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data){					 
+			 if(!err)
+			 {
+				var requestedCase = jQ.parseJSON(data);
+				res.render('userCase', {
+							   'title': userName + " : " + caseId,
+							   'requestedCase' : requestedCase,
+							   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+											'/javascripts/CaseController.js',
+											'/javascripts/controllers/DataFieldController.js']
+						   });
+			 }
+			 else
+					Render404(res, err);
+			});
+		});
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', function(req, res){
-            var userName = req.param('UserName', null);
-            
-            fs.readFile('data/'+userName+'/user.json', "utf-8", function(err, data){
-                if(!err)
-                {
-                    var requestedUser = jQ.parseJSON(data);
-                        res.render('user', {
-                                'title': userName,
-                                'requestedUser': requestedUser,
-                                'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
-                           });
-                }
-                else
-                    Render404(res, err);                  
-            });
-        });
+			var userName = req.param('UserName', null);
+			
+			fs.readFile('data/'+userName+'/user.json', "utf-8", function(err, data){
+				if(!err)
+				{
+					var requestedUser = jQ.parseJSON(data);
+						res.render('user', {
+								'title': userName,
+								'requestedUser': requestedUser,
+								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+						   });
+				}
+				else
+					Render404(res, err);				  
+			});
+		});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

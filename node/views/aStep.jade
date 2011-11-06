@@ -5,5 +5,5 @@ div(class="step isInvisible", id="step_#{step.id}")
     #{step.type}
   br
   #widgets
-    - each aWidget in step.widgets
-      !=partial('aWidget', {aWidget:aWidget})
+    - each widget,widget_id in step.widgets
+      !=partial(widget.widget_type, {widget:widget, widget_id:widget_id, step_id:step.id})
