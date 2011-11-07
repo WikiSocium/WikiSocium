@@ -1,7 +1,8 @@
-div(class="step isInvisible", id="step_#{step.id}")
+div(class="step isInvisible", id="step_#{step_i}")
   div(class="stepTitle")
     #{step.caption}
   br
   #widgets
-    - each widget,widget_id in step.widgets
-      !=partial(widget.widget_type, {widget:widget, widget_id:widget_id, step_id:step.id})
+    - var step_id = (step.alias != undefined || step.alias != null) ? step.alias : step_i
+    - each widget,widget_i in step.widgets
+      !=partial(widget.widget_type, {widget:widget, widget_i:widget_i, step_id:step_id})

@@ -5,8 +5,7 @@
 ,	"steps":	
 	[
 		{
-			"id": 0
-		,	"caption": "Заручитесь показаниями свидетелей"
+			"caption": "Заручитесь показаниями свидетелей"
 		,	"widgets": 
 			[
 				{ 
@@ -14,17 +13,10 @@
 				, 	"text": "Соберите как можно больше свидетельств того, что посторонние предметы были обнаружены в продукте после вскрытия упаковки. Наибольшую ценность представляют показания людей, непосредственно наблюдавших момент нахождения посторонних предметов" 
 				}
 			]
-		,	"next" :
-			[
-				{
-					"id": 1
-				,	"predicates": [ "true" ]
-				}
-			]
 		}	
 	,	{
-			"id": 1
-		,	"caption": "Загрузите фото"
+			"caption": "Загрузите фото"
+		,	"alias": "photo_load"
 		,	"widgets": 
 			[
 				{ 
@@ -34,19 +26,12 @@
 			,	{ 
 					"widget_type": "UploadFileWidget"
 				, 	"type": "image"
-				}
-			]
-		,	"next" :
-			[
-				{
-					"id": 2
-				,	"predicates": [ "true" ]
+				,	"alias": "photo_load"
 				}
 			]
 		}
 	,	{
-			"id": 2
-		,	"caption": "Если Вы поранились" 
+			"caption": "Если Вы поранились"
 		,	"widgets": 
 			[
 				{
@@ -54,17 +39,9 @@
 				,	"text": "Обратитесь к врачу и получите справку, подтверждающую ущерб здоровью из-за воздействия постороннего предмета." 
 				}
 			]
-		,	"next" :
-			[
-				{
-					"id": 3
-				,	"predicates": [ "true" ]
-				}
-			]
 		}
 	,	{
-			"id": 3
-		,	"caption": "Сохраните продукт и посторонние предметы" 
+			"caption": "Сохраните продукт и посторонние предметы" 
 		,	"widgets": 
 			[
 				{
@@ -73,6 +50,7 @@
 				}
 			,	{
 					"widget_type": "RadioGroupWidget"
+				,	"alias": "radio"
 				,	"initial": 1
 				,	"value_list": [ 1, 2, 3 ]
 				}
@@ -80,12 +58,12 @@
 		,	"next" :
 			[
 				{
-					"id": 7
+					"id": "final"
 				,	"predicates":
 					[
 						{ 
-							"wid": "\"step_3_widget_1\""
-						,	"cond": "\"==\""
+							"wid": "step_3_widget_radio"
+						,	"cond": "=="
 						,	"value": 2
 						}
 					]
@@ -93,8 +71,8 @@
 			]
 		}
 	,	{
-			"id": 4
-		,	"caption": "Свяжитесь с производителем" 
+			"caption": "Свяжитесь с производителем" 
+		,	"alias": "text_field"
 		,	"widgets": 
 			[
 				{
@@ -104,22 +82,22 @@
 			,	{ 	
 					"widget_type": "EndSolution" 
 				,	"type": "success"
-				,	"label": "Ущерб возмещен"
+				,	"caption": "Ущерб возмещен"
 				}
 			,	{
 					"widget_type": "TextFieldWidget"
-				,	"id": "input_text_1"
+				,	"alias": "text_field"
 				}
 			]
 		,	"next" :
 			[
 				{
-					"id": 7
+					"id": "final"
 				,	"predicates":
 					[
 						{ 
-							"wid": "\"step_4_widget_2\""
-						,	"cond": "\"==\""
+							"wid": "step_text_field_widget_text_field"
+						,	"cond": "=="
 						,	"value": 20
 						}
 					]
@@ -127,8 +105,7 @@
 			]
 		}
 	,	{
-			"id": 5
-		,	"caption": "Проведите экспертизу"
+			"caption": "Проведите экспертизу"
 		,	"widgets": 
 			[
 				{
@@ -149,17 +126,9 @@
 					]
 				}
 			]
-		,	"next" :
-			[
-				{
-					"id": 6
-				,	"predicates": [ "true" ]
-				}
-			]
 		}
 	,	{
-			"id": 6
-		,	"caption": "Подайте иск в суд"
+			"caption": "Подайте иск в суд"
 		,	"widgets": 
 			[
 				{
@@ -167,28 +136,21 @@
 				,	"text": "Составьте заявление и подайте его самостоятельно в суд по месту проживания или обратитесь за квалифицированной юридической помощью"
 				}
 			]
-		,	"next" :
-			[
-				{
-					"id": 7
-				,	"predicates": [ "true" ]
-				}
-			]
 		}
 	,	{
-			"id": 7
-		,	"caption": "Решили ли Вы проблему через суд?"
+			"caption": "Решили ли Вы проблему через суд?"
+		,	"alias": "final"
 		,	"widgets": 
 			[
 				{ 
 					"widget_type": "EndSolution"
 				,	"type": "success"
-				,	"label": "Да" 
+				,	"caption": "Да" 
 				}
 			,	{ 
 					"widget_type": "EndSolution"
 				,	"type": "failure"
-				,	"label": "Нет"
+				,	"caption": "Нет"
 				}
 			]
 		,	"next" :

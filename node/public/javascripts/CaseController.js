@@ -9,6 +9,9 @@ function CaseController()
 	}
 
 	this.CheckPredicate = function(predicate) {
+		if (predicate == "true") {
+			return true;
+		}
 		var value = $("#" + predicate.wid).data("my_value");
 		
 		return eval(value + predicate.cond + predicate.value);
@@ -19,16 +22,13 @@ function CaseController()
 		var check = false;
 		for (i in nextInfo) {
 			for (j in nextInfo[i].predicates) {
-				if (nextInfo[i].predicates[j] == "true") {
-					check = true;
+				check = this.CheckPredicate(nextInfo[i].predicates[j]);
+				if (check == false) {
 					break;
-				}
-				else {
-					check = this.CheckPredicate(nextInfo[i].predicates[j]);
 				}
 			}
 			if (check == true) {
-				temporaryCurrentStep = nextInfo[i].id;
+				temporaryCurrentStep = aliasMap[nextInfo[i].id];
 				break;
 			}
 		}

@@ -1,18 +1,23 @@
 !="<script type='text/javascript'>"
-!="var caseNextPredicates = [];"
-- each step in requestedCase.steps
+!="var caseNextPredicates = []; var aliasMap = new Array();"
+- each step, step_i in requestedCase.steps
+  - if (step.alias != undefined && step.alias != null)
+    != "aliasMap[\"" + step.alias + "\"] = " + step_i + ";"
+  - else
+    != "aliasMap[\"" + step_i + "\"] = " + step_i + ";"
   != "var stepNextPredicates = [];"
-  - each next in step.next
-    != "var next = {};"
-    != "next.id = " + next.id + ";"
-    != "var nextPredicates = [];"
-    - each predicate in next.predicates
-      - if (predicate == "true")
-        != "var predicate = \"true\";"
-      - else
-        != "var predicate = {}; predicate.wid = " + predicate.wid + "; predicate.cond = " + predicate.cond + "; predicate.value = " + predicate.value + ";"
-      != "nextPredicates.push(predicate);"
-    != "next.predicates = nextPredicates;"
+  - if (step.next != undefined)
+    - each next in step.next
+      != "var next = {};"
+      != "next.id = \"" + next.id + "\";"
+      != "var nextPredicates = [];"
+      - each predicate in next.predicates
+        - if (predicate == "true")
+          != "var predicate = \"true\";"
+        - else
+          != "var predicate = {}; predicate.wid = \"" +predicate.wid + "\"; predicate.cond = \"" + predicate.cond + "\"; predicate.value = \"" + predicate.value + "\";"
+        != "nextPredicates.push(predicate);"
+      != "next.predicates = nextPredicates;"
     != "stepNextPredicates.push(next);"
   != "caseNextPredicates.push(stepNextPredicates);"
 !="</script>"
@@ -24,7 +29,7 @@ div(class="caseDescription")
   #{requestedCase.description}
 
 #steps
-  - each step in requestedCase.steps
-    !=partial('aStep', {step:step})
+  - each step, step_i in requestedCase.steps
+    !=partial('aStep', {step:step, step_i:step_i})
 
 div(class="nextStepButton", onClick="caseController.GetNextStep();") Следующий шаг
