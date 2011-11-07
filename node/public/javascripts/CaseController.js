@@ -28,7 +28,7 @@ function CaseController()
 				}
 			}
 			if (check == true) {
-				temporaryCurrentStep = aliasMap[nextInfo[i].id];
+				temporaryCurrentStep = aliasMap["" + nextInfo[i].id];
 				break;
 			}
 		}

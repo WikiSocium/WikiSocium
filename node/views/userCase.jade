@@ -3,8 +3,7 @@
 - each step, step_i in requestedCase.steps
   - if (step.alias != undefined && step.alias != null)
     != "aliasMap[\"" + step.alias + "\"] = " + step_i + ";"
-  - else
-    != "aliasMap[\"" + step_i + "\"] = " + step_i + ";"
+  != "aliasMap[\"" + step_i + "\"] = " + step_i + ";"
   != "var stepNextPredicates = [];"
   - if (step.next != undefined)
     - each next in step.next
