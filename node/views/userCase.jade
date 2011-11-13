@@ -1,11 +1,13 @@
+script(type='text/javascript')
+  
+
 div(class="caseName")
   #{requestedCase.name}
 
 div(class="caseDescription")
   #{requestedCase.description}
 
-#steps
-  - each step in requestedCase.steps
-    !=partial('aStep', {step:step})
-
+div(class = "steps", id = "stepsWrapper")
+  - each step, i in requestedCase.steps
+    !=partial('aStep', {step:step, stepData:caseData[i]})
 div(class="nextStepButton", onClick="NextStep()") Следующий шаг

@@ -126,12 +126,22 @@ app.get('/UserData/:UserName/:CaseId', function(req, res) {
          fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data){                     
              if(!err)
              {
+                var caseData = fs.readFileSync('data/' + userName + '/' + caseId + 'Data.txt', "utf-8");
+                caseData = jQ.parseJSON(caseData); //Парсим джейсон с введенными данными
+                
+                //else console.log("Case data not found!");
+               
                 var requestedCase = jQ.parseJSON(data);
+                
                 res.render('userCase', {
                                'title': userName + " : " + caseId,
                                'requestedCase' : requestedCase,
+                               'caseData' : caseData,
                                'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+											                      'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+											                      '/inputex/src/loader.js',
                                             '/javascripts/controllers/' + requestedCase.id + '.js',
+                                            '/javascripts/jquery.json-2.3.min.js',
                                             '/javascripts/StepsController.js']
                            });
              }
@@ -139,6 +149,17 @@ app.get('/UserData/:UserName/:CaseId', function(req, res) {
                     Render404(res, err);
             });
         });
+//        
+//Сохранение данных кейса        
+app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+    console.log(req.body.jsonData);
+    fs.writeFile('data/' + userName + '/' + caseId + 'Data.txt', req.body.jsonData, function (err) {
+          if (err) console.log(err);
+    });
+    res.send(req.body);
+});
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов

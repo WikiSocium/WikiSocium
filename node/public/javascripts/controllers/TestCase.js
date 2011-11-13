@@ -4,8 +4,8 @@ var requestedCaseController =
 {
     GetNextStepForStep: function(currentStep)
     {
-        if(parseInt(currentStep) == 2)
-            return 0;
+        if(parseInt(currentStep) >= 1)
+            return currentStep;
         else            
             return (parseInt(currentStep) + 1);
     }

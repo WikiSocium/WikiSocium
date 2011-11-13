@@ -23,7 +23,7 @@
             "widgets"    : 
                             [
                                 {
-                                    "type" : "widget_type_0",
+                                    "type" : "string",
                                     "data" : "aData, st0"
                                 },
                                 {
