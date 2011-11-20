@@ -1,7 +1,10 @@
 - if (user.guest)
-  p Привет, гость!
+  p Привет, гость! 
+    a(href='/login') войти
 - else
-  p Привет, #{user.email}
+  p Привет, #{user.email} 
+    a(href='/logout') выйти
+  
 br
 p Как использовать:
 p /UserData/:UserName
