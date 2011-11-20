@@ -1,0 +1,117 @@
+# project node.js (1.0) configured on Sat Oct 29 10:51:46 2011 by
+# waf 1.5.16 (abi 7, python 20702f0 on linux2)
+# using /home/luar_soll/node/tools/waf-light --jobs=1 configure
+#
+
+----------------------------------------
+Checking for program g++ or c++
+  find program=['g++', 'c++'] paths=[] var='CXX'
+  -> '/usr/bin/g++'
+
+----------------------------------------
+Checking for program cpp
+  find program=['cpp'] paths=[] var='CPP'
+  -> '/usr/bin/cpp'
+
+----------------------------------------
+Checking for program ar
+  find program=['ar'] paths=[] var='AR'
+  -> '/usr/bin/ar'
+
+----------------------------------------
+Checking for program ranlib
+  find program=['ranlib'] paths=[] var='RANLIB'
+  -> '/usr/bin/ranlib'
+
+----------------------------------------
+Checking for g++ 
+ok 
+
+----------------------------------------
+Checking for program gcc or cc
+  find program=['gcc', 'cc'] paths=[] var='CC'
+  -> '/usr/bin/gcc'
+
+----------------------------------------
+Checking for program ar
+  find program=['ar'] paths=[] var='AR'
+  -> '/usr/bin/ar'
+
+----------------------------------------
+Checking for program ranlib
+  find program=['ranlib'] paths=[] var='RANLIB'
+  -> '/usr/bin/ranlib'
+
+----------------------------------------
+Checking for gcc 
+ok 
+
+----------------------------------------
+Checking for library dl
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: out/.conf_check_0/test.cpp -> out/.conf_check_0/testbuild/Release/test_1.o
+[0m['/usr/bin/g++', '../test.cpp', '-c', '-o', 'Release/test_1.o']
+[2/2] [33mcxx_link: out/.conf_check_0/testbuild/Release/test_1.o -> out/.conf_check_0/testbuild/Release/testprog
+[0m['/usr/bin/g++', 'Release/test_1.o', '-o', '/home/luar_soll/node/out/.conf_check_0/testbuild/Release/testprog', '-lz', '-Wl,-Bdynamic', '-ldl']
+yes
+
+----------------------------------------
+Checking for openssl
+pkg-config --errors-to-stdout --print-errors --cflags --libs openssl
+ -lssl -lcrypto  
+yes
+
+----------------------------------------
+Checking for library util
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: out/.conf_check_0/test.cpp -> out/.conf_check_0/testbuild/Release/test_1.o
+[0m['/usr/bin/g++', '-DHAVE_OPENSSL=1', '../test.cpp', '-c', '-o', 'Release/test_1.o']
+[2/2] [33mcxx_link: out/.conf_check_0/testbuild/Release/test_1.o -> out/.conf_check_0/testbuild/Release/testprog
+[0m['/usr/bin/g++', 'Release/test_1.o', '-o', '/home/luar_soll/node/out/.conf_check_0/testbuild/Release/testprog', '-lz', '-L/usr/lib', '-L/usr/local/lib', '-Wl,-Bdynamic', '-lutil']
+yes
+
+----------------------------------------
+Checking for library rt
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: out/.conf_check_0/test.cpp -> out/.conf_check_0/testbuild/Release/test_1.o
+[0m['/usr/bin/g++', '-DHAVE_OPENSSL=1', '../test.cpp', '-c', '-o', 'Release/test_1.o']
+[2/2] [33mcxx_link: out/.conf_check_0/testbuild/Release/test_1.o -> out/.conf_check_0/testbuild/Release/testprog
+[0m['/usr/bin/g++', 'Release/test_1.o', '-o', '/home/luar_soll/node/out/.conf_check_0/testbuild/Release/testprog', '-lz', '-Wl,-Bdynamic', '-lrt']
+yes
+
+----------------------------------------
+Checking for fdatasync(2) with c++
+==>
+
+    #include <unistd.h>
+    int main(void)
+    {
+       int fd = 0;
+       fdatasync (fd);
+       return 0;
+    }
+  
+<==
+[1/2] [32mcxx: out/.conf_check_0/test.cpp -> out/.conf_check_0/testbuild/Release/test_1.o
+[0m['/usr/bin/g++', '-pthread', '-m32', '-DHAVE_OPENSSL=1', '-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '../test.cpp', '-c', '-o', 'Release/test_1.o']
+[2/2] [33mcxx_link: out/.conf_check_0/testbuild/Release/test_1.o -> out/.conf_check_0/testbuild/Release/testprog
+[0m['/usr/bin/g++', 'Release/test_1.o', '-o', '/home/luar_soll/node/out/.conf_check_0/testbuild/Release/testprog', '-lz', '-pthread', '-m32']
+yes

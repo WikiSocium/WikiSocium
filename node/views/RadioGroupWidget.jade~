@@ -1,0 +1,7 @@
+extends BaseWidget
+
+block content
+  - each value, i in widget.value_list
+    input(class="radioGroupWidgetButton", type="radio", value="#{value}")
+    #{widget.labels[value-1]}
+    br
