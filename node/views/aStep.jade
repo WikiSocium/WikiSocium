@@ -8,13 +8,11 @@ div(class="step isInvisible", id="step_#{step.id}")
     script(type = 'text/javascript')
       var step#{step.id}FieldsList = [];
       var notEmptyStep = false;
-    - each aWidget in step.widgets
-      -var wValue = stepData[aWidget.name]
-      !=partial('aWidget', {aWidget:aWidget, stepId:step.id, wValue:wValue})
+    - each widget in step.widgets
+      - var value = (stepData == undefined) ? "" : stepData[widget.id]
+      !=partial(widget.widget_type, {widget:widget, step_id:step.id, value:value})
     script(type = 'text/javascript')
-      if(notEmptyStep)
-      {
-        YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', function(Y){
-          groups.push(new Y.inputEx.Group({parentEl: 'step_#{step.id}', fields: step#{step.id}FieldsList}) );
-        });
-      }
+      YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', function(Y){
+         groups.push(new Y.inputEx.Group({parentEl: 'step_#{step.id}', fields: step#{step.id}FieldsList}) );
+      });
+      
