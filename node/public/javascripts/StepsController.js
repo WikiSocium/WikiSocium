@@ -5,7 +5,6 @@ YUI_config.groups.inputex.base = '../../inputex/build/';
 
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
 var temporaryCurrentStep = 0;
-var NSTEPS = 1;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 
 function ShowPoperStep()
@@ -70,6 +69,7 @@ function CollectFormData()
 // Обработчик нажатия кнопки следующего шага
 function NextStep()
 {
+	var NSTEPS=requestedCaseController.NSTEPS;
     SaveFormData(); //Сохраняем данные при переходе к следующему шагу
     if(temporaryCurrentStep < NSTEPS)
     {
@@ -80,5 +80,6 @@ function NextStep()
 
 $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
+	if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
     ShowPoperStep();    
 });

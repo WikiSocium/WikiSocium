@@ -2,6 +2,8 @@
 
 var requestedCaseController = 
 {
+	NSTEPS: 2,
+
     GetNextStepForStep: function(currentStep)
     {
         if(parseInt(currentStep) >= 1)
