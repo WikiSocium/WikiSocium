@@ -1,0 +1,166 @@
+{
+	"id":	1
+,	"id": "Посторонние предметы в продуктах питания"
+,	"currentStep": "0"
+,	"steps":	
+	[
+		{
+			"label": "Заручитесь показаниями свидетелей"
+		,	"widgets": 
+			[
+				{ 
+					"widget_type": "StaticTextWidget"
+				, 	"text": "Соберите как можно больше свидетельств того, что посторонние предметы были обнаружены в продукте после вскрытия упаковки. Наибольшую ценность представляют показания людей, непосредственно наблюдавших момент нахождения посторонних предметов" 
+				}
+			]
+		}	
+	,	{
+			"label": "Загрузите фото"
+		,	"id": "photo_load"
+		,	"widgets": 
+			[
+				{ 
+					"widget_type": "StaticTextWidget"
+				, 	"text": "Вы можете загрузить фото нам на сайт"
+				}
+			,	{ 
+					"widget_type": "UploadFileWidget"
+				, 	"type": "image"
+				,	"id": "photo_load"
+				}
+			]
+		}
+	,	{
+			"label": "Если Вы поранились"
+		,	"widgets": 
+			[
+				{
+					"widget_type": "StaticTextWidget"
+				,	"text": "Обратитесь к врачу и получите справку, подтверждающую ущерб здоровью из-за воздействия постороннего предмета." 
+				}
+			]
+		}
+	,	{
+			"label": "Сохраните продукт и посторонние предметы" 
+		,	"widgets": 
+			[
+				{
+					"widget_type": "StaticTextWidget"
+				,	"text": "Аккуратно и тщательно упакуйте продукт и посторонние продукты и поместите их в холодильник или морозилку" 
+				}
+			,	{
+					"widget_type": "RadioGroupWidget"
+				,	"id": "radio"
+				,	"initial": 1
+				,	"value_list": [ 1, 2, 3 ]
+				}
+			]
+		,	"next" :
+			[
+				{
+					"id": "final"
+				,	"predicates":
+					[
+						{ 
+							"step_id": "text_field"
+						,	"widget_id": "text_field"
+						,	"cond": "=="
+						,	"value": 2
+						}
+					]
+				}
+			]
+		}
+	,	{
+			"label": "Свяжитесь с производителем" 
+		,	"id": "text_field"
+		,	"widgets": 
+			[
+				{
+					"widget_type": "StaticTextWidget"
+				,	"text": "Свяжитесь с производителем неофициально, озвучьте свою проблему. Производитель может предложить возместить ущерб без участия суда"
+				}
+			,	{ 	
+					"widget_type": "EndSolution" 
+				,	"type": "success"
+				,	"label": "Ущерб возмещен"
+				}
+			,	{
+					"widget_type": "TextFieldWidget"
+				,	"id": "text_field"
+				}
+			]
+		,	"next" :
+			[
+				{
+					"id": "final"
+				,	"predicates":
+					[
+						{ 
+							"wid": "step_text_field_widget_text_field"
+						,	"cond": "=="
+						,	"value": 20
+						}
+					]
+				}
+			]
+		}
+	,	{
+			"label": "Проведите экспертизу"
+		,	"widgets": 
+			[
+				{
+					"widget_type": "StaticTextWidget"
+				,	"text": "Обратитесь в независимую организацию для проведения экспертизы"
+				}
+			,	{
+					"widget_type": "InfoListWidget"
+				,	"item_list": 
+					[
+						"ФБУЗ \"Центр Гигиены и Эпидемиологии в Городе Москве\""
+					,	"АНО \"Центр Судебных Экспертиз\""
+					]
+				,	"value_list": 
+					[
+						"http://sud-expertiza.ru"
+					,	"http://www.mossanexpert.ru/"
+					]
+				}
+			]
+		}
+	,	{
+			"label": "Подайте иск в суд"
+		,	"widgets": 
+			[
+				{
+					"widget_type": "StaticTextWidget"
+				,	"text": "Составьте заявление и подайте его самостоятельно в суд по месту проживания или обратитесь за квалифицированной юридической помощью"
+				}
+			]
+		}
+	,	{
+			"label": "Решили ли Вы проблему через суд?"
+		,	"id": "final"
+		,	"widgets": 
+			[
+				{ 
+					"widget_type": "EndSolution"
+				,	"type": "success"
+				,	"label": "Да" 
+				}
+			,	{ 
+					"widget_type": "EndSolution"
+				,	"type": "failure"
+				,	"label": "Нет"
+				}
+			]
+		,	"next" :
+			[
+				{
+					"id": 0
+				,	"predicates": [ "true" ]
+				}
+			]
+		}
+	]
+}

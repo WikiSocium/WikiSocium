@@ -120,25 +120,50 @@ app.get('/Problems/:ProblemName', function(req, res){
 //
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/UserData/:UserName/:CaseId', function(req, res) {
-		 var userName = req.param('UserName', null);
-		 var caseId = req.param('CaseId', null);
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
 
-		 fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data){					 
-			 if(!err)
-			 {
-				var requestedCase = jQ.parseJSON(data);
-				res.render('userCase', {
-							   'title': userName + " : " + caseId,
-							   'requestedCase' : requestedCase,
-							   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-											'/javascripts/CaseController.js',
-											'/javascripts/controllers/DataFieldController.js']
-						   });
-			 }
-			 else
-					Render404(res, err);
-			});
-		});
+    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
+        if(!err) {
+             var caseData = fs.readFileSync('dat=a/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
+                 if (err) {
+                     fs.openFile('data/' + userName + '/' + caseId + 'Data.txt', 'w');
+                 });
+             caseData = jQ.parseJSON(caseData); //Парсим джейсон с введенными данными
+                
+                //else console.log("Case data not found!");
+               
+             var requestedCase = jQ.parseJSON(data);
+                
+             res.render('userCase', 
+                        {
+                            'title': userName + " : " + caseId,
+                            'requestedCase' : requestedCase,
+                            'caseData' : caseData,
+                            'scripts' : [
+                                'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+                                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                                '/inputex/src/loader.js',
+                                '/javascripts/controllers/' + requestedCase.id + '.js',
+                                '/javascripts/jquery.json-2.3.min.js',
+                                '/javascripts/StepsController.js']
+                        });
+             }
+             else
+                 Render404(res, err);
+            });
+    });
+//        
+//Сохранение данных кейса        
+app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+    console.log(req.body.jsonData);
+    fs.writeFile('data/' + userName + '/' + caseId + 'Data.txt', req.body.jsonData, function (err) {
+          if (err) console.log(err);
+    });
+    res.send(req.body);
+});
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов

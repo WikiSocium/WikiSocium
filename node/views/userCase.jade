@@ -27,8 +27,10 @@ div(class="caseName")
 div(class="caseDescription")
   #{requestedCase.description}
 
-#steps
-  - each step, step_i in requestedCase.steps
-    !=partial('aStep', {step:step, step_i:step_i})
+script(type="text/javascript")
+  var caseJson = !{JSON.stringify(requestedCase)};
 
-div(class="nextStepButton", onClick="caseController.GetNextStep();") Следующий шаг
+div(class = "steps", id = "stepsWrapper")
+  - each step, i in requestedCase.steps
+    !=partial('aStep', {step:step, stepData:caseData[i]})
+div(class="nextStepButton", onClick="NextStep()") Следующий шаг

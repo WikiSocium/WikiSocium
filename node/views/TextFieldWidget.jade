@@ -1,4 +1,5 @@
 extends BaseWidget
 
 block content
-  input(class="textFieldWidgetInput", type="text")
+  script(type='text/javascript')
+    step#{step_id}FieldsList.push({ type: 'string', label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', required:true });

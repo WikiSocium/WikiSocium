@@ -3,6 +3,13 @@ div(class="step isInvisible", id="step_#{step_i}")
     #{step.caption}
   br
   #widgets
-    - var step_id = (step.alias != undefined || step.alias != null) ? step.alias : step_i
-    - each widget,widget_i in step.widgets
-      !=partial(widget.widget_type, {widget:widget, widget_i:widget_i, step_id:step_id})
+    script(type = 'text/javascript')
+      var step#{step.id}FieldsList = [];
+      var notEmptyStep = false;
+    - each widget in step.widgets
+      - var value = (stepData == undefined) ? "" : stepData[widget.id]
+      !=partial(widget.widget_type, {widget:widget, step_id:step.id, value:value})
+    script(type = 'text/javascript')
+      YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', function(Y){
+         groups.push(new Y.inputEx.Group({parentEl: 'step_#{step.id}', fields: step#{step.id}FieldsList}) );
+      });
