@@ -267,7 +267,7 @@ app.post('/users.:format?', function(req, res) {
     if (err) return userSaveFailed();
 
     req.flash('info', 'Your account has been created');
-    emails.sendWelcome(user);
+    //emails.sendWelcome(user);
 
     switch (req.params.format) {
       case 'json':
