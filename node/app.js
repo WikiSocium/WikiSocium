@@ -135,27 +135,30 @@ function loadUser(req, res, next) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
         req.currentUser = user;
+        req.currentUser.guest = 0;
         next();
       } else {
-        res.redirect('/sessions/new');
+        req.currentUser = {}
+        req.currentUser.guest = 1;
+        next();
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
-    res.redirect('/sessions/new');
+    req.currentUser = {}
+    req.currentUser.guest = 1;
+    next();
   }
 }
 
-app.get('/login', loadUser, function(req, res) {
-  res.redirect('/')
-});
-
-
 //
 // Обработка корня
-app.get('/', function(req, res) {
-        res.render('index', {'title':"Usage", scripts:[]});
+app.get('/', loadUser, function(req, res) {
+        res.render('index', {
+                'title':"Usage",
+                'user':req.currentUser, 
+                scripts:[]});
         });
 
 //
@@ -278,6 +281,8 @@ app.post('/users.:format?', function(req, res) {
   });
 });
 
+
+
 // Sessions
 app.get('/sessions/new', function(req, res) {
   res.render('sessions/new.jade', {
@@ -309,14 +314,21 @@ app.post('/sessions', function(req, res) {
   }); 
 });
 
-app.del('/sessions', loadUser, function(req, res) {
+app.get('/login', loadUser, function(req, res) {
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else res.redirect('/');
+});
+
+app.get('/logout', loadUser, function(req, res) {
   if (req.session) {
     LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
     req.session.destroy(function() {});
   }
-  res.redirect('/sessions/new');
+  res.redirect('/');
 });
+
+
 
 
 app.listen(3000);
