@@ -9,14 +9,13 @@ var groups = []; //Список групп полей (шагов) для фор
 
 function ShowPoperStep()
 {
-    if(temporaryCurrentStep <= 10)
+    if(temporaryCurrentStep <= requestedCase.steps.length)
     {
       $(".step").addClass("isInvisible");
       $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
-      if(temporaryCurrentStep == 10) temporaryCurrentStep = temporaryCurrentStep + 1;
     }
     
-    if(temporaryCurrentStep >= 10) //Последний шаг
+    if(temporaryCurrentStep >= requestedCase.steps.length) //Последний шаг
     {
       YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) {
          var destroyButton = new Y.inputEx.widget.Button({
@@ -72,21 +71,29 @@ function CheckPredicate(predicate, step_id) {
 			return true;
 		}
 
-		var value = CollectFormData();
-				
-		return eval(value[step_id][predicate.widget_id] + predicate.cond + predicate.value);
+		var value = CollectFormData()[step_id][predicate.widget_id];
+
+		switch(predicate.cond) {
+			case "==":	return (value == predicate.value);
+			case "!=":	return (value != predicate.value);
+			case "<=":	return (value <= predicate.value);
+			case ">=":	return (value >= predicate.value);
+			case ">":	return (value > predicate.value);
+			case "<":	return (value < predicate.value);
+			default:	return false;
+		}
 	}
 
 function NextStep() {
 		SaveFormData();
-		var nextInfo = caseJson.steps[temporaryCurrentStep].next;
+		var nextInfo = requestedCase.steps[temporaryCurrentStep].next;
 		var check = false;
 		for (i in nextInfo) {
 			for (j in nextInfo[i].predicates) {
 				var step_id = 0;
-				for (step_id = 0; step_id < caseJson.steps.length; step_id ++)
+				for (step_id = 0; step_id < requestedCase.steps.length; step_id ++)
 				{
-					if (caseJson.steps[step_id].id == nextInfo[i].predicates[j].step_id) break;
+					if (requestedCase.steps[step_id].id == nextInfo[i].predicates[j].step_id) break;
 				}
 				check = this.CheckPredicate(nextInfo[i].predicates[j], step_id);
 				if (check == false) {
@@ -95,9 +102,9 @@ function NextStep() {
 			}
 			if (check == true) {
 				var next_step_id = 0;
-				for (next_step_id = 0; next_step_id < caseJson.steps.length; next_step_id ++)
+				for (next_step_id = 0; next_step_id < requestedCase.steps.length; next_step_id ++)
 				{
-					if (caseJson.steps[next_step_id].id == nextInfo[i].id) break;
+					if (requestedCase.steps[next_step_id].id == nextInfo[i].id) break;
 				}
 				temporaryCurrentStep = next_step_id;
 				break;

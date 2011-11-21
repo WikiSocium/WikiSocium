@@ -1,7 +1,10 @@
 extends BaseWidget
 
 block content
-  select(class="infoListWidgetList")
+  script(type="text/javascript")
+    var list_info_#{step_id} = "";
+    function ShowInfo() { alert(list_info_#{step_id}); }
+  select(class="infoListWidgetList", onUpdate="function() {list_info#{step_id} = $("#step_#{step_id}").children(".infoListWidgetList").val();}")
     - each item, i in widget.item_list
       option(value="#{widget.value_list[i]}")= widget.item_list[i]
   br

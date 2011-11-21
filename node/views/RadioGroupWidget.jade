@@ -1,6 +1,5 @@
 extends BaseWidget
 
 block content
-  - each value in widget.value_list
-    input(class="radioGroupWidgetButton", type="radio", value="#{value}")
-    br
+  script(type="text/javascript")
+    step#{step_id}FieldsList.push({ type: 'radio', label: '#{widget.label}', name: '#{widget.id}', display: 'vertically', choices: '#{widget.value_list}', value: '#{value}', required:true });

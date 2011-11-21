@@ -122,16 +122,18 @@ app.get('/Problems/:ProblemName', function(req, res){
 app.get('/UserData/:UserName/:CaseId', function(req, res) {
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
+    var caseData = "null";
+    fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
+        if (err) {
+	    fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
+        }
+        else {
+            caseData = jQ.parseJSON(data);
+        }
+    });
 
     fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
         if(!err) {
-             var caseData = fs.readFileSync('dat=a/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-                 if (err) {
-                     fs.openFile('data/' + userName + '/' + caseId + 'Data.txt', 'w');
-                 });
-             caseData = jQ.parseJSON(caseData); //Парсим джейсон с введенными данными
-                
-                //else console.log("Case data not found!");
                
              var requestedCase = jQ.parseJSON(data);
                 

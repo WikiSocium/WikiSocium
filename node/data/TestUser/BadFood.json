@@ -1,11 +1,12 @@
 {
 	"id":	1
-,	"id": "Посторонние предметы в продуктах питания"
+,	"label": "Посторонние предметы в продуктах питания"
 ,	"currentStep": "0"
 ,	"steps":	
 	[
 		{
-			"label": "Заручитесь показаниями свидетелей"
+			"id": "proof"
+		,	"label": "Заручитесь показаниями свидетелей"
 		,	"widgets": 
 			[
 				{ 
@@ -32,6 +33,7 @@
 		}
 	,	{
 			"label": "Если Вы поранились"
+		,	"id": "hurt"
 		,	"widgets": 
 			[
 				{
@@ -41,7 +43,8 @@
 			]
 		}
 	,	{
-			"label": "Сохраните продукт и посторонние предметы" 
+			"id": "save_products"
+		,	"label": "Сохраните продукт и посторонние предметы" 
 		,	"widgets": 
 			[
 				{
@@ -62,8 +65,8 @@
 				,	"predicates":
 					[
 						{ 
-							"step_id": "text_field"
-						,	"widget_id": "text_field"
+							"step_id": "save_products"
+						,	"widget_id": "radio"
 						,	"cond": "=="
 						,	"value": 2
 						}
@@ -73,7 +76,7 @@
 		}
 	,	{
 			"label": "Свяжитесь с производителем" 
-		,	"id": "text_field"
+		,	"id": "contact"
 		,	"widgets": 
 			[
 				{
@@ -97,7 +100,8 @@
 				,	"predicates":
 					[
 						{ 
-							"wid": "step_text_field_widget_text_field"
+							"step_id": "contact"
+						,	"widget_id": "text_field"
 						,	"cond": "=="
 						,	"value": 20
 						}
@@ -157,7 +161,7 @@
 		,	"next" :
 			[
 				{
-					"id": 0
+					"id": "proof"
 				,	"predicates": [ "true" ]
 				}
 			]

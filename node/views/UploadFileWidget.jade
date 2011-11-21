@@ -1,7 +1,5 @@
 extends BaseWidget
 
 block content
-  input(class="uploadFileWidgetField", type="file")
-  br
-
-  input(class="uploadFileWidgetButton", type="button", value="Upload", onClick="alert(\"Uploaded\")")
+  script(type="text/javascript")
+    step#{step_id}FieldsList.push({ type: 'file', label: '#{widget.label}', name: '#{widget.name}' });
