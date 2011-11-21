@@ -16,8 +16,19 @@ function Render404(res, err)
  */
 
 var express = require('express');
+var connect = require('connect');
+var jade = require('jade');
 var fs = require('fs');
 var jQ = require('jquery');
+var mongoose = require('mongoose');
+var mongoStore = require('connect-mongodb');
+var models = require('./models')
+    ,db
+    ,User
+    ,LoginToken
+//    ,Settings = { development: {}, test: {}, production: {} }
+//    ,emails
+    ;
 
 var app = module.exports = express.createServer();
 
@@ -25,10 +36,14 @@ var app = module.exports = express.createServer();
 // [RESEARCH] Не имею ни малейшего понятия что происходит в этом конфигурировании,
 // если кто-нибудь разберется и расскажет — будет круто.
 
+
+
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
+  app.use(express.cookieParser()); 
+  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -36,11 +51,23 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  app.set('db-uri', 'mongodb://localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
   app.use(express.errorHandler()); 
+  app.set('db-uri', 'mongodb://localhost/wikisocium-production');
 });
+
+var db = mongoose.connect(app.set('db-uri'));
+
+
+models.defineModels(mongoose, function() {
+  //app.Document = Document = mongoose.model('Document');
+  app.User = User = mongoose.model('User');
+  app.LoginToken = LoginToken = mongoose.model('LoginToken');
+  db = mongoose.connect(app.set('db-uri'));
+})
 
 app.dynamicHelpers({
   session: function (req, res) {
@@ -73,11 +100,66 @@ app.dynamicHelpers({
 // req <=> request
 // res <=> response
 
+
+
+function authenticateFromLoginToken(req, res, next) {
+  var cookie = JSON.parse(req.cookies.logintoken);
+
+  LoginToken.findOne({ email: cookie.email,
+                       series: cookie.series,
+                       token: cookie.token }, (function(err, token) {
+    if (!token) {
+      res.redirect('/sessions/new');
+      return;
+    }
+
+    User.findOne({ email: token.email }, function(err, user) {
+      if (user) {
+        req.session.user_id = user.id;
+        req.currentUser = user;
+
+        token.token = token.randomToken();
+        token.save(function() {
+          res.cookie('logintoken', token.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+          next();
+        });
+      } else {
+        res.redirect('/sessions/new');
+      }
+    });
+  }));
+}
+
+function loadUser(req, res, next) {
+  if (req.session.user_id) {
+    User.findById(req.session.user_id, function(err, user) {
+      if (user) {
+        req.currentUser = user;
+        req.currentUser.guest = 0;
+        next();
+      } else {
+        req.currentUser = {}
+        req.currentUser.guest = 1;
+        next();
+      }
+    });
+  } else if (req.cookies.logintoken) {
+    authenticateFromLoginToken(req, res, next);
+  } else {
+    req.currentUser = {}
+    req.currentUser.guest = 1;
+    next();
+  }
+}
+
 //
 // Обработка корня
-app.get('/', function(req, res) {
-		res.render('index', {'title':"Usage", scripts:[]});
-		});
+app.get('/', loadUser, function(req, res) {
+        res.render('index', {
+                'title':"Usage",
+                'user':req.currentUser, 
+                scripts:[]});
+        });
 
 //
 // Обработка запроса на показ списка проблем
@@ -187,6 +269,96 @@ app.get('/UserData/:UserName', function(req, res){
 			});
 		});
 
+// Users
+app.get('/users/new', function(req, res) {
+  res.render('users/new.jade', {
+    locals: { user: new User() },
+    title: '',
+    scripts: []
+  });
+});
+
+app.post('/users.:format?', function(req, res) {
+  var user = new User(req.body.user);
+
+  function userSaveFailed() {
+    req.flash('error', 'Account creation failed');
+    res.render('users/new.jade', {
+      locals: { user: user },
+      title: '',
+      scripts: []
+    });
+  }
+
+  user.save(function(err) {
+    if (err) return userSaveFailed();
+
+    req.flash('info', 'Your account has been created');
+    //emails.sendWelcome(user);
+
+    switch (req.params.format) {
+      case 'json':
+        res.send(user.toObject());
+      break;
+
+      default:
+        req.session.user_id = user.id;
+        res.redirect('/');
+    }
+  });
+});
+
+
+
+// Sessions
+app.get('/sessions/new', function(req, res) {
+  res.render('sessions/new.jade', {
+    locals: { user: new User() },
+    title: '',
+    scripts: []
+  });
+});
+
+app.post('/sessions', function(req, res) {
+  User.findOne({ email: req.body.user.email }, function(err, user) {
+    if (user && user.authenticate(req.body.user.password)) {
+      req.session.user_id = user.id;
+
+      // Remember me
+      if (req.body.remember_me) {
+        var loginToken = new LoginToken({ email: user.email });
+        loginToken.save(function() {
+          res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+          res.redirect('/');
+        });
+      } else {
+        res.redirect('/');
+      }
+    } else {
+      req.flash('error', 'Incorrect credentials');
+      res.redirect('/sessions/new');
+    }
+  }); 
+});
+
+app.get('/login', loadUser, function(req, res) {
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else res.redirect('/');
+});
+
+app.get('/logout', loadUser, function(req, res) {
+  if (req.session) {
+    LoginToken.remove({ email: req.currentUser.email }, function() {});
+    res.clearCookie('logintoken');
+    req.session.destroy(function() {});
+  }
+  res.redirect('/');
+});
+
+
+
+
 app.listen(3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+console.log('Express server listening on port %d, environment: %s', app.address().port, app.settings.env)
+console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);
 
