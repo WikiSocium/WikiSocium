@@ -43,11 +43,5 @@ var caseController = new CaseController();
 
 $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
-	textFieldController = new TextFieldController();
-	selectListController = new SelectListController();
-	radioGroupController = new RadioGroupController();
-	textFieldController.InitFields();
-	selectListController.InitFields();
-	radioGroupController.InitFields();
 	caseController.ShowProperStep();    
 });

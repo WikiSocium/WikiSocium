@@ -9,14 +9,14 @@ var groups = []; //Список групп полей (шагов) для фор
 
 function ShowPoperStep()
 {
-    if(temporaryCurrentStep <= NSTEPS)
+    if(temporaryCurrentStep <= 10)
     {
       $(".step").addClass("isInvisible");
       $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
-      if(temporaryCurrentStep == NSTEPS) temporaryCurrentStep = temporaryCurrentStep + 1;
+      if(temporaryCurrentStep == 10) temporaryCurrentStep = temporaryCurrentStep + 1;
     }
     
-    if(temporaryCurrentStep >= NSTEPS) //Последний шаг
+    if(temporaryCurrentStep >= 10) //Последний шаг
     {
       YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) {
          var destroyButton = new Y.inputEx.widget.Button({
@@ -67,19 +67,50 @@ function CollectFormData()
 }
 
 // Обработчик нажатия кнопки следующего шага
-function NextStep()
-{
-	var NSTEPS=requestedCaseController.NSTEPS;
-    SaveFormData(); //Сохраняем данные при переходе к следующему шагу
-    if(temporaryCurrentStep < NSTEPS)
-    {
-      temporaryCurrentStep = requestedCaseController.GetNextStepForStep(temporaryCurrentStep);
-      ShowPoperStep();
-    }
-}
+function CheckPredicate(predicate, step_id) {
+		if (predicate == "true") {
+			return true;
+		}
 
+		var value = CollectFormData();
+				
+		return eval(value[step_id][predicate.widget_id] + predicate.cond + predicate.value);
+	}
+
+function NextStep() {
+		SaveFormData();
+		var nextInfo = caseJson.steps[temporaryCurrentStep].next;
+		var check = false;
+		for (i in nextInfo) {
+			for (j in nextInfo[i].predicates) {
+				var step_id = 0;
+				for (step_id = 0; step_id < caseJson.steps.length; step_id ++)
+				{
+					if (caseJson.steps[step_id].id == nextInfo[i].predicates[j].step_id) break;
+				}
+				check = this.CheckPredicate(nextInfo[i].predicates[j], step_id);
+				if (check == false) {
+					break;
+				}
+			}
+			if (check == true) {
+				var next_step_id = 0;
+				for (next_step_id = 0; next_step_id < caseJson.steps.length; next_step_id ++)
+				{
+					if (caseJson.steps[next_step_id].id == nextInfo[i].id) break;
+				}
+				temporaryCurrentStep = next_step_id;
+				break;
+			}
+		}
+		if (check != true) {
+			temporaryCurrentStep += 1;
+		}
+		ShowPoperStep();
+	}
 $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
 	if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
     ShowPoperStep();    
 });
+

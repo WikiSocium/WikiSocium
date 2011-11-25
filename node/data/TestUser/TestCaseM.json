@@ -1,11 +1,11 @@
 {
 	"id":	1
-,	"name": "Посторонние предметы в продуктах питания"
+,	"id": "Посторонние предметы в продуктах питания"
 ,	"currentStep": "0"
 ,	"steps":	
 	[
 		{
-			"caption": "Заручитесь показаниями свидетелей"
+			"label": "Заручитесь показаниями свидетелей"
 		,	"widgets": 
 			[
 				{ 
@@ -15,8 +15,8 @@
 			]
 		}	
 	,	{
-			"caption": "Загрузите фото"
-		,	"alias": "photo_load"
+			"label": "Загрузите фото"
+		,	"id": "photo_load"
 		,	"widgets": 
 			[
 				{ 
@@ -26,12 +26,12 @@
 			,	{ 
 					"widget_type": "UploadFileWidget"
 				, 	"type": "image"
-				,	"alias": "photo_load"
+				,	"id": "photo_load"
 				}
 			]
 		}
 	,	{
-			"caption": "Если Вы поранились"
+			"label": "Если Вы поранились"
 		,	"widgets": 
 			[
 				{
@@ -41,7 +41,7 @@
 			]
 		}
 	,	{
-			"caption": "Сохраните продукт и посторонние предметы" 
+			"label": "Сохраните продукт и посторонние предметы" 
 		,	"widgets": 
 			[
 				{
@@ -50,7 +50,7 @@
 				}
 			,	{
 					"widget_type": "RadioGroupWidget"
-				,	"alias": "radio"
+				,	"id": "radio"
 				,	"initial": 1
 				,	"value_list": [ 1, 2, 3 ]
 				}
@@ -62,7 +62,8 @@
 				,	"predicates":
 					[
 						{ 
-							"wid": "step_3_widget_radio"
+							"step_id": "text_field"
+						,	"widget_id": "text_field"
 						,	"cond": "=="
 						,	"value": 2
 						}
@@ -71,8 +72,8 @@
 			]
 		}
 	,	{
-			"caption": "Свяжитесь с производителем" 
-		,	"alias": "text_field"
+			"label": "Свяжитесь с производителем" 
+		,	"id": "text_field"
 		,	"widgets": 
 			[
 				{
@@ -82,11 +83,11 @@
 			,	{ 	
 					"widget_type": "EndSolution" 
 				,	"type": "success"
-				,	"caption": "Ущерб возмещен"
+				,	"label": "Ущерб возмещен"
 				}
 			,	{
 					"widget_type": "TextFieldWidget"
-				,	"alias": "text_field"
+				,	"id": "text_field"
 				}
 			]
 		,	"next" :
@@ -105,7 +106,7 @@
 			]
 		}
 	,	{
-			"caption": "Проведите экспертизу"
+			"label": "Проведите экспертизу"
 		,	"widgets": 
 			[
 				{
@@ -128,7 +129,7 @@
 			]
 		}
 	,	{
-			"caption": "Подайте иск в суд"
+			"label": "Подайте иск в суд"
 		,	"widgets": 
 			[
 				{
@@ -138,19 +139,19 @@
 			]
 		}
 	,	{
-			"caption": "Решили ли Вы проблему через суд?"
-		,	"alias": "final"
+			"label": "Решили ли Вы проблему через суд?"
+		,	"id": "final"
 		,	"widgets": 
 			[
 				{ 
 					"widget_type": "EndSolution"
 				,	"type": "success"
-				,	"caption": "Да" 
+				,	"label": "Да" 
 				}
 			,	{ 
 					"widget_type": "EndSolution"
 				,	"type": "failure"
-				,	"caption": "Нет"
+				,	"label": "Нет"
 				}
 			]
 		,	"next" :

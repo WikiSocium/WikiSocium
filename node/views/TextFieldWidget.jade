@@ -1,4 +1,3 @@
-extends BaseWidget
-
-block content
-  input(class="textFieldWidgetInput", type="text")
+div(class="widgetData", id="#{stepId}"+"#{aWidget.id}")
+  script(type='text/javascript')
+    step#{stepId}FieldsList.push({ type: 'string', label: '#{aWidget.label}', name: '#{aWidget.id}', value: '#{wValue}', required:true });

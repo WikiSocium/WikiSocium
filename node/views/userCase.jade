@@ -7,6 +7,9 @@ div(class="caseName")
 div(class="caseDescription")
   #{requestedCase.description}
 
+script(type="text/javascript")
+  var caseJson = !{JSON.stringify(requestedCase)};
+
 div(class = "steps", id = "stepsWrapper")
   - each step, i in requestedCase.steps
     !=partial('aStep', {step:step, stepData:caseData[i]})
