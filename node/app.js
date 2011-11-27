@@ -289,10 +289,34 @@ app.post('/users.:format?', function(req, res) {
       scripts: []
     });
   }
+  
+  function userCreateEnv( user ) {
+    fs.mkdir('data/'+user.email);
+    
+    var userJSON = {
+      id: user.email,
+      fullName: '',
+      cases: ''
+    };
+    
+    var filter = new Array();
+    filter[0] = 'id';
+    filter[1] = 'fullName';
+    filter[2] = 'cases';
+    
+    fs.writeFile('data/' + user.email + '/user.json', JSON.stringify (userJSON, filter, "\t"), encoding='utf8', function (err) {
+      if (err) throw err;
+      //console.log('It\'s saved!');
+    }
+    );
+  }
 
   user.save(function(err) {
     if (err) return userSaveFailed();
-
+    
+    // creating user environment
+    userCreateEnv(user);    
+    
     req.flash('info', 'Your account has been created');
     //emails.sendWelcome(user);
 
