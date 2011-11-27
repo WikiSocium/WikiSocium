@@ -36,7 +36,9 @@ var app = module.exports = express.createServer();
 // [RESEARCH] Не имею ни малейшего понятия что происходит в этом конфигурировании,
 // если кто-нибудь разберется и расскажет — будет круто.
 
-
+// загрузка helpers -- штука, которая выводит сообщения или ошибки
+app.helpers(require('./helpers.js').helpers);
+app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -282,7 +284,7 @@ app.post('/users.:format?', function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
-    req.flash('error', 'Account creation failed');
+    req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
       locals: { user: user },
       title: '',
@@ -297,14 +299,16 @@ app.post('/users.:format?', function(req, res) {
       id: user.email,
       fullName: '',
       cases: ''
-    };
-    
+    };    
     var filter = new Array( 'id', 'fullName', 'cases' );
     
-    fs.writeFile('data/' + user.email + '/user.json', JSON.stringify (userJSON, filter, "\t"), encoding='utf8', function (err) {
-      if (err) throw err;
-      //console.log('It\'s saved!');
-    }
+    fs.writeFile(
+      'data/' + user.email + '/user.json',
+      JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+      function (err) {
+        if (err) throw err;
+        //console.log('It\'s saved!');
+      }
     );
   }
 
@@ -314,7 +318,7 @@ app.post('/users.:format?', function(req, res) {
     // creating user environment
     userCreateEnv(user);    
     
-    req.flash('info', 'Your account has been created');
+    req.flash('info', 'Ваш аккаунт был успешно создан');
     //emails.sendWelcome(user);
 
     switch (req.params.format) {
@@ -345,6 +349,8 @@ app.post('/sessions', function(req, res) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
 
+      req.flash('info', 'Вы вошли в систему. Здравствуйте!');
+
       // Remember me
       if (req.body.remember_me) {
         var loginToken = new LoginToken({ email: user.email });
@@ -354,9 +360,9 @@ app.post('/sessions', function(req, res) {
         });
       } else {
         res.redirect('/');
-      }
+      }      
     } else {
-      req.flash('error', 'Incorrect credentials');
+      req.flash('error', 'E-mail и пароль не подходят');
       res.redirect('/sessions/new');
     }
   }); 
