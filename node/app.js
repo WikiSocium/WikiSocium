@@ -299,10 +299,7 @@ app.post('/users.:format?', function(req, res) {
       cases: ''
     };
     
-    var filter = new Array();
-    filter[0] = 'id';
-    filter[1] = 'fullName';
-    filter[2] = 'cases';
+    var filter = new Array( 'id', 'fullName', 'cases' );
     
     fs.writeFile('data/' + user.email + '/user.json', JSON.stringify (userJSON, filter, "\t"), encoding='utf8', function (err) {
       if (err) throw err;
