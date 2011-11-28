@@ -1,1 +1,1 @@
-[{"fio":"123"},{"fio":"ыва","nationality":"ыва"},{"fidfff":"кк","nataaaionality":"ууу"}]
+[{"fio":"КВИ"},{"fio":"КВИ","nationality":"РУ"},{"fidfff":"blah1","nataaaionality":"blah2"}]

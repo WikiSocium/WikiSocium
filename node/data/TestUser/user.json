@@ -1,5 +1,5 @@
 {
     "id" : "TestUser",
     "fullName" : "Test User",
-    "cases": ["TestCase", "TestWidgets"]
+    "cases": ["TestCase", "TestWidgets", "BadFood", "HeatingSolution1", "ViolationStatementSolution"]
 }

@@ -1,8 +1,12 @@
-div
-  label Email:
-  input(name='user[email]', value=user.email || '')
-
-div
-  label Password:
-  input(name='user[password]', value=user.password || '', type='password')
+table
+  tr
+    td
+      label E-mail:
+    td
+      input(name='user[email]', value=user.email || '')
+  tr
+    td
+      label Пароль:
+    td
+      input(name='user[password]', value=user.password || '', type='password')
 
