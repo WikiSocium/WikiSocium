@@ -1,0 +1,6 @@
+extends BaseWidget
+
+block content
+  script(type="text/javascript")
+    step#{step_id}FieldsList.push({ type: 'string', label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', readonly: true});
+  input(type="button", class="startTimerButton", value="Запустить таймер", onClick="var date = new Date(); date.setDate(date.getDate() + #{widget.day_num}); groups[#{step_id}].getFieldByName(\"#{widget.id}\").setValue(date);")

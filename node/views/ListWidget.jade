@@ -1,0 +1,5 @@
+extends BaseWidget
+
+block content
+  script(type="text/javascript")
+    step#{step_id}FieldsList.push({ type: 'select', label: '#{widget.label}', name: '#{widget.id}', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:true });
