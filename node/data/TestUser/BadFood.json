@@ -51,27 +51,6 @@
 					"widget_type": "StaticTextWidget"
 				,	"text": "Аккуратно и тщательно упакуйте продукт и посторонние продукты и поместите их в холодильник или морозилку" 
 				}
-			,	{
-					"widget_type": "RadioGroupWidget"
-				,	"id": "radio"
-				,	"initial": 1
-				,	"value_list": [ 1, 2, 3 ]
-				}
-			]
-		,	"next" :
-			[
-				{
-					"id": "final"
-				,	"predicates":
-					[
-						{ 
-							"step_id": "save_products"
-						,	"widget_id": "radio"
-						,	"cond": "=="
-						,	"value": 2
-						}
-					]
-				}
 			]
 		}
 	,	{
@@ -87,25 +66,6 @@
 					"widget_type": "EndSolution" 
 				,	"type": "success"
 				,	"label": "Ущерб возмещен"
-				}
-			,	{
-					"widget_type": "TextFieldWidget"
-				,	"id": "text_field"
-				}
-			]
-		,	"next" :
-			[
-				{
-					"id": "final"
-				,	"predicates":
-					[
-						{ 
-							"step_id": "contact"
-						,	"widget_id": "text_field"
-						,	"cond": "=="
-						,	"value": 20
-						}
-					]
 				}
 			]
 		}

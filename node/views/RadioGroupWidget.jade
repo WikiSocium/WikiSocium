@@ -2,4 +2,4 @@ extends BaseWidget
 
 block content
   script(type="text/javascript")
-    step#{step_id}FieldsList.push({ type: 'radio', label: '#{widget.label}', name: '#{widget.id}', display: 'vertically', choices: '#{widget.value_list}', value: '#{value}', required:true });
+    step#{step_id}FieldsList.push({ type: 'radio', label: '#{widget.label}', name: '#{widget.id}', display: 'vertically', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:true });
