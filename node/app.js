@@ -230,7 +230,8 @@ app.get('/UserData/:UserName/:CaseId', function(req, res) {
                                 '/inputex/src/loader.js',
                                 '/javascripts/controllers/' + requestedCase.id + '.js',
                                 '/javascripts/jquery.json-2.3.min.js',
-                                '/javascripts/StepsController.js']
+                                '/javascripts/StepsController.js',
+                                '/javascripts/runtime.min.js']
                         });
              }
              else
