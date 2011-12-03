@@ -24,7 +24,7 @@
       {
       "id" : "map",
       "label": "Укажите местоположение",
-      "widget_type" : "MapsWidget",
+      "widget_type" : "TextFieldWidget",
       "data" : "aData, st0"
       },
       {
@@ -42,7 +42,7 @@
 					[
 						{ 
 							"step_id": "0"
-						,	"widget_id": "fio"
+						,	"widget_id": "fiooo"
 						,	"cond": "=="
 						,	"value": "123"
 						}

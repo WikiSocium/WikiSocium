@@ -62,7 +62,7 @@ function CollectWidgetData(step_index, widget_id)
         if ((step_index < 0) || (step_index >= groups.length)) {
             data = undefined;
         }
-        data = groups[step_index].getFieldByName(widget_id).getValue();
+        data = groups[step_index][widget_id].getValue();
     });
     return data;
 }
@@ -74,7 +74,9 @@ function CollectFormData()
     {
         for(var i = 0 ; i < groups.length ; i++)
         {
-            data[i] = groups[i].getValue();
+            data[i] = new Object();
+            for(var widg in groups[i])
+                data[i][widg] = groups[i][widg].getValue();
         }
     });
     return data;
