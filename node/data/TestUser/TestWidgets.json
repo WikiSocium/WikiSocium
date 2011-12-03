@@ -12,7 +12,7 @@
 			[
 				{
 					"widget_type": "StaticTextWidget"
-				,	"text": "Testing radio button group: Radio: 1 -> 2, 2 -> 3, 3 -> fail step"
+				,	"text": "фывфыTesting radio button group: Radio: 1 -> 2, 2 -> 3, 3 -> fail step"
 				}
 			,	{
 					"widget_type": "RadioGroupWidget"
@@ -130,6 +130,10 @@
 					"widget_type": "TimerWidget"
 				,	"id": "timer"
 				,	"day_num": 10
+				}
+			,	{
+					"widget_type": "URLOpenerWidget"
+				,	"id": "url"
 				}
 			]
 		}
