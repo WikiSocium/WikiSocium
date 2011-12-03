@@ -203,41 +203,49 @@ app.get('/Problems/:ProblemName', function(req, res){
 
 //
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId', function(req, res) {
+app.get('/UserData/:UserName/:CaseId'
+, function(req, res)
+{
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
     fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
         if (err) {
-	    fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
+	        fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
         }
     });
-    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
-        if(!err) {
+    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8"
+    , function(err, data) 
+      {
+        if(!err) 
+        {
              var requestedCase = jQ.parseJSON(data);
-             fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-                 if (!err) {
-	             var caseData = jQ.parseJSON(data);
-                     if (caseData == null) {
-                         caseData = "null";
-                     }
-		     res.render('userCase', 
-				{
-				    'title': userName + " : " + caseId,
-				    'requestedCase' : requestedCase,
-				    'caseData' : caseData,
-				    'scripts' : [
-					'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-					'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-					'/inputex/src/loader.js',
-					'/javascripts/controllers/' + requestedCase.id + '.js',
-					'/javascripts/jquery.json-2.3.min.js',
-					'/javascripts/CaseDataController.js',
-					'/javascripts/StepsController.js']
-				});
-		     }
-		 else
-		     Render404(res, err);
-	     });
+             fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
+             {
+                 if (!err) 
+                 {
+	                 var caseData = jQ.parseJSON(data);
+                         if (caseData == null) {
+                             caseData = "null";
+                         }
+		             res.render('userCase', 
+				        {
+				            'title': userName + " : " + caseId,
+				            'requestedCase' : requestedCase,
+				            'caseData' : caseData,
+				            'scripts' : [
+					        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+					        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                            'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+					        '/inputex/src/loader.js',
+					        '/javascripts/controllers/' + requestedCase.id + '.js',
+					        '/javascripts/jquery.json-2.3.min.js',
+					        '/javascripts/CaseDataController.js',
+					        '/javascripts/StepsController.js']
+				        });
+		        }
+		        else
+		            Render404(res, err);
+	        });
         }
     });
 });
