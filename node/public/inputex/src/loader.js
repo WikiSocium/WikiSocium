@@ -254,7 +254,14 @@ YUI().use(function(Y) {
 					'inputex-tinymce': {
 					   requires: ['inputex-field'],
 						ix_provides: 'tinymce'
+					},
+					
+					//Наши виджеты
+					'widget-map': {
+					   requires: ['inputex-field'],
+					    ix_provides: 'yamaps'
 					}
+					//////////////
 					/*,
 					// Piercus widgets
 					'inputex-pie-listcustom': {

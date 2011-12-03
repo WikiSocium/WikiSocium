@@ -207,7 +207,7 @@ app.get('/UserData/:UserName/:CaseId', function(req, res) {
     var caseData = "null";
     fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
         if (err) {
-	    fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
+	        fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
         }
         else {
             caseData = jQ.parseJSON(data);
@@ -227,7 +227,8 @@ app.get('/UserData/:UserName/:CaseId', function(req, res) {
                             'scripts' : [
                                 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
                                 'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                                '/inputex/src/loader.js',
+                                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                                '/inputex/build/loader.js',
                                 '/javascripts/controllers/' + requestedCase.id + '.js',
                                 '/javascripts/jquery.json-2.3.min.js',
                                 '/javascripts/StepsController.js']
