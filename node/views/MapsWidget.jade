@@ -1,0 +1,10 @@
+extends BaseWidget
+
+-var script = document.createElement("script");
+-script.src = "http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==";
+-script.type = "text/javascript";
+-document.getElementsByTagName("head")[0].appendChild(script);
+
+block content
+  script(type='text/javascript')
+    step#{step_id}FieldsList.push({ type: 'WSMaps', label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', required:true });
