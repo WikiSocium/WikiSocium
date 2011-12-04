@@ -1,1 +1,1 @@
-[{"fio":"КВИ"},{"fio":"КВИ","nationality":"РУ"},{"fidfff":"blah1","nataaaionality":"blah2"}]
+[{"timer":"Invalid Date","map":{},"fiooo":"fdsfa"},{"fio":"","nationality":""},{"fidfff":"","nataaaionality":""}]

@@ -1,0 +1,10 @@
+extends BaseWidget
+
+block content
+  script(type='text/javascript')
+    YUI().use('inputex', 'widget-map'
+    , function(Y) 
+    {
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.WSMapField({label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', 
+        parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    });

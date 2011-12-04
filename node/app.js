@@ -36,7 +36,9 @@ var app = module.exports = express.createServer();
 // [RESEARCH] Не имею ни малейшего понятия что происходит в этом конфигурировании,
 // если кто-нибудь разберется и расскажет — будет круто.
 
-
+// загрузка helpers -- штука, которая выводит сообщения или ошибки
+app.helpers(require('./helpers.js').helpers);
+app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -211,42 +213,52 @@ app.get ('/addcase', function(req,res)
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId', function(req, res) {
+app.get('/UserData/:UserName/:CaseId'
+, function(req, res)
+{
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
-    var caseData = "null";
     fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
         if (err) {
-	    fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
-        }
-        else {
-            caseData = jQ.parseJSON(data);
+	        fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
         }
     });
-
-    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
-        if(!err) {
-               
+    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8"
+    , function(err, data) 
+      {
+        if(!err) 
+        {
              var requestedCase = jQ.parseJSON(data);
-                
-             res.render('userCase', 
-                        {
-                            'title': userName + " : " + caseId,
-                            'requestedCase' : requestedCase,
-                            'caseData' : caseData,
-                            'scripts' : [
-                                'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                                '/inputex/src/loader.js',
-                                '/javascripts/controllers/' + requestedCase.id + '.js',
-                                '/javascripts/jquery.json-2.3.min.js',
-                                '/javascripts/StepsController.js']
-                        });
-             }
-             else
-                 Render404(res, err);
-            });
+             fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
+             {
+                 if (!err) 
+                 {
+	                 var caseData = jQ.parseJSON(data);
+                         if (caseData == null) {
+                             caseData = "null";
+                         }
+		             res.render('userCase', 
+				        {
+				            'title': userName + " : " + caseId,
+				            'requestedCase' : requestedCase,
+				            'caseData' : caseData,
+				            'scripts' : [
+					        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+					        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                            'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+					        '/inputex/src/loader.js',
+					        '/javascripts/controllers/' + requestedCase.id + '.js',
+					        '/javascripts/jquery.json-2.3.min.js',
+					        '/javascripts/CaseDataController.js',
+					        '/javascripts/StepsController.js']
+				        });
+		        }
+		        else
+		            Render404(res, err);
+	        });
+        }
     });
+});
 //        
 //Сохранение данных кейса        
 app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
@@ -299,18 +311,41 @@ app.post('/users.:format?', function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
-    req.flash('error', 'Account creation failed');
+    req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
       locals: { user: user },
       title: '',
       scripts: []
     });
   }
+  
+  function userCreateEnv( user ) {
+    fs.mkdir('data/'+user.email);
+    
+    var userJSON = {
+      id: user.email,
+      fullName: '',
+      cases: ''
+    };    
+    var filter = new Array( 'id', 'fullName', 'cases' );
+    
+    fs.writeFile(
+      'data/' + user.email + '/user.json',
+      JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+      function (err) {
+        if (err) throw err;
+        //console.log('It\'s saved!');
+      }
+    );
+  }
 
   user.save(function(err) {
     if (err) return userSaveFailed();
-
-    req.flash('info', 'Your account has been created');
+    
+    // creating user environment
+    userCreateEnv(user);    
+    
+    req.flash('info', 'Ваш аккаунт был успешно создан');
     //emails.sendWelcome(user);
 
     switch (req.params.format) {
@@ -341,6 +376,8 @@ app.post('/sessions', function(req, res) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
 
+      req.flash('info', 'Вы вошли в систему. Здравствуйте!');
+
       // Remember me
       if (req.body.remember_me) {
         var loginToken = new LoginToken({ email: user.email });
@@ -350,9 +387,9 @@ app.post('/sessions', function(req, res) {
         });
       } else {
         res.redirect('/');
-      }
+      }      
     } else {
-      req.flash('error', 'Incorrect credentials');
+      req.flash('error', 'E-mail и пароль не подходят');
       res.redirect('/sessions/new');
     }
   }); 

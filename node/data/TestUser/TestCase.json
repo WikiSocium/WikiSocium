@@ -22,16 +22,28 @@
      "widgets"    : 
      [
       {
-      "id" : "fio",
-      "label": "ФИО",
-      "widget_type" : "TextFieldWidget",
+      "id" : "timer",
+      "label": "Тататаймер",
+      "widget_type" : "TimerWidget",
       "data" : "aData, st0"
       },
       {
-      "id" : "timeLength",
-      "label": "Время",
+      "id" : "map",
+      "label": "Укажите местоположение",
+      "widget_type" : "MapsWidget",
+      "data" : "aData, st0"
+      },
+      {
+      "id" : "stat",
+      "label": "Съешь еще этих мягких французских булок, да выпей чаю",
       "widget_type" : "StaticTextWidget",
-      "data" : "anotherData, st0"
+      "data" : "aData, st0"
+      },
+      {
+      "id" : "fiooo",
+      "label": "ФИО",
+      "widget_type" : "TextFieldWidget",
+      "data" : "aData, st0"
       }                 
       ]           
       ,	"next" :
@@ -42,7 +54,7 @@
 					[
 						{ 
 							"step_id": "0"
-						,	"widget_id": "fio"
+						,	"widget_id": "fiooo"
 						,	"cond": "=="
 						,	"value": "123"
 						}
@@ -61,7 +73,7 @@
       "id" : "fio",
       "label": "ФИО",
       "widget_type" : "TextFieldWidget",
-      "data" : "aData, st1"
+      "data" : "aData, st0"
       },
       {
       "id" : "nationality",
