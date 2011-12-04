@@ -154,6 +154,26 @@ function loadUser(req, res, next) {
   }
 }
 
+function userCreateEnv( user ) {
+  fs.mkdir('data/'+user.email);
+  
+  var userJSON = {
+    id: user.email,
+    fullName: '',
+    cases: ''
+  };    
+  var filter = new Array( 'id', 'fullName', 'cases' );
+  
+  fs.writeFile(
+    'data/' + user.email + '/user.json',
+    JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  console.log ('Creating user folder and user.json for ', user.email);
+}
+
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
@@ -318,26 +338,6 @@ app.post('/users.:format?', function(req, res) {
       scripts: []
     });
   }
-  
-  function userCreateEnv( user ) {
-    fs.mkdir('data/'+user.email);
-    
-    var userJSON = {
-      id: user.email,
-      fullName: '',
-      cases: ''
-    };    
-    var filter = new Array( 'id', 'fullName', 'cases' );
-    
-    fs.writeFile(
-      'data/' + user.email + '/user.json',
-      JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
-      function (err) {
-        if (err) throw err;
-        //console.log('It\'s saved!');
-      }
-    );
-  }
 
   user.save(function(err) {
     if (err) return userSaveFailed();
@@ -375,7 +375,25 @@ app.post('/sessions', function(req, res) {
   User.findOne({ email: req.body.user.email }, function(err, user) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
-
+          
+      try
+      {
+        stats = fs.lstatSync('data/'+user.email);
+        
+        if ( !stats.isDirectory() ) {       
+          fs.unlink('data/'+user.email, function (err) {
+            if (err) throw err;
+            console.log('Deleting file '+'data/'+user.email);
+          });
+          userCreateEnv(user);
+        }        
+      }
+      catch (e)
+      {
+          console.log(user.email + ": " + e);
+          userCreateEnv(user);
+      }
+      
       req.flash('info', 'Вы вошли в систему. Здравствуйте!');
 
       // Remember me
