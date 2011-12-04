@@ -57,7 +57,7 @@ function SaveFormData()
 function CollectWidgetData(step_index, widget_id)
 {
     var data;
-    YUI().use('inputex', 'inputex-group', function(Y)
+    YUI().use('inputex', function(Y)
     {
         if ((step_index < 0) || (step_index >= groups.length)) {
             data = undefined;
@@ -70,7 +70,7 @@ function CollectWidgetData(step_index, widget_id)
 function CollectFormData()
 {
     var data = new Array();
-    YUI().use('inputex', 'inputex-group', function(Y) 
+    YUI().use('inputex', function(Y) 
     {
         for(var i = 0 ; i < groups.length ; i++)
         {

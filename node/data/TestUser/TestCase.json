@@ -22,9 +22,21 @@
      "widgets"    : 
      [
       {
+      "id" : "timer",
+      "label": "Тататаймер",
+      "widget_type" : "TimerWidget",
+      "data" : "aData, st0"
+      },
+      {
       "id" : "map",
       "label": "Укажите местоположение",
-      "widget_type" : "TextFieldWidget",
+      "widget_type" : "MapsWidget",
+      "data" : "aData, st0"
+      },
+      {
+      "id" : "stat",
+      "label": "Съешь еще этих мягких французских булок, да выпей чаю",
+      "widget_type" : "StaticTextWidget",
       "data" : "aData, st0"
       },
       {
