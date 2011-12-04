@@ -1,0 +1,9 @@
+extends BaseWidget
+
+block content
+  script(type="text/javascript")
+    YUI().use('inputex', 'inputex-select'
+    , function(Y) 
+    {
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({label: '#{widget.label}', name: '#{widget.id}', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:true, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    });

@@ -3,9 +3,11 @@
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
-      "express": ">= 2.4.7"
-    , "jade": ">= 0.0.1"
-    , "now": ">= 0.7.4"
-    , "node-jquery": ">= 1.6.3"
+      "express": ">= 2.5.1"
+    , "connect": ">= 1.8.1"
+    , "jade": ">= 0.18.0"
+    , "jquery": ">= 1.6.3"
+    , "mongoose": ">= 2.3.13"
+    , "connect-mongodb": ">= 1.1.1"
   }
 }

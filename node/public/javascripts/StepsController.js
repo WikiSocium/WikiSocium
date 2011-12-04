@@ -5,7 +5,9 @@ YUI_config.groups.inputex.base = '../../inputex/build/';
 
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
 var temporaryCurrentStep = 0;
+var previousStep = 0;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
+var currentCaseData;
 
 function template(locals, attrs, escape, rethrow)
 {
@@ -38,13 +40,13 @@ function GenerateDocument(documentName)
 
 function ShowPoperStep()
 {
-    if(temporaryCurrentStep <= requestedCase.steps.length)
+    if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
     {
       $(".step").addClass("isInvisible");
       $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
     }
     
-    if(temporaryCurrentStep >= requestedCase.steps.length) //Последний шаг
+    if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
     {
       YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) {
          var destroyButton = new Y.inputEx.widget.Button({
@@ -81,72 +83,135 @@ function SaveFormData()
     });    
 }
 
+function CollectWidgetData(step_index, widget_id)
+{
+    var data;
+    YUI().use('inputex', function(Y)
+    {
+        if ((step_index < 0) || (step_index >= groups.length)) {
+            data = undefined;
+        }
+        data = groups[step_index][widget_id].getValue();
+    });
+    return data;
+}
+
 function CollectFormData()
 {
     var data = new Array();
-    YUI().use('inputex', 'inputex-group', function(Y) 
+    YUI().use('inputex', function(Y) 
     {
         for(var i = 0 ; i < groups.length ; i++)
         {
-            data[i] = groups[i].getValue();
+            data[i] = new Object();
+            for(var widg in groups[i])
+                data[i][widg] = groups[i][widg].getValue();
         }
     });
     return data;
 }
 
 // Обработчик нажатия кнопки следующего шага
-function CheckPredicate(predicate, step_id) {
-		if (predicate == "true") {
-			return true;
-		}
+function CheckPredicate(predicate, step_index) {
+	var value = CollectWidgetData(step_index, predicate.widget_id);
 
-		var value = CollectFormData()[step_id][predicate.widget_id];
-
-		switch(predicate.cond) {
-			case "==":	return (value == predicate.value);
-			case "!=":	return (value != predicate.value);
-			case "<=":	return (value <= predicate.value);
-			case ">=":	return (value >= predicate.value);
-			case ">":	return (value > predicate.value);
-			case "<":	return (value < predicate.value);
-			default:	return false;
-		}
+	if (typeof value === "undefined") {
+	    return false;
 	}
+
+	switch(predicate.cond) {
+		case "==":	return (value == predicate.value);
+		case "!=":	return (value != predicate.value);
+		case "<=":	return (value <= predicate.value);
+		case ">=":	return (value >= predicate.value);
+		case ">":	return (value > predicate.value);
+		case "<":	return (value < predicate.value);
+		default:	return false;
+	}
+}
+
+function CheckNextInfo(nextInfo)
+{
+	var sourceStep;
+	if (nextInfo.type == "default") {
+		return currentCaseData.GetStepIndexById(nextInfo.value);
+	}
+	if (nextInfo.type == "list") {
+		if (nextInfo.step_id == undefined) {
+			sourceStep = temporaryCurrentStep;
+		}
+
+		else {
+			sourceStep = currentCaseData.GetStepIndexById(nextInfo.step_id);
+			if (sourceStep < 0) {
+				return -1;
+			}
+		}
+		var value = CollectWidgetData(sourceStep, nextInfo.widget_id);
+		var radioWidgetInfo = currentCaseData.GetWidgetData(sourceStep, nextInfo.widget_id);
+		if (radioWidgetInfo == undefined) {
+			return -1;
+		}
+		for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) {
+			if (radioWidgetInfo.value_list[i].value == value) {
+				return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
+			}
+		}
+		return -1;
+	}
+	else if (nextInfo.type == undefined) {
+		var check = false;
+		for (j in nextInfo.predicates) {
+			if (nextInfo.predicates[j].step_id == undefined) {
+				sourceStep = temporaryCurrentStep;
+			} else {
+				sourceStep = currentCaseData.GetStepIndexById(nextInfo.predicates[j].step_id);
+			}
+			if (sourceStep < 0) {
+				return -1;
+			}
+			check = this.CheckPredicate(nextInfo.predicates[j], sourceStep);
+			if (check == false) {
+				return -1;
+			}
+		}
+		return currentCaseData.GetStepIndexById(nextInfo.id);
+	}
+}
+		
+		
+		
 
 function NextStep() {
 		SaveFormData();
 		var nextInfo = requestedCase.steps[temporaryCurrentStep].next;
-		var check = false;
-		for (i in nextInfo) {
-			for (j in nextInfo[i].predicates) {
-				var step_id = 0;
-				for (step_id = 0; step_id < requestedCase.steps.length; step_id ++)
-				{
-					if (requestedCase.steps[step_id].id == nextInfo[i].predicates[j].step_id) break;
-				}
-				check = this.CheckPredicate(nextInfo[i].predicates[j], step_id);
-				if (check == false) {
+		var tmp = -1;
+		previousStep = temporaryCurrentStep;
+		if (nextInfo == undefined) {
+			temporaryCurrentStep += 1;
+		} else {
+			for (i in nextInfo) {
+				tmp = CheckNextInfo(nextInfo[i]);	
+				if (tmp > 0) {
+					temporaryCurrentStep = tmp;
 					break;
 				}
 			}
-			if (check == true) {
-				var next_step_id = 0;
-				for (next_step_id = 0; next_step_id < requestedCase.steps.length; next_step_id ++)
-				{
-					if (requestedCase.steps[next_step_id].id == nextInfo[i].id) break;
-				}
-				temporaryCurrentStep = next_step_id;
-				break;
-			}
 		}
-		if (check != true) {
-			temporaryCurrentStep += 1;
-		}
-		ShowPoperStep();
-	}
+		ShowProperStep();
+}
+
+function GoBack()
+{
+	temporaryCurrentStep = previousStep;
+	ShowProperStep();
+}
+
 $(document).ready(function(){
     // Все шаги сейчас скрыты, нужно показать выбранный
 	if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
-    ShowPoperStep();    
+	
+	currentCaseData = new CaseDataController(requestedCase);
+	ShowProperStep();    
 });
 

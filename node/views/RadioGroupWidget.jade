@@ -2,4 +2,8 @@ extends BaseWidget
 
 block content
   script(type="text/javascript")
-    step#{step_id}FieldsList.push({ type: 'radio', label: '#{widget.label}', name: '#{widget.id}', display: 'vertically', choices: '#{widget.value_list}', value: '#{value}', required:true });
+    YUI().use('inputex', 'inputex-radio'
+    , function(Y) 
+    {
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.RadioField({label: '#{widget.label}', name: '#{widget.id}', display: 'vertically', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:true, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    });

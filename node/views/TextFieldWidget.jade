@@ -2,4 +2,8 @@ extends BaseWidget
 
 block content
   script(type='text/javascript')
-    step#{step_id}FieldsList.push({ type: 'string', label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', required:true });
+    YUI().use('inputex', 'inputex-string'
+    , function(Y) 
+    {
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', required:true, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    });
