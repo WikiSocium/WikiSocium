@@ -12,6 +12,4 @@ div(class="step isInvisible", id="step_#{step_index}")
       - else
         !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
     script(type = 'text/javascript')
-      YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', 'inputex-radio', function(Y){
-         groups.push(new Y.inputEx.Group({parentEl: 'step_#{step.id}', fields: step#{step.id}FieldsList}) );
-      });
+        groups[#{step_index}] = step#{step_index}FieldsList;

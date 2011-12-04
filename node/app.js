@@ -239,25 +239,43 @@ app.get('/UserData/:UserName/:CaseId'
         if(!err) 
         {
              var requestedCase = jQ.parseJSON(data);
-                
-             res.render('userCase', 
-                        {
-                            'title': userName + " : " + caseId,
-                            'requestedCase' : requestedCase,
-                            'caseData' : caseData,
-                            'scripts' : [
-                                'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                                '/inputex/src/loader.js',
-                                '/javascripts/controllers/' + requestedCase.id + '.js',
-                                '/javascripts/jquery.json-2.3.min.js',
-                                '/javascripts/StepsController.js',
-                                '/javascripts/runtime.min.js']
-                        });
-             }
-             else
-                 Render404(res, err);
-            });
+             var scriptsToInject =      [
+				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                      'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+				        '/inputex/src/loader.js',
+				        '/javascripts/controllers/' + requestedCase.id + '.js',
+				        '/javascripts/jquery.json-2.3.min.js',
+				        '/javascripts/CaseDataController.js',
+				        '/javascripts/StepsController.js',
+				        '/javascripts/runtime.min.js'];
+				        
+				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+				var requiredDocuments = requestedCase.data.documents;
+				for(var i = 0; i < requiredDocuments.length; i++)
+				    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+				                 
+             fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
+             {
+                 if (!err) 
+                 {
+	                 var caseData = jQ.parseJSON(data);
+                         if (caseData == null) {
+                             caseData = "null";
+                         }
+                         
+		             res.render('userCase', 
+				        {
+				            'title': userName + " : " + caseId,
+				            'requestedCase' : requestedCase,
+				            'caseData' : caseData,
+				            'scripts' : scriptsToInject
+				        });
+		        }
+		        else
+		            Render404(res, err);
+	        });
+        }
     });
 });
 //        
@@ -402,8 +420,42 @@ app.get('/logout', loadUser, function(req, res) {
 });
 
 
+///
+/// Compiling documents templates to client-side javascript
+///
+console.log("Compiling documents templates...");
+var documents = fs.readdirSync('public/documents/');
+for(var i = 0; i < documents.length; i++)
+{
+    var lines = documents[i].split('.');
+    if(lines.length == 2 && lines[1] == 'jade')
+    {
+        try
+        {
+            var file = fs.readFileSync('public/documents/' + documents[i], 'utf8');
+            var fn = jade.compile(file, { client: true, pretty: true });
+            // Well, this is a fragile place. We utilize an info, that CollectFormData and #documentViewDOCNAME exist
+            var doc_code = "function GenerateDocument_" + lines[0] +
+                           "(){$('#documentView_" + lines[0] +
+                           "').html((" + fn + ")({'data':CollectFormData()}));}"
+            fs.writeFileSync('public/documents/' + lines[0] + '.js', doc_code);
+        }
+        catch(err)
+        {
+            console.log("[ERROR]: " + documents[i] + " is not a valid .jade template");
+        }
+    }
+    else if(lines.length != 2 || (lines.length == 2 && lines[1] != 'js'))
+    {
+        // Some error checking
+        console.log("[ERROR]: " + documents[i] + " is not a valid .jade template");
+    }
+}
+console.log("All documents compiled");
 
-
+///
+/// Launching server
+///
 app.listen(3000);
 console.log('Express server listening on port %d, environment: %s', app.address().port, app.settings.env)
 console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);

@@ -7,7 +7,8 @@
     "data"        : 
     {
         "law_doc" : "описание зконодательной базы",
-        "photo"   : "url://"
+        "photo"   : "url://",
+		"documents": ["TestDoc"]
     },
     
     "currentStep" :"0",

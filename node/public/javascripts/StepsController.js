@@ -9,36 +9,7 @@ var previousStep = 0;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
-function template(locals, attrs, escape, rethrow)
-{
-    var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
-    var __ = { lineno: 1, input: "p Hello #{name}" };
-    try
-    {
-        var buf = [];
-        with (locals || {})
-        {
-            var interp;
-            __.lineno = 1;
-            __.lineno = 1;
-            buf.push('\n<p>Hello ' + escape((interp = name) == null ? '' : interp) + '');
-            __.lineno = undefined;
-            buf.push('\n</p>');
-        }
-        return buf.join("");
-    }
-    catch(err)
-    {
-        rethrow(err, __.input, __.filename, __.lineno);
-    }
-}
-
-function GenerateDocument(documentName)
-{
-    $('#documentView').html(template({"name" : documentName}));
-}
-
-function ShowPoperStep()
+function ShowProperStep()
 {
     if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
     {
