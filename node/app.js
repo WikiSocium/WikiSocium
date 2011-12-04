@@ -200,6 +200,16 @@ app.get('/Problems/:ProblemName', function(req, res){
 		});
 
 //
+app.get ('/addcase', function(req,res)
+	{
+ 		res.render('AddCaseForUser', {
+			    locals: { user: new User() },
+			    title: '',
+			    scripts: []
+			  });
+	});
+
+
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/UserData/:UserName/:CaseId', function(req, res) {
     var userName = req.param('UserName', null);
@@ -277,6 +287,13 @@ app.get('/users/new', function(req, res) {
     scripts: []
   });
 });
+
+app.post('/addcasetouser', function(req, res) {
+  if(req.body.user)res.redirect('/');
+  else res.redirect('/sessions/new');
+});
+
+
 
 app.post('/users.:format?', function(req, res) {
   var user = new User(req.body.user);
