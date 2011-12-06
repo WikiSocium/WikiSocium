@@ -1,1 +1,1 @@
-[{"timer":"Invalid Date","map":{},"fiooo":"fdsfa"},{"fio":"","nationality":""},{"fidfff":"","nataaaionality":""}]
+[{"fio":"Вова"},{"fio":"","nationality":""},{"fidfff":"","nataaaionality":""}]
