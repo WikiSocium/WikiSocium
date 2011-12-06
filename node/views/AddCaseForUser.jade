@@ -1,8 +1,9 @@
 .page
-  h2 Положить это решение в корзину?;)
+  h2 Введите название для этого решения. Название должно быть уникально для списка Ваших решений.
 
-  form.users(method='post', action='/addcasetouser')
+  form.users(method="post", action="/addcasetouser/")
       div
-      input(type='submit', value='Добавить')
+        input(type = "text", name ="case_id")
+        input(type="submit", value="Добавить")
 
 

@@ -320,9 +320,13 @@ app.get('/users/new', function(req, res) {
   });
 });
 
-app.post('/addcasetouser', function(req, res) {
-  if(req.body.user)res.redirect('/');
-  else res.redirect('/sessions/new');
+app.post('/addcasetouser',loadUser, function(req, res) {
+  
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else 
+	{
+	 	 res.redirect('/' + req.body.case_id);
+	}; 
 });
 
 
