@@ -9,8 +9,8 @@ div(class="caseDescription")
 
 div(class = "steps", id = "stepsWrapper")
   - each step, i in requestedCase.steps
-    - if (caseData == "null")
-      !=partial('aStep', {step:step, stepData:"null", step_index:i})
+    - if (caseData == null)
+      !=partial('aStep', {step:step, stepData:null, step_index:i})
     - else
       !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
 div(class="nextStepButton", onClick="NextStep()") Следующий шаг
