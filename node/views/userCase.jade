@@ -7,6 +7,8 @@ div(class="caseName")
 div(class="caseDescription")
   #{requestedCase.description}
 
+div(class="nextStepButton showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить, нах
+
 div(class = "steps", id = "stepsWrapper")
   - each step, i in requestedCase.steps
     - if (caseData == null)
@@ -14,3 +16,6 @@ div(class = "steps", id = "stepsWrapper")
     - else
       !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
 div(class="nextStepButton", onClick="NextStep()") Следующий шаг
+
+div(id="endCasePopup")
+  != partial('endCasePopup', {caseName: requestedCase.id})

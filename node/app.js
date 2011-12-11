@@ -212,7 +212,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 						var problem = jQ.parseJSON(data);
 						res.render('problem', {
 									   'title' : problemName,
-                     'user':res.currentUser, 
+                     	               'user':res.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
@@ -232,8 +232,8 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
  	      	res.render('AddCaseForUser', {
                                         locals: {Solution: SolutionNew},
                                         user: res.currentUser, 
-			                                  title: '',
-			                                  scripts: []
+			                            title: '',
+			                            scripts: []
 			                                  }
                     );
       }
@@ -242,6 +242,16 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/UserData/:UserName/:CaseId', loadUser , function(req, res) {
+
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+
+    res.redirect("/UserData/" + userName + "/" + caseId);
+});
+
+app.get('/UserData/:UserName/:CaseId'
+, function(req, res)
+{
   var userName = req.param('UserName', null);
   if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
@@ -306,6 +316,37 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 });
 
 //
+//Завершение кейса
+app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+    
+    // [TODO]
+    // 0. Проверить, что пользователь аутентифицирован
+    if (req.currentUser.guest == 1 )
+        res.redirect('/sessions/new');
+    else
+        if(req.currentUser.email != userName)
+            res.redirect('/sessions/new');
+    
+    // 1. Изменить статус кейса
+    fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
+		if(!err)
+		{
+			var userCase = jQ.parseJSON(data);
+			userCase.status = 1;
+			fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase), encoding='utf8', function (err) {
+              if (err) throw err;
+            });
+		}});
+		
+    // 2. Записать статистику
+    
+    // 3. Отправить на главную страницу
+    res.redirect('/');
+});
+
+//
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', loadUser, function(req, res){
 			var userName = req.param('UserName', null);
@@ -320,7 +361,7 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 					var requestedUser = jQ.parseJSON(data);
 						res.render('user', {
 								'title': userName,
-                'user':res.currentUser, 
+                                'user':res.currentUser, 
 								'requestedUser': requestedUser,
 								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
@@ -340,7 +381,7 @@ function parseReturnTo ( req_query_return_to ) {
 // Users
 app.get('/users/new', loadUser, function(req, res) {
   res.render('users/new.jade', {
-    locals: { user: res.currentUser, return_to: parseReturnTo(req.query.return_to) },
+    locals: { return_to: parseReturnTo(req.query.return_to) },
     user:res.currentUser, 
     title: '',
     scripts: []
@@ -405,7 +446,7 @@ app.post('/users.:format?', function(req, res) {
   function userSaveFailed() {
     req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
-      locals: { user: user, return_to: parseReturnTo(req.query.return_to) },
+      locals: { return_to: parseReturnTo(req.query.return_to) },
       user:res.currentUser, 
       title: '',
       scripts: []
