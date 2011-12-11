@@ -1,1 +1,3 @@
 node_modules
+*Data.txt
+*.DS_Store

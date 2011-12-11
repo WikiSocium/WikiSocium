@@ -1,6 +1,8 @@
 extends BaseWidget
 
 block content
+  div(id="Timer_#{widget.id}_Button")
+    input(type="button", class="startTimerButton", value="Запустить таймер", onClick="var date = new Date(); date.setDate(date.getDate() + #{widget.day_num}); groups[#{step_id}]['#{widget.id}'].setValue(date);");
   div(id="Timer_#{widget.id}_Field")
   script(type="text/javascript")
     YUI().use('inputex', 'inputex-string'
@@ -8,5 +10,3 @@ block content
     {
     step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', readonly: true, parentEl: 'Timer_#{widget.id}_Field'});
     });
-  div(id="Timer_#{widget.id}_Button")
-    input(type="button", class="startTimerButton", value="Запустить таймер", onClick="var date = new Date(); date.setDate(date.getDate() + #{widget.day_num}); groups[#{step_id}]['#{widget.id}'].setValue(date);");
