@@ -155,21 +155,17 @@ function loadUser(req, res, next) {
 }
 
 function userCreateEnv( user ) {
-  fs.mkdir('data/'+user.email);
+  fs.mkdir('data/UserData/'+user.email);
   
   var userJSON = {
     id: user.email,
     fullName: '',
-<<<<<<< HEAD
     cases: []
-=======
-    cases: [] 
->>>>>>> a05c30050cbf80d9da12bbba7067dc1ed2a060a4
   };    
   var filter = new Array( 'id', 'fullName', 'cases' );
   
   fs.writeFile(
-    'data/' + user.email + '/user.json',
+    'data/UserData/' + user.email + '/user.json',
     JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
     function (err) {
       if (err) throw err;
@@ -226,9 +222,9 @@ app.get('/Problems/:ProblemName', function(req, res){
 		});
 
 //
-app.get ('/addcase/:SolutionName', loadUser,function(req,res)
-	{
-    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
+  
+    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
     else
         { 
           var SolutionNew = req.param('SolutionName', null);
@@ -247,7 +243,7 @@ app.get('/UserData/:UserName/:CaseId',loadUser
 , function(req, res)
 {
   var userName = req.param('UserName', null);
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else{
   if(req.currentUser.email!=userName) {
     res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
@@ -326,7 +322,7 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 app.get('/UserData/:UserName', loadUser, function(req, res){
 			var userName = req.param('UserName', null);
 
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else{
   if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
     else{
@@ -364,7 +360,7 @@ app.get('/users/new', function(req, res) {
 app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
   
   var Solution = req.param('SolutionName', null);
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
 	{
 	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
@@ -374,7 +370,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
 							problem.id = req.body.case_id;
               filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
               fs.writeFile(
-                           'data/' + req.currentUser.email +'/' + problem.id + '.json',
+                           'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
                             JSON.stringify (problem,space = '\t'), encoding='utf8',
                             function (err) {
                                              if (err) throw err;
@@ -385,7 +381,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
     });
     
 
-  	 	fs.readFile('data/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+  	 	fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
 						if(!err)
 						{
 							var userJSON = jQ.parseJSON(data);
@@ -394,7 +390,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
               var filter = new Array( 'id', 'fullName', 'cases' );
   
               fs.writeFile(
-                           'data/' + req.currentUser.email + '/user.json',
+                           'data/UserData/' + req.currentUser.email + '/user.json',
                             JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
                              function (err) {
                                              if (err) throw err;
@@ -470,12 +466,12 @@ app.post('/sessions', function(req, res) {
           
       try
       {
-        stats = fs.lstatSync('data/'+user.email);
+        stats = fs.lstatSync('data/UserData/'+user.email);
         
         if ( !stats.isDirectory() ) {       
-          fs.unlink('data/'+user.email, function (err) {
+          fs.unlink('data/UserData/'+user.email, function (err) {
             if (err) throw err;
-            console.log('Deleting file '+'data/'+user.email);
+            console.log('Deleting file '+'data/UserData/'+user.email);
           });
           userCreateEnv(user);
         }        
@@ -500,13 +496,13 @@ app.post('/sessions', function(req, res) {
       }      
     } else {
       req.flash('error', 'E-mail и пароль не подходят');
-      res.redirect('/sessions/new');
+      res.redirect('/sessions/new?return_to='+return_to);
     }
   }); 
 });
 
 app.get('/login', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.route.path);
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else res.redirect('/');
 });
 
@@ -520,11 +516,10 @@ app.get('/logout', loadUser, function(req, res) {
 });
 
 
-<<<<<<< HEAD
 // Statistics
 
 app.get('/statistics/solutions', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.route.path);
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
@@ -542,7 +537,6 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
     });
   }
 });
-=======
 ///
 /// Compiling documents templates to client-side javascript
 ///
@@ -575,7 +569,6 @@ for(var i = 0; i < documents.length; i++)
     }
 }
 console.log("All documents compiled");
->>>>>>> aa003286fda741bcddad6933c37695ae8110a071
 
 ///
 /// Launching server
