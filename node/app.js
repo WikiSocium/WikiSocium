@@ -160,7 +160,11 @@ function userCreateEnv( user ) {
   var userJSON = {
     id: user.email,
     fullName: '',
+<<<<<<< HEAD
     cases: []
+=======
+    cases: [] 
+>>>>>>> a05c30050cbf80d9da12bbba7067dc1ed2a060a4
   };    
   var filter = new Array( 'id', 'fullName', 'cases' );
   
@@ -222,11 +226,33 @@ app.get('/Problems/:ProblemName', function(req, res){
 		});
 
 //
+app.get ('/addcase/:SolutionName', loadUser,function(req,res)
+	{
+    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+    else
+        { 
+          var SolutionNew = req.param('SolutionName', null);
+ 	      	res.render('AddCaseForUser', {
+                                        locals: {Solution: SolutionNew},
+			                                  title: '',
+			                                  scripts: []
+			                                  }
+                    );
+      }
+	});
+
+
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId'
+app.get('/UserData/:UserName/:CaseId',loadUser
 , function(req, res)
 {
-    var userName = req.param('UserName', null);
+  var userName = req.param('UserName', null);
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else{
+  if(req.currentUser.email!=userName) {
+    res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
+        }
+    else{
     var caseId = req.param('CaseId', null);
     
     fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8"
@@ -248,7 +274,8 @@ app.get('/UserData/:UserName/:CaseId'
 				        
 				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
 				var requiredDocuments = requestedCase.data.documents;
-				for(var i = 0; i < requiredDocuments.length; i++)
+        if(requiredDocuments)
+          for(var i = 0; i < requiredDocuments.length; i++)
 				    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
 				                 
              fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
@@ -279,6 +306,8 @@ app.get('/UserData/:UserName/:CaseId'
         else 
           Render404(res, err);
     });
+  }
+}
 });
 //        
 //Сохранение данных кейса        
@@ -294,9 +323,13 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
-app.get('/UserData/:UserName', function(req, res){
+app.get('/UserData/:UserName', loadUser, function(req, res){
 			var userName = req.param('UserName', null);
-			
+
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else{
+  if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
+    else{
 			fs.readFile('data/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
 				{
@@ -310,7 +343,9 @@ app.get('/UserData/:UserName', function(req, res){
 				else
 					Render404(res, err);				  
 			});
-		});
+    }
+}
+});
 
 function parseReturnTo ( req_query_return_to ) {
   if (req_query_return_to == undefined) return '/';
@@ -325,6 +360,58 @@ app.get('/users/new', function(req, res) {
     scripts: []
   });
 });
+
+app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
+  
+  var Solution = req.param('SolutionName', null);
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  else 
+	{
+	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var problem = jQ.parseJSON(data);
+							problem.id = req.body.case_id;
+              filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
+              fs.writeFile(
+                           'data/' + req.currentUser.email +'/' + problem.id + '.json',
+                            JSON.stringify (problem,space = '\t'), encoding='utf8',
+                            function (err) {
+                                             if (err) throw err;
+                            });
+						}
+						else
+							Render404(res, err);
+    });
+    
+
+  	 	fs.readFile('data/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var userJSON = jQ.parseJSON(data);
+							userJSON.cases.push (req.body.case_id);
+
+              var filter = new Array( 'id', 'fullName', 'cases' );
+  
+              fs.writeFile(
+                           'data/' + req.currentUser.email + '/user.json',
+                            JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+                             function (err) {
+                                             if (err) throw err;
+                              });
+  
+  					}
+						else
+							Render404(res, err);
+    });
+    
+
+    res.redirect('/');
+
+	}; 
+});
+
+
 
 app.post('/users.:format?', function(req, res) {
   var user = new User(req.body.user);
