@@ -3,6 +3,10 @@
 ,	"name": "Widget test"
 ,	"description": "Check some widgets"
 ,	"currentStep": "0"
+,	"data":
+	{
+		"documents": []
+	}
 ,	"steps":	
 	[
 		{
