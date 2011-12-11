@@ -223,6 +223,15 @@ app.get('/Problems/:ProblemName', function(req, res){
 
 //
 // Обработка запроса на показ конкретного кейса конкретного пользователя
+app.get('/UserData/:UserName/:CaseId/'
+, function(req, res)
+{
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+
+    res.redirect("/UserData/" + userName + "/" + caseId);
+});
+
 app.get('/UserData/:UserName/:CaseId'
 , function(req, res)
 {
@@ -288,6 +297,37 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
           if (err) console.log(err);
     });
     res.send(req.body);
+});
+
+//
+//Завершение кейса
+app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
+    var userName = req.param('UserName', null);
+    var caseId = req.param('CaseId', null);
+    
+    // [TODO]
+    // 0. Проверить, что пользователь аутентифицирован
+    if (req.currentUser.guest == 1 )
+        res.redirect('/sessions/new');
+    else
+        if(req.currentUser.email != userName)
+            res.redirect('/sessions/new');
+    
+    // 1. Изменить статус кейса
+    fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
+		if(!err)
+		{
+			var userCase = jQ.parseJSON(data);
+			userCase.status = 1;
+			fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase), encoding='utf8', function (err) {
+              if (err) throw err;
+            });
+		}});
+		
+    // 2. Записать статистику
+    
+    // 3. Отправить на главную страницу
+    res.redirect('/');
 });
 
 //

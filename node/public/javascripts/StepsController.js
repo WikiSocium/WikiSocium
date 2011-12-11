@@ -150,8 +150,21 @@ function CheckNextInfo(nextInfo)
 	}
 }
 		
-		
-		
+function ShowEndCasePopup()
+{
+    $("#endCasePopup").show();
+}
+
+function HideEndCasePopup()
+{
+    $("#endCasePopup").hide();
+}
+
+function EndCasePopupSelectionChanged()
+{
+    $("#endCase1").toggle();
+    $("#endCase2").toggle();
+}
 
 function NextStep() {
 		SaveFormData();

@@ -11,6 +11,7 @@
 		"documents": ["TestDoc"]
     },
     
+		"status"      :"0",
     "currentStep" :"0",
     
     "steps"       :
@@ -80,7 +81,7 @@
 				}                 
 		      ]
 	     },
-	
+
 	     {   
 		     "id"         : "2",     
 		     "title"      : "step 2",
