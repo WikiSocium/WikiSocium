@@ -1,0 +1,9 @@
+.page
+  h2 Введите название для этого решения. Название должно быть уникально для списка Ваших решений.
+
+  form.users(method="post", action="/addcasetouser/#{Solution}")
+      div
+        input(type = "text", name ="case_id")
+        input(type="submit", value="Добавить")
+
+
