@@ -1,6 +1,31 @@
 /*
 	Functions
  */
+ 
+function dump(arr,level) {
+	var dumped_text = "";
+	if(!level) level = 0;
+	
+	//The padding given at the beginning of the line.
+	var level_padding = "";
+	for(var j=0;j<level+1;j++) level_padding += "    ";
+	
+	if(typeof(arr) == 'object') { //Array/Hashes/Objects 
+		for(var item in arr) {
+			var value = arr[item];
+			
+			if(typeof(value) == 'object') { //If it is an array,
+				dumped_text += level_padding + "'" + item + "' ...\n";
+				dumped_text += dump(value,level+1);
+			} else {
+				dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
+			}
+		}
+	} else { //Stings/Chars/Numbers etc.
+		dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+	}
+	return dumped_text;
+}
 
 function Render404(res, err)
 {
@@ -160,7 +185,7 @@ function userCreateEnv( user ) {
   var userJSON = {
     id: user.email,
     fullName: '',
-    cases: ''
+    cases: []
   };    
   var filter = new Array( 'id', 'fullName', 'cases' );
   
@@ -228,11 +253,7 @@ app.get('/UserData/:UserName/:CaseId'
 {
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
-    fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-        if (err) {
-	        fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
-        }
-    });
+    
     fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8"
     , function(err, data) 
       {
@@ -241,6 +262,10 @@ app.get('/UserData/:UserName/:CaseId'
              var requestedCase = jQ.parseJSON(data);
              fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
              {
+                 if (err) {
+	                fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
+	                err = FALSE;
+                 }
                  if (!err) 
                  {
 	                 var caseData = jQ.parseJSON(data);
@@ -267,6 +292,8 @@ app.get('/UserData/:UserName/:CaseId'
 		            Render404(res, err);
 	        });
         }
+        else 
+          Render404(res, err);
     });
 });
 //        
@@ -301,10 +328,15 @@ app.get('/UserData/:UserName', function(req, res){
 			});
 		});
 
+function parseReturnTo ( req_query_return_to ) {
+  if (req_query_return_to == undefined) return '/';
+  else return req_query_return_to;
+}
+
 // Users
 app.get('/users/new', function(req, res) {
   res.render('users/new.jade', {
-    locals: { user: new User() },
+    locals: { user: new User(), return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: []
   });
@@ -316,7 +348,7 @@ app.post('/users.:format?', function(req, res) {
   function userSaveFailed() {
     req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
-      locals: { user: user },
+      locals: { user: user, return_to: parseReturnTo(req.query.return_to) },
       title: '',
       scripts: []
     });
@@ -330,6 +362,8 @@ app.post('/users.:format?', function(req, res) {
     
     req.flash('info', 'Ваш аккаунт был успешно создан');
     //emails.sendWelcome(user);
+    
+    var return_to = parseReturnTo(req.query.return_to);
 
     switch (req.params.format) {
       case 'json':
@@ -338,7 +372,7 @@ app.post('/users.:format?', function(req, res) {
 
       default:
         req.session.user_id = user.id;
-        res.redirect('/');
+        res.redirect(return_to);
     }
   });
 });
@@ -347,14 +381,18 @@ app.post('/users.:format?', function(req, res) {
 
 // Sessions
 app.get('/sessions/new', function(req, res) {
+
   res.render('sessions/new.jade', {
-    locals: { user: new User() },
+    locals: { user: new User(), return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: []
   });
 });
 
 app.post('/sessions', function(req, res) {
+
+  var return_to = parseReturnTo(req.query.return_to);
+
   User.findOne({ email: req.body.user.email }, function(err, user) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
@@ -384,10 +422,10 @@ app.post('/sessions', function(req, res) {
         var loginToken = new LoginToken({ email: user.email });
         loginToken.save(function() {
           res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-          res.redirect('/');
+          res.redirect(return_to);
         });
       } else {
-        res.redirect('/');
+        res.redirect(return_to);
       }      
     } else {
       req.flash('error', 'E-mail и пароль не подходят');
@@ -397,7 +435,7 @@ app.post('/sessions', function(req, res) {
 });
 
 app.get('/login', loadUser, function(req, res) {
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new');
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.route.path);
   else res.redirect('/');
 });
 
@@ -411,6 +449,27 @@ app.get('/logout', loadUser, function(req, res) {
 });
 
 
+// Statistics
+
+app.get('/statistics/solutions', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.route.path);
+  else {
+    fs.readdir("data/solutions", function (err, files) {
+      if (err) throw err;
+      
+      var solutions = new Array();
+      for (var key in files) {
+        solutions[key] = files[key].replace(/.json/g,"");
+      }
+            
+      res.render('statistics/solutions.jade', {
+        title: "Статистики по решениям",
+        solutions: solutions, 
+        scripts:[]
+      });
+    });
+  }
+});
 
 
 app.listen(3000);

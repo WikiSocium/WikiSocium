@@ -35,8 +35,8 @@ function defineModels(mongoose, fn) {
     })
     .get(function() { return this._password; });
 
-  User.method('authenticate', function(plainText) {
-    return this.encryptPassword(plainText) === this.hashed_password;
+  User.method('authenticate', function(plaStringext) {
+    return this.encryptPassword(plaStringext) === this.hashed_password;
   });
   
   User.method('makeSalt', function() {
@@ -89,10 +89,38 @@ function defineModels(mongoose, fn) {
     .get(function() {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series });
     });
+  
+  
+    /**
+    * Model: Solution Statistics
+    */
+  SolutionStatistics = new Schema({
+    'solution_name': { type: String, index: true },
+    'started': Number,
+	  'finished_successful': Number,
+	  'finished_failed': Number,
+	  'finished_bad_solution': Number,
+	  'different_users': Number
+  });
+  
+  SolutionStatistics.pre('save', function(next) {
+  
+    try {
+      stats = fs.lstatSync('data/solutions' + this.solution_name + '.json');
+      }
+    catch (e)
+      {
+          console.log("Failed save solution statistics for " + this.solution_name + ": " + e);
+          next(new Error('Solution doesn\'t exist'));
+      }
+    next();
+  });
+  
 
 //  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
+  mongoose.model('SolutionStatistics', SolutionStatistics);
 
   fn();
 }

@@ -1,8 +1,8 @@
 .page
   h2 Вход в систему
   p
-    a.button(href='/users/new') Создать новый аккаунт &rarr;
-  form.users#login(method='post', action='/sessions')
+    a.button(href='/users/new?return_to=#{return_to}') Создать новый аккаунт &rarr;
+  form.users#login(method='post', action='/sessions?return_to=#{return_to}')
   
     !=partial('../users/fields', { locals: { user: user } })
     div
@@ -10,4 +10,3 @@
       input#remember_me(type='checkbox', name='remember_me')
     div
       input(type='submit', value='Войти')
-
