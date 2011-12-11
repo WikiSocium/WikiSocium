@@ -41,7 +41,7 @@ a:hover, a:active {
 
 #header-logo {
   float: left;
-  padding: 27px 30px;
+  padding: 27px 30px 26px 30px;
   position: absolute;
 }
 #header-logo span { 
@@ -65,7 +65,7 @@ a:hover, a:active {
   float: left;
   list-style: none;
   margin: 0;
-  padding: 35px 10px 35px 15px;
+  padding: 40px 10px 30px 15px;
 }
 
 #header-menu a {
@@ -79,7 +79,7 @@ a:hover, a:active {
 }
 
 #header-auth-links {
-  padding: 35px 10px;
+  padding: 40px 10px 30px 10px;
 }
 
 #header-reg-link {
@@ -126,6 +126,7 @@ a:hover, a:active {
 
 #footer {
   border-top: 1px solid #ccc;
+  height: 50px;
   padding-top: 30px;
 }
 
@@ -155,23 +156,17 @@ a:hover, a:active {
 
 
 
-
-
-
-
-
-
-form input[type=text], form input[type=password] {/* оформление для полей типа text и password */
-width: 200px;
-background: #fff; /* обязательно указываем цвет фона (или ставим его none), т.к. в браузере могут быть свои значения по умолчанию */
-border: 1px solid #7f9db9; /* цвет бордюра */
-height: 18px; /* явно задаем высоту, для кроссбраузерности */
+form input[type=text], form input[type=password] {
+  width: 200px;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  height: 18px; 
 }
 
 form.users {
-width: 500px; /* задаем ширину формы, чтобы сработал overflow */
-overflow: hidden; /* обрезаем выступы за форму (в частности в ие6 неправильно расчитанный width для div) */
-padding: 2px; /* небольшой отступ чтобы не обрезалась подсветка input в фокусе в Safari и Chrome */
+  width: 500px;
+  overflow: hidden;
+  padding: 2px;
 }
 
 form.users input, form.users label {
@@ -180,48 +175,48 @@ form.users input, form.users label {
 }
 
 form.users .formLine {
-float: left; /* чтобы не было проблем с отступами между блоками */
-width: 100%; /* чтобы блоки не встраивались в одну строку */
-margin-bottom: 5px; /* расстояние между блоками */
+  float: left;
+  width: 100%;
+  margin-bottom: 5px;
 }
 
 form.users .formline label {
-  float: left; /* делаем метки плавающими и фиксированной ширины чтобы выровнять их по одному уровню */
+  float: left; 
   width: 60px;
   text-align: right;
-  position: relative; /* выравниваем тексты меток и полей по одному уровню */
-  top: 2px; /* отступ сверху подбираем в зависимости от размера шрифта и дизайна полей */
-  margin-right: 5px; /* чтобы к меткам не прилипали поля */
+  position: relative;
+  top: 2px;
+  margin-right: 5px;
 }
 
-form.users input[type=text], form.users input[type=password] {/* оформление для полей типа text и password */
-width: 200px;
-background: #fff; /* обязательно указываем цвет фона (или ставим его none), т.к. в браузере могут быть свои значения по умолчанию */
-border: 1px solid #7f9db9; /* цвет бордюра */
-height: 20px; /* явно задаем высоту, для кроссбраузерности */
+form.users input[type=text], form.users input[type=password] {
+  width: 200px;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  height: 20px;
 }
 
-form.users .formText {/* класс для ие6, который не понимает свойства по типам селекторов */
-width: 200px;
-background: #fff;
-border: 1px solid #7f9db9;
-height: 20px;
+form.users .formText {
+  width: 200px;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  height: 20px;
 }
-form.users input[type=submit] {/* оформление для кнопки submit */
-margin-left: 73px;
-cursor: pointer; /* меняем указатель для кнопки */
+form.users input[type=submit] {
+  margin-left: 73px;
+  cursor: pointer;
 }
-form.users .formSubmit {/* класс для ие6 */
-margin-left: 73px;
-cursor: pointer;
-width: auto;
+form.users .formSubmit {
+  margin-left: 73px;
+  cursor: pointer;
+  width: auto;
 }
 * html input {/* хак для ие6, котрый поможет ему понять типы селекторов */
-z-index: expression(
-runtimeStyle.zIndex = 1,
-type == "text" ? (className = "formText") : 0,
-type == "password" ? (className = "formText") : 0,
-type == "submit" ? (className = "formSubmit") : 0
-)
+  z-index: expression(
+  runtimeStyle.zIndex = 1,
+  type == "text" ? (className = "formText") : 0,
+  type == "password" ? (className = "formText") : 0,
+  type == "submit" ? (className = "formSubmit") : 0
+  )
 }
 
