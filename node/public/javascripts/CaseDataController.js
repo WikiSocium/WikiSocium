@@ -33,4 +33,14 @@ function CaseDataController(caseInfo)
 			return undefined;
 		}
 	}
+
+	this.ChangeVisibility = function(step_index, widget_id, value) {
+		var widget_data = this.GetWidgetData(step_index, widget_id);
+        for (var i = 0; i < widget_data.change_visibility.length; i ++) {
+			if (widget_data.change_visibility[i].value == value) {
+				return widget_data.change_visibility[i].change;
+			}
+		}
+		return [];
+	}
 }
