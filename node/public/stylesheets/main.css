@@ -1,0 +1,227 @@
+body {  
+  min-width: 760px;
+}
+
+* {
+  font-family: Arial, Tahoma;
+  font-size: 12pt;
+  line-height: 130%;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+h1 { font-size: 22pt; margin-top: 20pt; margin-bottom: 14pt;  }
+h2 { font-size: 20pt; margin-top: 18pt; margin-bottom: 12pt; }
+h3 { font-size: 18pt; margin-top: 14pt; margin-bottom: 10pt; }
+h4 { font-size: 16pt; margin-top: 12pt; margin-bottom: 8pt; }
+h5 { font-size: 14pt; margin-top: 10pt; margin-bottom: 6pt; }
+h6 { font-size: 12pt; margin-top: 8pt; margin-bottom: 4pt; }
+
+p {
+  margin-top: 6pt; margin-bottom: 2pt;
+}
+
+a:link, a:visited {
+  color: #2275C8;
+  text-decoration: underline;
+}
+a:hover, a:active {
+  color: #F32200;
+  text-decoration: underline;
+}
+
+#header {
+  border-bottom: 1px solid #ccc;
+  height: 90px;
+}
+
+#header-logo {
+  float: left;
+  padding: 27px 30px;
+  position: absolute;
+}
+#header-logo span { 
+  cursor:pointer;cursor:hand;
+  font-size: 22pt;
+}
+
+#header-menu {
+  float: left;
+  left: 230px;
+  position: absolute;
+}
+
+#header-menu ul {
+  margin: 0;
+  padding: 0;
+}
+
+#header-menu ul li {
+  display: block;
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 35px 10px 35px 15px;
+}
+
+#header-menu a {
+  text-decoration: none;
+}
+
+#header-auth {
+  position: absolute;
+  right: 10px;
+  width: 250px;
+}
+
+#header-auth-links {
+  padding: 35px 10px;
+}
+
+#header-reg-link {
+  border-bottom: 1px solid;
+  text-decoration: none;
+}
+
+#header-login-link {
+  border-bottom: 1px dashed;
+  left: 10px;
+  position: relative;
+  text-decoration: none;
+}
+
+#header-login-form {
+  display: none;
+  padding: 18px 0;
+}
+
+#header-login-form * {
+  font-size: 10pt;
+}
+#header-login-form input {
+  margin: 2px;
+  padding: 2px;
+}
+#header-login-form input.input-type-text {
+  width: 100px;
+}
+
+#header-user-logged-in {
+  padding: 35px 0;
+}
+
+#logout {
+  left: 7px;
+  position: relative;
+}
+
+#content {
+  min-height: 600px;
+  padding: 15px 30px;
+}
+
+#footer {
+  border-top: 1px solid #ccc;
+  padding-top: 30px;
+}
+
+#footer #copyleft {
+  position: absolute;
+  left: 30px;
+}
+
+#footer #about {
+  position: absolute;
+  right: 120px;
+}
+
+#footer #about a {
+  color: #666;
+}
+
+#footer #about #help {
+  position: relative;
+  left: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+form input[type=text], form input[type=password] {/* оформление для полей типа text и password */
+width: 200px;
+background: #fff; /* обязательно указываем цвет фона (или ставим его none), т.к. в браузере могут быть свои значения по умолчанию */
+border: 1px solid #7f9db9; /* цвет бордюра */
+height: 18px; /* явно задаем высоту, для кроссбраузерности */
+}
+
+form.users {
+width: 500px; /* задаем ширину формы, чтобы сработал overflow */
+overflow: hidden; /* обрезаем выступы за форму (в частности в ие6 неправильно расчитанный width для div) */
+padding: 2px; /* небольшой отступ чтобы не обрезалась подсветка input в фокусе в Safari и Chrome */
+}
+
+form.users input, form.users label {
+  margin: 2px;
+  padding: 2px;
+}
+
+form.users .formLine {
+float: left; /* чтобы не было проблем с отступами между блоками */
+width: 100%; /* чтобы блоки не встраивались в одну строку */
+margin-bottom: 5px; /* расстояние между блоками */
+}
+
+form.users .formline label {
+  float: left; /* делаем метки плавающими и фиксированной ширины чтобы выровнять их по одному уровню */
+  width: 60px;
+  text-align: right;
+  position: relative; /* выравниваем тексты меток и полей по одному уровню */
+  top: 2px; /* отступ сверху подбираем в зависимости от размера шрифта и дизайна полей */
+  margin-right: 5px; /* чтобы к меткам не прилипали поля */
+}
+
+form.users input[type=text], form.users input[type=password] {/* оформление для полей типа text и password */
+width: 200px;
+background: #fff; /* обязательно указываем цвет фона (или ставим его none), т.к. в браузере могут быть свои значения по умолчанию */
+border: 1px solid #7f9db9; /* цвет бордюра */
+height: 20px; /* явно задаем высоту, для кроссбраузерности */
+}
+
+form.users .formText {/* класс для ие6, который не понимает свойства по типам селекторов */
+width: 200px;
+background: #fff;
+border: 1px solid #7f9db9;
+height: 20px;
+}
+form.users input[type=submit] {/* оформление для кнопки submit */
+margin-left: 73px;
+cursor: pointer; /* меняем указатель для кнопки */
+}
+form.users .formSubmit {/* класс для ие6 */
+margin-left: 73px;
+cursor: pointer;
+width: auto;
+}
+* html input {/* хак для ие6, котрый поможет ему понять типы селекторов */
+z-index: expression(
+runtimeStyle.zIndex = 1,
+type == "text" ? (className = "formText") : 0,
+type == "password" ? (className = "formText") : 0,
+type == "submit" ? (className = "formSubmit") : 0
+)
+}
+

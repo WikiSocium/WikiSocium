@@ -6,6 +6,7 @@ function Render404(res, err)
 {
 	res.render('404', {
 				   'title':'404',
+				   user: res.currentUser,
 				   'err': err,
 				   'scripts':[]
 			   });
@@ -102,8 +103,6 @@ app.dynamicHelpers({
 // req <=> request
 // res <=> response
 
-
-
 function authenticateFromLoginToken(req, res, next) {
   var cookie = JSON.parse(req.cookies.logintoken);
 
@@ -118,7 +117,7 @@ function authenticateFromLoginToken(req, res, next) {
     User.findOne({ email: token.email }, function(err, user) {
       if (user) {
         req.session.user_id = user.id;
-        req.currentUser = user;
+        res.currentUser = user;
 
         token.token = token.randomToken();
         token.save(function() {
@@ -136,20 +135,20 @@ function loadUser(req, res, next) {
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
-        req.currentUser = user;
-        req.currentUser.guest = 0;
+        res.currentUser = user;
+        res.currentUser.guest = 0;
         next();
       } else {
-        req.currentUser = {}
-        req.currentUser.guest = 1;
+        res.currentUser = {}
+        res.currentUser.guest = 1;
         next();
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
-    req.currentUser = {}
-    req.currentUser.guest = 1;
+    res.currentUser = {}
+    res.currentUser.guest = 1;
     next();
   }
 }
@@ -179,19 +178,20 @@ function userCreateEnv( user ) {
 app.get('/', loadUser, function(req, res) {
         res.render('index', {
                 'title':"Usage",
-                'user':req.currentUser, 
+                'user':res.currentUser, 
                 scripts:[]});
         });
 
 //
 // Обработка запроса на показ списка проблем
-app.get('/Problems', function(req, res){
+app.get('/Problems', loadUser, function(req, res){
 		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 						if(!err)
 						{
 							var problemsList = jQ.parseJSON(data);
 							res.render('problems', {
 									   'title' : "Problems list",
+									   'user':res.currentUser,
 									   'problemsList' : problemsList.problemsList,
 									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 									   });
@@ -203,7 +203,7 @@ app.get('/Problems', function(req, res){
 
 //
 // Обработка запроса на показ проблемы и списка ее решений
-app.get('/Problems/:ProblemName', function(req, res){
+app.get('/Problems/:ProblemName', loadUser, function(req, res){
 		var problemName = req.param('ProblemName', null);
 		
 		fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
@@ -212,6 +212,7 @@ app.get('/Problems/:ProblemName', function(req, res){
 						var problem = jQ.parseJSON(data);
 						res.render('problem', {
 									   'title' : problemName,
+                     'user':res.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
@@ -224,12 +225,13 @@ app.get('/Problems/:ProblemName', function(req, res){
 //
 app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
   
-    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+    if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
     else
         { 
           var SolutionNew = req.param('SolutionName', null);
  	      	res.render('AddCaseForUser', {
                                         locals: {Solution: SolutionNew},
+                                        user: res.currentUser, 
 			                                  title: '',
 			                                  scripts: []
 			                                  }
@@ -239,25 +241,21 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId',loadUser
-, function(req, res)
-{
+app.get('/UserData/:UserName/:CaseId', loadUser , function(req, res) {
   var userName = req.param('UserName', null);
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else{
-  if(req.currentUser.email!=userName) {
-    res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
-        }
-    else{
-    var caseId = req.param('CaseId', null);
+  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    if (res.currentUser.email != userName) {
+      res.redirect('/');
+      req.flash('info', 'Не смотрите чужие документы');
+    }
+    else {
+      var caseId = req.param('CaseId', null);
     
-    fs.readFile('data/'+userName+'/'+caseId+'.json', "utf-8"
-    , function(err, data) 
-      {
-        if(!err) 
-        {
-             var requestedCase = jQ.parseJSON(data);
-             var scriptsToInject =      [
+      fs.readFile('data/UserData/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
+        if(!err) {
+          var requestedCase = jQ.parseJSON(data);
+          var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
                       'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
@@ -269,41 +267,31 @@ app.get('/UserData/:UserName/:CaseId',loadUser
 				        '/javascripts/runtime.min.js'];
 				        
 				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
-				var requiredDocuments = requestedCase.data.documents;
-        if(requiredDocuments)
-          for(var i = 0; i < requiredDocuments.length; i++)
-				    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-				                 
-             fs.readFile('data/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) 
-             {
-                 if (err) {
-	                fs.open('data/' + userName + '/' + caseId + 'Data.txt', 'w');
-	                err = FALSE;
-                 }
-                 if (!err) 
-                 {
-	                 var caseData = jQ.parseJSON(data);
-                         if (caseData == null) {
-                             caseData = "null";
-                         }
-                         
-		             res.render('userCase', 
-				        {
-				            'title': userName + " : " + caseId,
-				            'requestedCase' : requestedCase,
-				            'caseData' : caseData,
-				            'scripts' : scriptsToInject
-				        });
-		        }
-		        else
-		            Render404(res, err);
-	        });
+				  var requiredDocuments = requestedCase.data.documents;
+          if(requiredDocuments)
+            for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+				                   
+          fs.readFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
+            if (err) {
+	            fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
+	            err = false;
+            }
+            var caseData = jQ.parseJSON(data);
+              
+            res.render('userCase', 
+				    {
+				      'title': userName + " : " + caseId,
+				      'user':res.currentUser, 
+				      'requestedCase' : requestedCase,
+				      'caseData' : caseData,
+				      'scripts' : scriptsToInject
+				    });
+				  });
         }
-        else 
-          Render404(res, err);
-    });
+        else Render404(res, err);
+      });
+    }
   }
-}
 });
 //        
 //Сохранение данных кейса        
@@ -311,7 +299,7 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
     console.log(req.body.jsonData);
-    fs.writeFile('data/' + userName + '/' + caseId + 'Data.txt', req.body.jsonData, function (err) {
+    fs.writeFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', req.body.jsonData, function (err) {
           if (err) console.log(err);
     });
     res.send(req.body);
@@ -322,16 +310,17 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 app.get('/UserData/:UserName', loadUser, function(req, res){
 			var userName = req.param('UserName', null);
 
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else{
-  if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
+  if(res.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
     else{
-			fs.readFile('data/'+userName+'/user.json', "utf-8", function(err, data){
+			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
 				{
 					var requestedUser = jQ.parseJSON(data);
 						res.render('user', {
 								'title': userName,
+                'user':res.currentUser, 
 								'requestedUser': requestedUser,
 								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
@@ -349,18 +338,19 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 // Users
-app.get('/users/new', function(req, res) {
+app.get('/users/new', loadUser, function(req, res) {
   res.render('users/new.jade', {
-    locals: { user: new User(), return_to: parseReturnTo(req.query.return_to) },
+    locals: { user: res.currentUser, return_to: parseReturnTo(req.query.return_to) },
+    user:res.currentUser, 
     title: '',
     scripts: []
   });
 });
 
-app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
+app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   var Solution = req.param('SolutionName', null);
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
 	{
 	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
@@ -370,7 +360,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
 							problem.id = req.body.case_id;
               filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
               fs.writeFile(
-                           'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
+                           'data/UserData/' + res.currentUser.email +'/' + problem.id + '.json',
                             JSON.stringify (problem,space = '\t'), encoding='utf8',
                             function (err) {
                                              if (err) throw err;
@@ -381,7 +371,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
     });
     
 
-  	 	fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+  	 	fs.readFile('data/UserData/' + res.currentUser.email + '/user.json', "utf-8", function(err, data){
 						if(!err)
 						{
 							var userJSON = jQ.parseJSON(data);
@@ -390,7 +380,7 @@ app.post('/addcasetouser/:SolutionName',loadUser, function(req, res) {
               var filter = new Array( 'id', 'fullName', 'cases' );
   
               fs.writeFile(
-                           'data/UserData/' + req.currentUser.email + '/user.json',
+                           'data/UserData/' + res.currentUser.email + '/user.json',
                             JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
                              function (err) {
                                              if (err) throw err;
@@ -416,6 +406,7 @@ app.post('/users.:format?', function(req, res) {
     req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
       locals: { user: user, return_to: parseReturnTo(req.query.return_to) },
+      user:res.currentUser, 
       title: '',
       scripts: []
     });
@@ -447,10 +438,11 @@ app.post('/users.:format?', function(req, res) {
 
 
 // Sessions
-app.get('/sessions/new', function(req, res) {
+app.get('/sessions/new', loadUser, function(req, res) {
 
   res.render('sessions/new.jade', {
-    locals: { user: new User(), return_to: parseReturnTo(req.query.return_to) },
+    user:res.currentUser,
+    locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: []
   });
@@ -502,13 +494,13 @@ app.post('/sessions', function(req, res) {
 });
 
 app.get('/login', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else res.redirect('/');
 });
 
 app.get('/logout', loadUser, function(req, res) {
   if (req.session) {
-    LoginToken.remove({ email: req.currentUser.email }, function() {});
+    LoginToken.remove({ email: res.currentUser.email }, function() {});
     res.clearCookie('logintoken');
     req.session.destroy(function() {});
   }
@@ -519,7 +511,7 @@ app.get('/logout', loadUser, function(req, res) {
 // Statistics
 
 app.get('/statistics/solutions', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
@@ -531,6 +523,7 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
             
       res.render('statistics/solutions.jade', {
         title: "Статистики по решениям",
+        user:res.currentUser,
         solutions: solutions, 
         scripts:[]
       });

@@ -2,12 +2,13 @@ div(class="step isInvisible", id="step_" + step_index + "")
   div(class="stepTitle")
     #{step.title}
   br
+  
   #widgets
     script(type = 'text/javascript')
       var step#{step_index}FieldsList = [];
       var notEmptyStep = false;
     - each widget in step.widgets
-      - if (stepData == "null")
+      - if (stepData == null)
         - console.log("init")
         !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
       - else
