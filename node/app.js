@@ -2,11 +2,11 @@
 	Functions
  */
 
-function Render404(res, err)
+function Render404(req,res, err)
 {
 	res.render('404', {
 				   'title':'404',
-				   user: res.currentUser,
+				   user: req.currentUser,
 				   'err': err,
 				   'scripts':[]
 			   });
@@ -117,7 +117,7 @@ function authenticateFromLoginToken(req, res, next) {
     User.findOne({ email: token.email }, function(err, user) {
       if (user) {
         req.session.user_id = user.id;
-        res.currentUser = user;
+        req.currentUser = user;
 
         token.token = token.randomToken();
         token.save(function() {
@@ -135,20 +135,20 @@ function loadUser(req, res, next) {
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
-        res.currentUser = user;
-        res.currentUser.guest = 0;
+        req.currentUser = user;
+        req.currentUser.guest = 0;
         next();
       } else {
-        res.currentUser = {}
-        res.currentUser.guest = 1;
+        req.currentUser = {}
+        req.currentUser.guest = 1;
         next();
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
-    res.currentUser = {}
-    res.currentUser.guest = 1;
+    req.currentUser = {}
+    req.currentUser.guest = 1;
     next();
   }
 }
@@ -178,7 +178,7 @@ function userCreateEnv( user ) {
 app.get('/', loadUser, function(req, res) {
         res.render('index', {
                 'title':"Usage",
-                'user':res.currentUser, 
+                'user':req.currentUser, 
                 scripts:[]});
         });
 
@@ -191,13 +191,13 @@ app.get('/Problems', loadUser, function(req, res){
 							var problemsList = jQ.parseJSON(data);
 							res.render('problems', {
 									   'title' : "Problems list",
-									   'user':res.currentUser,
+									   'user':req.currentUser,
 									   'problemsList' : problemsList.problemsList,
 									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 									   });
 						}
 						else
-							Render404(res, err);
+							Render404(req,res, err);
 					});
 		});
 
@@ -212,26 +212,26 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 						var problem = jQ.parseJSON(data);
 						res.render('problem', {
 									   'title' : problemName,
-                     	               'user':res.currentUser, 
+                     	               'user':req.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
 					}
 					else
-						Render404(res, err);
+						Render404(req,res, err);
 				});
 		});
 
 //
 app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
   
-    if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
     else
         { 
           var SolutionNew = req.param('SolutionName', null);
  	      	res.render('AddCaseForUser', {
                                         locals: {Solution: SolutionNew},
-                                        user: res.currentUser, 
+                                        user: req.currentUser, 
 			                            title: '',
 			                            scripts: []
 			                                  }
@@ -241,7 +241,7 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId', loadUser , function(req, res) {
+app.get('/UserData/:UserName/:CaseId/', loadUser , function(req, res) {
 
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
@@ -249,19 +249,16 @@ app.get('/UserData/:UserName/:CaseId', loadUser , function(req, res) {
     res.redirect("/UserData/" + userName + "/" + caseId);
 });
 
-app.get('/UserData/:UserName/:CaseId'
-, function(req, res)
-{
+app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
   var userName = req.param('UserName', null);
-  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-    if (res.currentUser.email != userName) {
+    if (req.currentUser.email != userName) {
       res.redirect('/');
       req.flash('info', 'Не смотрите чужие документы');
     }
     else {
       var caseId = req.param('CaseId', null);
-    
       fs.readFile('data/UserData/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
         if(!err) {
           var requestedCase = jQ.parseJSON(data);
@@ -291,14 +288,14 @@ app.get('/UserData/:UserName/:CaseId'
             res.render('userCase', 
 				    {
 				      'title': userName + " : " + caseId,
-				      'user':res.currentUser, 
+				      'user':req.currentUser, 
 				      'requestedCase' : requestedCase,
 				      'caseData' : caseData,
 				      'scripts' : scriptsToInject
 				    });
 				  });
         }
-        else Render404(res, err);
+        else Render404(req,res, err);
       });
     }
   }
@@ -323,27 +320,32 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
     
     // [TODO]
     // 0. Проверить, что пользователь аутентифицирован
-    if (req.currentUser.guest == 1 )
-        res.redirect('/sessions/new');
-    else
-        if(req.currentUser.email != userName)
-            res.redirect('/sessions/new');
+    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+    else {
+      if (req.currentUser.email != userName) res.redirect('/sessions/new');
+      else {
     
-    // 1. Изменить статус кейса
-    fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
-		if(!err)
-		{
-			var userCase = jQ.parseJSON(data);
-			userCase.status = 1;
-			fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase), encoding='utf8', function (err) {
-              if (err) throw err;
-            });
-		}});
+        // 1. Изменить статус кейса
+        fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
+		    if(!err)
+		    {
+			    var userCase = jQ.parseJSON(data);
+			    userCase.status = 1;
+			    fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase), encoding='utf8', function (err) {
+                  if (err) throw err;
+                });
+		    }});
 		
-    // 2. Записать статистику
-    
-    // 3. Отправить на главную страницу
-    res.redirect('/');
+        // 2. Записать статистику
+        
+        // 3. Отправить на главную страницу
+        res.redirect('/');
+        }
+    }
+});
+
+app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
+  res.redirect('/UserData/'+req.param('UserName')+'/'+req.param('CaseId'));
 });
 
 //
@@ -351,9 +353,9 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
 app.get('/UserData/:UserName', loadUser, function(req, res){
 			var userName = req.param('UserName', null);
 
-  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else{
-  if(res.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
+  if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
     else{
 			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
@@ -361,13 +363,13 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 					var requestedUser = jQ.parseJSON(data);
 						res.render('user', {
 								'title': userName,
-                                'user':res.currentUser, 
+                                'user':req.currentUser, 
 								'requestedUser': requestedUser,
 								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
 						   });
 				}
 				else
-					Render404(res, err);				  
+					Render404(req,res, err);				  
 			});
     }
 }
@@ -382,7 +384,7 @@ function parseReturnTo ( req_query_return_to ) {
 app.get('/users/new', loadUser, function(req, res) {
   res.render('users/new.jade', {
     locals: { return_to: parseReturnTo(req.query.return_to) },
-    user:res.currentUser, 
+    user:req.currentUser, 
     title: '',
     scripts: []
   });
@@ -391,7 +393,7 @@ app.get('/users/new', loadUser, function(req, res) {
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   var Solution = req.param('SolutionName', null);
-  if (res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
 	{
 	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
@@ -401,18 +403,18 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
 							problem.id = req.body.case_id;
               filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
               fs.writeFile(
-                           'data/UserData/' + res.currentUser.email +'/' + problem.id + '.json',
+                           'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
                             JSON.stringify (problem,space = '\t'), encoding='utf8',
                             function (err) {
                                              if (err) throw err;
                             });
 						}
 						else
-							Render404(res, err);
+							Render404(req,res, err);
     });
     
 
-  	 	fs.readFile('data/UserData/' + res.currentUser.email + '/user.json', "utf-8", function(err, data){
+  	 	fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
 						if(!err)
 						{
 							var userJSON = jQ.parseJSON(data);
@@ -421,7 +423,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
               var filter = new Array( 'id', 'fullName', 'cases' );
   
               fs.writeFile(
-                           'data/UserData/' + res.currentUser.email + '/user.json',
+                           'data/UserData/' + req.currentUser.email + '/user.json',
                             JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
                              function (err) {
                                              if (err) throw err;
@@ -429,7 +431,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   					}
 						else
-							Render404(res, err);
+							Render404(req,res, err);
     });
     
 
@@ -447,7 +449,7 @@ app.post('/users.:format?', function(req, res) {
     req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
       locals: { return_to: parseReturnTo(req.query.return_to) },
-      user:res.currentUser, 
+      user:req.currentUser, 
       title: '',
       scripts: []
     });
@@ -482,7 +484,7 @@ app.post('/users.:format?', function(req, res) {
 app.get('/sessions/new', loadUser, function(req, res) {
 
   res.render('sessions/new.jade', {
-    user:res.currentUser,
+    user:req.currentUser,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: []
@@ -535,13 +537,13 @@ app.post('/sessions', function(req, res) {
 });
 
 app.get('/login', loadUser, function(req, res) {
-  if ( res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else res.redirect('/');
 });
 
 app.get('/logout', loadUser, function(req, res) {
   if (req.session) {
-    LoginToken.remove({ email: res.currentUser.email }, function() {});
+    LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
     req.session.destroy(function() {});
   }
@@ -552,7 +554,7 @@ app.get('/logout', loadUser, function(req, res) {
 // Statistics
 
 app.get('/statistics/solutions', loadUser, function(req, res) {
-  if ( res.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
@@ -564,7 +566,7 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
             
       res.render('statistics/solutions.jade', {
         title: "Статистики по решениям",
-        user:res.currentUser,
+        user:req.currentUser,
         solutions: solutions, 
         scripts:[]
       });
