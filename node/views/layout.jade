@@ -31,7 +31,7 @@ html
         - if (user.guest)    
           #header-auth-links
             a#header-reg-link(href="/users/new") Регистрация
-            a#header-login-link(href="#login") Войти
+            a#header-login-link(href="#") Войти
           script(language="javascript") $("#header-login-link").click(function() { $("#header-auth-links").hide();$("#header-login-form").show(); });
           #header-login-form
             form(method='post', action='/sessions')
