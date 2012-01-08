@@ -1,12 +1,12 @@
 {
-    "id"          : "user-specified id",
+    "id"          : "violation",
     
     "name"        : "Составление заявления о правонарушении",
     "description" : "Если вы стали свиделетем правонарушения (например, нарушение ПДД), и хотите привлечь нарушитея к ответу, это можно сделать абсолютно цивилизованно — подать заявление в Полицию. Кстати, наверное дублирование описания — говно.",
     
     "data"        : 
     {
-        "law_doc" : "пока оставляем пустым — не решено в каком виде это делать",
+        "law_doc" : "пока оставляем пустым — не решено в каком виде это делать"
     },
     
     "currentStep" :"0",
@@ -17,198 +17,178 @@
             "id"         : "0",
             "title"      : "Место правонарушения и действующие лица",
             "type"       : "general_data",
-            "state"      : "0",
-            "next_steps" : ["1"],
             "widgets"    : 
                             [
                                 {
-                                    "type" : "date",
-                                    "data" : {
-												"label" : "Дата"
-											 }
+                                    "widget_type" : "TextFieldWidget",
+																		"id" : "date",
+																		"label" : "Дата нарушения",
+																		"type" : "string"
                                 },
                                 {
-                                    "type" : "time",
-                                    "data" : {
-												"label" : "Время"
-											 }
+		                                "widget_type" : "TextFieldWidget",
+																		"id" : "time",
+																		"label" : "Время нарушения",
+																		"type" : "string"
                                 },
                                 {
-                                    "type" : "location",
-                                    "data" : {
-												"label" : "Место (адрес)",
-												"possible_plain_text" : "yes"
-											 }
-                                }
+                                "widget_type" : "TextFieldWidget",
+																"id" : "car_id",
+																"label" : "ГРН автомобиля-нарушителя",
+																"type" : "string"
+                                },
                                 {
-                                    "type" : "car_id",
-                                    "data" : {
-												"label" : "ГРН автомобиля-нарушителя"
-											 }
+                                    "widget_type" : "ListWidget",
+																		"label": "Тип правонарушения",
+																		"id": "list",
+																		"initial": "value_1",
+																		"value_list":
+																			[
+																				{ "value": "value_1", "label": "проезд на красный" },
+																			  { "value": "value_2", "label": "выезд на полосу встречного движения" },
+																				{ "value": "value_3", "label": "неподчинение правилам разметки" },
+																				{ "value": "value_4", "label": "нарушение правил парковки" }															
+																			]
                                 }
-                                {
-                                    "type" : "selection",
-                                    "data" : {
-												"label" : "Тип правонарушения",
-												"variants" : ["проезд на крсный",
-															  "выезд на полосу встречного движения",
-															  "неподчинение правилам разметки",
-															  "нарушение правил парковки"],
-												"possible_plain_text" : "yes"
-											 }
-                                }
-                            ]                
+                            ],
+            "next" : [ { "id" : "1" } ]        
         },
         {
             "id"         : "1",
             "title"      : "Вы — свидетель?",
             "type"       : "selection",
-            "state"      : "0",
-            "next_steps" : ["2"],
             "widgets"    : 
                             [
                                 {
-                                    "type" : "radio",
-                                    "data" : {
-												"label":"Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
-												"variant_1":"я являюсь непосредственным свидетелем",
-												"variant_2":"я узнал о правонарушении из открытых источников"}
-}
-                                }
-                            ]                
+                                    "widget_type" : "RadioGroupWidget",
+																		"id": "radio",
+																		"label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
+																		"initial": "value_1",
+																		"value_list": 
+																			[
+																				{ "value": "value_1", "label": "я являюсь непосредственным свидетелем" },
+																				{ "value": "value_2", "label": "я узнал о правонарушении из открытых источников" }
+																			]
+																}
+                            ],
+            "next_steps" : [{ "id" : "2" }]             
         },
         {   
             "id"         : "2",     
-            "title"      : "Загрузка фотографии и видео",
+            "title"      : "Загрузка фотографии и/или видео",
             "type"       : "upload",
-            "state"      : "0",
-            "next_steps" : ["3"],     
             "widgets"    : 
                             [
                                 {
-                                    "type" : "photo_upload",
-                                    "data" : {
-												"url" : ""
-											 }
-                                },
-                                {
-                                    "type" : "video_upload",
-                                    "data" : {
-												"url" : "",
-												"is_optional" : "yes"
-											 }
-                                }                 
-                            ]
-        },
+																	"widget_type": "URLOpenerWidget",
+																  "id": "url"
+                                }                
+                            ],
+            "next_steps" : [{"id":"3"}]
+				},
         {   
             "id"         : "3",     
             "title"      : "Текст заявления",
-            "type"       : "statement",
-            "state"      : "0",
-            "next_steps" : ["4"],     
+            "type"       : "statement",    
             "widgets"    : 
                             [
 	                            {
-	                                "type" : "statement_request",
-	                                "data" : {
-												"text" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."
-												"url" : ""
-											 }
+	                                "widget_type" : "DocumentViewWidget",
+																	"label" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге.",
+																	"doc_name" : "ViolationStatement"
 	                            }
-                                {
-                                    "type" : "statement",
-                                    "data" : {
-												"url" : ""
-											 }
-                                }
-                            ]
+                            ],
+            "next_steps" : [{ "id" : "4" }]
         },
         {           
             "id"         : "4",
             "title"      : "Подача заявления",     
             "type"       : "offline_action",
-            "state"      : "0",
-            "next_steps" : ["5"],     
             "widgets"    : 
                             [
                                 {
-                                    "type" : "text",
-                                    "data" : {"value" : "Теперь, пожалуйста, идите-ка на http://gibdd.ru/letter и подавайте там заявление. Ответ должен прийти в течении 30 дней."}
-                                },
-                                {
-                                    "type" : "user_ok_response"
-                                }                 
-                            ]
-        },
+                                    "widget_type" : "StaticTextWidget",
+                                    "text" : "Теперь, пожалуйста, идите-ка на http://gibdd.ru/letter и подавайте там заявление. Ответ должен прийти в течении 30 дней."
+                                }
+                            ],
+            "next_steps" : [{ "id" : "5" }]
+		    },
         {           
             "id"         : "5",
             "title"      : "Ждем-с",     
-            "type"       : "time",
-            "state"      : "0",
-            "next_steps" : ["6"],     
+            "type"       : "time",    
             "widgets"    : 
                             [
                                 {
-                                    "type" : "timer",
-                                    "data" : {
-												"value" : "30*60*60*24"
-											 }
+																	"widget_type" : "TimerWidget",
+																  "id" : "timer",
+																  "day_num" : 30
                                 }
-                            ]
+                            ],
+            "next_steps" : [{"id":"6"}]
         },
         {           
             "id"         : "6",
             "title"      : "Все удалось?",     
-            "type"       : "general_data",
-            "state"      : "0",
-            "next_steps" : ["7", "8"],     
+            "type"       : "general_data", 
             "widgets"    : 
                             [
                                 {
-                                    "type" : "radio",
-                                    "data" : {
-											    "label" : "Все получилось?",
-										        "variant_1" : "Да",
-											    "variant_2" : "Нет"
-											 }
-                                },
-                                {
-                                    "type" : "user_ok_response"
-                                }                 
-                            ]
+                                    "widget_type" : "RadioGroupWidget",
+																    "label" : "Все получилось, злодеи наказаны?",
+																		"id" : "radio",
+																		"initial" : "value_1",
+																		"value_list":
+																							[
+																								{ "value": "value_1", "label": "Да" },
+																								{ "value": "value_2", "label": "Нет" }												
+																							]
+																}                           
+														 ],
+            "next_steps" : [{ "id" : "7",
+															"predicates":
+																[
+																	{
+																		"widget_id": "radio",
+																	  "cond": "==",
+																		"value": "yes"
+																	}
+																]
+														},
+														{ "id" : "8",
+															"predicates":
+																[
+																	{
+																		"widget_id": "radio",
+																	  "cond": "==",
+																		"value": "no"
+																	}
+																]
+														}]
         },
         {           
             "id"         : "7",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
-            "state"      : "0",
             "next_steps" : [],     
             "widgets"    : 
                             [
                                 {
-                                    "type" : "text",
-                                    "data" : {
-											    "value" : "Ура! Поздравляем."
-											 }
-                                },
-                                {
-                                    "type" : "user_ok_response"
-                                }                 
+                                    "widget_type" : "StaticTextWidget",
+																    "text" : "Ура! Поздравляем."
+                                }
                             ]
         },
         {           
             "id"         : "8",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
-            "state"      : "0",
             "next_steps" : [],     
             "widgets"    : 
                             [
                                 {
-                                    "type" : "text",
-                                    "data" : {
-											    "value" : "Вот тут <ссылка> можно ознакомиться с тем, как подавать заявление в прокуратуру."
-											 }
+                                "widget_type" : "StaticTextWidget",
+														    "text" : "Ура! Поздравляем."
                                 }
                             ]
         }
