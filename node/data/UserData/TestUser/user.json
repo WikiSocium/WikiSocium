@@ -1,5 +1,8 @@
 {
 	"id": "TestUser",
-	"fullName": "",
-	"cases": ["TestCase"]
+	"fullName": "Test User",
+	"cases": [
+		"TestWidgets",
+		"violation"
+	]
 }
