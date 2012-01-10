@@ -6,7 +6,8 @@
     
     "data"        : 
     {
-        "law_doc" : "пока оставляем пустым — не решено в каком виде это делать"
+        "law_doc" : "пока оставляем пустым — не решено в каком виде это делать",
+				"documents" : ["ViolationStatement"]
     },
     
     "currentStep" :"0",
@@ -40,7 +41,7 @@
                                 {
                                     "widget_type" : "ListWidget",
 																		"label": "Тип правонарушения",
-																		"id": "list",
+																		"id": "violation_type",
 																		"initial": "value_1",
 																		"value_list":
 																			[
