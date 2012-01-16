@@ -28,6 +28,7 @@ var models = require('./models')
     ,db
     ,User
     ,LoginToken
+    ,SolutionStatistics
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
     ;
@@ -444,7 +445,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
 
 
 
-app.post('/users.:format?', function(req, res) {
+app.post('/users.:format?', loadUser, function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
