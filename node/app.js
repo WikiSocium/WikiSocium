@@ -23,10 +23,12 @@ var fs = require('fs');
 var jQ = require('jquery');
 var mongoose = require('mongoose');
 var mongoStore = require('connect-mongodb');
+var async = require('async');
 var models = require('./models')
     ,db
     ,User
     ,LoginToken
+    ,SolutionStatistics
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
     ;
@@ -69,6 +71,7 @@ models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
+  app.SolutionStatistics = SolutionStatistics = mongoose.model('SolutionStatistics');
   db = mongoose.connect(app.set('db-uri'));
 })
 
@@ -442,7 +445,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
 
 
 
-app.post('/users.:format?', function(req, res) {
+app.post('/users.:format?', loadUser, function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
@@ -554,15 +557,41 @@ app.get('/logout', loadUser, function(req, res) {
 // Statistics
 
 app.get('/statistics/solutions', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( false && req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
       
       var solutions = new Array();
+      var solution_name;
       for (var key in files) {
-        solutions[key] = files[key].replace(/.json/g,"");
+        solution_name = files[key].replace(/.json/g,"");
+        solutions[key] = new Object();
+        solutions[key].name = solution_name;
+        //solutions[key].statisctics = new Object();
+        //console.log (solutions[key].statisctics);
       }
+      
+      async.forEach(Object.keys(solutions), function doStuff(key, callback) {
+        SolutionStatistics.findOne ({ solution_name: solutions[key].name }, function(e, solution) {
+          var stats_obj = new Object();
+          //stats_obj.name = solutions[key].name;
+          if (solution) {
+            stats_obj.started = solution.started;
+          }
+          else {
+            stats_obj.started = 0;
+          }
+          solutions[key].statistics = JSON.stringify(stats_obj);
+          console.log (solutions[key].statistics + ' ' + solutions[key].name);
+        });
+        
+        
+      }, function(err){
+        // if any of the saves produced an error, err would equal that error
+      });
+      
+      console.log (solutions[0].statistics);
             
       res.render('statistics/solutions.jade', {
         title: "Статистики по решениям",

@@ -34,6 +34,15 @@ a:hover, a:active {
   text-decoration: underline;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+table th, table td {
+  border: 1px #ccc solid;
+  padding: 3px 5px; 
+}
+
 #header {
   border-bottom: 1px solid #ccc;
   height: 90px;
