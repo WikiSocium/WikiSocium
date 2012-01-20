@@ -7,4 +7,4 @@ block content
     {
       step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.StringField({label: 'URL', name: '#{widget.id}', value: '#{value}', required:true, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
     });
-  input(type="button", class="openURLButton", value="Посмотреть", onClick="window.open(groups[#{step_id}].getFieldByName(\"#{widget.id}\").getValue(), \"\",\"menubar=no, status=no\");")
+  input(type="button", class="openURLButton", value="Посмотреть", onClick="window.open(groups[#{step_id}]['#{widget.id}'].getValue(), \"some media\", \"menubar=0, status=0\");")
