@@ -15,8 +15,7 @@ div(class = "steps", id = "stepsWrapper")
       !=partial('aStep', {step:step, stepData:null, step_index:i})
     - else
       !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
-div(id="validationFailedMessage", style="display:none; color:red") 
-  img(src="http://img152.imageshack.us/img152/1263/ffuu.jpg", height="200")
+div(id="validationFailedMessage", style="display:none; color:red") Заполните правильно все поля! Ололо!
 div(class="nextStepButton", onClick="NextStep()") Следующий шаг
 div(id="endCasePopup")
   != partial('endCasePopup', {caseName: requestedCase.id})

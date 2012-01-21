@@ -13,8 +13,8 @@ function ShowProperStep()
 {
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
   {
-    $(".step").addClass("isInvisible");
-    $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
+    $(".step").hide();//.addClass("isInvisible");
+    $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
   }
   
   if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
