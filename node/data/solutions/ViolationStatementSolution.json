@@ -38,6 +38,12 @@
 																"label" : "ГРН автомобиля-нарушителя",
 																"type" : "string"
                                 },
+                                {       
+                                              "widget_type" : "MapsWidget",
+                                              "id" : "place",
+                                              "label" : "Адрес нарушения",
+                                              "type" : "WSMaps"
+                                },
                                 {
                                     "widget_type" : "ListWidget",
 																		"label": "Тип правонарушения",
