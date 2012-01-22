@@ -274,48 +274,53 @@ app.get('/UserData/:UserName/:CaseId/', loadUser , function(req, res) {
 app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
   var userName = req.param('UserName', null);
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
-    if (req.currentUser.email != userName) {
+  else 
+  {
+    if (req.currentUser.email != userName) 
+    {
       res.redirect('/');
       req.flash('info', 'Не смотрите чужие документы');
     }
-    else {
+    else 
+    {
       var caseId = req.param('CaseId', null);
       fs.readFile('data/UserData/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
-        if(!err) {
+        if(!err) 
+        {
           var requestedCase = jQ.parseJSON(data);
           var scriptsToInject =      [
-				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                      'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
-				        '/inputex/src/loader.js',
-				        '/javascripts/controllers/' + requestedCase.id + '.js',
-				        '/javascripts/jquery.json-2.3.min.js',
-				        '/javascripts/CaseDataController.js',
-				        '/javascripts/StepsController.js',
-				        '/javascripts/runtime.min.js'];
-				        
-				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
-				  var requiredDocuments = requestedCase.data.documents;
+          'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+          'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+          'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+          '/inputex/src/loader.js',
+          '/javascripts/controllers/' + requestedCase.id + '.js',
+          '/javascripts/jquery.json-2.3.min.js',
+          '/javascripts/CaseDataController.js',
+          '/javascripts/StepsController.js',
+          '/javascripts/runtime.min.js'];
+          
+          // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+          var requiredDocuments = requestedCase.data.documents;
           if(requiredDocuments)
             for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-				                   
+            
           fs.readFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-            if (err) {
-	            fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
-	            err = false;
+            if (err)
+            {
+              fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
+              err = false;
             }
             var caseData = jQ.parseJSON(data);
-              
+            
             res.render('userCase', 
-				    {
-				      'title': userName + " : " + caseId,
-				      'user':req.currentUser, 
-				      'requestedCase' : requestedCase,
-				      'caseData' : caseData,
-				      'scripts' : scriptsToInject
-				    });
-				  });
+            {
+              'title': userName + " : " + caseId,
+              'user':req.currentUser, 
+              'requestedCase' : requestedCase,
+              'caseData' : caseData,
+              'scripts' : scriptsToInject
+            });
+          });
         }
         else Render404(req,res, err);
       });
@@ -427,6 +432,7 @@ app.get('/users/new', loadUser, function(req, res) {
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   var Solution = req.param('SolutionName', null);
+  //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
 	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
@@ -443,7 +449,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
 		  }
 			else Render404(req,res, err);
     });
-    
+    //Добавляем кейс в спиок кейсов юзера
     fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = jQ.parseJSON(data);

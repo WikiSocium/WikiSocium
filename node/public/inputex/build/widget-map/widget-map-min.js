@@ -255,9 +255,9 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 			var myEventListener = YMaps.Events.observe(YaMap, YaMap.Events.Click
 			    , function (YaMap, mEvent) 
 			    {
-							var placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {style: s, draggable: true});
-							placemark.name = "Batman!!!";
-							placemark.description = "";
+							var placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {/*style: s,*/ draggable: true});
+							//placemark.name = "Batman!!!";
+							//placemark.description = "";
 							YaMap.addOverlay(placemark);
 				}, this);
 		

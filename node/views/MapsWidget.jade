@@ -5,6 +5,6 @@ block content
     YUI().use('inputex', 'widget-map'
     , function(Y) 
     {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.WSMapField({label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', 
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.WSMapField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value}', 
         parentEl: 'step_#{step_id}_widget_#{widget.id}'});
     });

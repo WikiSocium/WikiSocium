@@ -2,4 +2,4 @@ extends BaseWidget
 
 block content
   script(type="text/javascript")
-    step#{step_id}FieldsList.push({ type: 'file', label: '#{widget.label}', name: '#{widget.name}' });
+    step#{step_id}FieldsList.push({ type: 'file', label: '#{widget.label}', name: 'step#{step_id}_#{widget.name}' });
