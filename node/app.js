@@ -291,7 +291,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
           var scriptsToInject =      [
           'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
           'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-          'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+          'http://api-maps.yandex.ru/1.1/index.xml?key=AO2mHU8BAAAAGVK9VQQACTrbNonZhIgjMAr0i7jRUUrNEoQAAAAAAAAAAAB_GLQKNMA9iqZDnsy9kDHNhcV5cA==',
           '/inputex/src/loader.js',
           '/javascripts/controllers/' + requestedCase.id + '.js',
           '/javascripts/jquery.json-2.3.min.js',

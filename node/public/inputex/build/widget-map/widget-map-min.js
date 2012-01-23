@@ -117,6 +117,8 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 		);
 		this.fieldContainer.appendChild(this.el);
 
+        this.elLat = 37.64;
+        this.elLon = 55.76;
         //Зачем эти скрытые поля ???
 		/*this.elLat = inputEx.cn('input', { id: idLat, type: "hidden", value: this.options.lat });
 		this.fieldContainer.appendChild(this.elLat);
@@ -155,12 +157,12 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 		}
 
 		if (value.lat != undefined) {
-			this.elLat.value = value.lat;
+			this.elLat = value.lat;
 			any = true;
 		}
 
 		if (value.lon != undefined) {
-			this.elLon.value = value.lon;
+			this.elLon = value.lon;
 			any = true;
 		}
 
@@ -175,10 +177,9 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 	getValue: function() {
 		if (!this.elLat) return {};
 		return {
-			lat : parseFloat(this.elLat.value),
-			lon : parseFloat(this.elLon.value),
-			uzoom : parseInt(this.elUZoom.value),
-			nzoom : parseInt(this.elNZoom.value)
+			lat : this.apid.lat,//parseFloat(this.elLat),
+			lon : this.apid.lng,//parseFloat(this.elLon),
+			addr : "Moscow"
 		};
 	},
 
@@ -204,8 +205,9 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 	yandex : {
 		YaMap : null, //Объект карты
 		f_zoom : inputEx.WSMapFieldZoom.yandex,
-
-
+        lat : 0,
+        lng : 0,
+        
 		/**
 		 *
 		 *  Загрузка API, если она не была сделана явно до этого (нужно ли?)
@@ -247,18 +249,18 @@ Y.extend(inputEx.WSMapField, inputEx.Field, {
 			YaMap.addControl(new YMaps.MiniMap());
 			YaMap.addControl(new YMaps.ScaleLine());
 			YaMap.enableScrollZoom();
-			var template = new YMaps.Template(
+			/*var template = new YMaps.Template(
 				"<b><span style=\"color:red\">Я</span> - $[name|объект]</b>	<div>$[description|Информация недоступна]</div>");
 			var s = new YMaps.Style();
-			s.balloonContentStyle = new YMaps.BalloonContentStyle(template);
-			
+			s.balloonContentStyle = new YMaps.BalloonContentStyle(template);*/
+			this.placemarks = null;
 			var myEventListener = YMaps.Events.observe(YaMap, YaMap.Events.Click
 			    , function (YaMap, mEvent) 
 			    {
-							var placemark = new YMaps.Placemark(mEvent.getGeoPoint(), {/*style: s,*/ draggable: true});
-							//placemark.name = "Batman!!!";
-							//placemark.description = "";
-							YaMap.addOverlay(placemark);
+                            YaMap.removeOverlay(placemarks);
+							this.placemarks = new YMaps.Placemark(mEvent.getGeoPoint(), {/*style: s,*/ draggable: true});
+                            this.lat = mEvent.getGeoPoint().getLat();
+                            YaMap.addOverlay(placemarks);
 				}, this);
 		
 		
