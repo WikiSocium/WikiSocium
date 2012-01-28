@@ -1,0 +1,281 @@
+{
+	"id"		:"Heating",
+	
+	"name"	:"Отсутствие отопления",
+	"description": "Если в отопительный сезон не греют или плохо греют батареи - вы имеете право на бесплатный ремонт и снижение платы за отопление",
+	"data"	:
+	{
+		"law_doc"	: "Санитарные нормы (СанПиН 2.1.2.2645-10); статья №157 Жилищного кодекса; Постановление правительства РФ №307, раздел VII",
+		"documents"	: []
+	},
+	
+	"currentStep"	: "0",
+
+	"steps"	:
+	[
+		{
+			"id"		: "0",
+			"title"		: "Убедитесь в наличии проблемы",
+			"type"		: "selection",
+			"widgets"	:
+			[
+				{
+	            	"widget_type" : "RadioGroupWidget",
+					"id": "season",
+					"label": "Отопительный сезон начинается, когда среднесуточная температура не превышает +8 в течение 5 дней. Отопительный сезон начался?",
+					"initial": "no",
+					"value_list": 
+					[
+						{ "value": "yes", "label": "Да" },
+						{ "value": "no", "label": "Нет" }
+					]
+				},
+				{
+	            	"widget_type" : "StaticTextWidget",
+	                "text" : "По санитарным нормам (СанПиН 2.1.2.2645-10) минимально допустимыми являются следующие температуры:<p><table><tbody><tr><td>Тип помещения<td><td>Температура</td></tr><tr><td>Жилая комната</td><td>+18</td></tr><tr><td>Кухня, туалет, ванная</td><td>+18</td></tr><tr><td>Межквартирный коридор</td><td>+16</td></tr><tr><td>Лестничная клетка</td><td>+14</td></tr></tbody></table><p> Измерьте температуру в помещении, где по вашему мнению слишком холодно. Замер необходимо производить на расстоянии не менее метра от стены, выходящей на улицу, и на высоте полтора метра над полом."
+	            },
+				{
+	            	"widget_type" : "RadioGroupWidget",
+					"id": "temp",
+					"label": "Температура ниже нормы?",
+					"initial": "yes",
+					"value_list": 
+					[
+						{ "value": "yes", "label": "Да" },
+						{ "value": "no", "label": "Нет"},
+						{ "value": "hz", "label": "У меня нет термометра"}
+					]
+				},
+				{
+	            	"widget_type" : "RadioGroupWidget",
+					"id": "reg",
+					"label": "В некоторых квартирах на батареи отопления могут быть установлены регуляторы мощности отопления. Проверьте, нет ли у вас такого регулятора, и если еесть, попробуйте отрегулировать температуру с его помощью.<p> Регулятор есть?",
+					"initial": "no",
+					"value_list": 
+					[
+						{ "value": "no", "label": "Нет" },
+						{ "value": "yes", "label": "Да, попробовал, помогло"},
+						{ "value": "yesno", "label": "Да, попробовал, не помогло"}
+					]
+				}
+			],
+			"next_steps"	:
+			[
+				{
+					"id"		: "2",
+					"predicates":
+					[
+						{
+							"widget_id"	: "season",
+							"cond"		: "==",
+							"value"		: "yes"
+						},
+						{
+							"widget_id"	: "temp",
+							"cond"		: "!=",
+							"value"		: "no"
+						},
+						{
+							"widget_id"	: "reg",
+							"cond"		: "!=",
+							"value"		: "yes"
+						}
+					]
+				},
+				{
+					"id"		: "noproblem",
+					"predicates":
+					[
+						{
+							"widget_id"	: "season",
+							"cond"		: "==",
+							"value"		: "no"
+						}
+					]
+				},
+				{
+					"id"		: "noproblem",
+					"predicates":
+					[
+						{
+							"widget_id"	: "temp",
+							"cond"		: "==",
+							"value"		: "no"
+						}
+					]
+				},
+				{
+					"id"		: "noproblem",
+					"predicates":
+					[
+						{
+							"widget_id"	: "reg",
+							"cond"		: "==",
+							"value"		: "yes"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id"	: "2",
+			"title" : "Наша цель",
+			"type"	: "text",
+			"widgets":
+			[
+				{
+	            	"widget_type" : "StaticTextWidget",
+	                "text" : "Отопление действительно не соответствует нормам. Значит, вы имеете право на: <p> 1. Бесплатный ремонт отопления <p> 2. Снижение платы за отопление"
+	            }
+			],
+			"next_steps" : [{"id": "3"}]
+		},
+		{
+			"id"	: "3",
+			"title"	: "Оформление заявления",
+			"type"	: "statement",
+			"widgets":
+			[
+				{
+	            	"widget_type" : "StaticTextWidget",
+	                "text" : "Чтобы сгенерировать заявление, нажмите \"Сгенерировать\". Если вы хотите, чтобы ваши данные были вставлены в него автоматически, заполните поля ниже, если не хотите - не заполняйте, на нужных местах в тексте заявления останутся пробелы."
+	            },
+				{
+                	"widget_type" : "TextFieldWidget",
+					"id" : "fio",
+					"label" : "Ваши ФИО полностью",
+					"type" : "string"
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "place",
+                    "label" : "Ваш адрес",
+                    "type" : "string"
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "dog_num",
+                    "label" : "Номер вашего договора коммунального обслуживания",
+                    "type" : "string"
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "dog_date",
+                    "label" : "Дата заключения договора коммунального обслуживания",
+                    "type" : "string"
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "pr_date",
+                    "label" : "Дата начала проблем с отоплением",
+                    "type" : "string"
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "pr_length",
+                    "label" : "Длительность проблем с отоплением",
+                    "type" : "string"
+                },
+				{
+                	"widget_type" : "ListWidget",
+					"label": "Тип помещения, в котором проблемы с отоплением (если везде - выбирайте жилую комнату",
+					"id": "room_type",
+					"initial": "value_1",
+					"value_list":
+					[
+						{ "value": "value_1", "label": "Жилая комната" },																			  							{ "value": "value_2", "label": "Кухня" },
+						{ "value": "value_3", "label": "Ванная" },
+						{ "value": "value_4", "label": "Туалет" },
+						{ "value": "value_5", "label": "Межквартирный коридор" },
+						{ "value": "value_6", "label": "Лестничная площадка" }
+					]
+                },
+				{       
+	                "widget_type" : "TextFieldWidget",
+                    "id" : "temp",
+                    "label" : "Температура в указанном выше помещении",
+                    "type" : "string"
+                },
+                {
+	                "widget_type" : "DocumentViewWidget",
+					"label" : "Нажмите кнопку, чтобы сгенерировать заявление. Сохраните его, оно понадобится на следующем шаге.",
+					"doc_name" : "HeatingStatement1"
+	            }
+			],
+            "next_steps" : [{ "id" : "4" }]
+		},
+		{
+			"id"	: "4",
+			"title"	: "Подача заявления - 1",
+			"type"	: "selection",
+			"widgets":
+			[
+				{
+					"widget_type": "StaticTextWidget",
+					"text"		: "Если есть возможность, перечитайте договор с обслуживающей компанией. Может быть, там указано, каким именно способом предпочтительнее подавать заявление. Если не указано, выберите наиболее удобный вам вариант сами"
+				},
+				{
+	            	"widget_type" : "RadioGroupWidget",
+					"id": "method",
+					"label": "Как будем подавать заявление?",
+					"initial": "1",
+					"value_list": 
+					[
+						{ "value": "1", "label": "Лично" },
+						{ "value": "2", "label": "По почте"},
+						{ "value": "3", "label": "По телефону"}
+					]
+				}				
+			],
+			"next_steps":
+			[
+				{
+					"id": "5",
+					"predicate":
+					[
+						{
+							"widget_id": "method",
+							"cond": "==",
+							"value": "1"
+						}
+					]
+				},
+				{
+					"id": "6",
+					"predicate":
+					[
+						{
+							"widget_id": "method",
+							"cond":	"==",
+							"value": "2"
+						}
+					]
+				},
+				{
+					"id": "8",
+					"predicate":
+					[
+						{
+							"widget_id": "method",
+							"cond": "==",
+							"value": "3"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id"	: "noproblem",
+			"title" : "Отопление соответствует санитарным нормам",
+			"type"	: "text",
+			"widgets":
+			[
+				{
+	            	"widget_type" : "StaticTextWidget",
+	                "text" : "К сожалению, с точки зрения санитарных норм у вас все в порядке. Придется бороться с холодом подручными средствами."
+	            }
+			],
+			"next_steps":[]			
+		}
+	]
+}
