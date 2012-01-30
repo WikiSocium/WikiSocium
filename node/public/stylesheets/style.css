@@ -150,19 +150,6 @@
     margin-top: 5px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 .flash {
   position: absolute;
   top: 30%;
@@ -186,4 +173,18 @@
   -moz-box-shadow: 0 0 8px #f6f6f6;
   -webkit-box-shadow: 0 0 8px #f6f6f6;
   box-shadow: 0 0 8px #f6f6f6;
+}
+
+.errorMsg
+{
+  color: red;
+}
+.mapArea
+{
+  width: 400px;
+  height: 400px;
+  margin: 10px;
+}
+.addressArea
+{
 }

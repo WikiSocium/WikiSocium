@@ -1,10 +1,31 @@
 extends BaseWidget
 
 block content
-  div(class="mapArea", id="step#{step_id}_#{widget.id}_MapsID", style="width:600px;height:500px")
+  div(class="addressArea", id="step#{step_id}_#{widget.id}_AddressID")
+    script(type='text/javascript')
+      var mapField, map;
+      YUI().use('inputex', 'inputex-string'
+      , function(Y) 
+      {
+        mapField = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value.address}', required:true, parentEl: 'step#{step_id}_#{widget.id}_AddressID'});
+        mapField.on('updated', function(value)
+        {
+          map.address = value;
+        }, this, true);
+      });
+  button(onClick="FindPlace()") Найти на карте!
+  div(class="errorMsg", id="step#{step_id}_#{widget.id}_errorMsg")
+  div(class="mapArea", id="step#{step_id}_#{widget.id}_MapsID")
     script(type='text/javascript', src='/javascripts/customWidgets/map.js')
     script(type='text/javascript')
+      FindPlace = function()
+      {
+        var addr = mapField.getValue();
+        map.findPlace(addr);
+      }
       $(document).ready(function () {
-         var map = new MapsWidget(37.64, 55.76, document.getElementById("step#{step_id}_#{widget.id}_MapsID"));
-         map.Init();
+        map = new MapsWidget(#{value.lat}, #{value.lng}, "#{value.address}", document.getElementById("step#{step_id}_#{widget.id}_MapsID"), document.getElementById("step#{step_id}_#{widget.id}_errorMsg"));
+        step#{step_id}FieldsList['#{widget.id}'] = map;
+        map.Init();
+        map.InitMarkerCallback();
       });
