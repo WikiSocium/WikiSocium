@@ -1,13 +1,14 @@
 script(type='text/javascript')
   var requestedCase = !{JSON.stringify(requestedCase)};
 
-div(class="caseName")
+h1
   #{requestedCase.name}
 
 div(class="caseDescription")
-  #{requestedCase.description}
+  p
+    #{requestedCase.description}
 
-div(class="nextStepButton showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить, нах
+div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить
 
 div(class = "steps", id = "stepsWrapper")
   - each step, i in requestedCase.steps
@@ -15,7 +16,7 @@ div(class = "steps", id = "stepsWrapper")
       !=partial('aStep', {step:step, stepData:null, step_index:i})
     - else
       !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
-div(id="validationFailedMessage", style="display:none; color:red") Заполните правильно все поля! Ололо!
-div(class="nextStepButton", onClick="NextStep()") Следующий шаг
+div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
+div(class="btn", onClick="NextStep()") Следующий шаг
 div(id="endCasePopup")
   != partial('endCasePopup', {caseName: requestedCase.id})

@@ -2,11 +2,11 @@
   h2 Вход в систему
   p
     a.button(href='/users/new?return_to=#{return_to}') Создать новый аккаунт &rarr;
-  form.users#login(method='post', action='/sessions?return_to=#{return_to}')
+  form.well#login(method='post', action='/sessions?return_to=#{return_to}')
   
     !=partial('../users/fields', { locals: { user: user } })
-    div
-      label(for='remember_me') Запомнить меня:
-      input#remember_me(type='checkbox', name='remember_me')
+    label.checkbox
+      input(type='checkbox', name='remember_me')
+      Запомнить меня
     div
       input(type='submit', value='Войти')

@@ -2,7 +2,7 @@ extends BaseWidget
 
 block content
   script(type="text/javascript")
-    YUI().use('inputex', 'inputex-checkbox'
+    YUI().use('inputex', 'inputex-checkbox .checkbox'
     , function(Y) 
     {
       step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.CheckBox({label: '!{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value}', parentEl: 'step_#{step_id}_widget_#{widget.id}'});
