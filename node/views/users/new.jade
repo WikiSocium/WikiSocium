@@ -1,10 +1,10 @@
 .page
   h2 Регистрация
 
-  form.users(method='post', action='/users?return_to=#{return_to}')
+  form.well(method='post', action='/users?return_to=#{return_to}')
     !=partial('fields', { locals: { user: user } })
     div
-      input(type='submit', value='Создать аккаунт')
+      input.btn(type='submit', value='Создать аккаунт')
       span \ или 
         a(href='/sessions/new?return_to=#{return_to}') войти в&nbsp;систему
 

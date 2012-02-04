@@ -32,19 +32,10 @@ html
                 a(href='/UserData/#{user.email}') Мои дела
           ul.nav.pull-right
             - if (user.guest)
-              li#header-auth-links
+              li
                 a(href="/users/new") Регистрация
-              li#header-login-link
-                a(href="#") Войти
-              script(language="javascript") $("#header-login-link").click(function() { $("#header-auth-links").hide();$("#header-login-form").show(); });
-              #header-login-form
-                form(method='post', action='/sessions')
-                  input(type="text", name="user[email]", class="input-type-text", placeholder="E-mail")
-                  input(type="password", name="user[password]", class="input-type-text", placeholder="Пароль")
-                  br
-                  input(type='submit', value='Войти')
-                  \ или
-                  a(href='/users/new')зарегистрироваться
+              li
+                a(href="/sessions/new") Войти
             - else
               li.navbar-text
                 #{user.email}
