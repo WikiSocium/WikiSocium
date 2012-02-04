@@ -28,8 +28,8 @@ html
             li
               a(href='/Problems') Проблемы
             - if (!user.guest)
-            li
-              a(href='/UserData/#{user.email}') Мои дела
+              li
+                a(href='/UserData/#{user.email}') Мои дела
           ul.nav.pull-right
             - if (user.guest)
               li#header-auth-links
