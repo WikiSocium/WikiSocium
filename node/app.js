@@ -293,7 +293,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 				        '/javascripts/jquery.json-2.3.min.js',
 				        '/javascripts/CaseDataController.js',
 				        '/javascripts/StepsController.js',
-				        '/javascripts/runtime.min.js'];
+				        '/javascripts/runtime.min.js',
+				        '/javascripts/ww.jquery.js'];
 				        
 				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
 				  var requiredDocuments = requestedCase.data.documents;
