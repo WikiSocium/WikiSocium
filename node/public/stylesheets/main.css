@@ -49,13 +49,7 @@ table th, table td {
 }
 
 #header-logo {
-  float: left;
-  padding: 27px 30px 26px 30px;
-  position: absolute;
-}
-#header-logo span { 
   cursor:pointer;cursor:hand;
-  font-size: 22pt;
 }
 
 #header-menu {
@@ -88,19 +82,13 @@ table th, table td {
 }
 
 #header-auth-links {
-  padding: 40px 10px 30px 10px;
 }
 
 #header-reg-link {
-  border-bottom: 1px solid;
   text-decoration: none;
 }
 
 #header-login-link {
-  border-bottom: 1px dashed;
-  left: 10px;
-  position: relative;
-  text-decoration: none;
 }
 
 #header-login-form {

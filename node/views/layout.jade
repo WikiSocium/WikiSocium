@@ -5,47 +5,44 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/main.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/aristo/jquery-ui-1.8.5.custom.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js')
-    
+    script(type='text/javascript', src='/javascripts/bootstrap.js')
+
+    script(language="javascript") $("#header-logo").click(function() { window.location.href = '/'; });
+
     -each script in scripts 
       script(type='text/javascript', src=script)      
 
   body
-    #header
-      #header-logo
-        span ВикиСоциум
-      script(language="javascript") $("#header-logo").click(function() { window.location.href = '/'; });
-    
-      #header-menu
-        ul
-          li
-            a(href='/Problems') Проблемы
-          - if (!user.guest)
+    div.navbar
+      div.navbar-inner
+        div.container
+          #header-logo.brand(href='#')
+            ВикиСоциум
+          ul.nav
+            li.active
+              a(href='/') Главная
             li
-              a(href='/UserData/#{user.email}') Мои дела
-        
-      #header-auth
-      
-        - if (user.guest)    
-          #header-auth-links
-            a#header-reg-link(href="/users/new") Регистрация
-            a#header-login-link(href="#") Войти
-          script(language="javascript") $("#header-login-link").click(function() { $("#header-auth-links").hide();$("#header-login-form").show(); });
-          #header-login-form
-            form(method='post', action='/sessions')
-              input(type="text", name="user[email]", class="input-type-text", placeholder="E-mail")
-              input(type="password", name="user[password]", class="input-type-text", placeholder="Пароль")
-              br
-              input(type='submit', value='Войти')
-              \ или
-              a(href='/users/new')зарегистрироваться
-        - else
-          #header-user-logged-in #{user.email} 
-            a#logout(href='/logout') выйти
-  
-    #content
+              a(href='/Problems') Проблемы
+            - if (!user.guest)
+              li
+                a(href='/UserData/#{user.email}') Мои дела
+          ul.nav.pull-right
+            - if (user.guest)
+              li
+                a(href="/users/new") Регистрация
+              li
+                a(href="/sessions/new") Войти
+            - else
+              li.navbar-text
+                #{user.email}
+              li
+                a#logout(href='/logout') Выйти
+
+    #content.container
       !{flashMessages}
       != body
     script(type='text/javascript', src='/javascripts/flash.js')

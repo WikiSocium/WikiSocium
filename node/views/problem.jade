@@ -2,7 +2,8 @@ div(class="problemId")
   #{problem.id}
 
 div(class="problemDescription")
-  #{problem.description}
+  p
+    #{problem.description}
 
 #solutions
   - each aSolution in problem.solutions
