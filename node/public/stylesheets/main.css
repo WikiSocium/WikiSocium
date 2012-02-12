@@ -48,8 +48,8 @@ table th, table td {
   height: 90px;
 }
 
-#header-logo {
-  cursor:pointer;cursor:hand;
+a.header-logo:link, a.header-logo:visited, a.header-logo:hover, a.header-logo:active {
+  text-decoration: none;
 }
 
 #header-menu {

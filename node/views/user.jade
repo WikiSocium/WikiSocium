@@ -7,4 +7,4 @@ div(class="userStuff")
 
 #cases
   - each aCase in requestedUser.cases
-    !=partial('aCase', {user:requestedUser.id, aCase:aCase})
+    !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
