@@ -200,7 +200,8 @@ app.get('/', loadUser, function(req, res) {
         res.render('index', {
                 'title':"Usage",
                 'user':req.currentUser, 
-                scripts:[]});
+                scripts:[],
+                styles:[]});
         });
 
 //
@@ -214,7 +215,8 @@ app.get('/Problems', loadUser, function(req, res){
 									   'title' : "Problems list",
 									   'user':req.currentUser,
 									   'problemsList' : problemsList.problemsList,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                      styles:[]
 									   });
 						}
 						else
@@ -235,7 +237,8 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 									   'title' : problemName,
                      	               'user':req.currentUser, 
 									   'problem' : problem,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                      styles:[]
 						   });
 					}
 					else
@@ -254,7 +257,8 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
                                         locals: {Solution: SolutionNew},
                                         user: req.currentUser, 
 			                            title: '',
-			                            scripts: []
+			                            scripts: [],
+                                  styles:[]
 			                                  }
                     );
       }
@@ -302,9 +306,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                      'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
 				        '/inputex/src/loader.js',
-				        '/javascripts/controllers/' + requestedCase.id + '.js',
 				        '/javascripts/jquery.json-2.3.min.js',
 				        '/javascripts/CaseDataController.js',
 				        '/javascripts/StepsController.js',
@@ -337,7 +340,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     'title': userName + " : " + caseId,
                     'user':req.currentUser, 
                     'solutionData' : solutionData,
-                    'caseData' : caseContents,
+                    'caseData' : caseContents.data,
                     'scripts' : scriptsToInject,
                     'styles' : stylesToInject
                   });
@@ -444,7 +447,8 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 								'title': userName,
                                 'user':req.currentUser, 
 								'requestedUser': requestedUser,
-								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                styles:[]
 						   });
 				}
 				else
@@ -465,7 +469,8 @@ app.get('/users/new', loadUser, function(req, res) {
     locals: { return_to: parseReturnTo(req.query.return_to) },
     user:req.currentUser, 
     title: '',
-    scripts: []
+    scripts: [],
+    styles:[]
   });
 });
 
@@ -510,7 +515,8 @@ app.post('/users.:format?', loadUser, function(req, res) {
       locals: { return_to: parseReturnTo(req.query.return_to) },
       user:req.currentUser, 
       title: '',
-      scripts: []
+      scripts: [],
+      styles:[]
     });
   }
 
@@ -546,7 +552,8 @@ app.get('/sessions/new', loadUser, function(req, res) {
     user:req.currentUser,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
-    scripts: []
+    scripts: [],
+    styles:[]
   });
 });
 
@@ -657,7 +664,8 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
           title: "Статистики по решениям",
           user:req.currentUser,
           solutions: solutions, 
-          scripts:[]
+          scripts:[],
+          styles:[]
         })
       });
     });
