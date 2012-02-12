@@ -13,6 +13,9 @@ html
 
     script(language="javascript") $("#header-logo").click(function() { window.location.href = '/'; });
 
+    -each style in styles
+      link(rel='stylesheet', href=style)
+
     -each script in scripts 
       script(type='text/javascript', src=script)      
 

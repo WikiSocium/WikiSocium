@@ -288,6 +288,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
         if(!err) 
         {
           var requestedCase = jQ.parseJSON(data);
+          var stylesToInject = [];
           var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
@@ -303,7 +304,14 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
 				  var requiredDocuments = requestedCase.data.documents;
           if(requiredDocuments)
-            for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+          {
+            for(var i = 0; i < requiredDocuments.length; i++)
+                scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+            scriptsToInject.push("/javascripts/jquery.markitup.js");
+            scriptsToInject.push("/markitup/sets/default/set.js");            
+            stylesToInject.push("/markitup/sets/default/style.css");
+            stylesToInject.push("/markitup/skins/markitup/style.css");            
+          }
             
           fs.readFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
             if (err)
@@ -319,7 +327,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
               'user':req.currentUser, 
               'requestedCase' : requestedCase,
               'caseData' : caseData,
-              'scripts' : scriptsToInject
+              'scripts' : scriptsToInject,
+              'styles' : stylesToInject
             });
           });
         }
