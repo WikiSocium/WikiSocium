@@ -1,5 +1,7 @@
 extends BaseWidget
 
+script(language="javascript") $("#documentView_#{widget.doc_name}").watch("display", function(){GenerateDocument_#{widget.doc_name}();}, 100, "");
+
 block content
   <div onclick="GenerateDocument_#{widget.doc_name}();">generate</div>
   <div id="documentView_#{widget.doc_name}"></div>

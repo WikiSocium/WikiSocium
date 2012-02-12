@@ -11,191 +11,215 @@ var currentCaseData;
 
 function ShowProperStep()
 {
-    if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
-    {
-      $(".step").addClass("isInvisible");
-      $("#"+"step_"+temporaryCurrentStep).toggleClass("isInvisible");
-    }
-    
-    if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
+  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
+  {
+    $(".step").hide();//.addClass("isInvisible");
+    $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
+  }
+  
+  if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
     {
       YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) {
-         var destroyButton = new Y.inputEx.widget.Button({
-         parentEl: 'stepsWrapper',
-         id: 'submitForm',
-         type: 'submit',
-         value: 'Submit the form',
-         onClick: function(){
+        var destroyButton = new Y.inputEx.widget.Button({
+          parentEl: 'stepsWrapper',
+          id: 'submitForm',
+          type: 'submit',
+          value: 'Submit the form',
+          onClick: function(){
             SaveFormData();
-            }
-         });
+          }
+        });
       });
     }
     
     //Набросок альтернативного варианта показа шагов (с багами, надо дописывать)
     /*YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', function(Y) {
-      if(temporaryCurrentStep > 0)
-      {
-        groups[temporaryCurrentStep - 1].hide();
-        groups[temporaryCurrentStep].show();
-      }
-    });*/
+     *      if(temporaryCurrentStep > 0)
+     *      {
+     *        groups[temporaryCurrentStep - 1].hide();
+     *        groups[temporaryCurrentStep].show();
+     }
+     });*/
 }
-
+     
 function SaveFormData()
 {
-    var formData = CollectFormData();
-            
-    $.ajax({
-        url: window.location.pathname + '/submitForm'
-        , type:'POST'
-        , data:'step=' + temporaryCurrentStep + '&jsonData=' + $.toJSON(formData)
-        , success: function(res) {}
-    });    
+  var formData = CollectFormData();
+  
+  $.ajax({
+    url: window.location.pathname + '/submitForm'
+    , type:'POST'
+    , data:'step=' + temporaryCurrentStep + '&jsonData=' + $.toJSON(formData)
+    , success: function(res) {}
+  });    
 }
 
 function CollectWidgetData(step_index, widget_id)
 {
-    var data;
-    YUI().use('inputex', function(Y)
-    {
-        if ((step_index < 0) || (step_index >= groups.length)) {
-            data = undefined;
-        }
-        data = groups[step_index][widget_id].getValue();
-    });
-    return data;
+  var data;
+  YUI().use('inputex', function(Y)
+  {
+    if ((step_index < 0) || (step_index >= groups.length)) {
+      data = undefined;
+    }
+    data = groups[step_index][widget_id].getValue();
+  });
+  return data;
 }
 
 function CollectFormData()
 {
-    var data = new Array();
-    YUI().use('inputex', function(Y) 
+  var data = new Array();
+  YUI().use('inputex', function(Y) 
+  {
+    for(var i = 0 ; i < groups.length ; i++)
     {
-        for(var i = 0 ; i < groups.length ; i++)
-        {
-            data[i] = new Object();
-            for(var widg in groups[i])
-                data[i][widg] = groups[i][widg].getValue();
-        }
-    });
-    return data;
+      data[i] = new Object();
+      for(var widg in groups[i])
+        data[i][widg] = groups[i][widg].getValue();
+    }
+  });
+  return data;
+}
+
+//Валидация всех виджетов на шаге
+function ValidateStep(step_index)
+{
+  var isValid = true;
+  YUI().use('inputex', function(Y) 
+  {
+    for(var widg in groups[step_index])
+      if(!groups[step_index][widg].validate()) isValid = false;
+  });
+  return isValid;    
 }
 
 // Обработчик нажатия кнопки следующего шага
 function CheckPredicate(predicate, step_index) {
-	var value = CollectWidgetData(step_index, predicate.widget_id);
-
-	if (typeof value === "undefined") {
-	    return false;
-	}
-
-	switch(predicate.cond) {
-		case "==":	return (value == predicate.value);
-		case "!=":	return (value != predicate.value);
-		case "<=":	return (value <= predicate.value);
-		case ">=":	return (value >= predicate.value);
-		case ">":	return (value > predicate.value);
-		case "<":	return (value < predicate.value);
-		default:	return false;
-	}
+  var value = CollectWidgetData(step_index, predicate.widget_id);
+  
+  if (typeof value === "undefined") {
+    return false;
+  }
+  
+  switch(predicate.cond) {
+    case "==":	return (value == predicate.value);
+    case "!=":	return (value != predicate.value);
+    case "<=":	return (value <= predicate.value);
+    case ">=":	return (value >= predicate.value);
+    case ">":	return (value > predicate.value);
+    case "<":	return (value < predicate.value);
+    default:	return false;
+  }
 }
 
 function CheckNextInfo(nextInfo)
 {
-	var sourceStep;
-	if (nextInfo.type == "default") {
-		return currentCaseData.GetStepIndexById(nextInfo.value);
-	}
-	if (nextInfo.type == "list") {
-		if (nextInfo.step_id == undefined) {
-			sourceStep = temporaryCurrentStep;
-		}
-
-		else {
-			sourceStep = currentCaseData.GetStepIndexById(nextInfo.step_id);
-			if (sourceStep < 0) {
-				return -1;
-			}
-		}
-		var value = CollectWidgetData(sourceStep, nextInfo.widget_id);
-		var radioWidgetInfo = currentCaseData.GetWidgetData(sourceStep, nextInfo.widget_id);
-		if (radioWidgetInfo == undefined) {
-			return -1;
-		}
-		for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) {
-			if (radioWidgetInfo.value_list[i].value == value) {
-				return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
-			}
-		}
-		return -1;
-	}
-	else if (nextInfo.type == undefined) {
-		var check = false;
-		for (j in nextInfo.predicates) {
-			if (nextInfo.predicates[j].step_id == undefined) {
-				sourceStep = temporaryCurrentStep;
-			} else {
-				sourceStep = currentCaseData.GetStepIndexById(nextInfo.predicates[j].step_id);
-			}
-			if (sourceStep < 0) {
-				return -1;
-			}
-			check = this.CheckPredicate(nextInfo.predicates[j], sourceStep);
-			if (check == false) {
-				return -1;
-			}
-		}
-		return currentCaseData.GetStepIndexById(nextInfo.id);
-	}
+  var sourceStep;
+  if (nextInfo.type == "default") {
+    return currentCaseData.GetStepIndexById(nextInfo.value);
+  }
+  if (nextInfo.type == "list") {
+    if (nextInfo.step_id == undefined) {
+      sourceStep = temporaryCurrentStep;
+    }
+    
+    else {
+      sourceStep = currentCaseData.GetStepIndexById(nextInfo.step_id);
+      if (sourceStep < 0) {
+        return -1;
+      }
+    }
+    var value = CollectWidgetData(sourceStep, nextInfo.widget_id);
+    var radioWidgetInfo = currentCaseData.GetWidgetData(sourceStep, nextInfo.widget_id);
+    if (radioWidgetInfo == undefined) {
+      return -1;
+    }
+    for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) {
+      if (radioWidgetInfo.value_list[i].value == value) {
+        return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
+      }
+    }
+    return -1;
+  }
+  else if (nextInfo.type == undefined) {
+    var check = false;
+    for (j in nextInfo.predicates) {
+      if (nextInfo.predicates[j].step_id == undefined) {
+        sourceStep = temporaryCurrentStep;
+      } else {
+        sourceStep = currentCaseData.GetStepIndexById(nextInfo.predicates[j].step_id);
+      }
+      if (sourceStep < 0) {
+        return -1;
+      }
+      check = this.CheckPredicate(nextInfo.predicates[j], sourceStep);
+      if (check == false) {
+        return -1;
+      }
+    }
+    return currentCaseData.GetStepIndexById(nextInfo.id);
+  }
 }
-		
+
 function ShowEndCasePopup()
 {
-    $("#endCasePopup").show();
+  $("#endCasePopup").fadeIn(100);
 }
 
 function HideEndCasePopup()
 {
-    $("#endCasePopup").hide();
+  $("#endCasePopup").fadeOut(100);
 }
 
 function EndCasePopupSelectionChanged()
 {
-    $("#endCase1").toggle();
-    $("#endCase2").toggle();
+  $("#endCase1").toggle();
+  $("#endCase2").toggle();
 }
 
-function NextStep() {
-		SaveFormData();
-		var nextInfo = requestedCase.steps[temporaryCurrentStep].next;
-		var tmp = -1;
-		previousStep = temporaryCurrentStep;
-		if (nextInfo == undefined) {
-			temporaryCurrentStep += 1;
-		} else {
-			for (i in nextInfo) {
-				tmp = CheckNextInfo(nextInfo[i]);	
-				if (tmp > 0) {
-					temporaryCurrentStep = tmp;
-					break;
-				}
-			}
-		}
-		ShowProperStep();
+function NextStep()
+{
+  $("#validationFailedMessage").hide("fast");
+  //Сохраняем на сервере введенные данные
+  SaveFormData();
+  //Если они верны, то переходим на один из следующих шагов
+  if(ValidateStep(temporaryCurrentStep))
+  {
+    var nextInfo = requestedCase.steps[temporaryCurrentStep].next;
+    var tmp = -1;
+    previousStep = temporaryCurrentStep;
+    if (nextInfo == undefined) {
+      temporaryCurrentStep += 1;
+    } else {
+      for (i in nextInfo) {
+        tmp = CheckNextInfo(nextInfo[i]);	
+        if (tmp > 0) {
+          temporaryCurrentStep = tmp;
+          break;
+        }
+      }
+    }
+    ShowProperStep();
+  }
+  else //Радуем пользователя сообщением о неправильном заполнении формы
+  {
+    $("#validationFailedMessage").show("slow");
+  }
 }
 
 function GoBack()
 {
-	temporaryCurrentStep = previousStep;
-	ShowProperStep();
+  temporaryCurrentStep = previousStep;
+  ShowProperStep();
 }
 
-$(document).ready(function(){
-    // Все шаги сейчас скрыты, нужно показать выбранный
-	if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
-	
-	currentCaseData = new CaseDataController(requestedCase);
-	ShowProperStep();    
+$(document).ready(function()
+{
+  // Все шаги сейчас скрыты, нужно показать выбранный
+  if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
+                  
+  currentCaseData = new CaseDataController(requestedCase);
+  ShowProperStep();    
 });
 

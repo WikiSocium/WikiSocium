@@ -176,6 +176,25 @@ function userCreateEnv( user ) {
   console.log ('Creating user folder and user.json for ', user.email);
 }
 
+function increaseSolutionStatistics ( solution_name, field_name ) {
+  SolutionStatistics.findOne ({ solution_name: solution_name }, function(e, solution) {
+    if (!solution) {
+      var solution = new SolutionStatistics({
+        solution_name:solution_name,
+        started: 0,
+        finished_successful: 0,
+	      finished_failed: 0,
+	      finished_good_solution: 0,
+        finished_bad_solution: 0
+      });
+    }
+    solution[field_name]++;
+    solution.save(function(err) {
+      console.log(err);
+    });
+  }); 
+}
+
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
@@ -255,15 +274,19 @@ app.get('/UserData/:UserName/:CaseId/', loadUser , function(req, res) {
 app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
   var userName = req.param('UserName', null);
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
-    if (req.currentUser.email != userName) {
+  else 
+  {
+    if (req.currentUser.email != userName) 
+    {
       res.redirect('/');
       req.flash('info', 'Не смотрите чужие документы');
     }
-    else {
+    else 
+    {
       var caseId = req.param('CaseId', null);
       fs.readFile('data/UserData/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
-        if(!err) {
+        if(!err) 
+        {
           var requestedCase = jQ.parseJSON(data);
           var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
@@ -274,29 +297,31 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 				        '/javascripts/jquery.json-2.3.min.js',
 				        '/javascripts/CaseDataController.js',
 				        '/javascripts/StepsController.js',
-				        '/javascripts/runtime.min.js'];
+				        '/javascripts/runtime.min.js',
+				        '/javascripts/ww.jquery.js'];
 				        
 				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
 				  var requiredDocuments = requestedCase.data.documents;
           if(requiredDocuments)
             for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-				                   
+            
           fs.readFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-            if (err) {
-	            fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
-	            err = false;
+            if (err)
+            {
+              fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
+              err = false;
             }
             var caseData = jQ.parseJSON(data);
-              
+            
             res.render('userCase', 
-				    {
-				      'title': userName + " : " + caseId,
-				      'user':req.currentUser, 
-				      'requestedCase' : requestedCase,
-				      'caseData' : caseData,
-				      'scripts' : scriptsToInject
-				    });
-				  });
+            {
+              'title': userName + " : " + caseId,
+              'user':req.currentUser, 
+              'requestedCase' : requestedCase,
+              'caseData' : caseData,
+              'scripts' : scriptsToInject
+            });
+          });
         }
         else Render404(req,res, err);
       });
@@ -340,6 +365,18 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
 		    }});
 		
         // 2. Записать статистику
+        // тут Solution -> solution_name. Сейчас брать неоткуда(
+        /*
+        if ( req.body.isSolved == 'yes' ) {
+          increaseSolutionStatistics ( Solution, 'finished_successful' );
+          if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
+          else increaseSolutionStatistics ( Solution, 'finished_bad_solution' );
+        }
+        else {
+          increaseSolutionStatistics ( Solution, 'finished_successful' );
+          if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
+          else increaseSolutionStatistics ( Solution, 'finished_bad_solution' ); 
+        }*/
         
         // 3. Отправить на главную страницу
         res.redirect('/');
@@ -396,50 +433,42 @@ app.get('/users/new', loadUser, function(req, res) {
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   var Solution = req.param('SolutionName', null);
+  //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else 
-	{
+  else {
 	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problem = jQ.parseJSON(data);
-							problem.id = req.body.case_id;
-              filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
-              fs.writeFile(
-                           'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
-                            JSON.stringify (problem,space = '\t'), encoding='utf8',
-                            function (err) {
-                                             if (err) throw err;
-                            });
-						}
-						else
-							Render404(req,res, err);
+		  if (!err) {
+			  var problem = jQ.parseJSON(data);
+			  problem.id = req.body.case_id;
+        filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
+        fs.writeFile(
+          'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
+          JSON.stringify (problem,space = '\t'), encoding='utf8',
+          function (err) {
+            if (err) throw err;
+          });
+		  }
+			else Render404(req,res, err);
     });
-    
-
-  	 	fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var userJSON = jQ.parseJSON(data);
-							userJSON.cases.push (req.body.case_id);
-
-              var filter = new Array( 'id', 'fullName', 'cases' );
-  
-              fs.writeFile(
-                           'data/UserData/' + req.currentUser.email + '/user.json',
-                            JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
-                             function (err) {
-                                             if (err) throw err;
-                              });
-  
-  					}
-						else
-							Render404(req,res, err);
+    //Добавляем кейс в спиок кейсов юзера
+    fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+      if (!err) {
+        var userJSON = jQ.parseJSON(data);
+        userJSON.cases.push (req.body.case_id);
+        
+        var filter = new Array( 'id', 'fullName', 'cases' );
+        
+        fs.writeFile(
+          'data/UserData/' + req.currentUser.email + '/user.json',
+          JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+          function (err) {
+            if (err) throw err;
+        });
+      }
+      else Render404(req,res, err);
     });
-    
-
+    increaseSolutionStatistics ( Solution, 'started' );
     res.redirect('/');
-
 	}; 
 });
 
@@ -553,12 +582,11 @@ app.get('/logout', loadUser, function(req, res) {
   res.redirect('/');
 });
 
-
 // Statistics
 
 app.get('/statistics/solutions', loadUser, function(req, res) {
-  if ( false && req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
     fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
       
@@ -568,36 +596,34 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
         solution_name = files[key].replace(/.json/g,"");
         solutions[key] = new Object();
         solutions[key].name = solution_name;
-        //solutions[key].statisctics = new Object();
-        //console.log (solutions[key].statisctics);
+        //solutions[key].statistics = {};
       }
-      
-      async.forEach(Object.keys(solutions), function doStuff(key, callback) {
-        SolutionStatistics.findOne ({ solution_name: solutions[key].name }, function(e, solution) {
+
+      var f = function(arg, callback) {
+        SolutionStatistics.findOne ({ solution_name: arg.name }, function(e, solution) {
           var stats_obj = new Object();
-          //stats_obj.name = solutions[key].name;
           if (solution) {
-            stats_obj.started = solution.started;
+            arg.statistics = solution;
           }
           else {
-            stats_obj.started = 0;
+            arg.statistics = {
+              started: 0,
+              finished_successful: 0,
+	            finished_failed: 0,
+	            finished_good_solution: 0,
+          	  finished_bad_solution: 0
+            }
           }
-          solutions[key].statistics = JSON.stringify(stats_obj);
-          console.log (solutions[key].statistics + ' ' + solutions[key].name);
-        });
-        
-        
-      }, function(err){
-        // if any of the saves produced an error, err would equal that error
-      });
-      
-      console.log (solutions[0].statistics);
-            
-      res.render('statistics/solutions.jade', {
-        title: "Статистики по решениям",
-        user:req.currentUser,
-        solutions: solutions, 
-        scripts:[]
+          callback();
+        }); 
+      }
+      async.forEach(solutions, f, function(err) {
+        res.render('statistics/solutions.jade', {
+          title: "Статистики по решениям",
+          user:req.currentUser,
+          solutions: solutions, 
+          scripts:[]
+        })
       });
     });
   }

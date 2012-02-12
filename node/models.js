@@ -2,6 +2,7 @@ var crypto = require('crypto'),
     Document,
     User,
     LoginToken;
+var fs = require('fs');
     
 function defineModels(mongoose, fn) {
   var Schema = mongoose.Schema,
@@ -99,20 +100,19 @@ function defineModels(mongoose, fn) {
     'started': Number,
 	  'finished_successful': Number,
 	  'finished_failed': Number,
+	  'finished_good_solution': Number,
 	  'finished_bad_solution': Number,
 	  'different_users': Number
   });
   
-  SolutionStatistics.pre('save', function(next) {
-  
+  SolutionStatistics.pre('save', function(next) {  
     try {
-      stats = fs.lstatSync('data/solutions' + this.solution_name + '.json');
-      }
-    catch (e)
-      {
-          console.log("Failed save solution statistics for " + this.solution_name + ": " + e);
-          next(new Error('Solution doesn\'t exist'));
-      }
+      stats = fs.lstatSync('data/solutions/' + this.solution_name + '.json');
+    }
+    catch (e) {
+      console.log("Failed save solution statistics for " + this.solution_name + ": " + e);
+      next(new Error('Solution doesn\'t exist'));
+    }
     next();
   });
   

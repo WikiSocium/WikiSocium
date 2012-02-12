@@ -2,15 +2,17 @@ table
   tr
     th(rowspan='2') Решение
     th(rowspan='2') Начато
-    th(colspan='3') Завершено
+    th(colspan='4') Завершено
   tr
     th Успешно
     th Безуспешно
+    th Решение хорошее
     th Решение плохое
   - each solution in solutions
     tr
       td #{solution.name}
-      td #{solution.statistics.started}
-      td #{solution.statistics.finished_successful}
-      td #{solution.statistics.finished_failed}
-      td #{solution.statistics.finished_bad_solution}
+      td(align='right') #{solution.statistics.started}
+      td(align='right') #{solution.statistics.finished_successful}
+      td(align='right') #{solution.statistics.finished_failed}
+      td(align='right') #{solution.statistics.finished_good_solution}
+      td(align='right') #{solution.statistics.finished_bad_solution}

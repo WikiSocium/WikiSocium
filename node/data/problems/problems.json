@@ -2,6 +2,7 @@
     "problemsList": [
         "TestProblem",
 	"Violation",
-	"BadItem"
+	"BadItem",
+	"Heating"
     ]
 }
