@@ -298,24 +298,32 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
               if(!err) 
               {
                 var solutionData = jQ.parseJSON(data);
+                var stylesToInject = [];
                 var scriptsToInject =      [
-                'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                'http://api-maps.yandex.ru/1.1/index.xml?key=AO2mHU8BAAAAGVK9VQQACTrbNonZhIgjMAr0i7jRUUrNEoQAAAAAAAAAAAB_GLQKNMA9iqZDnsy9kDHNhcV5cA==',
-                '/inputex/src/loader.js',
-                '/javascripts/jquery.json-2.3.min.js',
-                '/javascripts/CaseDataController.js',
-                '/javascripts/StepsController.js',
-                '/javascripts/runtime.min.js'];
-                
+				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                      'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+				        '/inputex/src/loader.js',
+				        '/javascripts/controllers/' + requestedCase.id + '.js',
+				        '/javascripts/jquery.json-2.3.min.js',
+				        '/javascripts/CaseDataController.js',
+				        '/javascripts/StepsController.js',
+				        '/javascripts/runtime.min.js',
+				        '/javascripts/ww.jquery.js'];
+				        
                 // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
                 var requiredDocuments = solutionData.data.documents;
                 if(requiredDocuments)
-                  for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                  
+                {
+                  for(var i = 0; i < requiredDocuments.length; i++)
+                    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                  scriptsToInject.push("/javascripts/jquery.markitup.js");
+                  scriptsToInject.push("/markitup/sets/default/set.js");            
+                  stylesToInject.push("/markitup/sets/default/style.css");
+                  stylesToInject.push("/markitup/skins/markitup/style.css");            
+                }
                 fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
-                  if (err)
-                  {
+                  if (err) {
                     var caseContents = {};
                     err = false;
                   }
@@ -323,15 +331,15 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     var caseContents = jQ.parseJSON(caseContentsJson);
                     if (caseContents == null) var caseContents = {};
                   }
-                  var caseData = caseContents;
-                  
+
                   res.render('userCase', 
                   {
                     'title': userName + " : " + caseId,
                     'user':req.currentUser, 
                     'solutionData' : solutionData,
-                    'caseData' : caseData,
-                    'scripts' : scriptsToInject
+                    'caseData' : caseContents,
+                    'scripts' : scriptsToInject,
+                    'styles' : stylesToInject
                   });
                 });
               }

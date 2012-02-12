@@ -42,20 +42,20 @@
                                               "widget_type" : "MapsWidget",
                                               "id" : "place",
                                               "label" : "Адрес нарушения",
-                                              "initial": {"lat": "55.690725", lng: "37.413179", address: ""},
+                                              "initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
                                               "type" : "WSMaps"
                                 },
                                 {
                                     "widget_type" : "ListWidget",
 																		"label": "Тип правонарушения",
 																		"id": "violation_type",
-																		"initial": "value_1",
+																		"initial": "red",
 																		"value_list":
 																			[
-																				{ "value": "value_1", "label": "проезд на красный" },
-																			  { "value": "value_2", "label": "выезд на полосу встречного движения" },
-																				{ "value": "value_3", "label": "неподчинение правилам разметки" },
-																				{ "value": "value_4", "label": "нарушение правил парковки" }															
+																				{ "value": "red", "label": "проезд на красный" },
+																			  { "value": "lines", "label": "выезд на полосу встречного движения" },
+																				{ "value": "rules", "label": "неподчинение правилам разметки" },
+																				{ "value": "parking", "label": "нарушение правил парковки" }															
 																			]
                                 }
                             ],
@@ -69,17 +69,17 @@
                             [
                                 {
                                     "widget_type" : "RadioGroupWidget",
-																		"id": "radio",
+																		"id": "radio_witness",
 																		"label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
-																		"initial": "value_1",
+																		"initial": "witness",
 																		"value_list": 
 																			[
-																				{ "value": "value_1", "label": "я являюсь непосредственным свидетелем" },
-																				{ "value": "value_2", "label": "я узнал о правонарушении из открытых источников" }
+																				{ "value": "witness", "label": "я являюсь непосредственным свидетелем" },
+																				{ "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
 																			]
 																}
                             ],
-            "next_steps" : [{ "id" : "2" }]             
+            "next" : [{ "id" : "2" }]             
         },
         {   
             "id"         : "2",     
@@ -92,7 +92,7 @@
 																  "id": "url"
                                 }                
                             ],
-            "next_steps" : [{"id":"3"}]
+            "next" : [{"id":"3"}]
 				},
         {   
             "id"         : "3",     
@@ -106,7 +106,7 @@
 																	"doc_name" : "ViolationStatement"
 	                            }
                             ],
-            "next_steps" : [{ "id" : "4" }]
+            "next" : [{ "id" : "4" }]
         },
         {           
             "id"         : "4",
@@ -119,7 +119,7 @@
                                     "text" : "Теперь, пожалуйста, идите-ка на http://gibdd.ru/letter и подавайте там заявление. Ответ должен прийти в течении 30 дней."
                                 }
                             ],
-            "next_steps" : [{ "id" : "5" }]
+            "next" : [{ "id" : "5" }]
 		    },
         {           
             "id"         : "5",
@@ -133,7 +133,7 @@
 																  "day_num" : 30
                                 }
                             ],
-            "next_steps" : [{"id":"6"}]
+            "next" : [{"id":"6"}]
         },
         {           
             "id"         : "6",
@@ -144,20 +144,20 @@
                                 {
                                     "widget_type" : "RadioGroupWidget",
 																    "label" : "Все получилось, злодеи наказаны?",
-																		"id" : "radio",
+																		"id" : "radio_end",
 																		"initial" : "value_1",
 																		"value_list":
 																							[
-																								{ "value": "value_1", "label": "Да" },
-																								{ "value": "value_2", "label": "Нет" }												
+																								{ "value": "yes", "label": "Да" },
+																								{ "value": "no", "label": "Нет" }												
 																							]
 																}                           
 														 ],
-            "next_steps" : [{ "id" : "7",
+            "next" : [{ "id" : "7",
 															"predicates":
 																[
 																	{
-																		"widget_id": "radio",
+																		"widget_id": "radio_end",
 																	  "cond": "==",
 																		"value": "yes"
 																	}
@@ -167,7 +167,7 @@
 															"predicates":
 																[
 																	{
-																		"widget_id": "radio",
+																		"widget_id": "radio_end",
 																	  "cond": "==",
 																		"value": "no"
 																	}
@@ -178,7 +178,7 @@
             "id"         : "7",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
-            "next_steps" : [],     
+            "next" : [],     
             "widgets"    : 
                             [
                                 {
@@ -191,7 +191,7 @@
             "id"         : "8",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
-            "next_steps" : [],     
+            "next" : [],     
             "widgets"    : 
                             [
                                 {
