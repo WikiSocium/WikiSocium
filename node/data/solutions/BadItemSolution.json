@@ -1,72 +1,83 @@
 {
-    "id"          : "user-specified id",
-    
-    "name"        : "A Test Problem Solution number 1",
-    "description" : "Некое описание",
-    
-    "data"        : 
-    {
-        "law_doc" : "описание зконодательной базы",
-        "photo"   : "url://"
-    },
-    
-    "currentStep" :"0",
-    
-    "steps"       :
-    [
-        {
-            "id"         : "0",
-            "title"      : "step 0",
-            "type"       : "step_type_0",
-            "state"      : "0",
-            "next_steps" : ["1"],
-            "widgets"    : 
-                            [
-                                {
-                                    "type" : "string",
-                                    "data" : "aData, st0"
-                                },
-                                {
-                                    "type" : "widget_type_1",
-                                    "data" : "anotherData, st0"
-                                }                 
-                            ]                
-        },
-        {   
-            "id"         : "1",     
-            "title"      : "step 1",
-            "type"       : "step_type_0",
-            "state"      : "0",
-            "next_steps" : ["2"],     
-            "widgets"    : 
-                            [
-                                {
-                                    "type" : "widget_type_0",
-                                    "data" : "aData, st1"
-                                },
-                                {
-                                    "type" : "widget_type_1",
-                                    "data" : "anotherData, st1"
-                                }                 
-                            ]
-        },
-        {           
-            "id"         : "2",
-            "title"      : "step 2",     
-            "type"       : "step_type_0",
-            "state"      : "0",
-            "next_steps" : ["0"],     
-            "widgets"    : 
-                            [
-                                {
-                                    "type" : "widget_type_0",
-                                    "data" : "aData, st2"
-                                },
-                                {
-                                    "type" : "widget_type_1",
-                                    "data" : "anotherData, st2"
-                                }                 
-                            ]
-        }
-    ]
+	"id"		:	"BadItem",
+	"name"		:	"Составление претензии по некачественному товару",
+	"description"	:	"",	
+	"data"		:
+	{
+		"documents"	: 	[]		
+	},			
+	"currentstep"	:	"0",
+	"steps"		:
+	[
+		{
+			"id"		:	"0",
+			"title"		:	"Основная информация",
+			"type"		:	"general_data",
+			"widget_groups"	:
+			[
+				{
+					"title": "О покупке"
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemName",
+							"label"		:	"Что купили? TODO: (Например: 											мобильный телефон)" 
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsTecComplicated",
+							"label"		:	"Это технически сложный товар? 											(TODO: компьютер, холодильник, 											мобильный телефон - см. 										Перечень технически сложных 											товаров)" 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemPrice",
+							"label"		:	"Полная стоимость покупки",
+							"type"		:	"number" 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"BuyDate",
+							"label"		:	"Дата покупки",
+							"type"		:	"date"		 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ChequeNumber",
+							"label"		:	"Номер чека или договора 											 купли-продажи TODO: 											 (необязательно)" 
+							"type"		:	"number" 
+						},					
+					]
+						
+				},
+				
+				{
+					"title": "О продавце/производителе (TODO: информацию можно найти на 								упаковке товара или в договоре купли/продажи. Кому 								писать выбирайте с помощью Рекомендации по выбору 								адресата претензии)"
+					"widgets":
+					[
+											
+					]
+						
+				},
+
+				{
+					"title": "О себе (TODO: Необязательно. Мы не показываем Ваших 								персональных данных без Вашего согласия)"
+					"widgets":
+					[
+											
+					]
+						
+				},
+			],
+			"next"		:	[ { "id" : "1" } ] 					
+		},
+	
+	]
 }
+
+
+
+
+
+
+
