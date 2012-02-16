@@ -186,7 +186,7 @@ function NextStep()
   //Если они верны, то переходим на один из следующих шагов
   if(ValidateStep(temporaryCurrentStep))
   {
-    var nextInfo = requestedCase.steps[temporaryCurrentStep].next;
+    var nextInfo = solutionData.steps[temporaryCurrentStep].next;
     var tmp = -1;
     previousStep = temporaryCurrentStep;
     if (nextInfo == undefined) {
@@ -219,7 +219,7 @@ $(document).ready(function()
   // Все шаги сейчас скрыты, нужно показать выбранный
   if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
                   
-  currentCaseData = new CaseDataController(requestedCase);
+  currentCaseData = new CaseDataController(solutionData);
   ShowProperStep();    
 });
 

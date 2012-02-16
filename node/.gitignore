@@ -1,3 +1,4 @@
 node_modules
 *Data.txt
 *.DS_Store
+public/documents/*.js
