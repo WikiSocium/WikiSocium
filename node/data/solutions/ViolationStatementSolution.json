@@ -49,6 +49,7 @@
                         [
                             {
                                 "widget_type" : "TextFieldWidget",
+<<<<<<< HEAD
                                 "id" : "car_id",
                                 "label" : "ГРН автомобиля-нарушителя",
                                 "type" : "string"
@@ -76,12 +77,40 @@
                         ]
                   }
             ],
+=======
+																"id" : "car_id",
+																"label" : "ГРН автомобиля-нарушителя",
+																"type" : "string"
+                                },
+                                {       
+                                              "widget_type" : "MapsWidget",
+                                              "id" : "place",
+                                              "label" : "Адрес нарушения",
+                                              "initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
+                                              "type" : "WSMaps"
+                                },
+                                {
+                                    "widget_type" : "ListWidget",
+																		"label": "Тип правонарушения",
+																		"id": "violation_type",
+																		"initial": "red",
+																		"value_list":
+																			[
+																				{ "value": "red", "label": "проезд на красный" },
+																			  { "value": "lines", "label": "выезд на полосу встречного движения" },
+																				{ "value": "rules", "label": "неподчинение правилам разметки" },
+																				{ "value": "parking", "label": "нарушение правил парковки" }															
+																			]
+                                }
+                            ],
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
             "next" : [ { "id" : "1" } ]        
         },
         {
             "id"         : "1",
             "title"      : "Вы — свидетель?",
             "type"       : "selection",
+<<<<<<< HEAD
             "widget_groups": 
             [
                   {
@@ -102,11 +131,29 @@
                   }
             ],
             "next_steps" : [{ "id" : "2" }]             
+=======
+            "widgets"    : 
+                            [
+                                {
+                                    "widget_type" : "RadioGroupWidget",
+																		"id": "radio_witness",
+																		"label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
+																		"initial": "witness",
+																		"value_list": 
+																			[
+																				{ "value": "witness", "label": "я являюсь непосредственным свидетелем" },
+																				{ "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
+																			]
+																}
+                            ],
+            "next" : [{ "id" : "2" }]             
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         },
         {   
             "id"         : "2",     
             "title"      : "Загрузка фотографии и/или видео",
             "type"       : "upload",
+<<<<<<< HEAD
             "widget_groups": 
             [
                   {
@@ -121,6 +168,17 @@
             ],
             "next_steps" : [{"id":"3"}]
         },
+=======
+            "widgets"    : 
+                            [
+                                {
+																	"widget_type": "URLOpenerWidget",
+																  "id": "url"
+                                }                
+                            ],
+            "next" : [{"id":"3"}]
+				},
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         {   
             "id"         : "3",     
             "title"      : "Текст заявления",
@@ -130,6 +188,7 @@
                   {
                         "widgets": 
                             [
+<<<<<<< HEAD
                                 {
                                     "widget_type" : "DocumentViewWidget",
                                                                     "label" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге.",
@@ -139,6 +198,15 @@
                   }
             ],
             "next_steps" : [{ "id" : "4" }]
+=======
+	                            {
+	                                "widget_type" : "DocumentViewWidget",
+																	"label" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге.",
+																	"doc_name" : "ViolationStatement"
+	                            }
+                            ],
+            "next" : [{ "id" : "4" }]
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         },
         {           
             "id"         : "4",
@@ -153,15 +221,22 @@
                                     "widget_type" : "StaticTextWidget",
                                     "text" : "Теперь, пожалуйста, идите-ка на http://gibdd.ru/letter и подавайте там заявление. Ответ должен прийти в течении 30 дней."
                                 }
+<<<<<<< HEAD
                         ]
                   }
             ],
             "next_steps" : [{ "id" : "5" }]
             },
+=======
+                            ],
+            "next" : [{ "id" : "5" }]
+		    },
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         {           
             "id"         : "5",
             "title"      : "Ждем-с",     
             "type"       : "time",    
+<<<<<<< HEAD
             "widget_groups": 
             [
                   {
@@ -176,6 +251,17 @@
                   }
             ],
             "next_steps" : [{"id":"6"}]
+=======
+            "widgets"    : 
+                            [
+                                {
+																	"widget_type" : "TimerWidget",
+																  "id" : "timer",
+																  "day_num" : 30
+                                }
+                            ],
+            "next" : [{"id":"6"}]
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         },
         {           
             "id"         : "6",
@@ -188,6 +274,7 @@
                         [
                                 {
                                     "widget_type" : "RadioGroupWidget",
+<<<<<<< HEAD
                                                                     "label" : "Все получилось, злодеи наказаны?",
                                                                         "id" : "radio",
                                                                         "initial" : "value_1",
@@ -220,17 +307,55 @@
                                   }
                               ]
                             }]
+=======
+																    "label" : "Все получилось, злодеи наказаны?",
+																		"id" : "radio_end",
+																		"initial" : "value_1",
+																		"value_list":
+																							[
+																								{ "value": "yes", "label": "Да" },
+																								{ "value": "no", "label": "Нет" }												
+																							]
+																}                           
+														 ],
+            "next" : [{ "id" : "7",
+															"predicates":
+																[
+																	{
+																		"widget_id": "radio_end",
+																	  "cond": "==",
+																		"value": "yes"
+																	}
+																]
+														},
+														{ "id" : "8",
+															"predicates":
+																[
+																	{
+																		"widget_id": "radio_end",
+																	  "cond": "==",
+																		"value": "no"
+																	}
+																]
+														}]
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
         },
         {           
             "id"         : "7",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
+<<<<<<< HEAD
             "next_steps" : [],     
             "widget_groups": 
             [
                   {
                         "widgets": 
                         [
+=======
+            "next" : [],     
+            "widgets"    : 
+                            [
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
                                 {
                                     "widget_type" : "StaticTextWidget",
                                                                     "text" : "Ура! Поздравляем."
@@ -243,12 +368,18 @@
             "id"         : "8",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
+<<<<<<< HEAD
             "next_steps" : [],     
             "widget_groups": 
             [
                   {
                         "widgets": 
                         [
+=======
+            "next" : [],     
+            "widgets"    : 
+                            [
+>>>>>>> 01d155001e62f17d67d0ec4b2dc6383eb10d3a1d
                                 {
                                 "widget_type" : "StaticTextWidget",
                                                             "text" : "Ура! Поздравляем."

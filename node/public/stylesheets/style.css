@@ -3,6 +3,15 @@
 #steps
 {}
 
+.document_textarea
+{
+    width: 80%;
+    margin-left: 10%;
+    margin-rght: 10%;
+    
+    height: 300px;
+}
+
 .step
 {
     margin-top: 10px;

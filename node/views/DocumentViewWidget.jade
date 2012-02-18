@@ -1,5 +1,6 @@
 extends BaseWidget
 
 block content
-  <div onclick="GenerateDocument_#{widget.doc_name}();">generate</div>
-  <div id="documentView_#{widget.doc_name}"></div>
+  <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
+  script
+    $("#documentView_#{widget.doc_name}").parent().parent().parent().watch("display", function(){ GenerateDocument_#{widget.doc_name}();$('#documentView_#{widget.doc_name}').markItUp();}, 100, "");
