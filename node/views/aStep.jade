@@ -16,6 +16,7 @@ div(class="step isInvisible", id="step_" + step_index + "")
             - console.log(widget.initial)
             !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
           - else
+            - console.log("Widget " + widget.id + " initialization with data loading");
             !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
     script(type = 'text/javascript')
       groups[#{step_index}] = step#{step_index}FieldsList;

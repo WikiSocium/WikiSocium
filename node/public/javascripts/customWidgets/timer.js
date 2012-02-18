@@ -4,6 +4,7 @@
 BasicTimer = function(workingPeriod /*in seconds*/)
 {
   this.workingPeriod = workingPeriod;
+  this.isRunning = false;
 }
 
 //Initialization of paused timer
@@ -57,6 +58,7 @@ BasicTimer.prototype.Stop = function()
 
 BasicTimer.prototype.getRemainingTime = function()
 {
+  if(!this.isRunning && !this.paused) return "";
   if(!this.paused)
   {
     date = new Date();
@@ -85,16 +87,9 @@ BasicTimer.prototype.getValue = function()
     res.state = "paused";
     res.pauseDate = this.pauseDate.getTime();
   }
-  else if(typeof(startDate)==='undefined')
-  {
-    res.startDate = '';
-    res.workingPeriod = this.workingPeriod;
-    res.state = "stopped";
-    res.pauseDate = 0;
-  }
   else
   {
-    res.startDate = this.startDate.getTime();
+    res.startDate = 0;
     res.workingPeriod = this.workingPeriod;
     res.state = "stopped";
     res.pauseDate = 0;

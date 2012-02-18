@@ -8,7 +8,7 @@ block content
   script(type="text/javascript")
     step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer(#{value.workingPeriod});
     $(document).ready(function (){
-      if("#{value.state}" == "stopped" || "#{value.state}" == "running")
+      if("#{value.state}" == "running")
       {
         $("#Timer_#{widget.id}_checkbox").attr("checked", "true");
         step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
