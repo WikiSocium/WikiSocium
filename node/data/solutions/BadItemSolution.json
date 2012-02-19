@@ -1,0 +1,111 @@
+{
+	"id"		:	"BadItem",
+	"name"		:	"Составление претензии по некачественному товару",
+	"description"	:	"",	
+	"data"		:
+	{
+		"documents"	: 	[]		
+	},			
+	"currentstep"	:	"0",
+	"steps"		:
+	[
+		{
+			"id"		:	"0",
+			"title"		:	"Основная информация",
+			"type"		:	"general_data",
+			"widget_groups"	:
+			[
+				{
+					"title": "О покупке",
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemName",
+							"label"		:	"Что купили? TODO:(Например: мобильный телефон)" 
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsTecComplicated",
+							"label"		:	"Это технически сложный товар?(TODO: компьютер, холодильник, мобильный телефон - см. Перечень технически сложных товаров)" 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemPrice",
+							"label"		:	"Полная стоимость покупки",
+							"type"		:	"number" 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"BuyDate",
+							"label"		:	"Дата покупки",
+							"type"		:	"date"		 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ChequeNumber",
+							"label"		:	"Номер чека или договора купли-продажи TODO: (необязательно)", 
+							"type"		:	"number" 
+						}					
+					]
+						
+				},
+				
+				{
+					"title": "О продавце/производителе (TODO: информацию можно найти на упаковке товара или в договоре купли/продажи. Кому писать выбирайте с помощью Рекомендации по выбору адресата претензии)",
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"SellerName",
+							"label"		:	"Наименование TODO: (например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов)"		
+						},
+						{
+							"widget_type" : "MapsWidget",
+                                              		"id" : "SellerAddress",
+                                              		"label" : "Адрес",
+                                              		"type" : "WSMaps"
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"SellerOfficicalName",
+							"label"		:	"Фамилия, имя, отчество руководителя TODO: (необязательно)",
+							"type"		:	"name"
+						}
+											
+					]
+						
+				},
+
+				{
+					"title": "О себе (TODO: Необязательно. Мы не показываем Ваших персональных данных без Вашего согласия)",
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"UserName",
+							"label"		:	"Ваши Фамилия, Имя, Отчество"		
+						},
+						{
+							"widget_type" : "MapsWidget",
+                                              		"id" : "UserAddress",
+                                              		"label" : "Ваш Адрес (по паспорту)",
+                                              		"type" : "WSMaps"
+						}
+						
+					]
+						
+				}
+			],
+			"next"		:	[] 					
+		}
+	
+	]
+}
+
+
+
+
+
+
+

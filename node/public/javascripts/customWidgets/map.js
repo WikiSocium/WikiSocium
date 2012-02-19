@@ -8,8 +8,8 @@ function MapsWidget(lat, lng, address, parentEl, errorEl)
   this.Init = function()
   {
     this.mapObj.setCenter(new YMaps.GeoPoint(this.lng, this.lat), 10);
-    this.placemarks = new YMaps.Placemark(new YMaps.GeoPoint(this.lng, this.lat), {draggable: false});
-    this.mapObj.addOverlay(this.placemarks);
+    this.geoResult = new YMaps.Placemark(new YMaps.GeoPoint(this.lng, this.lat), {draggable: false});
+    this.mapObj.addOverlay(this.geoResult);
     this.mapObj.addControl(new YMaps.TypeControl());
     this.mapObj.addControl(new YMaps.ToolBar());
     this.mapObj.addControl(new YMaps.Zoom());
@@ -34,11 +34,11 @@ MapsWidget.prototype.InitMarkerCallback = function(func)
   var myEventListener = YMaps.Events.observe(this.mapObj, this.mapObj.Events.Click
   , function (map, mEvent)
   {
-      map.removeOverlay(that.placemarks);
-      that.placemarks = new YMaps.Placemark(mEvent.getGeoPoint(), {draggable: false});
+      map.removeOverlay(that.geoResult);
+      that.geoResult = new YMaps.Placemark(mEvent.getGeoPoint(), {draggable: false});
       that.lat = mEvent.getGeoPoint().getLat();
       that.lng = mEvent.getGeoPoint().getLng();
-      map.addOverlay(that.placemarks);
+      map.addOverlay(that.geoResult);
   }, this);
 };
 

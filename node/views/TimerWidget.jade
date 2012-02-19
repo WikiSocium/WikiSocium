@@ -1,12 +1,40 @@
 extends BaseWidget
 
 block content
-  div(id="Timer_#{widget.id}_Button")
-    input(type="button", class="startTimerButton", value="Запустить таймер", onClick="var date = new Date(); date.setDate(date.getDate() + #{widget.day_num}); groups[#{step_id}]['#{widget.id}'].setValue(date);");
+  div(id="Timer_#{widget.id}_checkboxdiv")
+    input(type="checkbox", id="Timer_#{widget.id}_checkbox", onClick="ToggleTimer_#{widget.id}()")
+    Запустить таймер!
   div(id="Timer_#{widget.id}_Field")
   script(type="text/javascript")
-    YUI().use('inputex', 'inputex-string'
-    , function(Y) 
-    {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: '#{widget.id}', value: '#{value}', readonly: true, parentEl: 'Timer_#{widget.id}_Field'});
+    step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer(#{value.workingPeriod});
+    $(document).ready(function (){
+      if("#{value.state}" == "running")
+      {
+        $("#Timer_#{widget.id}_checkbox").attr("checked", "true");
+        step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
+      }
+      else if("#{value.state}" == "paused")
+      {
+        step#{step_id}FieldsList['#{widget.id}'].InitPaused(#{value.startDate}, #{value.pauseDate});
+        $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTime());
+      }
+      setInterval('UpdateTimer_#{widget.id}()', 1000);
     });
+    ToggleTimer_#{widget.id} = function()
+    {
+      if(!step#{step_id}FieldsList['#{widget.id}'].isRunning &&
+          !step#{step_id}FieldsList['#{widget.id}'].paused)
+      {
+        step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
+        var interval = setInterval('UpdateTimer_#{widget.id}()', 1000);
+      }
+      else if(step#{step_id}FieldsList['#{widget.id}'].paused)
+        step#{step_id}FieldsList['#{widget.id}'].Resume();
+      else 
+        step#{step_id}FieldsList['#{widget.id}'].Pause();
+    }
+    UpdateTimer_#{widget.id} = function()
+    {
+      //if(step#{step_id}FieldsList['#{widget.id}'].TestTimer())
+        $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTime());
+    }

@@ -158,17 +158,16 @@ function loadUser(req, res, next) {
 
 function userCreateEnv( user ) {
   fs.mkdir('data/UserData/'+user.email);
+  fs.mkdir('data/UserData/'+user.email+'/cases');
   
   var userJSON = {
     id: user.email,
     fullName: '',
     cases: []
-  };    
-  var filter = new Array( 'id', 'fullName', 'cases' );
-  
+  };  
   fs.writeFile(
     'data/UserData/' + user.email + '/user.json',
-    JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+    JSON.stringify (userJSON, null, "\t"), encoding='utf8',
     function (err) {
       if (err) throw err;
     }
@@ -201,7 +200,8 @@ app.get('/', loadUser, function(req, res) {
         res.render('index', {
                 'title':"Usage",
                 'user':req.currentUser, 
-                scripts:[]});
+                scripts:[],
+                styles:[]});
         });
 
 //
@@ -215,7 +215,8 @@ app.get('/Problems', loadUser, function(req, res){
 									   'title' : "Problems list",
 									   'user':req.currentUser,
 									   'problemsList' : problemsList.problemsList,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                      styles:[]
 									   });
 						}
 						else
@@ -236,7 +237,8 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 									   'title' : problemName,
                      	               'user':req.currentUser, 
 									   'problem' : problem,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                      styles:[]
 						   });
 					}
 					else
@@ -255,7 +257,8 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
                                         locals: {Solution: SolutionNew},
                                         user: req.currentUser, 
 			                            title: '',
-			                            scripts: []
+			                            scripts: [],
+                                  styles:[]
 			                                  }
                     );
       }
@@ -284,53 +287,69 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
     else 
     {
       var caseId = req.param('CaseId', null);
-      fs.readFile('data/UserData/'+userName+'/'+caseId+'.json', "utf-8", function(err, data) {
-        if(!err) 
-        {
-          var requestedCase = jQ.parseJSON(data);
-          var stylesToInject = [];
-          var scriptsToInject =      [
+      fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+        if (!err) {
+          var userJSON = jQ.parseJSON(data);
+          solutionId = false;
+          for (var key in userJSON.cases) {
+              if (userJSON.cases[key].caseId == caseId) {
+                solutionId = userJSON.cases[key].solutionId;
+                break;
+              }
+          }
+          if (solutionId)
+            fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
+              if(!err) 
+              {
+                var solutionData = jQ.parseJSON(data);
+                var stylesToInject = [];
+                var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                      'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
 				        '/inputex/src/loader.js',
-				        '/javascripts/controllers/' + requestedCase.id + '.js',
 				        '/javascripts/jquery.json-2.3.min.js',
 				        '/javascripts/CaseDataController.js',
 				        '/javascripts/StepsController.js',
+                        '/javascripts/customWidgets/timer.js',
 				        '/javascripts/runtime.min.js',
 				        '/javascripts/ww.jquery.js'];
 				        
-				// Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
-				  var requiredDocuments = requestedCase.data.documents;
-          if(requiredDocuments)
-          {
-            for(var i = 0; i < requiredDocuments.length; i++)
-                scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-            scriptsToInject.push("/javascripts/jquery.markitup.js");
-            scriptsToInject.push("/markitup/sets/default/set.js");            
-            stylesToInject.push("/markitup/sets/default/style.css");
-            stylesToInject.push("/markitup/skins/markitup/style.css");            
-          }
-            
-          fs.readFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', "utf-8", function(err, data) {
-            if (err)
-            {
-              fs.open('data/UserData/' + userName + '/' + caseId + 'Data.txt', 'w');
-              err = false;
-            }
-            var caseData = jQ.parseJSON(data);
-            
-            res.render('userCase', 
-            {
-              'title': userName + " : " + caseId,
-              'user':req.currentUser, 
-              'requestedCase' : requestedCase,
-              'caseData' : caseData,
-              'scripts' : scriptsToInject,
-              'styles' : stylesToInject
+                // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+                var requiredDocuments = solutionData.data.documents;
+                if(requiredDocuments)
+                {
+                  for(var i = 0; i < requiredDocuments.length; i++)
+                    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                  scriptsToInject.push("/javascripts/jquery.markitup.js");
+                  scriptsToInject.push("/markitup/sets/default/set.js");            
+                  stylesToInject.push("/markitup/sets/default/style.css");
+                  stylesToInject.push("/markitup/skins/markitup/style.css");            
+                }
+                fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+                  if (err) {
+                    var caseContents = {};
+                    err = false;
+                  }
+                  else {
+                    var caseContents = jQ.parseJSON(caseContentsJson);
+                    if (caseContents == null) var caseContents = {};
+                  }
+
+                  res.render('userCase', 
+                  {
+                    'title': userName + " : " + caseId,
+                    'user':req.currentUser, 
+                    'solutionData' : solutionData,
+                    'caseData' : caseContents.data,
+                    'scripts' : scriptsToInject,
+                    'styles' : stylesToInject
+                  });
+                });
+              }
+              else Render404(req,res, err);
             });
-          });
+          else Render404(req,res,'У вас нет дела с этим id')
         }
         else Render404(req,res, err);
       });
@@ -342,11 +361,26 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
-    console.log(req.body.jsonData);
-    fs.writeFile('data/UserData/' + userName + '/' + caseId + 'Data.txt', req.body.jsonData, function (err) {
-          if (err) console.log(err);
+    
+    fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+      if (err) {
+        fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');
+        var caseContents = {};
+        caseContents.name = caseId;
+        err = false;
+      }
+      else {
+        var caseContents = jQ.parseJSON(caseContentsJson);
+        if (caseContents == null) var caseContents = {};
+        caseContents.name = caseId;
+      }
+      caseContents.data = jQ.parseJSON(req.body.jsonData);
+      console.log(req.body.jsonData);
+      fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
+            if (err) console.log(err);
+      });
+      res.send(req.body);
     });
-    res.send(req.body);
 });
 
 //
@@ -368,14 +402,14 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
 		    {
 			    var userCase = jQ.parseJSON(data);
 			    userCase.status = 1;
-			    fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase), encoding='utf8', function (err) {
+			    fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase, null, "\t"), encoding='utf8', function (err) {
                   if (err) throw err;
                 });
 		    }});
 		
         // 2. Записать статистику
         // тут Solution -> solution_name. Сейчас брать неоткуда(
-        /*
+        
         if ( req.body.isSolved == 'yes' ) {
           increaseSolutionStatistics ( Solution, 'finished_successful' );
           if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
@@ -385,7 +419,7 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
           increaseSolutionStatistics ( Solution, 'finished_successful' );
           if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
           else increaseSolutionStatistics ( Solution, 'finished_bad_solution' ); 
-        }*/
+        }
         
         // 3. Отправить на главную страницу
         res.redirect('/');
@@ -414,7 +448,8 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 								'title': userName,
                                 'user':req.currentUser, 
 								'requestedUser': requestedUser,
-								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js']
+								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+                styles:[]
 						   });
 				}
 				else
@@ -435,7 +470,8 @@ app.get('/users/new', loadUser, function(req, res) {
     locals: { return_to: parseReturnTo(req.query.return_to) },
     user:req.currentUser, 
     title: '',
-    scripts: []
+    scripts: [],
+    styles:[]
   });
 });
 
@@ -445,31 +481,19 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-	 	fs.readFile('data/solutions/' + Solution + '.json', "utf-8", function(err, data){
-		  if (!err) {
-			  var problem = jQ.parseJSON(data);
-			  problem.id = req.body.case_id;
-        filter = new Array( 'id', 'name', 'description','data','currentStep','steps' );
-        fs.writeFile(
-          'data/UserData/' + req.currentUser.email +'/' + problem.id + '.json',
-          JSON.stringify (problem,space = '\t'), encoding='utf8',
-          function (err) {
-            if (err) throw err;
-          });
-		  }
-			else Render404(req,res, err);
-    });
     //Добавляем кейс в спиок кейсов юзера
     fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = jQ.parseJSON(data);
-        userJSON.cases.push (req.body.case_id);
-        
-        var filter = new Array( 'id', 'fullName', 'cases' );
-        
+        var case_obj = {
+          solutionId: Solution,
+          caseId: req.body.case_id
+        };
+        userJSON.cases.push (case_obj);
+                
         fs.writeFile(
           'data/UserData/' + req.currentUser.email + '/user.json',
-          JSON.stringify (userJSON, filter, "\t"), encoding='utf8',
+          JSON.stringify (userJSON, null, "\t"), encoding='utf8',
           function (err) {
             if (err) throw err;
         });
@@ -492,7 +516,8 @@ app.post('/users.:format?', loadUser, function(req, res) {
       locals: { return_to: parseReturnTo(req.query.return_to) },
       user:req.currentUser, 
       title: '',
-      scripts: []
+      scripts: [],
+      styles:[]
     });
   }
 
@@ -528,7 +553,8 @@ app.get('/sessions/new', loadUser, function(req, res) {
     user:req.currentUser,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
-    scripts: []
+    scripts: [],
+    styles:[]
   });
 });
 
@@ -542,15 +568,23 @@ app.post('/sessions', function(req, res) {
           
       try
       {
-        stats = fs.lstatSync('data/UserData/'+user.email);
-        
+        stats = fs.lstatSync('data/UserData/'+user.email);        
         if ( !stats.isDirectory() ) {       
           fs.unlink('data/UserData/'+user.email, function (err) {
             if (err) throw err;
             console.log('Deleting file '+'data/UserData/'+user.email);
           });
           userCreateEnv(user);
-        }        
+        }
+        
+        stats = fs.lstatSync('data/UserData/'+user.email+'/cases');
+        if ( !stats.isDirectory() ) {       
+          fs.unlink('data/UserData/'+user.email+'/cases', function (err) {
+            if (err) throw err;
+            console.log('Deleting file '+'data/UserData/'+user.email+'/cases');
+          });
+          userCreateEnv(user);
+        }
       }
       catch (e)
       {
@@ -631,7 +665,8 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
           title: "Статистики по решениям",
           user:req.currentUser,
           solutions: solutions, 
-          scripts:[]
+          scripts:[],
+          styles:[]
         })
       });
     });

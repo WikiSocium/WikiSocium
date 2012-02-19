@@ -1,7 +1,8 @@
 {
     "problemsList": [
         "TestProblem",
-		"Violation",
+	"Violation",
+	"BadItem",
 	"Heating"
     ]
 }
