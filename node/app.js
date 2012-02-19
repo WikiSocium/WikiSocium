@@ -324,7 +324,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                   scriptsToInject.push("/javascripts/jquery.markitup.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
-                  stylesToInject.push("/markitup/skins/markitup/style.css");            
+                  stylesToInject.push("/markitup/skins/simple/style.css");            
                 }
                 fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
                   if (err) {
