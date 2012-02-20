@@ -96,7 +96,9 @@ function ValidateStep(step_index)
   YUI().use('inputex', function(Y) 
   {
     for(var widg in groups[step_index])
-      if(!groups[step_index][widg].validate()) isValid = false;
+      if(!groups[step_index][widg].validate()) {
+        isValid = false; break;
+      }
   });
   return isValid;    
 }
@@ -245,6 +247,21 @@ function NextStep() {
     SaveFormData( previousStep, temporaryCurrentStep );
     
     ShowProperStep();
+  }
+  else //Радуем пользователя сообщением о неправильном заполнении формы
+  {
+    $("#validationFailedMessage").show("slow");
+  }
+}
+
+function SaveAndExit() {
+  $("#validationFailedMessage").hide("fast");
+ 
+  //Если они верны, то переходим на один из следующих шагов
+  if(ValidateStep(temporaryCurrentStep)) {
+    //Сохраняем на сервере введенные данные
+    SaveFormData( previousStep, temporaryCurrentStep );
+    window.location('../');
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
   {
