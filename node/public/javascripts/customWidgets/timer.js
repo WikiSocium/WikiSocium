@@ -10,7 +10,7 @@ BasicTimer = function(workingPeriod /*in seconds*/)
 //Initialization of paused timer
 BasicTimer.prototype.InitPaused = function(startDate, pauseDate/*as string 'dd/mm/yyyy hh:mm'*/)
 {
-  if(typeof(startDate)==='undefined') startDate = 0; //default value
+  if(typeof(startDate)=='undefined') startDate = 0; //default value
   if(startDate)
     this.startDate = new Date(startDate);
   else //If startDate isn't set, start timer right from now
@@ -22,7 +22,7 @@ BasicTimer.prototype.InitPaused = function(startDate, pauseDate/*as string 'dd/m
 
 BasicTimer.prototype.Start = function(startDate)
 {
-  if(typeof(startDate)==='undefined') startDate = 0; //default value
+  if(typeof(startDate)=='undefined') startDate = 0; //default value
   if(startDate)
     this.startDate = new Date(startDate);
   else //If startDate isn't set, start timer right from now
