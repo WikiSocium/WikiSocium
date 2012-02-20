@@ -343,6 +343,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     'solutionData' : solutionData,
                     'caseData' : caseContents.data,
                     'currentStep' : caseContents.currentStep,
+                    'stepsHistory' : caseContents.steps,
                     'scripts' : scriptsToInject,
                     'styles' : stylesToInject
                   });
@@ -634,7 +635,7 @@ app.post('/sessions', function(req, res) {
         fs.readFile('data/UserData/' + user.email + '/user.json', "utf-8", function(err, data){
           if (!err) {
             var userJSON = jQ.parseJSON(data);
-            console.log (userJSON);
+            //console.log (userJSON);
             if ( userJSON.id == null ) throw "Incorrect user.json file";
           }
           else throw err;          

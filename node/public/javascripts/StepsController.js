@@ -4,8 +4,9 @@
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
-var temporaryCurrentStep = 0;//currentStep;
+var temporaryCurrentStep = 0;
 var previousStep = 0;
+var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
@@ -177,6 +178,37 @@ function EndCasePopupSelectionChanged()
   $("#endCase2").toggle();
 }
 
+function getPreviousStep ( currentStep ) {
+  if ( stepsHistory !== null ) {
+    for (var key in stepsHistory) {
+      if (stepsHistory[key].id == temporaryCurrentStep) {
+        return stepsHistory[key].prevStep;
+      }
+    }
+  }
+  else return 0;
+}
+
+function PrevStep() {
+  $("#validationFailedMessage").hide("fast");  
+ 
+  //Если они верны, то переходим на один из следующих шагов
+  if(ValidateStep(temporaryCurrentStep)) { 
+    
+    temporaryCurrentStep = previousStep;
+    previousStep = getPreviousStep ( temporaryCurrentStep );   
+        
+    //Сохраняем на сервере введенные данные
+    SaveFormData( previousStep, temporaryCurrentStep );
+    
+    ShowProperStep();
+  }
+  else //Радуем пользователя сообщением о неправильном заполнении формы
+  {
+    $("#validationFailedMessage").show("slow");
+  }
+}
+
 function NextStep() {
   $("#validationFailedMessage").hide("fast");  
  
@@ -223,4 +255,3 @@ $(document).ready(function()
   currentCaseData = new CaseDataController(solutionData);
   ShowProperStep();    
 });
-
