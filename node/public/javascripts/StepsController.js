@@ -10,6 +10,13 @@ var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
+function checkStepExists ( step_id ) {
+  for (key in solutionData.steps) {
+    if ( solutionData.steps[key].id == step_id ) return true;
+  }
+  return false;
+}
+
 function ShowProperStep()
 {
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
@@ -195,13 +202,17 @@ function PrevStep() {
   //Если они верны, то переходим на один из следующих шагов
   if(ValidateStep(temporaryCurrentStep)) { 
     
-    temporaryCurrentStep = previousStep;
-    previousStep = getPreviousStep ( temporaryCurrentStep );   
-        
-    //Сохраняем на сервере введенные данные
-    SaveFormData( previousStep, temporaryCurrentStep );
+    if ( checkStepExists ( previousStep ) ) {
+      temporaryCurrentStep = previousStep;
+      previousStep = getPreviousStep ( temporaryCurrentStep );
     
-    ShowProperStep();
+      //Сохраняем на сервере введенные данные
+      SaveFormData( previousStep, temporaryCurrentStep );
+    
+      ShowProperStep();
+    }
+        
+    
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
   {
