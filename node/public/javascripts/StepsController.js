@@ -244,18 +244,8 @@ function NextStep() {
 }
 
 function SaveAndExit() {
-  $("#validationFailedMessage").hide("fast");
- 
-  //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(temporaryCurrentStep)) {
-    //Сохраняем на сервере введенные данные
-    SaveFormData( previousStep, temporaryCurrentStep );
-    window.location('../');
-  }
-  else //Радуем пользователя сообщением о неправильном заполнении формы
-  {
-    $("#validationFailedMessage").show("slow");
-  }
+  SaveFormData( previousStep, temporaryCurrentStep );
+  window.location = '/mycases';
 }
 
 function GoBack()

@@ -448,11 +448,11 @@ app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', loadUser, function(req, res){
-			var userName = req.param('UserName', null);
+	var userName = req.param('UserName', null);
 
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else{
-  if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
+  else {
+  if (req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
     else{
 			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
@@ -471,6 +471,14 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 			});
     }
 }
+});
+
+app.get('/mycases', loadUser, function(req, res) {
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    var userName = req.currentUser.email;
+    res.redirect('/UserData/'+userName);
+  }
 });
 
 function parseReturnTo ( req_query_return_to ) {
