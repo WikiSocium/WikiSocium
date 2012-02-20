@@ -20,7 +20,7 @@ div(class="step isInvisible", id="step_" + step_index + "")
             - else
               - console.log("Widget " + widget.id + " initialization with data loading");
               !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
-    - else
+    - else //- Else render all widgets in one implicit group
       - each widget in step.widgets
         - if (stepData == null)
           - console.log("init")
