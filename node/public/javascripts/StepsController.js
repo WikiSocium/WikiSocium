@@ -197,26 +197,15 @@ function getPreviousStep ( currentStep ) {
 }
 
 function PrevStep() {
-  $("#validationFailedMessage").hide("fast");  
- 
-  //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(temporaryCurrentStep)) { 
+
+  if ( checkStepExists ( previousStep ) ) {
+    temporaryCurrentStep = previousStep;
+    previousStep = getPreviousStep ( temporaryCurrentStep );
     
-    if ( checkStepExists ( previousStep ) ) {
-      temporaryCurrentStep = previousStep;
-      previousStep = getPreviousStep ( temporaryCurrentStep );
+    //Сохраняем на сервере введенные данные
+    SaveFormData( previousStep, temporaryCurrentStep );
     
-      //Сохраняем на сервере введенные данные
-      SaveFormData( previousStep, temporaryCurrentStep );
-    
-      ShowProperStep();
-    }
-        
-    
-  }
-  else //Радуем пользователя сообщением о неправильном заполнении формы
-  {
-    $("#validationFailedMessage").show("slow");
+    ShowProperStep();
   }
 }
 
