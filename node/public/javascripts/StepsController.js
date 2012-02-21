@@ -22,6 +22,31 @@ function ShowProperStep()
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
     $(".step").hide();//.addClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
+    for (i in solutionData.steps[temporaryCurrentStep].widget_groups)
+    {
+    	if (solutionData.steps[temporaryCurrentStep].widget_groups[i].visible==false)
+    	{
+    		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
+    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide();
+    	}
+    	else
+    	{
+    		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
+    		{
+    			if (solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].visible==false)
+	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide();
+	    		else
+	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show();
+	   		}
+	   	}
+    }
+    for (i in solutionData.steps[temporaryCurrentStep].widgets)
+    {
+    	if (solutionData.steps[temporaryCurrentStep].widgets[i].visible==false)
+    		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide();
+   		else
+		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[j].id).show();
+    }
   }
   
   if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
@@ -207,6 +232,8 @@ function PrevStep() {
     //Сохраняем на сервере введенные данные
     SaveFormData( previousStep, temporaryCurrentStep );
     
+    CheckWidgetsVisibility(temporaryCurrentStep);
+    
     ShowProperStep();
   }
 }
@@ -235,12 +262,90 @@ function NextStep() {
     //Сохраняем на сервере введенные данные
     SaveFormData( previousStep, temporaryCurrentStep );
     
+    CheckWidgetsVisibility(temporaryCurrentStep);
+    
     ShowProperStep();
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
   {
     $("#validationFailedMessage").show("slow");
   }
+}
+
+function CheckWidgetsVisibility (stepnum)
+{
+    var tcp=solutionData.steps[stepnum];
+    
+   	for (i in tcp.widget_groups)
+   	{
+   		var gr=tcp.widget_groups[i];
+   		if (gr.isVisible == undefined || gr.isVisible=="true")
+   			gr.visible=true;
+    	else
+    	{
+    		if (gr.isVisible == "false")
+    			gr.visible=false;
+    		else
+    		{
+    		    gr.visible = false;
+			    for (j in gr.isVisible.predicates)
+			    {
+			        sourceStep = currentCaseData.GetStepIndexById(gr.isVisible.predicates[j].step_id);
+			        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
+      				gr.visible = this.CheckPredicate(gr.isVisible.predicates[j], sourceStep);
+				    if (gr.visible==false) { return -1; }
+    			}
+    		}    		
+    	}
+    	if (gr.visible==true)
+    	{
+    		for (j in gr.widgets)
+    		{
+    			var w=gr.widgets[j];
+    			if (w.isVisible==undefined || w.isVisible=="true")
+    				w.visible=true;
+				else
+				{
+					if (w.isVisible=="false")
+						w.visible=false;
+					else
+					{
+						w.visible=false;
+						for (k in w.isVisible.predicates)
+						{
+					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
+					        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
+      						w.visible = this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
+						    if (w.visible==false) { return -1; }
+						}
+					}
+    			}
+    		}    		
+    	}
+    }
+    
+    for (i in tcp.widgets)
+    {
+    	var w=tcp.widgets[i];
+		if (w.isVisible==undefined || w.isVisible=="true")
+			w.visible=true;
+		else
+		{
+			if (w.isVisible=="false")
+				w.visible=false;
+			else
+			{
+				w.visible=false;
+				for (k in w.isVisible.predicates)
+				{
+			        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
+			        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
+					w.visible = this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
+				    if (w.visible==false) { return -1; }
+				}
+			}
+		}
+    }
 }
 
 function SaveAndExit() {
@@ -260,5 +365,7 @@ $(document).ready(function()
   if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
   
   currentCaseData = new CaseDataController(solutionData);
+  
+  CheckWidgetsVisibility(temporaryCurrentStep);
   ShowProperStep();    
 });
