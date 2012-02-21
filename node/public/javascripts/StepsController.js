@@ -6,13 +6,20 @@ YUI_config.groups.inputex.base = '../../inputex/build/';
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
 var temporaryCurrentStep = 0;
 var previousStep = 0;
+var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
+function checkStepExists ( step_id ) {
+  for (key in solutionData.steps) {
+    if ( solutionData.steps[key].id == step_id ) return true;
+  }
+  return false;
+}
+
 function ShowProperStep()
 {
-  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps())
-  {
+  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
     $(".step").hide();//.addClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
   }
@@ -42,14 +49,14 @@ function ShowProperStep()
      });*/
 }
      
-function SaveFormData()
+function SaveFormData( curStep, nextStep )
 {
   var formData = CollectFormData();
   
   $.ajax({
     url: window.location.pathname + '/submitForm'
     , type:'POST'
-    , data:'step=' + temporaryCurrentStep + '&jsonData=' + $.toJSON(formData)
+    , data: 'curStep=' + curStep + '&nextStep=' + nextStep + '&jsonData=' + $.toJSON(formData)
     , success: function(res) {}
   });    
 }
@@ -89,7 +96,9 @@ function ValidateStep(step_index)
   YUI().use('inputex', function(Y) 
   {
     for(var widg in groups[step_index])
-      if(!groups[step_index][widg].validate()) isValid = false;
+      if(!groups[step_index][widg].validate()) {
+        isValid = false; break;
+      }
   });
   return isValid;    
 }
@@ -178,20 +187,42 @@ function EndCasePopupSelectionChanged()
   $("#endCase2").toggle();
 }
 
-function NextStep()
-{
-  $("#validationFailedMessage").hide("fast");
-  //Сохраняем на сервере введенные данные
-  SaveFormData();
+function getPreviousStep ( currentStep ) {
+  if ( stepsHistory !== null ) {
+    for (var key in stepsHistory) {
+      if (stepsHistory[key].id == temporaryCurrentStep) {
+        return stepsHistory[key].prevStep;
+      }
+    }
+  }
+  else return 0;
+}
+
+function PrevStep() {
+
+  if ( checkStepExists ( previousStep ) ) {
+    temporaryCurrentStep = previousStep;
+    previousStep = getPreviousStep ( temporaryCurrentStep );
+    
+    //Сохраняем на сервере введенные данные
+    SaveFormData( previousStep, temporaryCurrentStep );
+    
+    ShowProperStep();
+  }
+}
+
+function NextStep() {
+  $("#validationFailedMessage").hide("fast");  
+ 
   //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(temporaryCurrentStep))
-  {
+  if(ValidateStep(temporaryCurrentStep)) {
     var nextInfo = solutionData.steps[temporaryCurrentStep].next;
     var tmp = -1;
     previousStep = temporaryCurrentStep;
     if (nextInfo == undefined) {
       temporaryCurrentStep += 1;
-    } else {
+    }
+    else {
       for (i in nextInfo) {
         tmp = CheckNextInfo(nextInfo[i]);	
         if (tmp > 0) {
@@ -200,12 +231,21 @@ function NextStep()
         }
       }
     }
+        
+    //Сохраняем на сервере введенные данные
+    SaveFormData( previousStep, temporaryCurrentStep );
+    
     ShowProperStep();
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
   {
     $("#validationFailedMessage").show("slow");
   }
+}
+
+function SaveAndExit() {
+  SaveFormData( previousStep, temporaryCurrentStep );
+  window.location = '/mycases';
 }
 
 function GoBack()
@@ -218,8 +258,7 @@ $(document).ready(function()
 {
   // Все шаги сейчас скрыты, нужно показать выбранный
   if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
-                  
+  
   currentCaseData = new CaseDataController(solutionData);
   ShowProperStep();    
 });
-
