@@ -392,11 +392,8 @@
 					"id"		:	"ComplaintSentDate",
 					"label"		:	"Дата отправки претензии (TODO: появляется только после того, как выбрано \"я отправил претензию\" TODO2: По умолчанию текущая дата)",
 					"type"		:	"date"
-				},
-				{	
-					"widget_type"	: 	"TimerWidget",
-					"id"		:	"ItemComplaintTimer"		
 				}
+				
 			],
 			"next"		:	[ { "id" : "6" } ] 					
 		},	
