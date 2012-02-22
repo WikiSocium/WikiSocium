@@ -372,6 +372,7 @@ function CheckWidgetsVisibility (stepnum)
 }
 
 function SaveAndExit() {
+  previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId );
   window.location = '/mycases';
 }
@@ -384,7 +385,10 @@ function GoBack()
 
 $(document).ready(function() {
 
-  if (currentStepId == null) currentStepId = solutionData.steps[0].id;  
+  if (currentStepId == null) {
+    currentStepId = solutionData.steps[0].id;
+    alert('currentStepId = null');
+  } 
   currentCaseData = new CaseDataController(solutionData);
   
   CheckWidgetsVisibility(temporaryCurrentStep);
