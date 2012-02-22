@@ -7,8 +7,8 @@ YUI_config.groups.inputex.base = '../../inputex/build/';
 var previousStep = 0;
 var temporaryCurrentStep = 0;
 
-var previousStepId = '';
-var currentStepId = '';
+var previousStepId = null;
+var currentStepId = null;
 
 var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
@@ -21,20 +21,9 @@ function checkStepExists ( step_id ) {
   return false;
 }
 
-function getStepKey ( id ) {
-  for ( key in solutionData.steps ) {
-    if ( solutionData.steps[key].id == id ) return key;
-  }
-  return false;
-}
-
-function getStepId ( key ) {
-  return solutionData.steps[key].id;
-}
-
 function ShowProperStep()
 {
-  temporaryCurrentStep = getStepKey ( currentStepId );
+  temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
     $(".step").hide();//.addClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
@@ -90,8 +79,15 @@ function ShowProperStep()
      });*/
 }
      
-function SaveFormData( curStep, nextStep )
-{
+function SaveFormData( curStep, nextStep ) {
+
+  for (key in stepsHistory) {
+    if ( stepsHistory[key].id == nextStep ) {
+      stepsHistory[key].prevStep = curStep;
+      break;
+    }
+  }
+
   var formData = CollectFormData();
   
   $.ajax({
@@ -165,6 +161,8 @@ function CheckPredicate(predicate, step_index) {
 
 function CheckNextInfo(nextInfo)
 {
+  temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
+  
   var sourceStep;
   if (nextInfo.type == "default") {
     return currentCaseData.GetStepIndexById(nextInfo.value);
@@ -228,10 +226,10 @@ function EndCasePopupSelectionChanged()
   $("#endCase2").toggle();
 }
 
-function getPreviousStep ( currentStep ) {
+function getPreviousStepId ( currentStepId ) {
   if ( stepsHistory !== null ) {
     for (var key in stepsHistory) {
-      if (stepsHistory[key].id == temporaryCurrentStep) {
+      if (stepsHistory[key].id == currentStepId) {
         return stepsHistory[key].prevStep;
       }
     }
@@ -241,27 +239,34 @@ function getPreviousStep ( currentStep ) {
 
 function PrevStep() {
 
-  if ( checkStepExists ( previousStep ) ) {
-    temporaryCurrentStep = previousStep;
-    previousStep = getPreviousStep ( temporaryCurrentStep );
+  if ( checkStepExists ( getPreviousStepId ( currentStepId ) ) ) {
+    previousStepId = getPreviousStepId ( currentStepId );
+    currentStepId = previousStepId;
+    previousStepId = getPreviousStepId ( currentStepId );
     
     //Сохраняем на сервере введенные данные
-    SaveFormData( previousStep, temporaryCurrentStep );
+    SaveFormData( previousStepId, currentStepId );
     
-    CheckWidgetsVisibility(temporaryCurrentStep);
+    CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
     
     ShowProperStep();
   }
+  else alert('Previous step doesn\'t exist');
 }
 
 function getNextStepId (stepId) {
-  var tmp;
-  var nextInfo = solutionData.steps[getStepKey(stepId)].next;
+  var step_index;
+  var nextInfo = solutionData.steps[currentCaseData.GetStepIndexById(stepId)].next;
   for (i in nextInfo) {
-    tmp = CheckNextInfo(nextInfo[i]);	
-    if (tmp > 0) {
-      return tmp; // check twice
-    }
+    step_index = CheckNextInfo(nextInfo[i]);	
+    if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) break;
+  }
+  if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) {
+    return solutionData.steps[step_index].id;
+  }
+  else {
+    alert('Next step not found');
+    return false;
   }
 }
 
@@ -269,26 +274,20 @@ function NextStep() {
   $("#validationFailedMessage").hide("fast");  
  
   //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(temporaryCurrentStep)) {
-    var nextInfo = solutionData.steps[temporaryCurrentStep].next;
-    var tmp = -1;
-    previousStep = temporaryCurrentStep;
-    previousStepId = currentStepId;
-
-    if (nextInfo == undefined) {
-      //temporaryCurrentStep += 1;
-    }
-    else {
-      currentStepId = getNextStepId (currentStepId);
+  if(ValidateStep(temporaryCurrentStep)) {    
+    var nextStepId;
+    if ( nextStepId = getNextStepId (currentStepId) ) {      
+      previousStep = temporaryCurrentStep;
+      previousStepId = currentStepId;      
+      currentStepId = nextStepId;
       
+      //Сохраняем на сервере введенные данные
+      SaveFormData( previousStepId, currentStepId );
+      
+      CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+      
+      ShowProperStep();
     }
-        
-    //Сохраняем на сервере введенные данные
-    SaveFormData( previousStep, temporaryCurrentStep );
-    
-    CheckWidgetsVisibility(temporaryCurrentStep);
-    
-    ShowProperStep();
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
   {
@@ -373,7 +372,7 @@ function CheckWidgetsVisibility (stepnum)
 }
 
 function SaveAndExit() {
-  SaveFormData( previousStep, temporaryCurrentStep );
+  SaveFormData( previousStepId, currentStepId );
   window.location = '/mycases';
 }
 
@@ -383,11 +382,9 @@ function GoBack()
   ShowProperStep();
 }
 
-$(document).ready(function()
-{
-  // Все шаги сейчас скрыты, нужно показать выбранный
-  if (temporaryCurrentStep==undefined) temporaryCurrentStep=0;
-  
+$(document).ready(function() {
+
+  if (currentStepId == null) currentStepId = solutionData.steps[0].id;  
   currentCaseData = new CaseDataController(solutionData);
   
   CheckWidgetsVisibility(temporaryCurrentStep);

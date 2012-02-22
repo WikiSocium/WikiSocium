@@ -1,8 +1,7 @@
 script(type='text/javascript')
   var solutionData = !{JSON.stringify(solutionData)};
-  if ( checkStepExists ( #{currentStep} ) ) { temporaryCurrentStep = getStepKey(#{currentStep}); currentStepId = #{currentStep}; }
-  stepsHistory = !{JSON.stringify(stepsHistory)};  
-  previousStep = getPreviousStep ( temporaryCurrentStep );
+  if ( checkStepExists ( #{currentStep} ) ) { currentStepId = #{currentStep}; }
+  stepsHistory = !{JSON.stringify(stepsHistory)};
   
 h1
   #{solutionData.name}
