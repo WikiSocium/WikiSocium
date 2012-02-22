@@ -5,7 +5,10 @@ YUI_config.groups.inputex.base = '../../inputex/build/';
 
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
 var temporaryCurrentStep = 0;
+
 var previousStep = 0;
+var currentStepId = '';
+
 var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
@@ -13,6 +16,13 @@ var currentCaseData;
 function checkStepExists ( step_id ) {
   for (key in solutionData.steps) {
     if ( solutionData.steps[key].id == step_id ) return true;
+  }
+  return false;
+}
+
+function getStepKey ( id ) {
+  for ( key in solutionData.steps ) {
+    if ( solutionData.steps[key].id == id ) return key;
   }
   return false;
 }
@@ -247,7 +257,7 @@ function NextStep() {
     var tmp = -1;
     previousStep = temporaryCurrentStep;
     if (nextInfo == undefined) {
-      temporaryCurrentStep += 1;
+      //temporaryCurrentStep += 1;
     }
     else {
       for (i in nextInfo) {
