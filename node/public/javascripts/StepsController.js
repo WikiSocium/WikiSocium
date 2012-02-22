@@ -3,10 +3,6 @@
 //
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
-// [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
-var previousStep = 0;
-var temporaryCurrentStep = 0;
-
 var previousStepId = null;
 var currentStepId = null;
 
@@ -23,7 +19,7 @@ function checkStepExists ( step_id ) {
 
 function ShowProperStep()
 {
-  temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
+  var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
     $(".step").hide();//.addClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
@@ -127,8 +123,9 @@ function CollectFormData()
 }
 
 //Валидация всех виджетов на шаге
-function ValidateStep(step_index)
+function ValidateStep(step_id)
 {
+  step_index = currentCaseData.GetStepIndexById(step_id);
   var isValid = true;
   YUI().use('inputex', function(Y) 
   {
@@ -161,7 +158,7 @@ function CheckPredicate(predicate, step_index) {
 
 function CheckNextInfo(nextInfo)
 {
-  temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
+  var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   
   var sourceStep;
   if (nextInfo.type == "default") {
@@ -274,10 +271,10 @@ function NextStep() {
   $("#validationFailedMessage").hide("fast");  
  
   //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(temporaryCurrentStep)) {    
+  if(ValidateStep(currentStepId)) {    
     var nextStepId;
     if ( nextStepId = getNextStepId (currentStepId) ) {      
-      previousStep = temporaryCurrentStep;
+      
       previousStepId = currentStepId;      
       currentStepId = nextStepId;
       
@@ -377,11 +374,13 @@ function SaveAndExit() {
   window.location = '/mycases';
 }
 
+/*
 function GoBack()
 {
   temporaryCurrentStep = previousStep;
   ShowProperStep();
 }
+*/
 
 $(document).ready(function() {
 
@@ -391,6 +390,6 @@ $(document).ready(function() {
   } 
   currentCaseData = new CaseDataController(solutionData);
   
-  CheckWidgetsVisibility(temporaryCurrentStep);
+  CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
   ShowProperStep();    
 });
