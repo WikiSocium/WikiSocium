@@ -4,9 +4,10 @@
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
 // [TODO] Этой переменной не будет, вместо нее будет обращение к динамическому объекту, синхронизирующемуся с серверу
+var previousStep = 0;
 var temporaryCurrentStep = 0;
 
-var previousStep = 0;
+var previousStepId = '';
 var currentStepId = '';
 
 var stepsHistory = null;
@@ -27,8 +28,13 @@ function getStepKey ( id ) {
   return false;
 }
 
+function getStepId ( key ) {
+  return solutionData.steps[key].id;
+}
+
 function ShowProperStep()
 {
+  temporaryCurrentStep = getStepKey ( currentStepId );
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
     $(".step").hide();//.addClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
@@ -248,6 +254,17 @@ function PrevStep() {
   }
 }
 
+function getNextStepId (stepId) {
+  var tmp;
+  var nextInfo = solutionData.steps[getStepKey(stepId)].next;
+  for (i in nextInfo) {
+    tmp = CheckNextInfo(nextInfo[i]);	
+    if (tmp > 0) {
+      return tmp; // check twice
+    }
+  }
+}
+
 function NextStep() {
   $("#validationFailedMessage").hide("fast");  
  
@@ -256,17 +273,14 @@ function NextStep() {
     var nextInfo = solutionData.steps[temporaryCurrentStep].next;
     var tmp = -1;
     previousStep = temporaryCurrentStep;
+    previousStepId = currentStepId;
+
     if (nextInfo == undefined) {
       //temporaryCurrentStep += 1;
     }
     else {
-      for (i in nextInfo) {
-        tmp = CheckNextInfo(nextInfo[i]);	
-        if (tmp > 0) {
-          temporaryCurrentStep = tmp;
-          break;
-        }
-      }
+      currentStepId = getNextStepId (currentStepId);
+      
     }
         
     //Сохраняем на сервере введенные данные
