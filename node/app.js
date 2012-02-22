@@ -463,7 +463,7 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
                                 'user':req.currentUser, 
 								'requestedUser': requestedUser,
 								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
-                styles:[]
+                'styles': []
 						   });
 				}
 				else
