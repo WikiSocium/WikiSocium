@@ -1,10 +1,10 @@
-function CaseDataController(caseInfo) 
+function CaseDataController(solutionData) 
 {
-	this.caseInfo = caseInfo;
+	this.solutionData = solutionData;
 
 	this.GetStepIndexById = function(step_id) {
-		for (var i = 0; i < this.caseInfo.steps.length; i ++) {
-			if (this.caseInfo.steps[i].id == step_id) {
+		for (var i = 0; i < this.solutionData.steps.length; i ++) {
+			if (this.solutionData.steps[i].id == step_id) {
 				return i;
 			}
 		}
@@ -12,7 +12,7 @@ function CaseDataController(caseInfo)
 	}
 
 	this.GetWidgetData = function(step_index, widget_id) {
-		var step = this.caseInfo.steps[step_index];
+		var step = this.solutionData.steps[step_index];
 		for (var i = 0; i < step.widgets.length; i ++) {
 			if (step.widgets[i].id == widget_id) {
 				return step.widgets[i];
@@ -22,12 +22,12 @@ function CaseDataController(caseInfo)
 	}
 
 	this.GetNumberOfSteps = function() {
-		return this.caseInfo.steps.length;
+		return this.solutionData.steps.length;
 	}
 
 	this.GetStepNextInfo = function(step_index) {
-		if (step_index < this.caseInfo.steps.length) {
-			return this.caseInfo.steps[step_index].next;
+		if (step_index < this.solutionData.steps.length) {
+			return this.solutionData.steps[step_index].next;
 		}
 		else {
 			return undefined;
