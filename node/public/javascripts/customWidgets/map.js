@@ -1,14 +1,30 @@
 function MapsWidget(lat, lng, address, parentEl, errorEl)
 {  
   this.mapObj = new YMaps.Map(parentEl);
+  if(typeof(lat) != "number" || typeof(lng) != "number")
+    this.initPlacemark = false;
+  else
+    this.initPlacemark = true;
   this.lat = lat;
   this.lng = lng;
   this.address = address;
   this.errorEl = errorEl;
   this.Init = function()
   {
-    this.mapObj.setCenter(new YMaps.GeoPoint(this.lng, this.lat), 10);
-    this.geoResult = new YMaps.Placemark(new YMaps.GeoPoint(this.lng, this.lat), {draggable: false});
+    if(this.initPlacemark)
+    {
+      this.geoResult = new YMaps.Placemark(new YMaps.GeoPoint(this.lng, this.lat), {draggable: false});
+      this.mapObj.setCenter(new YMaps.GeoPoint(this.lng, this.lat), 10);
+    }
+    else
+    {
+      // Получение информации о местоположении пользователя
+      if (YMaps.location)
+        center = new YMaps.GeoPoint(YMaps.location.longitude, YMaps.location.latitude);
+      else 
+        center = new YMaps.GeoPoint(37.64, 55.76);
+      this.mapObj.setCenter(center, 10);
+    }
     this.mapObj.addOverlay(this.geoResult);
     this.mapObj.addControl(new YMaps.TypeControl());
     this.mapObj.addControl(new YMaps.ToolBar());

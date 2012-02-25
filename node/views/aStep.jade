@@ -10,7 +10,10 @@ div(class="step isInvisible", id="step_" + step_index + "")
     //- If groups are defined, render widgets in them
     - if(typeof(step.widget_groups) != 'undefined')
       - each widget_group in step.widget_groups
-        div(class="widgetGroup")
+        - var groupDivClass = "widgetGroup";
+        - if(widget_group.no_group == "true") //-if widgets are meant to be shown outside group (only CSS magic)
+          - groupDivClass = "";
+        div(class="#{groupDivClass}")
           #{widget_group.title}
           - each widget in widget_group.widgets
             - if (stepData == null)
