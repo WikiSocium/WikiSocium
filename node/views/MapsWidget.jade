@@ -1,6 +1,8 @@
 extends BaseWidget
 
 block content
+  //--------------------------------
+  //- Check the value of the widget
   - var val;
   - if(typeof(value) == 'undefined')
     - val = new Object();
@@ -9,6 +11,7 @@ block content
     - val.lng = '';
   - else
     - val = value;
+  //--------------------------------
   div(class="addressArea", id="step#{step_id}_#{widget.id}_AddressID")
     script(type='text/javascript')
       var mapField, map;
