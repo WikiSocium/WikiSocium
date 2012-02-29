@@ -6,7 +6,7 @@
 	{
 		"documents"	: 	[]		
 	},			
-	"currentstep"	:	"0",
+	"currentstep"	:	"1",
 	"steps"		:
 	[
 		{
@@ -33,6 +33,22 @@
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemPrice",
 							"label"		:	"Полная стоимость покупки",
+							"type"		:	"number" 
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsItemDelivered",
+							"label"		:	"Производилась ли доставка товара? (TODO: например, покупали в интернет-магазине)"
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsItemPrePaid",
+							"label"		:	"Была ли предоплата? (TODO: появляется, только если производилась доставка)"
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemPrePaidPrice",
+							"label"		:	"Размер предоплаты (TODO: появляется, только если указано, что была предоплата)",
 							"type"		:	"number" 
 						},
 						{
@@ -64,8 +80,10 @@
 							"widget_type" : "MapsWidget",
                                               		"id" : "SellerAddress",
                                               		"label" : "Адрес",
+							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
                                               		"type" : "WSMaps"
 						},
+
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"SellerOfficicalName",
@@ -76,7 +94,6 @@
 					]
 						
 				},
-
 				{
 					"title": "О себе (TODO: Необязательно. Мы не показываем Ваших персональных данных без Вашего согласия)",
 					"widgets":
@@ -90,6 +107,7 @@
 							"widget_type" : "MapsWidget",
                                               		"id" : "UserAddress",
                                               		"label" : "Ваш Адрес (по паспорту)",
+							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
                                               		"type" : "WSMaps"
 						}
 						
@@ -97,9 +115,304 @@
 						
 				}
 			],
+			"next"		:	
+			[ 
+				{ 
+					"id" 		:	"1",
+					"predicate" 	:	
+					{
+						"widget_id"	:	"IsItemDelivered",
+						"cond"		:	"==",
+						"value"		:	"1" 						
+					}
+				},
+				{ 
+					"id" 		:	"2",
+					"predicate" 	:	
+					{
+						"widget_id"	:	"IsItemDelivered",
+						"cond"		:	"==",
+						"value"		:	"0" 						
+					}
+				}
+			] 					
+		},
+
+		{
+			"id"		:	"1",
+			"title"		:	"Проблемы при доставке",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"IsDeliveryProblems",
+					"label"		:	"Были ли проблемы при доставке?",
+					"value_list"	:
+					[
+						{
+							"label"	:	"Товар не привезли",
+							"value"	:	"0"
+						},
+						{
+												
+							"label"	:	"Товар привезли с опозданием",
+							"value"	:	"1"
+						},
+						{
+							"label"	:	"Проблем при доставке не было",
+							"value"	:	"2"
+						}
+					]
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"DeliveryDelayDays",
+					"label"		:	"На сколько дней опоздали с доставкой? (TODO: появляется, только если выбрано \"товар привезли с опозданием\")",
+					"type"		:	"number"
+				}
+				
+			],
+			"next"		:						
+			[ 
+				{ 
+					"id" 		:	"2",
+					"predicate" 	:	
+					{
+						"widget_id"	:	"IsDeliveryProblems",
+						"cond"		:	"=",
+						"value"		:	"0" 						
+					}
+				},
+				{ 
+					"id" 		:	"3",
+					"predicate" 	:	
+					{
+						"widget_id"	:	"IsDeliveryProblems",
+						"cond"		:	"==",
+						"value"		:	"0" 						
+					}
+				}
+			]
+		},
+		{
+			"id"		:	"2",
+			"title"		:	"Недостатки товара и другие неприятности",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"IsItemProblems",
+					"label"		:	"Есть ли у товара недостатки?",
+					"value_list"	:
+					[
+						{
+							"label"	:	"Недостатков нет",
+							"value"	:	"0"
+						},
+						{
+												
+							"label"	:	"Найдены недостатки",
+							"value"	:	"1"
+						}
+					]	
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblems",
+					"label"		:	"Опишите, что не так TODO1: Появляется, только если выбрано \"найдены недостатки\"; TODO2: Сделать TextArea; TODO3: (например: в йогурте был шуруп, телефон перезагружается каждые 5 минут. Постарайтесь заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"IsProblemsHealth",
+					"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)? TODO: Появляется, только если выбрано \"найдены недостатки\""
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsHealth",
+					"label"		:	"Напишите, в чём выразился вред здоровью TODO1: Появляется, только если выбрано \"здоровью нанесён вред\"; TODO2: Сделать TextArea; TODO3:  (например, Вы отравились. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"IsProblemsMoney",
+					"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара? TODO: Появляется, только если выбрано \"найдены недостатки\""
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsMoney",
+					"label"		:	"Напишите, в чём выразился ущерб TODO1: Появляется, только если выбрано \"имуществу нанесён ущерб\"; TODO2: Сделать TextArea; TODO3:  (например, у Вас сломался двигатель из-за некачественного масла. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+				}
+			],
+			"next"		:	[ { "id" : "3" } ] 					
+		},
+		{
+			"id"		:	"3",
+			"title"		:	"Требования",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsNotDelivered",
+					"label"		:	"Требую: TODO: появляется, если в IsDeliveryProblems указано, что товар не привезли (значение 0)",
+					"value_list"	:
+					[
+						{
+							"value"	: 	"0",
+							"label"	:	"Передать товар в новый срок (TODO: а потребовать при этом неустойку или ещё-что либо можно?)"
+						},
+
+						{
+							"value"	:	"1",
+							"label"	:	"Расторжение договора и возврат предоплаты (TODO: Что, если предоплаты не было?)"
+						}
+					]
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestsNewDeliveryDate",
+					"label"		:	"Новый срок доставки товара (TODO: появляется, только если выбрано \"передать товар в новый срок\")"
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"RequestsDeliveryDelayMoney",
+					"label"		:	"Требуем уплаты неустойки в размере 0.5% за каждый день опоздания (TODO1: появляется, только если в IsDeliveryProblems указано, что товар привезли с опозданием (значение 1); TODO2: реализация формул для размера неустойки)"
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"Prerequisite4TechComplicated",
+					"label"		:	"С момента покупки прошло не больше 15 дней или недостатки являются существенными (TODO1: появляется, только если выбрано \"товар технически сложный\" TODO2: Что такое существенный недостаток?)"
+				},
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsTechComplicated",
+					"label"		:	"TODO: Появляется, только если Prerequisite4TechComplicated==true",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Заменить на товар этой же марки, модели, артикула с пересчётом покупной цены (TODO: откуда тут пересчёт цены? Может быть, можно требовать заменить на другой товар с пересчётом цены?)"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Возврата уплаченной за товар суммы"
+						}
+
+					]		
+				},
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsNonComplicated",
+					"label"		:	"Требую: TODO: Появляется, если не выбрано, что товар технически сложный",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Возврата уплаченной за товар суммы"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Заменить на товар этой же марки, модели, артикула"
+						},
+						{
+							"value"	:	"2",
+							"label"	:	"Заменить на такой же товар другой марки, модели, артикула с соответствующим перерасчётом покупной цены"
+						},
+						{
+							"value"	:	"3",
+							"label"	:	"Соразмерно уменьшить покупную цену (TODO: мы сами не предлагаем, насколько?)"
+						},
+						{
+							"value"	:	"4",
+							"label"	:	"Незамедлительно безвозмездно устранить недостатки товара"
+						},
+						{
+							"value"	:	"5",
+							"label"	:	"Возместить ущерб из-за устранения недостатков своими силами (TODO: например, Вы купили не оказавшееся в комплекте зарядное устройство для телефона)"
+						}
+
+					]		
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"SelfRepairMoney",
+					"label"		:	"Размер ущерба из-за возмещения недостатков (TODO: появляется, только если выбрано \"возместить ущерб из-за устранения недостатков своими силами\")",
+					"type"		:	"number"
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestHealthProblems",						
+					"label"		:	"Во сколько Вы оцениваете нанесённый вред здоровью (TODO: появляется, если только IsProblemsHealth==true)",
+					"type"		:	"number"
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestDamage",
+					"label"		:	"Во сколько Вы оцениваете ущерб из-за недостатков товара? (TODO: появляется, если только IsProblemsMoney==true)",
+					"type"		:	"number"
+				}
+
+			],
+			"next"		:	[ { "id" : "4" } ] 					
+		},
+		{
+			"id"		:	"4",
+			"title"		:	"Текст претензии",
+			"type"		:	"document_text",
+			"widgets"	:
+			[
+				{
+					"widget_type"	: 	"DocumentViewWidget",
+					"id"		:	"BadItemComplaintView",
+					"label"		: 	"Перед Вами текст претензии. Вы можете скопировать его в буффер, сохранить или распечатать. Далее его нужно будет отправить адресату - как это сделать, описано на следующем шаге.",
+					"doc_name"	:	"BadItemComplaint" 
+				}
+			],
+			"next"		:	[ { "id" : "5" } ] 					
+		},
+		{
+			"id"		:	"5",
+			"title"		:	"Отправка претензии",
+			"type"		:	"timer",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"StaticTextWidget",
+					"id"		:	"SendCompaintInfo",
+					"label"		: "TODO: Рекомендации по отправке претензии"	
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"IsComplaintSent",
+					"label"		:	"Да, я отправил(а) претензию"	
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ComplaintSentDate",
+					"label"		:	"Дата отправки претензии (TODO: появляется только после того, как выбрано \"я отправил претензию\" TODO2: По умолчанию текущая дата)",
+					"type"		:	"date"
+				}
+				
+			],
+			"next"		:	[ { "id" : "6" } ] 					
+		},	
+		{
+			"id"		:	"6",
+			"title"		:	"Отстаиваем свои права в суде",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"StaticTextWidget",
+					"id"		:	"CourtInfo",
+					"label"		: "TODO: Рекомендации по подаче заявления в суд"	
+				}
+
+			],
 			"next"		:	[] 					
-		}
-	
+		}	
+
 	]
 }
 

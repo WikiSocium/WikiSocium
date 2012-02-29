@@ -1,13 +1,24 @@
 extends BaseWidget
 
 block content
+  //--------------------------------
+  //- Check the value of the widget
+  - var val;
+  - if(typeof(value) == 'undefined')
+    - val = new Object();
+    - val.address = '';
+    - val.lat = '';
+    - val.lng = '';
+  - else
+    - val = value;
+  //--------------------------------
   div(class="addressArea", id="step#{step_id}_#{widget.id}_AddressID")
     script(type='text/javascript')
       var mapField, map;
       YUI().use('inputex', 'inputex-string'
       , function(Y) 
       {
-        mapField = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value.address}', required:true, parentEl: 'step#{step_id}_#{widget.id}_AddressID'});
+        mapField = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{val.address}', required:true, parentEl: 'step#{step_id}_#{widget.id}_AddressID'});
         mapField.on('updated', function(value)
         {
           map.address = value;
@@ -24,7 +35,7 @@ block content
         map.FindPlace(addr);
       }
       $(document).ready(function () {
-        map = new MapsWidget(#{value.lat}, #{value.lng}, "#{value.address}", document.getElementById("step#{step_id}_#{widget.id}_MapsID"), document.getElementById("step#{step_id}_#{widget.id}_errorMsg"));
+        map = new MapsWidget('#{val.lat}', '#{val.lng}', '#{val.address}', document.getElementById("step#{step_id}_#{widget.id}_MapsID"), document.getElementById("step#{step_id}_#{widget.id}_errorMsg"));
         step#{step_id}FieldsList['#{widget.id}'] = map;
         map.Init();
         map.InitMarkerCallback();

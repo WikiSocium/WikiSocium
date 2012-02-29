@@ -1,6 +1,8 @@
 script(type='text/javascript')
   var solutionData = !{JSON.stringify(solutionData)};
-
+  if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
+  stepsHistory = !{JSON.stringify(stepsHistory)};
+  
 h1
   #{solutionData.name}
 
@@ -17,6 +19,10 @@ div(class = "steps", id = "stepsWrapper")
     - else
       !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
 div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
-div(class="btn", onClick="NextStep()") Следующий шаг
+div
+  div(class="btn", onClick="PrevStep()") Предыдущий шаг
+  div(class="btn", onClick="NextStep()") Следующий шаг
+  div(class="btn", onClick="SaveAndExit()") Сохранить
+  span и перейти к списку кейсов
 div(id="endCasePopup")
   != partial('endCasePopup', {caseName: solutionData.id})

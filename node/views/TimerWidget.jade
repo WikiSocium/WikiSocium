@@ -6,6 +6,7 @@ block content
     Запустить таймер!
   div(id="Timer_#{widget.id}_Field")
   script(type="text/javascript")
+    //Initialization of timer object
     step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer(#{value.workingPeriod});
     $(document).ready(function (){
       if("#{value.state}" == "running")
@@ -16,25 +17,22 @@ block content
       else if("#{value.state}" == "paused")
       {
         step#{step_id}FieldsList['#{widget.id}'].InitPaused(#{value.startDate}, #{value.pauseDate});
-        $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTime());
+        $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTimeAsString());
       }
       setInterval('UpdateTimer_#{widget.id}()', 1000);
     });
+    //Pause/Resume control handler. Starts the timer if it's not yet started
     ToggleTimer_#{widget.id} = function()
     {
-      if(!step#{step_id}FieldsList['#{widget.id}'].isRunning &&
-          !step#{step_id}FieldsList['#{widget.id}'].paused)
-      {
+      if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "stopped")
         step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
-        var interval = setInterval('UpdateTimer_#{widget.id}()', 1000);
-      }
-      else if(step#{step_id}FieldsList['#{widget.id}'].paused)
+      else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "paused")
         step#{step_id}FieldsList['#{widget.id}'].Resume();
-      else 
+      else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "running")
         step#{step_id}FieldsList['#{widget.id}'].Pause();
     }
+    //Function to be called regularly to update timer state
     UpdateTimer_#{widget.id} = function()
     {
-      //if(step#{step_id}FieldsList['#{widget.id}'].TestTimer())
-        $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTime());
+      $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTimeAsString());
     }

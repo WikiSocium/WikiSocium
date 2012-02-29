@@ -342,6 +342,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     'user':req.currentUser, 
                     'solutionData' : solutionData,
                     'caseData' : caseContents.data,
+                    'currentStep' : caseContents.currentStep,
+                    'stepsHistory' : caseContents.steps,
                     'scripts' : scriptsToInject,
                     'styles' : stylesToInject
                   });
@@ -375,7 +377,19 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
         caseContents.name = caseId;
       }
       caseContents.data = jQ.parseJSON(req.body.jsonData);
-      console.log(req.body.jsonData);
+      
+      var curStep = req.body.curStep;
+      var nextStep = req.body.nextStep;
+      
+      for (var key in caseContents.steps) {
+        if (caseContents.steps[key].id == nextStep) {
+          caseContents.steps[key].prevStep = curStep;
+          break;
+        }
+      }
+      caseContents.currentStep = nextStep;
+      
+      //console.log(req.body.jsonData);
       fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
             if (err) console.log(err);
       });
@@ -434,11 +448,11 @@ app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', loadUser, function(req, res){
-			var userName = req.param('UserName', null);
+	var userName = req.param('UserName', null);
 
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else{
-  if(req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
+  else {
+  if (req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
     else{
 			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
@@ -449,7 +463,7 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
                                 'user':req.currentUser, 
 								'requestedUser': requestedUser,
 								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
-                styles:[]
+                'styles': []
 						   });
 				}
 				else
@@ -457,6 +471,14 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 			});
     }
 }
+});
+
+app.get('/mycases', loadUser, function(req, res) {
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    var userName = req.currentUser.email;
+    res.redirect('/UserData/'+userName);
+  }
 });
 
 function parseReturnTo ( req_query_return_to ) {
@@ -475,32 +497,62 @@ app.get('/users/new', loadUser, function(req, res) {
   });
 });
 
+function createCaseFile ( userName, caseId, solutionId ) {
+
+  fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
+    if(!err) {
+      var solutionData = jQ.parseJSON(data);
+      
+      var caseContents = {};
+      caseContents.name = caseId;
+      caseContents.steps = [];
+      
+      for (var key in solutionData.steps) {
+        caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
+      }
+      
+      caseContents.currentStep = caseContents.steps[0].id;
+      
+      fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
+      fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
+        if (err) console.log(err);
+      });
+    }
+  });
+}
+
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
-  var Solution = req.param('SolutionName', null);
+  var solutionId = req.param('SolutionName', null);
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     //Добавляем кейс в спиок кейсов юзера
-    fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
+    
+    var userName = req.currentUser.email;
+    var caseId = req.body.case_id;
+    
+    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = jQ.parseJSON(data);
         var case_obj = {
-          solutionId: Solution,
-          caseId: req.body.case_id
+          solutionId: solutionId,
+          caseId: caseId
         };
         userJSON.cases.push (case_obj);
                 
         fs.writeFile(
-          'data/UserData/' + req.currentUser.email + '/user.json',
+          'data/UserData/' + userName + '/user.json',
           JSON.stringify (userJSON, null, "\t"), encoding='utf8',
           function (err) {
             if (err) throw err;
         });
+        
+        createCaseFile ( userName, caseId, solutionId );
       }
       else Render404(req,res, err);
     });
-    increaseSolutionStatistics ( Solution, 'started' );
+    increaseSolutionStatistics ( solutionId, 'started' );
     res.redirect('/');
 	}; 
 });
@@ -574,17 +626,28 @@ app.post('/sessions', function(req, res) {
             if (err) throw err;
             console.log('Deleting file '+'data/UserData/'+user.email);
           });
-          userCreateEnv(user);
+          throw "User's directory doesn't exist";
+          //userCreateEnv(user);
         }
         
         stats = fs.lstatSync('data/UserData/'+user.email+'/cases');
-        if ( !stats.isDirectory() ) {       
+        if ( !stats.isDirectory() ) {
           fs.unlink('data/UserData/'+user.email+'/cases', function (err) {
             if (err) throw err;
             console.log('Deleting file '+'data/UserData/'+user.email+'/cases');
           });
-          userCreateEnv(user);
+          throw "User's cases directory doesn't exist";
+          //userCreateEnv(user);
         }
+        
+        fs.readFile('data/UserData/' + user.email + '/user.json', "utf-8", function(err, data){
+          if (!err) {
+            var userJSON = jQ.parseJSON(data);
+            //console.log (userJSON);
+            if ( userJSON.id == null ) throw "Incorrect user.json file";
+          }
+          else throw err;          
+        });
       }
       catch (e)
       {
