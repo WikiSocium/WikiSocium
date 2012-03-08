@@ -43,13 +43,45 @@
 						{
 							"widget_type"	:	"CheckBoxWidget",
 							"id"		:	"IsItemPrePaid",
-							"label"		:	"Была ли предоплата? (TODO: появляется, только если производилась доставка)"
+							"label"		:	"Была ли предоплата? (TODO: появляется, только если производилась доставка)",
+							"initial"     : "false",
+							"isVisible" :
+							{
+							   "predicates":
+							   [
+							      {
+							         "step_id": "0",
+							         "widget_id": "IsItemDelivered",
+							         "cond": "==",
+							         "value": true
+							      }
+							   ]
+							}
 						},
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemPrePaidPrice",
 							"label"		:	"Размер предоплаты (TODO: появляется, только если указано, что была предоплата)",
-							"type"		:	"number" 
+							"type"		:	"number",
+							"isVisible" :
+							{
+							   "predicates":
+							   [
+							      {
+							         "step_id": "0",
+							         "widget_id": "IsItemDelivered",
+							         "cond": "==",
+							         "value": true
+							      },							   
+							      {
+							         "step_id": "0",
+							         "widget_id": "IsItemPrePaid",
+							         "cond": "==",
+							         "value": true
+							      }
+							   ]
+							}
+
 						},
 						{
 							"widget_type"	:	"TextFieldWidget",
