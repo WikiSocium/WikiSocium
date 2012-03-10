@@ -4,4 +4,4 @@ block content
   <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
   script
     // [TODO] there shoudn't be so many p().p()
-    $("#documentView_#{widget.doc_name}").parent().parent().parent().parent().watch("display", function(){ GenerateDocument_#{widget.doc_name}();$('#documentView_#{widget.doc_name}').markItUp();}, 100, "");
+    $("#documentView_#{widget.doc_name}").parent().parent().parent().parent().watch("display", function(){ GenerateDocument_#{widget.doc_name}();$('#documentView_#{widget.doc_name}').markItUp(mySettings);}, 100, "");

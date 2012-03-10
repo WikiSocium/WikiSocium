@@ -326,8 +326,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                   scriptsToInject.push("/javascripts/jquery.markitup.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
-                  stylesToInject.push("/markitup/skins/markitup/style.css");
                   stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
+                  stylesToInject.push("/markitup/skins/simple/style.css");            
                 }
                 fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
                   if (err) {
@@ -424,20 +424,40 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
                 });
 		    }});
 		
-        // 2. Записать статистику
-        // тут Solution -> solution_name. Сейчас брать неоткуда(
-        
-        if ( req.body.isSolved == 'yes' ) {
-          increaseSolutionStatistics ( Solution, 'finished_successful' );
-          if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
-          else increaseSolutionStatistics ( Solution, 'finished_bad_solution' );
-        }
-        else {
-          increaseSolutionStatistics ( Solution, 'finished_successful' );
-          if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( Solution, 'finished_good_solution' );
-          else increaseSolutionStatistics ( Solution, 'finished_bad_solution' ); 
-        }
-        
+		// Получаем название солюшена
+		var solution_name = "";
+		fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+		    if(!err)
+		    {		        
+		        var userData = jQ.parseJSON(data);
+		        for(var i = 0; i < userData.cases.length; i++)
+		        {
+		            if(userData.cases[i].caseId == caseId)
+		            {
+		                solution_name = userData.cases[i].solutionId;
+		                
+                        // 2. Записать статистику
+                        // тут Solution -> solution_name. Сейчас брать неоткуда(
+
+                        if ( req.body.isSolved == 'yes' ) {
+                          increaseSolutionStatistics ( solution_name, 'finished_successful' );
+                          if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+                          else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' );
+                        }
+                        else {
+                          increaseSolutionStatistics ( solution_name, 'finished_successful' );
+                          if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+                          else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
+                        }
+		                
+		                break;
+	                }
+                }
+		    }
+		    else
+		        console.log("Error at case finish: " + err);
+		});
+
         // 3. Отправить на главную страницу
         res.redirect('/');
         }
