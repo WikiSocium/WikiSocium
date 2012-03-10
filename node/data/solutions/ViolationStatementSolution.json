@@ -37,9 +37,30 @@
                                     "type" : "string"
                               },
                               {
-                                    "widget_type" : "TimerWidget",
+                                    "widget_type" : "TimerFromDateWidget",
                                     "id" : "timer1",
-                                    "initial": {"startDate": "0", "pauseDate": "0", "workingPeriod": "100000", "state": "stopped"} 
+                                    "pickDateMessage": "Когда вы отправили заявление?",
+                                    "iDidItMessage": "Йа отправил заявление!!!11",
+                                    "initial": 
+                                    {
+                                      "startDate": "0",
+                                      "pauseDate": "0",
+                                      "workingPeriod": {"days": "5", "hours": "0", "leftover": "0"},
+                                      "state": "stopped"
+                                    } 
+                              },
+                              {
+                                    "widget_type" : "TimerTillDateWidget",
+                                    "id" : "timer11",
+                                    "pickDateMessage": "Когда к вам приедет ОМОН",
+                                    "iDidItMessage": "Йа был на митинге!!!",
+                                    "initial": 
+                                    {
+                                      "startDate": "0",
+                                      "pauseDate": "0",
+                                      "endDate": "0",
+                                      "state": "stopped"
+                                    } 
                               }
                         ]
                   },
@@ -168,9 +189,15 @@
                         "widgets": 
                         [
                               {
-                                "widget_type" : "TimerWidget",
+                                "widget_type" : "TimerFromDateWidget",
                                 "id" : "timer2",
-                                "initial": {"startDate": "0", "pauseDate": "0", "workingPeriod": "100000", "state": "stopped"} 
+                                "initial": 
+                                {
+                                  "startDate": "0",
+                                  "pauseDate": "0",
+                                  "workingPeriod": {"days": "2", "hours": "0", "leftover": "0"},
+                                  "state": "stopped"
+                                } 
                               }
                         ]
                   }

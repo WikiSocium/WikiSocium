@@ -3,33 +3,46 @@ extends BaseWidget
 block content
   div(id="Timer_#{widget.id}_checkboxdiv")
     input(type="checkbox", id="Timer_#{widget.id}_checkbox", onClick="ToggleTimer_#{widget.id}()")
-    Запустить таймер!
+    Я отдал бумажки!
+  Когда Вы отдали бумажки:
+  input(id="Timer_#{widget.id}_datepicker")
+  script(type='text/javascript')
+    $(document).ready(function (){
+      $.datepicker.setDefaults($.datepicker.regional["ru"]);
+      $("#Timer_#{widget.id}_datepicker").datepicker();
+    });
   div(id="Timer_#{widget.id}_Field")
   script(type="text/javascript")
     //Initialization of timer object
-    step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer(#{value.workingPeriod});
+    step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer();
     $(document).ready(function (){
+      step#{step_id}FieldsList['#{widget.id}'].SetWorkingPeriod(#{value.workingPeriod});
       if("#{value.state}" == "running")
       {
         $("#Timer_#{widget.id}_checkbox").attr("checked", "true");
+        $("#Timer_#{widget.id}_datepicker").attr("readonly", "true");
+        $("#Timer_#{widget.id}_datepicker").datepicker("disable");
         step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
       }
-      else if("#{value.state}" == "paused")
+      /*else if("#{value.state}" == "paused")
       {
         step#{step_id}FieldsList['#{widget.id}'].InitPaused(#{value.startDate}, #{value.pauseDate});
         $("#Timer_#{widget.id}_Field").text("Осталось времени:" + step#{step_id}FieldsList['#{widget.id}'].getRemainingTimeAsString());
-      }
+      }*/
       setInterval('UpdateTimer_#{widget.id}()', 1000);
     });
     //Pause/Resume control handler. Starts the timer if it's not yet started
     ToggleTimer_#{widget.id} = function()
     {
       if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "stopped")
-        step#{step_id}FieldsList['#{widget.id}'].Start(#{value.startDate});
-      else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "paused")
-        step#{step_id}FieldsList['#{widget.id}'].Resume();
+      {
+        var startDate = new Date(Date.parse($("#Timer_#{widget.id}_datepicker").datepicker("getDate")));
+        step#{step_id}FieldsList['#{widget.id}'].Start(startDate.getTime());
+      }
+      /*else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "paused")
+        step#{step_id}FieldsList['#{widget.id}'].Resume();*/
       else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "running")
-        step#{step_id}FieldsList['#{widget.id}'].Pause();
+        step#{step_id}FieldsList['#{widget.id}'].Stop();
     }
     //Function to be called regularly to update timer state
     UpdateTimer_#{widget.id} = function()

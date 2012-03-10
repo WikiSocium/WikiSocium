@@ -305,9 +305,11 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 var stylesToInject = [];
                 var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+                        'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
+                        'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
-				        '/inputex/src/loader.js',
+                        'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                        '/inputex/src/loader.js',
 				        '/javascripts/jquery.json-2.3.min.js',
 				        '/javascripts/CaseDataController.js',
 				        '/javascripts/StepsController.js',
@@ -324,7 +326,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                   scriptsToInject.push("/javascripts/jquery.markitup.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
-                  stylesToInject.push("/markitup/skins/markitup/style.css");            
+                  stylesToInject.push("/markitup/skins/markitup/style.css");
+                  stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
                 }
                 fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
                   if (err) {
