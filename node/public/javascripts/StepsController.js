@@ -89,8 +89,9 @@ function SaveFormData( curStep, nextStep ) {
   $.ajax({
     url: window.location.pathname + '/submitForm'
     , type:'POST'
-    , data: 'curStep=' + curStep + '&nextStep=' + nextStep + '&jsonData=' + $.toJSON(formData)
-    , success: function(res) {}
+    , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(formData))
+    , success: function(res) {
+		}
   });    
 }
 
