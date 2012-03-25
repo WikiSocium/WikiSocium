@@ -3,9 +3,9 @@ html
   head
     meta (http-equiv='Content-Type', content='text/html; charset=UTF-8')
     title= title
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/main.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/aristo/jquery-ui-1.8.5.custom.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js')
@@ -20,39 +20,40 @@ html
       script(type='text/javascript', src=script)      
 
   body
-    div.navbar
-      div.navbar-inner
-        div.container
-          a.header-logo(href='/')
-            #header-logo.brand(href='/')
-              ВикиСоциум
-          ul.nav
-            li.active
-              a(href='/') Главная
-            li
-              a(href='/Problems') Проблемы
-            - if (!user.guest)
-              li
-                a(href='/UserData/#{user.email}') Мои дела
-          ul.nav.pull-right
-            - if (user.guest)
-              li
-                a(href="/users/new") Регистрация
-              li
-                a(href="/sessions/new") Войти
-            - else
-              li.navbar-text
-                #{user.email}
-              li
-                a#logout(href='/logout') Выйти
-
-    #content.container
-      !{flashMessages}
-      != body
-    script(type='text/javascript', src='/javascripts/flash.js')
+    div.container-fluid
+    #heading.row
+      #logo.span4.offset1
+        &nbsp;
+      #heading-stat.span3 3 проблемы, 3 решения, 152 дела, 114 пользователей
+      #heading-login-form.span4
+        div.formline
+          -if (user.guest)
+            form.form-inline(method='post', action='/sessions')
+              input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
+              input#user-password.input-small(name='user[password]', value=user.password || '', type='password')
+              button.btn.btn-success(type='submit')Войти
+            a(href='/users/new') Регистрация
+          -else
+            #{user.email}
+            a(href='/Logout').btn(type='submit')Выйти
+    #menu.row
+      div.span11.offset1
+        a.menu-element О проекте 
+        a.menu-element(href='/Problems') Проблемы  и решения
+        //-a.menu-element Карта
+        - if (!user.guest)
+          a.menu-element(href='/UserData/#{user.email}') Мои дела
+    div.row
+      #content
+        !{flashMessages}
+        != body
+      script(type='text/javascript', src='/javascripts/flash.js')
     
-    #footer
-      #copyleft &copy; 2011&ndash;2012 ВикиСоциум
-      #about
-        a(href="#about") О проекте
-        a#help(href="#help") Помочь
+    #footer.row
+      div.span3.offset1
+        &copy; ВикиСоциум 2011&ndash;2012
+      div.span3
+        a(href='mailto:feedback@wikisocium.ru') feedback@wikisocium.ru
+      div.span3.offset2
+        a(href="#about") О проекте 
+        a(href="#help") Помочь
