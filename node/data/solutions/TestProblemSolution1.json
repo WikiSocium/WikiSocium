@@ -24,11 +24,13 @@
                             [
                                 {
                                     "type" : "string",
-                                    "data" : "aData, st0"
+                                    "data" : "aData, st0",
+                                    "initial" : ""
                                 },
                                 {
                                     "type" : "widget_type_1",
-                                    "data" : "anotherData, st0"
+                                    "data" : "anotherData, st0",
+                                    "initial" : ""
                                 }                 
                             ]                
         },
@@ -42,11 +44,13 @@
                             [
                                 {
                                     "type" : "widget_type_0",
-                                    "data" : "aData, st1"
+                                    "data" : "aData, st1",
+                                    "initial" : ""
                                 },
                                 {
                                     "type" : "widget_type_1",
-                                    "data" : "anotherData, st1"
+                                    "data" : "anotherData, st1",
+                                    "initial" : ""
                                 }                 
                             ]
         },
@@ -60,11 +64,13 @@
                             [
                                 {
                                     "type" : "widget_type_0",
-                                    "data" : "aData, st2"
+                                    "data" : "aData, st2",
+                                    "initial" : ""
                                 },
                                 {
                                     "type" : "widget_type_1",
-                                    "data" : "anotherData, st2"
+                                    "data" : "anotherData, st2",
+                                    "initial" : ""
                                 }                 
                             ]
         }
