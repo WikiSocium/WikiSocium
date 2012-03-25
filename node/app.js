@@ -20,7 +20,6 @@ var express = require('express');
 var connect = require('connect');
 var jade = require('jade');
 var fs = require('fs');
-var jQ = require('jquery');
 var mongoose = require('mongoose');
 var mongoStore = require('connect-mongodb');
 var async = require('async');
@@ -210,7 +209,7 @@ app.get('/Problems', loadUser, function(req, res){
 		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 						if(!err)
 						{
-							var problemsList = jQ.parseJSON(data);
+							var problemsList = JSON.parse(data);
 							res.render('problems', {
 									   'title' : "Problems list",
 									   'user':req.currentUser,
@@ -232,7 +231,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 		fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
 					if(!err)
 					{
-						var problem = jQ.parseJSON(data);
+						var problem = JSON.parse(data);
 						res.render('problem', {
 									   'title' : problemName,
                      	               'user':req.currentUser, 
@@ -289,7 +288,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
       var caseId = req.param('CaseId', null);
       fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
         if (!err) {
-          var userJSON = jQ.parseJSON(data);
+          var userJSON = JSON.parse(data);
           solutionId = false;
           for (var key in userJSON.cases) {
               if (userJSON.cases[key].caseId == caseId) {
@@ -301,7 +300,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
             fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
               if(!err) 
               {
-                var solutionData = jQ.parseJSON(data);
+                var solutionData = JSON.parse(data);
                 var stylesToInject = [];
                 var scriptsToInject =      [
 				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
@@ -323,6 +322,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 {
                   for(var i = 0; i < requiredDocuments.length; i++)
                     scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                  if(requiredDocuments.length != 0)
+                    scriptsToInject.push("/documents/DocumentsController.js");
                   scriptsToInject.push("/javascripts/jquery.markitup.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
@@ -335,7 +336,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     err = false;
                   }
                   else {
-                    var caseContents = jQ.parseJSON(caseContentsJson);
+                    var caseContents = JSON.parse(caseContentsJson);
                     if (caseContents == null) var caseContents = {};
                   }
 
@@ -366,7 +367,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
     var userName = req.param('UserName', null);
     var caseId = req.param('CaseId', null);
-    
+
     fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
       if (err) {
         fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');
@@ -375,12 +376,12 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
         err = false;
       }
       else {
-        var caseContents = jQ.parseJSON(caseContentsJson);
+        var caseContents = JSON.parse(caseContentsJson);
         if (caseContents == null) var caseContents = {};
         caseContents.name = caseId;
       }
-      caseContents.data = jQ.parseJSON(req.body.jsonData);
-      
+      caseContents.data = JSON.parse(req.body.jsonData);
+
       var curStep = req.body.curStep;
       var nextStep = req.body.nextStep;
       
@@ -417,7 +418,7 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
         fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
 		    if(!err)
 		    {
-			    var userCase = jQ.parseJSON(data);
+			    var userCase = JSON.parse(data);
 			    userCase.status = 1;
 			    fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase, null, "\t"), encoding='utf8', function (err) {
                   if (err) throw err;
@@ -429,7 +430,7 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
 		fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
 		    if(!err)
 		    {		        
-		        var userData = jQ.parseJSON(data);
+		        var userData = JSON.parse(data);
 		        for(var i = 0; i < userData.cases.length; i++)
 		        {
 		            if(userData.cases[i].caseId == caseId)
@@ -480,7 +481,7 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
 				if(!err)
 				{
-					var requestedUser = jQ.parseJSON(data);
+					var requestedUser = JSON.parse(data);
 						res.render('user', {
 								'title': userName,
                                 'user':req.currentUser, 
@@ -524,7 +525,7 @@ function createCaseFile ( userName, caseId, solutionId ) {
 
   fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
     if(!err) {
-      var solutionData = jQ.parseJSON(data);
+      var solutionData = JSON.parse(data);
       
       var caseContents = {};
       caseContents.name = caseId;
@@ -557,7 +558,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
     
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
-        var userJSON = jQ.parseJSON(data);
+        var userJSON = JSON.parse(data);
         var case_obj = {
           solutionId: solutionId,
           caseId: caseId
@@ -665,7 +666,7 @@ app.post('/sessions', function(req, res) {
         
         fs.readFile('data/UserData/' + user.email + '/user.json', "utf-8", function(err, data){
           if (!err) {
-            var userJSON = jQ.parseJSON(data);
+            var userJSON = JSON.parse(data);
             //console.log (userJSON);
             if ( userJSON.id == null ) throw "Incorrect user.json file";
           }
