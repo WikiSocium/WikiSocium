@@ -75,7 +75,7 @@ function ShowProperStep()
      });*/
 }
      
-function SaveFormData( curStep, nextStep ) {
+function SaveFormData( curStep, nextStep, callback ) {
 
   for (key in stepsHistory) {
     if ( stepsHistory[key].id == nextStep ) {
@@ -85,13 +85,17 @@ function SaveFormData( curStep, nextStep ) {
   }
 
   var formData = CollectFormData();
-  
+
   $.ajax({
     url: window.location.pathname + '/submitForm'
     , type:'POST'
     , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(formData))
     , success: function(res) {
+            callback();
 		}
+	, error: function(jqXHR, textStatus, errorThrown) {
+	        // [TODO]
+        }
   });    
 }
 
@@ -413,8 +417,7 @@ function OnWidgetChanged()
 
 function SaveAndExit() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId );
-  window.location = '/mycases';
+  SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
 }
 
 /*
