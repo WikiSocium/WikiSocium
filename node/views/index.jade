@@ -1,11 +1,65 @@
-p Как использовать:
-p /UserData/:UserName//////
-p /UserData/:UserName/:CaseId
-br
-br
-Сейчас добавлен пользователь TestUser, у которого заведен один кейс — TestCase, име, поэтому доступны адреса:
-p /UserData/TestUser
-p /UserData/TestUser/TestCase
-br
-br
-Формат кейсов предлагается видоизменять до того момента, как они не станут удовлетворять нашим потребностям, и TestCase не является отлитым в бронзе. Главное чтобы только ничего не отвалилось :)
+div.row
+  div.span4.offset1 
+        Добро пожаловать на <span class='orange'>ВикиСоциум </span> - сайт для тех, кто устал разговаривать о том, как всё плохо, в ЖЖ или на кухнях, но не хочет кровавых революций и гражданских войн. Для тех, кто хочет жить в лучшей стране и готов для этого действовать. Что Вы можете сделать? Именно для ответа на этот вопрос мы и делаем <span class='orange'>ВикиСоциум </span>.
+  div.span4 <span class='orange'>ВикиСоциум </span> - коллекция простых, пошаговых решений для самых разных социальных вопросов. Наша задача - сделать решения удобными и доступными, но только с Вашей помощью мы сможем выбрать лучшие и доказать, что они работают!
+div.row
+  #main-block.span8.offset1.wikiBlock
+    div.row.mainProblemBlock
+      div.span1.mainProblemIcon
+        img(src='/img/icon_ZKH.png')
+      div.span3.mainProblemName
+        a.problemLink(href='#')ЖКХ
+      div.span4.mainProblemStat
+        a.problemLink(href='#')Отсутствие отопления
+        p
+          img(src='/img/solved.png')
+          span.mainStatValue 6
+          img(src='/img/inprocess.png')
+          span.mainStatValue 15
+          img(src='/img/notsolved.png')
+          span.mainStatValue 8
+        p.problemLinkAllProblems
+          a(href='#') Ещё 158 проблем
+    div.row.mainProblemBlock
+      div.span1.mainProblemIcon
+        img(src='/img/icon_customer_protection.png')
+      div.span3.mainProblemName
+        a.problemLink(href='#')Защита прав потребителей
+      div.span4.mainProblemStat
+        a.problemLink(href='#')Мышиный хвостик в пищевых продуктах
+        p
+          img(src='/img/solved.png')
+          span.mainStatValue 50
+          img(src='/img/inprocess.png')
+          span.mainStatValue 11
+          img(src='/img/notsolved.png')
+          span.mainStatValue 0
+        p.problemLinkAllProblems
+          a(href='#') Ещё 13 проблем
+    div.row.mainProblemBlock
+      div.span1.mainProblemIcon
+        img(src='/img/icon_customer_protection.png')
+      div.span3.mainProblemName
+        a.problemLink(href='#')Экология
+      div.span4.mainProblemStat
+        a.problemLink(href='#')Не вывозится мусор
+        p
+          img(src='/img/solved.png')
+          span.mainStatValue 0
+          img(src='/img/inprocess.png')
+          span.mainStatValue 0
+          img(src='/img/notsolved.png')
+          span.mainStatValue 135
+        p.problemLinkAllProblems
+          a(href='#') Ещё 3 проблемы
+  #right-block.span2.hero-unit.wikiBlock
+    b
+            Может быть вы думаете, что:
+    p
+      a(href='#')Бесполезно, всем на всё наплевать?
+    p
+      a(href='#')Сначала нужно менять законы, суды, чиновников?
+    p
+      a(href='#')Нет уж, потрачу кучу времени, и без толку?
+div.row  
+  div.span8.offset1 Вы - юрист, общественный деятель, политик, журналист, чиновник? Вступайте в наше экспертное сообщество - участвуйте в наполнении коллекции <span class='orange'>ВикиСоциума </span>!
