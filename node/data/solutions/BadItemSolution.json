@@ -6,7 +6,7 @@
 	{
 		"documents"	: 	[]		
 	},			
-	"currentstep"	:	"1",
+	"currentstep"	:	"0",
 	"steps"		:
 	[
 		{
@@ -89,7 +89,6 @@
 			],
 			"next"		:	[{ "id": "0.5"} ] 					
 		},
-
 		{
 			"id"		: 	"0.5",
 			"title"		: 	"О продавце/производителе и о себе",
@@ -111,15 +110,8 @@
                                               		"label" : "Адрес",
 							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
                                               		"type" : "WSMaps"
-						},
-
-						{
-							"widget_type"	:	"TextFieldWidget",
-							"id"		:	"SellerOfficicalName",
-							"label"		:	"Фамилия, имя, отчество руководителя TODO: (необязательно)",
-							"type"		:	"name"
 						}
-											
+					
 					]
 						
 				},
@@ -222,7 +214,7 @@
 					"predicate" 	:	
 					{
 						"widget_id"	:	"IsDeliveryProblems",
-						"cond"		:	"=",
+						"cond"		:	"!=",
 						"value"		:	"0" 						
 					}
 				},
