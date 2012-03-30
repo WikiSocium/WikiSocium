@@ -1,7 +1,3 @@
-body {  
-  min-width: 760px;
-}
-
 * {
   font-family: Arial, Tahoma;
   font-size: 12pt;
@@ -23,15 +19,6 @@ h6 { font-size: 12pt; margin-top: 8pt; margin-bottom: 4pt; }
 
 p {
   margin-top: 6pt; margin-bottom: 2pt;
-}
-
-a:link, a:visited {
-  color: #2275C8;
-  text-decoration: underline;
-}
-a:hover, a:active {
-  color: #F32200;
-  text-decoration: underline;
 }
 
 table {
@@ -91,22 +78,6 @@ a.header-logo:link, a.header-logo:visited, a.header-logo:hover, a.header-logo:ac
 #header-login-link {
 }
 
-#header-login-form {
-  display: none;
-  padding: 18px 0;
-}
-
-#header-login-form * {
-  font-size: 10pt;
-}
-#header-login-form input {
-  margin: 2px;
-  padding: 2px;
-}
-#header-login-form input.input-type-text {
-  width: 100px;
-}
-
 #header-user-logged-in {
   padding: 35px 0;
 }
@@ -114,50 +85,6 @@ a.header-logo:link, a.header-logo:visited, a.header-logo:hover, a.header-logo:ac
 #logout {
   left: 7px;
   position: relative;
-}
-
-#content {
-  min-height: 600px;
-  padding: 15px 30px;
-}
-
-#footer {
-  border-top: 1px solid #ccc;
-  height: 50px;
-  padding-top: 30px;
-}
-
-#footer #copyleft {
-  position: absolute;
-  left: 30px;
-}
-
-#footer #about {
-  position: absolute;
-  right: 120px;
-}
-
-#footer #about a {
-  color: #666;
-}
-
-#footer #about #help {
-  position: relative;
-  left: 20px;
-}
-
-
-
-
-
-
-
-
-form input[type=text], form input[type=password] {
-  width: 200px;
-  background: #fff;
-  border: 1px solid #7f9db9;
-  height: 18px; 
 }
 
 form.users {
@@ -218,3 +145,141 @@ form.users .formSubmit {
 }
 
 .btn { margin-right: 5px; }
+
+/* LAYOUT STYLES */
+
+body {  
+  min-width: 760px;
+  color: #6e6e6e;
+}
+
+a:link, a:visited {
+  color: #34b0bf;
+  text-decoration: underline;
+}
+
+a:hover, a:active {
+  color: #34b0bf;
+  text-decoration: underline;
+}
+
+#logo {
+  background-image: url(/img/logo.png);
+  background-repeat: no-repeat;
+  background-position: left center;
+  height: 116px;
+}
+
+#heading {
+  background-color: #cccccc;
+  background: url(/img/bgheader.png) repeat-x;
+  height: 116px;
+  border-bottom: 1px solid grey;
+}
+
+#heading-stat {
+  text-align: center;
+  font-size: 11pt;
+  padding-top: 40px;
+}
+
+#heading-login-form{
+  padding-top: 30px;
+  text-align: right;
+}
+
+#menu {
+  background-color: lightgrey;
+  background: url(/img/bgmenu.png) repeat-x;
+  height: 58px;
+}
+
+a.menu-element {
+  color: #777;
+  font-size: large;
+  margin: 17px 50px 2px 0px;
+  font-weight: bold;
+  vertical-align : middle;
+  float: left;
+  display: block;
+  text-decoration: none;
+}
+
+.orange {
+  color: #f7941e;
+}
+
+#content {
+  min-height: 600px;
+  padding: 15px 30px;
+  margin-top: 30px;
+}
+
+#main-block {
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+#right-block {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.wikiBlock {
+  -moz-border-radius: 5px; /* Для Firefox 3 */
+  -webkit-border-radius: 5px; /* Для Safari 4 и Chrome */
+  border-radius: 5px; /* Для современных браузеров */
+  background: #ffffff; /* Старые браузеры */
+  background: -moz-radial-gradient(#ffffff, #f9f9f9); /* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0, center center, 100%, 
+              color-stop(0%,#ffffff), color-stop(100%,#f9f9f9)); /* Chrome, Safari4+ */
+  background: -webkit-radial-gradient(#ffffff, #f9f9f9); /* Chrome 10+, Safari 5.1+ */
+  background: -o-radial-gradient(#ffffff, #f9f9f9); /* Opera 12 */
+  background: -ms-radial-gradient(#ffffff, #f9f9f9); /* IE10 */
+  background: radial-gradient(#ffffff, #f9f9f9); /* CSS3 */
+  border: 1px solid #d2d2d2;
+}
+
+.mainProblemBlock {
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+
+.mainProblemIcon{
+  text-align: right;
+}
+
+.mainProblemName{
+  padding-top: 12px;
+}
+
+.mainProblemStat {
+  padding-top: 12px;
+}
+
+.mainStatValue {
+  margin: 3px 25px 0px 2px;
+}
+
+a.problemLink {
+  font-weight: bold;
+  color: #6e6e6e;
+  text-decoration: underline;
+  font-size: 14pt;
+}
+
+.problemLinkAllProblems {
+  margin-top: 25px;
+}
+
+#footer {
+  margin-top: 40px;
+  border-top: 1px solid #d5d5d5;
+  height: 38px;
+  background-image: url(/img/bgmenu.png);
+}
+
+#footer div, #footer a {
+  padding-top: 12px;
+  font-size: small;
+}

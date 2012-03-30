@@ -1,0 +1,69 @@
+extends BaseWidget
+
+block content
+  //--------------------------------
+  //- Check the value of the widget
+  - var val;
+  - if(typeof(value) == 'undefined')
+    - val = new Object();
+    - val.startDate = 0;
+    - val.pauseDate = 0;
+    - val.workingPeriod = new Object();
+    - val.workingPeriod.days = 0;
+    - val.workingPeriod.hours = 0;
+    - val.workingPeriod.leftover = 0;
+    - val.state = "stopped";
+  - else
+    - val = value;
+  //--------------------------------
+  div(id="Timer_#{widget.id}_checkboxdiv")
+    input(type="checkbox", id="Timer_#{widget.id}_checkbox", onClick="ToggleTimer_#{widget.id}()")
+    #{widget.iDidItMessage}
+  #{widget.pickDateMessage}
+  input(id="Timer_#{widget.id}_datepicker")
+  script(type='text/javascript')
+    $(document).ready(function (){
+      $.datepicker.setDefaults($.datepicker.regional["ru"]);
+      $("#Timer_#{widget.id}_datepicker").datepicker();
+    });
+  div(id="Timer_#{widget.id}_Field")
+  script(type="text/javascript")
+    //Initialization of timer object
+    step#{step_id}FieldsList['#{widget.id}'] = new BasicTimer();
+    // The number of milliseconds in one day
+    var ONE_DAY = 1000 * 60 * 60 * 24;
+    var ONE_HOUR = 1000 * 60 * 60;
+    var ONE_MINUTE = 60000;
+    var rawWorkingPeriod = #{val.workingPeriod.days} * ONE_DAY + #{val.workingPeriod.hours} * ONE_HOUR + #{val.workingPeriod.leftover};
+    step#{step_id}FieldsList['#{widget.id}'].SetWorkingPeriod(rawWorkingPeriod);
+    $(document).ready(function (){
+      if("#{val.state}" == "running")
+      {
+        var date = new Date(#{val.startDate});
+        $("#Timer_#{widget.id}_checkbox").attr("checked", "true");
+        $("#Timer_#{widget.id}_datepicker").datepicker("disable");
+        $("#Timer_#{widget.id}_datepicker").datepicker("setDate", date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear());
+        step#{step_id}FieldsList['#{widget.id}'].Start(#{val.startDate});
+      }
+      setInterval('UpdateTimer_#{widget.id}()', 1000);
+    });
+    //Start/Stop control handler
+    ToggleTimer_#{widget.id} = function()
+    {
+      if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "stopped")
+      {
+        var startDate = new Date(Date.parse($("#Timer_#{widget.id}_datepicker").datepicker("getDate")));
+        step#{step_id}FieldsList['#{widget.id}'].Start(startDate.getTime());
+        $("#Timer_#{widget.id}_datepicker").datepicker("disable");
+      }
+      else if(step#{step_id}FieldsList['#{widget.id}'].GetState() == "running")
+      {
+        step#{step_id}FieldsList['#{widget.id}'].Stop();
+        $("#Timer_#{widget.id}_datepicker").datepicker("enable");
+      }
+    }
+    //Function to be called regularly to update timer state
+    UpdateTimer_#{widget.id} = function()
+    {
+      $("#Timer_#{widget.id}_Field").text("Осталось времени: " + step#{step_id}FieldsList['#{widget.id}'].getRemainingTimeAsString());
+    }

@@ -2,12 +2,23 @@
 /*BASIC TIMER*/
 
 /****Constructor****/
-BasicTimer = function(workingPeriod /*in seconds*/)
+BasicTimer = function()
 {
-  this.workingPeriod = workingPeriod;
   this.startDate = new Date(0);
   this.pauseDate = new Date(0);
   this.state = "stopped";
+}
+
+BasicTimer.prototype.SetWorkingPeriod = function(workingPeriod)
+{
+  this.workingPeriod = workingPeriod;
+  this.mode = 1; //Timer has it's working period set
+}
+
+BasicTimer.prototype.SetFinalDate = function(endDate)
+{
+  this.endDate = new Date(endDate);
+  this.mode = 2; //Timer has it's final date set
 }
 
 /****Initialization of paused timer****/
@@ -32,6 +43,10 @@ BasicTimer.prototype.Start = function(startDate)
   else //If startDate isn't set, start timer right from now
     this.startDate = new Date();
   this.state = "running";
+  
+  //If timer has final date, we need to evaluate its working period
+  if(this.mode == 2)
+    this.workingPeriod = this.endDate.getTime() - this.startDate.getTime();
 }
 
 /****Pause the timer without resetting it****/
@@ -64,7 +79,7 @@ BasicTimer.prototype.Stop = function()
 /****Get remaining time in milliseconds****/
 BasicTimer.prototype.getRemainingTime = function()
 {
-  if(this.state == "stopped") return this.workingPeriod;
+  if(this.state == "stopped") return -1;
   if(this.state == "finished") return 0;
   if(this.state == "running")
   {
@@ -81,7 +96,7 @@ BasicTimer.prototype.getRemainingTime = function()
 BasicTimer.prototype.getRemainingTimeAsString = function()
 {
   if(this.state == "stopped")
-    res = new Date(this.workingPeriod);
+    return "Таймер остановлен!";
   else if(this.state == "running")
   {
     date = new Date();
@@ -91,17 +106,24 @@ BasicTimer.prototype.getRemainingTimeAsString = function()
     res = new Date(this.workingPeriod - (this.pauseDate.getTime() - this.startDate.getTime()));
   else res = new Date(0);
   
-  return res.getTime() >= 0 ? NumOfDays(res.getTime()) + " дней " + res.toLocaleTimeString() : "Время истекло!";
+  resString = GetTimeIntervalString(res);
+  return resString.length > 0 ? resString : "Время истекло!";
 }
 
 /****Get value for saving purposes****/
 BasicTimer.prototype.getValue = function()
 {
+  var ONE_DAY = 1000 * 60 * 60 * 24;
+  var ONE_HOUR = 1000 * 60 * 60;
   res = new Object();
   res.startDate = this.startDate.getTime();
-  res.workingPeriod = this.workingPeriod;
+  res.workingPeriod = new Object();
+  res.workingPeriod.days = NumOfDays(this.workingPeriod);
+  res.workingPeriod.hours = NumOfHours(this.workingPeriod)
+  res.workingPeriod.leftover = this.workingPeriod - res.workingPeriod.days * ONE_DAY - res.workingPeriod.hours * ONE_HOUR;
   res.state = this.state;
   res.pauseDate = this.pauseDate.getTime();
+  if(this.mode == 2) res.endDate = this.endDate.getTime();
   
   return res;
 }
@@ -145,14 +167,36 @@ function DaysBetween(date1, date2)
     var difference_ms = Math.abs(date1_ms - date2_ms);
     
     // Convert back to days and return
-    return Math.round(difference_ms/ONE_DAY);
+    return Math.floor(difference_ms/ONE_DAY);
 }
 
 function NumOfDays(period)
 {
     // The number of milliseconds in one day
-    var ONE_DAY = 1000 * 60 * 60 * 24;
-     
+    var ONE_DAY = 1000 * 60 * 60 * 24;     
     // Convert back to days and return
-    return Math.round(period/ONE_DAY);
+    return Math.floor(period/ONE_DAY);
+}
+
+function NumOfHours(period)
+{
+    // The number of milliseconds in one day
+    var ONE_DAY = 1000 * 60 * 60 * 24; 
+    var ONE_HOUR = 1000 * 60 * 60;
+    // Convert back to days and return
+    return Math.floor((period - NumOfDays(period) * ONE_DAY) / ONE_HOUR);
+}
+
+function GetTimeIntervalString(date)
+{
+  if(date.getTime() < 0) return '';
+  var res = NumOfDays(date.getTime()) + " дней ";
+  var hours =  date.getUTCHours();
+  if(hours < 10) hours = '0' + hours;
+  var minutes = date.getUTCMinutes();
+  if(minutes < 10) minutes = '0' + minutes;
+  var seconds = date.getUTCSeconds()
+  if(seconds < 10) seconds = '0' + seconds;
+  res = res + hours + ':' + minutes + ':' + seconds;
+  return res;
 }

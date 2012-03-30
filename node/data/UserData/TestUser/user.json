@@ -1,8 +1,14 @@
 {
 	"id": "TestUser",
-	"fullName": "Test User",
+	"fullName": "",
 	"cases": [
-		"TestWidgets",
-		"violation"
+		{
+			"solutionId": "TestProblemSolution1",
+			"caseId": "Название 1"
+		},
+		{
+			"solutionId": "TestProblemSolution1",
+			"caseId": "1111"
+		}
 	]
 }

@@ -75,7 +75,7 @@ function ShowProperStep()
      });*/
 }
      
-function SaveFormData( curStep, nextStep ) {
+function SaveFormData( curStep, nextStep, callback ) {
 
   for (key in stepsHistory) {
     if ( stepsHistory[key].id == nextStep ) {
@@ -85,12 +85,17 @@ function SaveFormData( curStep, nextStep ) {
   }
 
   var formData = CollectFormData();
-  
+
   $.ajax({
     url: window.location.pathname + '/submitForm'
     , type:'POST'
-    , data: 'curStep=' + curStep + '&nextStep=' + nextStep + '&jsonData=' + $.toJSON(formData)
-    , success: function(res) {}
+    , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(formData))
+    , success: function(res) {
+            callback();
+		}
+	, error: function(jqXHR, textStatus, errorThrown) {
+	        // [TODO]
+        }
   });    
 }
 
@@ -307,13 +312,15 @@ function CheckWidgetsVisibility (stepnum)
     			gr.visible=false;
     		else
     		{
-    		    gr.visible = false;
+    		    gr.visible = true;
 			    for (j in gr.isVisible.predicates)
 			    {
 			        sourceStep = currentCaseData.GetStepIndexById(gr.isVisible.predicates[j].step_id);
-			        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
-      				gr.visible = this.CheckPredicate(gr.isVisible.predicates[j], sourceStep);
-				    if (gr.visible==false) { return -1; }
+			        if (sourceStep==undefined || sourceStep < 0) { gr.visible=false; }
+                    else
+                    {
+      				   gr.visible = gr.visible && this.CheckPredicate(gr.isVisible.predicates[j], sourceStep);
+				    }
     			}
     		}    		
     	}
@@ -330,13 +337,15 @@ function CheckWidgetsVisibility (stepnum)
 						w.visible=false;
 					else
 					{
-						w.visible=false;
+						w.visible=true;
 						for (k in w.isVisible.predicates)
 						{
 					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
-					        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
-      						w.visible = this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
-						    if (w.visible==false) { return -1; }
+					        if (sourceStep==undefined || sourceStep < 0) { w.visible=false; }
+					        else
+					        {
+      						   w.visible = w.visible && this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
+						    }
 						}
 					}
     			}
@@ -355,23 +364,60 @@ function CheckWidgetsVisibility (stepnum)
 				w.visible=false;
 			else
 			{
-				w.visible=false;
+				w.visible=true;
 				for (k in w.isVisible.predicates)
 				{
 			        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
-			        if (sourceStep==undefined || sourceStep < 0) {    return -1;   }
-					w.visible = this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
-				    if (w.visible==false) { return -1; }
+			        if (sourceStep==undefined || sourceStep < 0) { w.visible=false; }
+			        else
+			        {
+					   w.visible = w.visible && this.CheckPredicate(w.isVisible.predicates[k], sourceStep);
+					}
 				}
 			}
 		}
     }
 }
 
+function OnWidgetChanged()
+{
+  previousStepId=getPreviousStepId(currentStepId);
+  SaveFormData (previousStepId, currentStepId);
+  CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+  
+  var tcs=currentCaseData.GetStepIndexById(currentStepId)
+      
+  for (i in solutionData.steps[tcs].widget_groups)
+  {
+    	if (solutionData.steps[tcs].widget_groups[i].visible==false)
+    	{
+    		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
+    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+    	}
+    	else
+    	{
+    		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
+    		{
+    			if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible==false)
+	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+	    		else
+	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).show();
+	   		}
+	   	}
+    }
+    for (i in solutionData.steps[temporaryCurrentStep].widgets)
+    {
+    	if (solutionData.steps[tcs].widgets[i].visible==false)
+    		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
+   		else
+		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[j].id).show();
+    }
+
+}
+
 function SaveAndExit() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId );
-  window.location = '/mycases';
+  SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
 }
 
 /*
