@@ -11,14 +11,10 @@
 	[
 		{
 			"id"		:	"0",
-			"title"		:	"Основная информация",
+			"title"		:	"О покупке",
 			"type"		:	"general_data",
-			"widget_groups"	:
+			"widgets":
 			[
-				{
-					"title": "О покупке",
-					"widgets":
-					[
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
@@ -43,30 +39,63 @@
 						{
 							"widget_type"	:	"CheckBoxWidget",
 							"id"		:	"IsItemPrePaid",
-							"label"		:	"Была ли предоплата? (TODO: появляется, только если производилась доставка)"
+							"label"		:	"Была ли предоплата?",
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemDelivered",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									}								
+								]
+							}	
+	
 						},
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemPrePaidPrice",
-							"label"		:	"Размер предоплаты (TODO: появляется, только если указано, что была предоплата)",
-							"type"		:	"number" 
+							"label"		:	"Размер предоплаты",
+							"type"		:	"number",
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemDelivered",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									},
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemPrePaid",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									}
+								]
+							} 
 						},
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"BuyDate",
 							"label"		:	"Дата покупки",
 							"type"		:	"date"		 
-						},
-						{
-							"widget_type"	:	"TextFieldWidget",
-							"id"		:	"ChequeNumber",
-							"label"		:	"Номер чека или договора купли-продажи TODO: (необязательно)", 
-							"type"		:	"number" 
-						}					
-					]
-						
-				},
+						}
+		
 				
+			],
+			"next"		:	[{ "id": "0.5"} ] 					
+		},
+
+		{
+			"id"		: 	"0.5",
+			"title"		: 	"О продавце/производителе и о себе",
+			"type"		:	"general_data",	
+			"widget_groups"	:
+			[
 				{
 					"title": "О продавце/производителе (TODO: информацию можно найти на упаковке товара или в договоре купли/продажи. Кому писать выбирайте с помощью Рекомендации по выбору адресата претензии)",
 					"widgets":
@@ -114,9 +143,10 @@
 					]
 						
 				}
+
 			],
-			"next"		:	
-			[ 
+			"next"		:
+			[
 				{ 
 					"id" 		:	"1",
 					"predicate" 	:	
@@ -134,10 +164,9 @@
 						"cond"		:	"==",
 						"value"		:	"0" 						
 					}
-				}
-			] 					
+				}		
+			]					
 		},
-
 		{
 			"id"		:	"1",
 			"title"		:	"Проблемы при доставке",
@@ -168,9 +197,22 @@
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"DeliveryDelayDays",
-					"label"		:	"На сколько дней опоздали с доставкой? (TODO: появляется, только если выбрано \"товар привезли с опозданием\")",
-					"type"		:	"number"
+					"label"		:	"На сколько дней опоздали с доставкой?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				}
+				
 				
 			],
 			"next"		:						
@@ -221,27 +263,99 @@
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"ItemProblems",
-					"label"		:	"Опишите, что не так TODO1: Появляется, только если выбрано \"найдены недостатки\"; TODO2: Сделать TextArea; TODO3: (например: в йогурте был шуруп, телефон перезагружается каждые 5 минут. Постарайтесь заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+					"label"		:	"Опишите, что не так TODO: Сделать TextArea; TODO2: (например: в йогурте был шуруп, телефон перезагружается каждые 5 минут. Постарайтесь заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"IsProblemsHealth",
-					"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)? TODO: Появляется, только если выбрано \"найдены недостатки\""
+					"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)?",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"ItemProblemsHealth",
-					"label"		:	"Напишите, в чём выразился вред здоровью TODO1: Появляется, только если выбрано \"здоровью нанесён вред\"; TODO2: Сделать TextArea; TODO3:  (например, Вы отравились. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+					"label"		:	"Напишите, в чём выразился вред здоровью TODO: Сделать TextArea; TODO3:  (например, Вы отравились. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsHealth",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"IsProblemsMoney",
-					"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара? TODO: Появляется, только если выбрано \"найдены недостатки\""
+					"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара?",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"ItemProblemsMoney",
-					"label"		:	"Напишите, в чём выразился ущерб TODO1: Появляется, только если выбрано \"имуществу нанесён ущерб\"; TODO2: Сделать TextArea; TODO3:  (например, у Вас сломался двигатель из-за некачественного масла. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)"
+					"label"		:	"Напишите, в чём выразился ущерб TODO: Сделать TextArea; TODO2:  (например, у Вас сломался двигатель из-за некачественного масла. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsMoney",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				}
 			],
 			"next"		:	[ { "id" : "3" } ] 					
