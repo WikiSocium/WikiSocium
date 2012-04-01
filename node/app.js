@@ -578,7 +578,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
       else Render404(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/');
+    res.redirect('/UserData/' + userName + '/' + caseId);
 	}; 
 });
 
