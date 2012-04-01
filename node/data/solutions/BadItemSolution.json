@@ -7,6 +7,17 @@
 		"documents"	: 	[]		
 	},			
 	"currentstep"	:	"0",
+	"sections"	:
+	[
+		{
+			"name": "Miau",
+			"steps": ["0", "1", "2"]
+		},
+		{
+			"name": "Ы",
+			"steps": ["0.5", "3", "4", "5", "6"]
+		}
+	],
 	"steps"		:
 	[
 		{

@@ -312,7 +312,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 				        '/javascripts/StepsController.js',
                         '/javascripts/customWidgets/timer.js',
 				        '/javascripts/runtime.min.js',
-				        '/javascripts/jquery.watch-2.0.min.js'];
+				        '/javascripts/jquery.watch-2.0.min.js',
+				        '/javascripts/jquery.prettyPhoto.js'];
 				        
                 // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
                 var requiredDocuments = solutionData.data.documents;
@@ -327,6 +328,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                   stylesToInject.push("/markitup/sets/default/style.css");
                   stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
                   stylesToInject.push("/markitup/skins/simple/style.css");            
+                  stylesToInject.push("/stylesheets/prettyPhoto.css");
                 }
                 fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
                   if (err) {
