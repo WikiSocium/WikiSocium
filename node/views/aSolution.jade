@@ -1,3 +1,14 @@
 div(class="aSolution")
-  a(href="/addcase/#{aSolution}")
+  a(href="#add")
     #{aSolution}
+  
+#modal_window
+
+
+script(type='text/javascript', src='/javascripts/modal_window.js')    
+script(type='text/javascript')
+  var modal_body = '<p><form id="addCaseForm" method="post", action="/addcasetouser/#{aSolution}"><input type="text" name ="case_id" /></form></p><p>Решение с этим названием будет добавлено в список ваших дел</p>';
+  var buttons = [];
+  buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+  buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); } ) );
+  $(".aSolution").click( function() { showModalWindow ( "Введите название решения", modal_body, buttons, 550, 285 ); } );

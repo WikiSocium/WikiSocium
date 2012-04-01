@@ -91,8 +91,7 @@ app.dynamicHelpers({
 //		res.render('caseOverview', {
 //				   title: "overview of selected case",
 //				   selectedCase: allTemplates[caseName],
-//				   scripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
-//							 '/javascripts/Curry-1.0.1.js',
+//				   scripts: ['/javascripts/Curry-1.0.1.js',
 //							 '/javascripts/raphael-min.js',
 //							 '/javascripts/dracula_algorithms.js',
 //							 '/javascripts/dracula_graffle.js',
@@ -214,7 +213,7 @@ app.get('/Problems', loadUser, function(req, res){
 									   'title' : "Problems list",
 									   'user':req.currentUser,
 									   'problemsList' : problemsList.problemsList,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+									   'scripts' : [],
                       styles:[]
 									   });
 						}
@@ -236,7 +235,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 									   'title' : problemName,
                      	               'user':req.currentUser, 
 									   'problem' : problem,
-									   'scripts' : ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+									   'scripts' : [],
                       styles:[]
 						   });
 					}
@@ -303,7 +302,6 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 var solutionData = JSON.parse(data);
                 var stylesToInject = [];
                 var scriptsToInject =      [
-				        'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
                         'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
                         'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
 				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
@@ -486,7 +484,7 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
 								'title': userName,
                                 'user':req.currentUser, 
 								'requestedUser': requestedUser,
-								'scripts': ['http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'],
+								'scripts': [],
                 'styles': []
 						   });
 				}
@@ -545,6 +543,10 @@ function createCaseFile ( userName, caseId, solutionId ) {
   });
 }
 
+app.get('/addcasetouser/:SolutionName', loadUser, function(req, res) {
+  res.redirect('/Problems/');
+});
+
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
   var solutionId = req.param('SolutionName', null);
@@ -556,7 +558,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
     var userName = req.currentUser.email;
     var caseId = req.body.case_id;
     
-    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
         var userJSON = JSON.parse(data);
         var case_obj = {
@@ -577,7 +579,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
       else Render404(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/');
+    res.redirect('/UserData/'+userName+'/'+caseId);
 	}; 
 });
 
