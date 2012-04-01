@@ -46,7 +46,7 @@ function ShowProperStep()
     	if (solutionData.steps[temporaryCurrentStep].widgets[i].visible==false)
     		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide().toggleClass("isInvisible");
    		else
-		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[j].id).show().toggleClass("isInvisible");
+		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).show().toggleClass("isInvisible");
     }
   }
   
@@ -380,7 +380,8 @@ function CheckWidgetsVisibility (stepnum)
 function OnWidgetChanged()
 {
   previousStepId=getPreviousStepId(currentStepId);
-  SaveFormData (previousStepId, currentStepId);
+  SaveFormData (previousStepId, currentStepId, function()
+  {
   CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
   
   var tcs=currentCaseData.GetStepIndexById(currentStepId)
@@ -403,14 +404,18 @@ function OnWidgetChanged()
 	   		}
 	   	}
     }
-    for (i in solutionData.steps[temporaryCurrentStep].widgets)
+    for (i in solutionData.steps[tcs].widgets)
     {
     	if (solutionData.steps[tcs].widgets[i].visible==false)
+    	{
     		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
+    	}
    		else
-		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[j].id).show();
+   		{
+		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+		}
     }
-
+	});
 }
 
 function SaveAndExit() {
