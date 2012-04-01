@@ -11,6 +11,11 @@ URLOpenerWidget.prototype.getValue = function()
     return tmpList;
 }
 
+URLOpenerWidget.prototype.validate = function()
+{
+    return true;
+}
+
 URLOpenerWidget.showData = function(urlsList)
 {
     // [TODO]
