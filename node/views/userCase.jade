@@ -1,28 +1,31 @@
-script(type='text/javascript')
-  var solutionData = !{JSON.stringify(solutionData)};
-  if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
-  stepsHistory = !{JSON.stringify(stepsHistory)};
-  
-h1
-  #{solutionData.name}
+div(class="offset1")
+  div(class="row")
 
-div(class="caseDescription")
-  p
-    !{solutionData.description}
+    script(type='text/javascript')
+      var solutionData = !{JSON.stringify(solutionData)};
+      if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
+      stepsHistory = !{JSON.stringify(stepsHistory)};
+      
+    h1
+      #{solutionData.name}
 
-div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить
+    div(class="caseDescription")
+      p
+        !{solutionData.description}
 
-div(class = "steps", id = "stepsWrapper")
-  - each step, i in solutionData.steps
-    - if (caseData == null)
-      !=partial('aStep', {step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
-    - else
-      !=partial('aStep', {step:step, stepData:caseData[i], step_index:i, sectionData:solutionData.sections})
-div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
-div
-  div(class="btn", onClick="PrevStep()") Предыдущий шаг
-  div(class="btn", onClick="NextStep()") Следующий шаг
-  div(class="btn", onClick="SaveAndExit()") Сохранить
-  span и перейти к списку кейсов
-div(id="endCasePopup")
-  != partial('endCasePopup', {caseName: solutionData.id})
+    div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить
+
+    div(class = "steps", id = "stepsWrapper")
+      - each step, i in solutionData.steps
+        - if (caseData == null)
+          !=partial('aStep', {step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
+        - else
+          !=partial('aStep', {step:step, stepData:caseData[i], step_index:i, sectionData:solutionData.sections})
+    div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
+    div
+      div(class="btn", onClick="PrevStep()") Предыдущий шаг
+      div(class="btn", onClick="NextStep()") Следующий шаг
+      div(class="btn", onClick="SaveAndExit()") Сохранить
+      span и перейти к списку кейсов
+    div(id="endCasePopup")
+      != partial('endCasePopup', {caseName: solutionData.id})
