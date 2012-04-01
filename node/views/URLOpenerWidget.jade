@@ -51,5 +51,4 @@ block content
         step#{step_id}FieldsList['#{widget.id}'] = opener;
         $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
     });
-  input(type="button", class="openURLButton", value="Посмотреть", onClick="URLOpenerWidget.showData(groups[#{step_id}]['#{widget.id}'].getValue());")
   input(type="button", class="openURLButton", value="Add", onClick="groups[#{step_id}]['#{widget.id}'].addField(); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});")
