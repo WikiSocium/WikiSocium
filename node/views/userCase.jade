@@ -15,9 +15,9 @@ div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завер
 div(class = "steps", id = "stepsWrapper")
   - each step, i in solutionData.steps
     - if (caseData == null)
-      !=partial('aStep', {step:step, stepData:null, step_index:i})
+      !=partial('aStep', {step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
     - else
-      !=partial('aStep', {step:step, stepData:caseData[i], step_index:i})
+      !=partial('aStep', {step:step, stepData:caseData[i], step_index:i, sectionData:solutionData.sections})
 div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
 div
   div(class="btn", onClick="PrevStep()") Предыдущий шаг
