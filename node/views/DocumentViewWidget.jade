@@ -1,6 +1,7 @@
 extends BaseWidget
 
 block content
+  input(type="button", class="generatePDFFromDocumentButton", value="PDF", onClick="GeneratePDFFrom(#documentView_#{widget.doc_name})");
   <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
   script
     $('#documentView_#{widget.doc_name}').markItUp(mySettings);    
