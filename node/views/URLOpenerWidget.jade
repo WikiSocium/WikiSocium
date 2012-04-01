@@ -29,7 +29,7 @@ block content
               $('#step_#{step_id}_widget_#{widget.id}').append($('<a>').attr('href', old_field[i].getValue()).attr('width', '50').attr('height', '50').attr('rel', 'prettyPhoto').html('Посмотреть'));              
             }
             step#{step_id}FieldsList['#{widget.id}'] = opener;
-            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:'');
+            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
         });
     }
     YUI().use('inputex', 'inputex-string'
