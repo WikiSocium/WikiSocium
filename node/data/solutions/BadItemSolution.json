@@ -4,7 +4,7 @@
 	"description"	:	"",	
 	"data"		:
 	{
-		"documents"	: 	[]		
+		"documents"	: ["BadItemComplaint"]		
 	},			
 	"currentstep"	:	"0",
 	"steps"		:
