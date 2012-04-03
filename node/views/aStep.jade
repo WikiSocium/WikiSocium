@@ -1,6 +1,12 @@
 div(class="step", id="step_" + step_index + "")
   h2.stepTitle
-    #{step.title}
+    - if (sectionData==undefined)
+      #{step.title}
+    - else
+      - each section, i in sectionData
+        - each id, j in section.steps
+          - if (id==step.id)
+            Секция № #{i+1}. #{section.name}. Шаг #{j+1} из #{section.steps.length}. #{step.title}
   br
   
   #widgets

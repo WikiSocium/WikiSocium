@@ -6,12 +6,11 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/main.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/aristo/jquery-ui-1.8.5.custom.css')
+    link(rel='stylesheet', href='/stylesheets/Aristo-jquery-ui/Aristo.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
-    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js')
     script(type='text/javascript', src='/javascripts/bootstrap.js')
 
-    script(language="javascript") $("#header-logo").click(function() { window.location.href = '/'; });
 
     -each style in styles
       link(rel='stylesheet', href=style)
@@ -22,8 +21,8 @@ html
   body
     div.container-fluid
     #heading.row
-      #logo.span4.offset1
-        &nbsp;
+      a(href="/")
+        #logo.span4.offset1
       #heading-stat.span3 3 проблемы, 3 решения, 152 дела, 114 пользователей
       #heading-login-form.span4
         div.formline

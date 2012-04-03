@@ -21,32 +21,32 @@ function ShowProperStep()
 {
   var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
-    $(".step").hide();//.addClass("isInvisible");
-    $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//toggleClass("isInvisible");
+    $(".step").hide().toggleClass("isInvisible");
+    $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
     for (i in solutionData.steps[temporaryCurrentStep].widget_groups)
     {
     	if (solutionData.steps[temporaryCurrentStep].widget_groups[i].visible==false)
     	{
     		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
-    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide();
+    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
     	}
     	else
     	{
     		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
     		{
     			if (solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].visible==false)
-	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide();
+	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
 	    		else
-	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show();
+	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show().toggleClass("isInvisible");
 	   		}
 	   	}
     }
     for (i in solutionData.steps[temporaryCurrentStep].widgets)
     {
     	if (solutionData.steps[temporaryCurrentStep].widgets[i].visible==false)
-    		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide();
+    		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide().toggleClass("isInvisible");
    		else
-		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[j].id).show();
+		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).show().toggleClass("isInvisible");
     }
   }
   
@@ -247,11 +247,10 @@ function PrevStep() {
     previousStepId = getPreviousStepId ( currentStepId );
     
     //Сохраняем на сервере введенные данные
-    SaveFormData( previousStepId, currentStepId );
-    
-    CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
-    
-    ShowProperStep();
+    SaveFormData( previousStepId, currentStepId, function(){
+        CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+        ShowProperStep();
+    });    
   }
   else alert('Previous step doesn\'t exist');
 }
@@ -284,11 +283,10 @@ function NextStep() {
       currentStepId = nextStepId;
       
       //Сохраняем на сервере введенные данные
-      SaveFormData( previousStepId, currentStepId );
-      
-      CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
-      
-      ShowProperStep();
+      SaveFormData( previousStepId, currentStepId, function(){
+            CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+            ShowProperStep();
+      });
     }
   }
   else //Радуем пользователя сообщением о неправильном заполнении формы
@@ -382,7 +380,8 @@ function CheckWidgetsVisibility (stepnum)
 function OnWidgetChanged()
 {
   previousStepId=getPreviousStepId(currentStepId);
-  SaveFormData (previousStepId, currentStepId);
+  SaveFormData (previousStepId, currentStepId, function()
+  {
   CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
   
   var tcs=currentCaseData.GetStepIndexById(currentStepId)
@@ -405,14 +404,18 @@ function OnWidgetChanged()
 	   		}
 	   	}
     }
-    for (i in solutionData.steps[temporaryCurrentStep].widgets)
+    for (i in solutionData.steps[tcs].widgets)
     {
     	if (solutionData.steps[tcs].widgets[i].visible==false)
+    	{
     		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
+    	}
    		else
-		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[j].id).show();
+   		{
+		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+		}
     }
-
+	});
 }
 
 function SaveAndExit() {
