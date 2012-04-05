@@ -24,6 +24,7 @@ block content
               opener.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                             name: 'step#{step_id}_#{widget.id}',
                                                             value: old_field[i].getValue(),
+                                                            typeInvite: 'Input Media URL Here',
                                                             required:true,
                                                             parentEl: 'step_#{step_id}_widget_#{widget.id}'}));
               $('#step_#{step_id}_widget_#{widget.id}').append($('<input type=button>').attr('class', 'openURLRemoveButton').attr('value', 'Remove').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();}); '));
@@ -44,6 +45,7 @@ block content
             opener.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                         name: 'step#{step_id}_#{widget.id}',
                                                         value: strings[i],
+                                                        typeInvite: 'Input Media URL Here',                                                        
                                                         required:true,
                                                         parentEl: 'step_#{step_id}_widget_#{widget.id}'}));
             $('#step_#{step_id}_widget_#{widget.id}').append($('<input type=button>').attr('class', 'openURLRemoveButton').attr('value', 'Remove').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});'));

@@ -31,6 +31,7 @@ URLOpenerWidget.prototype.addField = function()
         tmp_this.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                     name: (new Date()),
                                                     value: '',
+                                                    typeInvite: 'Input Media URL Here',                                                    
                                                     required: true,
                                                     parentEl: $(tmp_this).parent()[0]}));
         });
