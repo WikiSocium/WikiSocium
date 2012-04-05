@@ -10,6 +10,7 @@ block content
         step#{step_id}FieldsList['#{widget.id}'].fields = [];
         $("#step_#{step_id}_widget_#{widget.id}").children("div").remove();
         $("#step_#{step_id}_widget_#{widget.id}").children("img").remove();
+        $("#step_#{step_id}_widget_#{widget.id}").children("a").remove();        
         $("#step_#{step_id}_widget_#{widget.id}").children(".openURLRemoveButton").remove();
         
         // Injecting new ones
