@@ -588,7 +588,7 @@ app.post('/users.:format?', loadUser, function(req, res) {
     if (err) return userSaveFailed();
     
     // creating user environment
-    userCreateEnv(user);    
+    userCreateEnv( user.email );    
     
     req.flash('info', 'Ваш аккаунт был успешно создан');
     //emails.sendWelcome(user);
