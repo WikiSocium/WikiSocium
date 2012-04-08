@@ -427,6 +427,12 @@ function SaveAndExit() {
   SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
 }
 
+var autoSaveTime = 2 * 1000; 
+function AutoSave() {
+  previousStepId = getPreviousStepId ( currentStepId );
+  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
+}
+
 /*
 function GoBack()
 {
@@ -444,5 +450,7 @@ $(document).ready(function() {
   currentCaseData = new CaseDataController(solutionData);
   
   CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
-  ShowProperStep();    
+  ShowProperStep();
+    
+  setTimeout(AutoSave, autoSaveTime);
 });

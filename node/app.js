@@ -154,23 +154,21 @@ function loadUser(req, res, next) {
   }
 }
 
-function userCreateEnv( user ) {
-  fs.mkdir('data/UserData/'+user.email);
-  fs.mkdir('data/UserData/'+user.email+'/cases');
+function userCreateEnv( user_id ) {
+  fs.mkdir('data/UserData/'+user_id);
+  fs.mkdir('data/UserData/'+user_id+'/cases');
   
   var userJSON = {
-    id: user.email,
+    id: user_id,
     fullName: '',
     cases: []
   };  
-  fs.writeFile(
-    'data/UserData/' + user.email + '/user.json',
-    JSON.stringify (userJSON, null, "\t"), encoding='utf8',
+  fs.writeFile('data/UserData/' + user_id + '/user.json', JSON.stringify (userJSON, null, "\t"), encoding='utf8',
     function (err) {
       if (err) throw err;
     }
   );
-  console.log ('Creating user folder and user.json for ', user.email);
+  console.log ('Creating user folder and user.json for ', user_id);
 }
 
 function increaseSolutionStatistics ( solution_name, field_name ) {
@@ -346,6 +344,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                     'user':req.currentUser, 
                     'solutionData' : solutionData,
                     'caseData' : caseContents.data,
+                    'caseName' : caseContents.name,
                     'currentStep' : caseContents.currentStep,
                     'stepsHistory' : caseContents.steps,
                     'scripts' : scriptsToInject,
@@ -404,65 +403,52 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 //
 //Завершение кейса
 app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
-    var userName = req.param('UserName', null);
-    var caseId = req.param('CaseId', null);
+  var userName = req.param('UserName', null);
+  var caseId = req.param('CaseId', null);
     
-    // [TODO]
-    // 0. Проверить, что пользователь аутентифицирован
-    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-    else {
-      if (req.currentUser.email != userName) res.redirect('/sessions/new');
-      else {
-    
-        // 1. Изменить статус кейса
-        fs.readFile('data/' + userName + '/' + caseId + '.json', "utf-8", function(err, data){
-		    if(!err)
-		    {
-			    var userCase = JSON.parse(data);
-			    userCase.status = 1;
-			    fs.writeFile('data/' + userName + '/' + caseId + '.json', JSON.stringify(userCase, null, "\t"), encoding='utf8', function (err) {
-                  if (err) throw err;
-                });
-		    }});
-		
-		// Получаем название солюшена
-		var solution_name = "";
-		fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
-		    if(!err)
-		    {		        
-		        var userData = JSON.parse(data);
-		        for(var i = 0; i < userData.cases.length; i++)
-		        {
-		            if(userData.cases[i].caseId == caseId)
-		            {
-		                solution_name = userData.cases[i].solutionId;
+  // [TODO]
+  // 0. Проверить, что пользователь аутентифицирован
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    if (req.currentUser.email != userName) res.redirect('/sessions/new?return_to='+req.url);
+    else {		
+  		var solution_name = "";
+	  	fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+	  	  if (!err) {		        
+		      var userData = JSON.parse(data);
+		      for(var i = 0; i < userData.cases.length; i++)
+		      {
+		        if ( userData.cases[i].caseId == caseId ) {
+		          
+		          // Меняем статус кейса и записываем это
+		          userData.cases[i].state = "completed";
+		          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userData, null, "\t"), encoding='utf8',
+		            function (err) { if (err) throw err; } );
+		          
+		          solution_name = userData.cases[i].solutionId;
 		                
-                        // 2. Записать статистику
-                        // тут Solution -> solution_name. Сейчас брать неоткуда(
+              // Записываем статистику
 
-                        if ( req.body.isSolved == 'yes' ) {
-                          increaseSolutionStatistics ( solution_name, 'finished_successful' );
-                          if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
-                          else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' );
-                        }
-                        else {
-                          increaseSolutionStatistics ( solution_name, 'finished_successful' );
-                          if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
-                          else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
-                        }
-		                
-		                break;
-	                }
-                }
+              if ( req.body.isSolved == 'yes' ) {
+                increaseSolutionStatistics ( solution_name, 'finished_successful' );
+                if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+                else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' );
+              }
+              else {
+                increaseSolutionStatistics ( solution_name, 'finished_failed' );
+                if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+                else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
+              }      
+		          break;
+	          }
+          }
 		    }
-		    else
-		        console.log("Error at case finish: " + err);
-		});
-
-        // 3. Отправить на главную страницу
-        res.redirect('/');
-        }
+		    else console.log("Error at case finish: " + err);
+		  });
+      // 3. Отправить на главную страницу
+      res.redirect('/UserData/'+userName);
     }
+  }
 });
 
 app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
@@ -535,7 +521,7 @@ function createCaseFile ( userName, caseId, solutionId ) {
         caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
       }
       
-      caseContents.currentStep = caseContents.steps[0].id;
+      caseContents.currentStep = solutionData.initialStep;
       
       fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
       fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
@@ -544,10 +530,6 @@ function createCaseFile ( userName, caseId, solutionId ) {
     }
   });
 }
-
-app.get('/addcasetouser/:SolutionName', loadUser, function(req, res) {
-  res.redirect('/Problems/');
-});
 
 app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
   
@@ -565,7 +547,8 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
         var userJSON = JSON.parse(data);
         var case_obj = {
           solutionId: solutionId,
-          caseId: caseId
+          caseId: caseId,
+          state: "active"
         };
         userJSON.cases.push (case_obj);
                 
@@ -638,6 +621,27 @@ app.get('/sessions/new', loadUser, function(req, res) {
   });
 });
 
+function checkUserEnv ( user_id ) {
+  stats = fs.lstatSync('data/UserData/'+user_id);        
+  if ( !stats.isDirectory() ) {
+    fs.unlinkSync('data/UserData/'+user_id);
+    console.log('Deleting file '+'data/UserData/'+user_id);
+    throw "User's directory doesn't exist";
+  }
+        
+  stats = fs.lstatSync('data/UserData/'+user_id+'/cases');
+  if ( !stats.isDirectory() ) {
+    fs.unlinkSync('data/UserData/'+user_id+'/cases');
+    console.log('Deleting file '+'data/UserData/'+user_id+'/cases');
+    throw "User's cases directory doesn't exist";
+  }
+        
+  data = fs.readFileSync('data/UserData/' + user_id + '/user.json', "utf-8");
+  if ( data == "" ) throw "Empty user.json file"; 
+  var userData = JSON.parse(data);
+  if ( userData.id == null ) throw "Incorrect user.json file";
+}
+
 app.post('/sessions', function(req, res) {
 
   var return_to = parseReturnTo(req.query.return_to);
@@ -645,46 +649,16 @@ app.post('/sessions', function(req, res) {
   User.findOne({ email: req.body.user.email }, function(err, user) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
-          
-      try
-      {
-        stats = fs.lstatSync('data/UserData/'+user.email);        
-        if ( !stats.isDirectory() ) {       
-          fs.unlink('data/UserData/'+user.email, function (err) {
-            if (err) throw err;
-            console.log('Deleting file '+'data/UserData/'+user.email);
-          });
-          throw "User's directory doesn't exist";
-          //userCreateEnv(user);
-        }
-        
-        stats = fs.lstatSync('data/UserData/'+user.email+'/cases');
-        if ( !stats.isDirectory() ) {
-          fs.unlink('data/UserData/'+user.email+'/cases', function (err) {
-            if (err) throw err;
-            console.log('Deleting file '+'data/UserData/'+user.email+'/cases');
-          });
-          throw "User's cases directory doesn't exist";
-          //userCreateEnv(user);
-        }
-        
-        fs.readFile('data/UserData/' + user.email + '/user.json', "utf-8", function(err, data){
-          if (!err) {
-            var userJSON = JSON.parse(data);
-            //console.log (userJSON);
-            if ( userJSON.id == null ) throw "Incorrect user.json file";
-          }
-          else throw err;          
-        });
+      
+      try {
+        checkUserEnv ( user.email );
       }
-      catch (e)
-      {
-          console.log(user.email + ": " + e);
-          userCreateEnv(user);
+      catch (e) {
+        console.log (user.email + ": " + e);
+        userCreateEnv ( user.email );
       }
       
       req.flash('info', 'Вы вошли в систему. Здравствуйте!');
-
       // Remember me
       if (req.body.remember_me) {
         var loginToken = new LoginToken({ email: user.email });
@@ -692,14 +666,17 @@ app.post('/sessions', function(req, res) {
           res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
           res.redirect(return_to);
         });
-      } else {
+      }
+      else {
         res.redirect(return_to);
-      }      
-    } else {
+      }           
+    }
+    else {
       req.flash('error', 'E-mail и пароль не подходят');
       res.redirect('/sessions/new?return_to='+return_to);
-    }
-  }); 
+    }   
+  });
+   
 });
 
 app.get('/login', loadUser, function(req, res) {
