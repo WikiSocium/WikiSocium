@@ -235,7 +235,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 									   'title' : problemName,
                      	               'user':req.currentUser, 
 									   'problem' : problem,
-									   'scripts' : [],
+									   'scripts' : ['/javascripts/modal_window.js'],
                       styles:[]
 						   });
 					}
@@ -301,28 +301,28 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
               {
                 var solutionData = JSON.parse(data);
                 var stylesToInject = [];
-                var scriptsToInject =      [
-                        'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
-                        'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
-				        'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                        'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
-                        '/inputex/src/loader.js',
-				        '/javascripts/jquery.json-2.3.min.js',
-				        '/javascripts/CaseDataController.js',
-				        '/javascripts/StepsController.js',
-                        '/javascripts/customWidgets/timer.js',
-				        '/javascripts/runtime.min.js',
-				        '/javascripts/jquery.watch-2.0.min.js',
-				        '/javascripts/jquery.prettyPhoto.js'];
+                var scriptsToInject = [
+                  'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
+                  'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+				          'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                  'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                  '/inputex/src/loader.js',
+				          '/javascripts/jquery.json-2.3.min.js',
+				          '/javascripts/CaseDataController.js',
+				          '/javascripts/StepsController.js',
+                  '/javascripts/customWidgets/timer.js',
+				          '/javascripts/runtime.min.js',
+				          '/javascripts/jquery.watch-2.0.min.js',
+				          '/javascripts/jquery.prettyPhoto.js',
+				          '/javascripts/modal_window.js'
+				        ];
 				        
                 // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
                 var requiredDocuments = solutionData.data.documents;
                 if(requiredDocuments)
                 {
-                  for(var i = 0; i < requiredDocuments.length; i++)
-                    scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                  if(requiredDocuments.length != 0)
-                    scriptsToInject.push("/documents/DocumentsController.js");
+                  for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                  if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
                   scriptsToInject.push("/javascripts/jquery.markitup.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
@@ -703,7 +703,7 @@ app.post('/sessions', function(req, res) {
 });
 
 app.get('/login', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.query.return_to);
   else res.redirect('/');
 });
 

@@ -214,7 +214,11 @@ function CheckNextInfo(nextInfo)
 
 function ShowEndCasePopup()
 {
-  $("#endCasePopup").fadeIn(100);
+  var modal_title = "Завершение дела";
+  var buttons = [];
+  buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+  buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
+  showModalWindow ( modal_title, "", buttons, 550, 320, "endCasePopup" );
 }
 
 function HideEndCasePopup()

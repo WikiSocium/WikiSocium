@@ -1,30 +1,26 @@
-div(class="endCasePopupShader")
 div(class="endCasePopup")
-  form(method="post", action="#{caseName}/endCase")
+  form(method="post", action="#{caseName}/endCase", id="endCaseForm")
     fieldset
       legend Удалось ли решить проблему?
       p
         input(type="radio", name="isSolved", value="yes", onchange="EndCasePopupSelectionChanged()", checked)
-        Да
-      p
+        &nbsp;Да
+        br
         input(type="radio", name="isSolved", value="no", onchange="EndCasePopupSelectionChanged()")
-        Нет
+        &nbsp;Нет
     fieldset(id="endCase1")
       legend Решение верное?
       p
         input(type="radio", name="isSolutionUsed", value="yes", checked)
-        Да, всё получилось благодаря этому решению
-      p
+        &nbsp;Да, всё получилось благодаря этому решению
+        br
         input(type="radio", name="isSolutionUsed", value="no")
-        Нет, я пошёл другим путем
+        &nbsp;Нет, я пошёл другим путем
     fieldset(id="endCase2", style="display:none;")
       legend Решение верное?
       p
         input(type="radio", name="isSolutionCorrect", value="yes", checked)
-        Да, проблема не в описании решения
-      p
+        &nbsp;Да, проблема не в описании решения
+        br
         input(type="radio", name="isSolutionCorrect", value="no")
-        Нет, решение плохое
-     p
-       input(type="submit", value="Завершить")
-  div(class="nextStepButton hideEndCasePopupButton", onClick="HideEndCasePopup()") закрыть
+        &nbsp;Нет, решение плохое
