@@ -6,7 +6,7 @@
 	{
 		"documents"	: ["BadItemComplaint"]		
 	},			
-	"initialStep"	:	"0",
+	"currentstep"	:	"0",
 	"sections"	:
 	[
 		{

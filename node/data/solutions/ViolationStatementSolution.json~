@@ -10,7 +10,7 @@
         "documents" : ["ViolationStatement"]
     },
     
-    "initialStep" :"0",
+    "currentStep" :"0",
     
     "steps"       :
     [
