@@ -29,6 +29,7 @@
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
+							"IsRequired"    : false,
 							"label"		:	"Что купили? TODO:(Например: мобильный телефон)" 
 						},
 						{
