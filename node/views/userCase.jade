@@ -26,7 +26,6 @@ div(class="offset1")
     div
       div(class="btn", onClick="PrevStep()") Предыдущий шаг
       div(class="btn", onClick="NextStep()") Следующий шаг
-      div(class="btn", onClick="SaveAndExit()") Сохранить
-      span и перейти к списку кейсов
+      a(href="/mycases") Перейти к списку кейсов
     div(id="endCasePopup")
       != partial('endCasePopup', {caseName: caseName})
