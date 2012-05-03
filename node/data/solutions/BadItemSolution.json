@@ -33,7 +33,7 @@
 						},
 						{
 							"widget_type"	:	"CheckBoxWidget",
-							"id"		:	"IsTecComplicated",
+							"id"		:	"IsTechComplicated",
 							"label"		:	"Это технически сложный товар?(TODO: компьютер, холодильник, мобильный телефон - см. Перечень технически сложных товаров)" 
 						},
 						{
@@ -127,13 +127,13 @@
 						
 				},
 				{
-					"title": "О себе (TODO: Необязательно. Мы не показываем Ваших персональных данных без Вашего согласия)",
+					"title": "О себе (TODO: Необязательно. Вы можете вписать их в претензию самостоятельно.)",
 					"widgets":
 					[
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"UserName",
-							"label"		:	"Ваши Фамилия, Имя, Отчество"		
+							"label"		:	"Ваши Фамилия, Имя, Отчество"	
 						},
 						{
 							"widget_type" : "MapsWidget",
@@ -196,6 +196,24 @@
 							"value"	:	"2"
 						}
 					]
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"DeliveryDate",
+					"label"		:	"Дата доставки",
+					"type"		:	"date",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"2"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
@@ -262,6 +280,24 @@
 							"value"	:	"1"
 						}
 					]	
+				},
+				{
+				 "widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsDate",
+					"label"		:	"Дата обнаружения недостатков",
+					"type"    : "date",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
@@ -372,73 +408,155 @@
 				{
 					"widget_type"	:	"RadioGroupWidget",
 					"id"		:	"RequestsNotDelivered",
-					"label"		:	"Требую: TODO: появляется, если в IsDeliveryProblems указано, что товар не привезли (значение 0)",
+					"label"		:	"Требую: ",
 					"value_list"	:
 					[
 						{
 							"value"	: 	"0",
-							"label"	:	"Передать товар в новый срок (TODO: а потребовать при этом неустойку или ещё-что либо можно?)"
+							"label"	:	"Передать товар в новый срок"
 						},
 
 						{
 							"value"	:	"1",
-							"label"	:	"Расторжение договора и возврат предоплаты (TODO: Что, если предоплаты не было?)"
+							"label"	:	"Расторгнуть договор купли продажи и вернуть предоплату"
 						}
-					]
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"RequestsNewDeliveryDate",
-					"label"		:	"Новый срок доставки товара (TODO: появляется, только если выбрано \"передать товар в новый срок\")"
+					"label"		:	"Новый срок доставки товара",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNotDelivered",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							}						
+						]
+					}
 				},
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"RequestsDeliveryDelayMoney",
-					"label"		:	"Требуем уплаты неустойки в размере 0.5% за каждый день опоздания (TODO1: появляется, только если в IsDeliveryProblems указано, что товар привезли с опозданием (значение 1); TODO2: реализация формул для размера неустойки)"
+					"label"		:	"Требуем уплаты неустойки в размере 0.5% за каждый день опоздания",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"Prerequisite4TechComplicated",
-					"label"		:	"С момента покупки прошло не больше 15 дней или недостатки являются существенными (TODO1: появляется, только если выбрано \"товар технически сложный\" TODO2: Что такое существенный недостаток?)"
+					"label"		:	"С момента покупки прошло не больше 15 дней или недостатки являются существенными TODO: сссылка: Что такое существенный недостаток?)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"RadioGroupWidget",
 					"id"		:	"RequestsTechComplicated",
-					"label"		:	"TODO: Появляется, только если Prerequisite4TechComplicated==true",
+					"label"		:	"Требую",
 					"value_list"	:
 					[
 						{
 							"value"	:	"0",
-							"label"	:	"Заменить на товар этой же марки, модели, артикула с пересчётом покупной цены (TODO: откуда тут пересчёт цены? Может быть, можно требовать заменить на другой товар с пересчётом цены?)"
+							"label"	:	"Расторгнуть договор купли-продажи и вернуть уплаченную за товар сумму"
 						},
 						{
 							"value"	:	"1",
-							"label"	:	"Возврата уплаченной за товар суммы"
+							"label"	:	"Заменить товар с недостатками на товар этой же марки (модели)"
+						},
+						{
+							"value"	:	"2",
+							"label"	:	"Заменить товар с недостатками на товар другой марки (модели) с соответствующим перерасчётом покупной цены"
 						}
-
-					]		
+	
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"Prerequisite4TechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}		
 				},
 				{
 					"widget_type"	:	"RadioGroupWidget",
 					"id"		:	"RequestsNonComplicated",
-					"label"		:	"Требую: TODO: Появляется, если не выбрано, что товар технически сложный",
+					"label"		:	"Требую: ",
 					"value_list"	:
 					[
 						{
 							"value"	:	"0",
-							"label"	:	"Возврата уплаченной за товар суммы"
+							"label"	:	"Расторгнуть договор купли-продажи и вернуть уплаченную за товар сумму"
 						},
 						{
 							"value"	:	"1",
-							"label"	:	"Заменить на товар этой же марки, модели, артикула"
+							"label"	:	"Заменить товар с недостатком на товар этой же марки (модели)"
 						},
 						{
 							"value"	:	"2",
-							"label"	:	"Заменить на такой же товар другой марки, модели, артикула с соответствующим перерасчётом покупной цены"
+							"label"	:	"Заменить на такой же товар другой марки (модели) с соответствующим перерасчётом покупной цены"
 						},
 						{
 							"value"	:	"3",
-							"label"	:	"Соразмерно уменьшить покупную цену (TODO: мы сами не предлагаем, насколько?)"
+							"label"	:	"Уменьшить покупную цену и вернуть мне разницу"
 						},
 						{
 							"value"	:	"4",
@@ -446,28 +564,112 @@
 						},
 						{
 							"value"	:	"5",
-							"label"	:	"Возместить ущерб из-за устранения недостатков своими силами (TODO: например, Вы купили не оказавшееся в комплекте зарядное устройство для телефона)"
+							"label"	:	"Возместить ущерб из-за устранения недостатков своими силами"
 						}
 
-					]		
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"! =",								
+								"value"		:	"0"
+							}
+						]
+					}		
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"PriceDiscountMoney",
+					"label"		:	"На сколько, Вы считаете, нужно снизить цену товара (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNonComplicated",
+								"cond"		:	"==",								
+								"value"		:	"3"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"SelfRepairMoney",
-					"label"		:	"Размер ущерба из-за возмещения недостатков (TODO: появляется, только если выбрано \"возместить ущерб из-за устранения недостатков своими силами\")",
-					"type"		:	"number"
+					"label"		:	"Размер ущерба из-за возмещения недостатков своими силами",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNonComplicated",
+								"cond"		:	"==",								
+								"value"		:	"5"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"RequestHealthProblems",						
-					"label"		:	"Во сколько Вы оцениваете нанесённый вред здоровью (TODO: появляется, если только IsProblemsHealth==true)",
-					"type"		:	"number"
+					"label"		:	"Во сколько Вы оцениваете вред, нанесённый Вашему здоровью (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsHealth",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"RequestDamage",
-					"label"		:	"Во сколько Вы оцениваете ущерб из-за недостатков товара? (TODO: появляется, если только IsProblemsMoney==true)",
-					"type"		:	"number"
+					"label"		:	"Во сколько Вы оцениваете ущерб из-за недостатков товара (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsMoney",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
 				}
 
 			],
@@ -497,19 +699,22 @@
 				{
 					"widget_type"	:	"StaticTextWidget",
 					"id"		:	"SendCompaintInfo",
-					"label"		: "TODO: Рекомендации по отправке претензии"	
+					"label"		: "<div>   <li> Распечатайте текст претензии (не забудьте заполнить персональные данные!)   <li> Сделайте ксерокопию чека или договора купли-продажи и приложите их к претензии.<li> Отправьте претензию с приложениями, если они есть, по почте, заказным письмом с уведомлением о вручении - см. <a>TODO: Отправка заказного письма с уведомлением</a>. Тогда можно будет отследить, что письмо пришло адресату. А если дело дойдёт до суда, уведомление является доказательством получения адресатом претензии. <li> Укажите здесь, когда Вам придёт уведомление о доставке письма. После указания этого момента мы запустим отсчёт времени, в течение которого Вам должны будут ответить </div>"	
 				},
 				{
-					"widget_type"	:	"CheckBoxWidget",
-					"id"		:	"IsComplaintSent",
-					"label"		:	"Да, я отправил(а) претензию"	
-				},
-				{
-					"widget_type"	:	"TextFieldWidget",
-					"id"		:	"ComplaintSentDate",
-					"label"		:	"Дата отправки претензии (TODO: появляется только после того, как выбрано \"я отправил претензию\" TODO2: По умолчанию текущая дата)",
-					"type"		:	"date"
-				}
+          "widget_type" : "TimerFromDateWidget",
+          "id" : "SendCompaintTimer",
+          "pickDateMessage": "Когда вы получили уведомление о доставке претензии?",
+          "iDidItMessage": "Я отправил претензию и получил уведомление о доставке",
+          "initial":
+          {
+            "startDate": "0",
+            "pauseDate": "0",
+            "workingPeriod": {"days": "27", "hours": "0", "leftover": "0"},
+            "state": "stopped"
+          }
+}
+        
 				
 			],
 			"next"		:	[ { "id" : "6" } ] 					
