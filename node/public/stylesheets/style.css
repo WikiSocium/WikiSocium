@@ -103,6 +103,12 @@
     cursor: pointer;
 }
 
+.mediaWidgetButton
+{
+    margin-bottom: 20px;
+    margin-top: 0px;    
+}
+
 .openURLRemoveButton:hover,
 .nextStepButton:hover
 {
