@@ -1,0 +1,21 @@
+div align=right
+  #{data["0.5"].SellerName}
+  #{data["0.5"].SellerAddress}
+div align=center
+  ПРЕТЕНЗИЯ
+div
+  #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice}. 
+  if data["0"].IsItemPrePaid
+    Предоплата составила #{data["0"].ItemPrePaidPrice} рублей. 
+  if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 1
+    Товар должен был быть доставлен мне TODO: "дата доставки", но доставка была выполнена c опозданием на #{data["0"].DeliveryDelayDays} дней.
+  elif data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 0
+    До настоящего времени товар доставлен не был.   
+div
+  if data["2"].IsItemProblems
+    В товаре были найдены следующие недостатки: #{data["2"].ItemProblems}. 
+    TODO: вред здоровью, вред имуществу
+div
+  Руководствуясь нормами Закона Российской Федерации о Защите прав Потребителей, ТРЕБУЮ: 
+  li TODO: куча требований
+  li TODO: куча требований 
