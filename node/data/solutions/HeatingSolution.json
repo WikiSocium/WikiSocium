@@ -9,7 +9,7 @@
 		"documents"	: ["HeatingStatement"]
 	},
 	
-	"currentStep"	: "0",
+	"initialStep"	: "0",
 
 	"steps"	:
 	[

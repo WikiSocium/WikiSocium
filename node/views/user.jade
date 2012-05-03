@@ -9,5 +9,12 @@ div(class="offset1")
       div= requestedUser.cases.length
 
     #cases
+      h2 Активные дела
       - each aCase in requestedUser.cases
-        !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+        - if (aCase.state == 'active')
+          !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+        
+      h2 Завершенные дела
+      - each aCase in requestedUser.cases
+        - if (aCase.state == "completed")
+          !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
