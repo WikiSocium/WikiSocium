@@ -28,25 +28,74 @@ function ShowProperStep()
     	if (solutionData.steps[temporaryCurrentStep].widget_groups[i].visible==false)
     	{
     		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
-    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
+		{
+			if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
+			{
+				YUI().use('inputex', function(Y) 
+	    			{
+	    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
+				});
+			}
+
+			   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
+		}
     	}
     	else
     	{
     		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
     		{
     			if (solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].visible==false)
+			{
+				if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
+				{
+					YUI().use('inputex', function(Y) 
+		    			{
+		    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: false});
+					});
+				}
 	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
+			}
 	    		else
-	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show().toggleClass("isInvisible");
-	   		}
+			{
+				if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
+				{
+					YUI().use('inputex', function(Y) 
+		    			{
+		    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
+					});
+				}
+
+	    		   	$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show().toggleClass("isInvisible");
+			}
 	   	}
+	   }
     }
     for (i in solutionData.steps[temporaryCurrentStep].widgets)
     {
     	if (solutionData.steps[temporaryCurrentStep].widgets[i].visible==false)
+	{
+		if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
+		{
+			YUI().use('inputex', function(Y) 
+    			{
+    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: false});
+			});
+		}
+
     		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide().toggleClass("isInvisible");
-   		else
+	}
+   	else
+	{
+		if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
+		{
+			YUI().use('inputex', function(Y) 
+    			{
+    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
+			});
+		}
+
 		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).show().toggleClass("isInvisible");
+	}
     }
   }
   
@@ -214,7 +263,11 @@ function CheckNextInfo(nextInfo)
 
 function ShowEndCasePopup()
 {
-  $("#endCasePopup").fadeIn(100);
+  var modal_title = "Завершение дела";
+  var buttons = [];
+  buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+  buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
+  showModalWindow ( modal_title, "", buttons, 550, 320, "endCasePopup" );
 }
 
 function HideEndCasePopup()
@@ -391,16 +444,46 @@ function OnWidgetChanged()
     	if (solutionData.steps[tcs].widget_groups[i].visible==false)
     	{
     		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
+		{
+			if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+			{
+				YUI().use('inputex', function(Y) 
+    				{
+    					window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
+				});
+			}
+
     		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+		}
     	}
     	else
     	{
     		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
     		{
     			if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible==false)
+			{
+				if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+				{
+					YUI().use('inputex', function(Y) 
+		    			{
+		    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
+					});
+				}
+
 	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+			}
 	    		else
+			{
+				if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+				{
+					YUI().use('inputex', function(Y) 
+    					{
+    						window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
+					});
+				}
+
 	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).show();
+			}
 	   		}
 	   	}
     }
@@ -408,11 +491,26 @@ function OnWidgetChanged()
     {
     	if (solutionData.steps[tcs].widgets[i].visible==false)
     	{
+		if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+		{
+			YUI().use('inputex', function(Y) 
+    			{
+    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
+			});
+		}
     		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
     	}
    		else
    		{
-		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+			if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+			{
+				YUI().use('inputex', function(Y) 
+	    			{
+	    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
+				});
+			}
+			   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+
 		}
     }
 	});
@@ -421,6 +519,12 @@ function OnWidgetChanged()
 function SaveAndExit() {
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
+}
+
+var autoSaveTime = 2 * 1000; 
+function AutoSave() {
+  previousStepId = getPreviousStepId ( currentStepId );
+  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
 }
 
 /*
@@ -440,5 +544,7 @@ $(document).ready(function() {
   currentCaseData = new CaseDataController(solutionData);
   
   CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
-  ShowProperStep();    
+  ShowProperStep();
+    
+  setTimeout(AutoSave, autoSaveTime);
 });

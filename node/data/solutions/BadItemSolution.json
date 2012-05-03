@@ -6,7 +6,7 @@
 	{
 		"documents"	: ["BadItemComplaint"]		
 	},			
-	"currentstep"	:	"0",
+	"initialStep"	:	"0",
 	"sections"	:
 	[
 		{
@@ -29,6 +29,7 @@
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
+							"IsRequired"    : false,
 							"label"		:	"Что купили? TODO:(Например: мобильный телефон)" 
 						},
 						{
@@ -152,21 +153,27 @@
 			[
 				{ 
 					"id" 		:	"1",
-					"predicate" 	:	
-					{
+					"predicates" 	:	
+					[
+						{
+						"step_id"	: "0",
 						"widget_id"	:	"IsItemDelivered",
 						"cond"		:	"==",
 						"value"		:	"1" 						
-					}
+						}
+					]
 				},
 				{ 
 					"id" 		:	"2",
-					"predicate" 	:	
-					{
-						"widget_id"	:	"IsItemDelivered",
-						"cond"		:	"==",
-						"value"		:	"0" 						
-					}
+					"predicates" 	:
+					[	
+						{
+							"step_id"	: "0",
+							"widget_id"	:	"IsItemDelivered",
+							"cond"		:	"==",
+							"value"		:	"0" 						
+						}
+					]
 				}		
 			]					
 		},
@@ -240,21 +247,25 @@
 			[ 
 				{ 
 					"id" 		:	"2",
-					"predicate" 	:	
-					{
-						"widget_id"	:	"IsDeliveryProblems",
-						"cond"		:	"!=",
-						"value"		:	"0" 						
-					}
+					"predicates" 	:
+					[	
+						{
+							"widget_id"	:	"IsDeliveryProblems",
+							"cond"		:	"!=",
+							"value"		:	"0" 						
+						}
+					]
 				},
 				{ 
 					"id" 		:	"3",
-					"predicate" 	:	
-					{
-						"widget_id"	:	"IsDeliveryProblems",
-						"cond"		:	"==",
-						"value"		:	"0" 						
-					}
+					"predicates" 	:	
+					[
+						{
+							"widget_id"	:	"IsDeliveryProblems",
+							"cond"		:	"==",
+							"value"		:	"0" 						
+						}
+					]
 				}
 			]
 		},

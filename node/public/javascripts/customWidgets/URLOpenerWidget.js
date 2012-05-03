@@ -7,7 +7,8 @@ URLOpenerWidget.prototype.getValue = function()
 {
     var tmpList = [];
     for(var i = 0; i < this.fields.length; i++)
-      tmpList.push(this.fields[i].getValue());
+        if(this.fields[i].getValue().length != 0)
+            tmpList.push(this.fields[i].getValue());
     return tmpList;
 }
 
@@ -29,7 +30,8 @@ URLOpenerWidget.prototype.addField = function()
     function(Y){
         tmp_this.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                     name: (new Date()),
-                                                    value: 'input data here',
+                                                    value: '',
+                                                    typeInvite: 'Input Media URL Here',                                                    
                                                     required: true,
                                                     parentEl: $(tmp_this).parent()[0]}));
         });

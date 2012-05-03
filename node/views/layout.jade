@@ -16,7 +16,10 @@ html
       link(rel='stylesheet', href=style)
 
     -each script in scripts 
-      script(type='text/javascript', src=script)      
+      script(type='text/javascript', src=script)
+    script(type='text/javascript')
+      var user = {};
+      user.guest = #{user.guest};  
 
   body
     div.container-fluid

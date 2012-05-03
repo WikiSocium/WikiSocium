@@ -4,6 +4,7 @@ div(class="offset1")
     script(type='text/javascript')
       var solutionData = !{JSON.stringify(solutionData)};
       if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
+      else currentStepId = "#{solutionData.initialStep}";
       stepsHistory = !{JSON.stringify(stepsHistory)};
       
     h1
@@ -28,4 +29,4 @@ div(class="offset1")
       div(class="btn", onClick="SaveAndExit()") Сохранить
       span и перейти к списку кейсов
     div(id="endCasePopup")
-      != partial('endCasePopup', {caseName: solutionData.id})
+      != partial('endCasePopup', {caseName: caseName})
