@@ -163,14 +163,14 @@ function CollectWidgetData(step_index, widget_id)
 
 function CollectFormData()
 {
-  var data = new Array();
+  var data = {};
   YUI().use('inputex', function(Y) 
   {
     for(var i = 0 ; i < groups.length ; i++)
     {
-      data[i] = new Object();
+      data[solutionData.steps[i].id] = {};
       for(var widg in groups[i])
-        data[i][widg] = groups[i][widg].getValue();
+        data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
     }
   });
   return data;

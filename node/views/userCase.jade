@@ -21,7 +21,7 @@ div(class="offset1")
         - if (caseData == null)
           !=partial('aStep', {step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
         - else
-          !=partial('aStep', {step:step, stepData:caseData[i], step_index:i, sectionData:solutionData.sections})
+          !=partial('aStep', {step:step, stepData:caseData[step.id], step_index:i, sectionData:solutionData.sections})
     div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
     div
       div(class="btn", onClick="PrevStep()") Предыдущий шаг
