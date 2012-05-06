@@ -24,11 +24,11 @@ block content
               opener.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                             name: 'step#{step_id}_#{widget.id}',
                                                             value: old_field[i].getValue(),
-                                                            typeInvite: 'Input Media URL Here',
+                                                            typeInvite: 'Введите адрес картинки или видео',
                                                             required:true,
                                                             parentEl: 'step_#{step_id}_widget_#{widget.id}'}));
-              $('#step_#{step_id}_widget_#{widget.id}').append($('<input type=button>').attr('class', 'openURLRemoveButton').attr('value', 'Remove').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();}); '));
-              $('#step_#{step_id}_widget_#{widget.id}').append($('<a>').attr('href', old_field[i].getValue()).attr('width', '50').attr('height', '50').attr('rel', 'prettyPhoto').html('Посмотреть'));              
+            $('#step_#{step_id}_widget_#{widget.id}').append($('<div>').attr('class', 'btn mediaWidgetButton').html('Удалить').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});'));
+            $('#step_#{step_id}_widget_#{widget.id}').append($('<a>').attr('class', 'mediaPreview').attr('href', old_field[i].getValue()).attr('rel', 'prettyPhoto').append($('<img>').attr('ONERROR', '$(this).parent().html("Посмотреть видео");').attr('width', '50').attr('height', '50').attr('src', old_field[i].getValue())));              
             }
             step#{step_id}FieldsList['#{widget.id}'] = opener;
             $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
@@ -45,13 +45,13 @@ block content
             opener.fields.push(new Y.inputEx.StringField({label: 'URL',
                                                         name: 'step#{step_id}_#{widget.id}',
                                                         value: strings[i],
-                                                        typeInvite: 'Input Media URL Here',                                                        
+                                                        typeInvite: 'Введите адрес картинки или видео',                                                        
                                                         required:true,
                                                         parentEl: 'step_#{step_id}_widget_#{widget.id}'}));
-            $('#step_#{step_id}_widget_#{widget.id}').append($('<input type=button>').attr('class', 'openURLRemoveButton').attr('value', 'Remove').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});'));
-            $('#step_#{step_id}_widget_#{widget.id}').append($('<a>').attr('href', strings[i]).attr('width', '50').attr('height', '50').attr('rel', 'prettyPhoto').html("Посмотреть"));
+            $('#step_#{step_id}_widget_#{widget.id}').append($('<div>').attr('class', 'btn mediaWidgetButton').html('Удалить').attr('onClick', 'groups[#{step_id}]["#{widget.id}"].removeField(' + i + '); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});'));
+            $('#step_#{step_id}_widget_#{widget.id}').append($('<a>').attr('class', 'mediaPreview').attr('href', strings[i]).attr('rel', 'prettyPhoto').append($('<img>').attr('ONERROR', '$(this).parent().html("Посмотреть видео");').attr('width', '50').attr('height', '50').attr('src', strings[i])));              
         }
         step#{step_id}FieldsList['#{widget.id}'] = opener;
         $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
     });
-  input(type="button", class="openURLButton", value="Add", onClick="groups[#{step_id}]['#{widget.id}'].addField(); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});")
+  div(class="btn mediaWidgetButton", onClick="groups[#{step_id}]['#{widget.id}'].addField(); SaveFormData(currentStepId, currentStepId, function(){addFieldToGroup();});") Добавить
