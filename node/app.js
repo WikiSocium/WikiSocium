@@ -312,7 +312,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 				          '/javascripts/runtime.min.js',
 				          '/javascripts/jquery.watch-2.0.min.js',
 				          '/javascripts/jquery.prettyPhoto.js',
-				          '/javascripts/modal_window.js'
+				          '/javascripts/modal_window.js',
+				          '/javascripts/RegionalizedData.js'
 				        ];
 				        
                 // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
@@ -361,6 +362,19 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
     }
   }
 });
+
+//
+// Механизм запросов регионализируеммых данных
+app.post('/GetRegionalizedData', function(req, res) {
+    var region = req.body.region;
+    var db     = req.body.db;
+    var dataId = req.body.dataId;
+    
+    // [TODO] Use mondodb interface
+    
+    res.send(region + "|" + db + "|" + dataId);
+});
+
 //        
 //Сохранение данных кейса        
 app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
