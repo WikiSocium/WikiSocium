@@ -1,6 +1,3 @@
-//
-// [TODO] Это все надо оформить в виде объекта StepsController, чтобы методы не "висели" в воздухе
-//
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
 var previousStepId = null;
@@ -10,9 +7,12 @@ var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
-function checkStepExists ( step_id ) {
-  for (key in solutionData.steps) {
-    if ( solutionData.steps[key].id == step_id ) return true;
+function checkStepExists ( step_id ) 
+{
+  for (key in solutionData.steps) 
+  {
+    if ( solutionData.steps[key].id == step_id ) 
+        return true;
   }
   return false;
 }
@@ -20,99 +20,29 @@ function checkStepExists ( step_id ) {
 function ShowProperStep()
 {
   var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
-  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) {
+  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) 
+  {
     $(".step").hide().toggleClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
-    for (i in solutionData.steps[temporaryCurrentStep].widget_groups)
-    {
-    	if (solutionData.steps[temporaryCurrentStep].widget_groups[i].visible==false)
-    	{
-    		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
-		{
-			if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
-			{
-				YUI().use('inputex', function(Y) 
-	    			{
-	    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
-				});
-			}
-
-			   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
-		}
-    	}
-    	else
-    	{
-    		for (j in solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets)
-    		{
-    			if (solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].visible==false)
-			{
-				if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
-				{
-					YUI().use('inputex', function(Y) 
-		    			{
-		    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: false});
-					});
-				}
-	    		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).hide().toggleClass("isInvisible");
-			}
-	    		else
-			{
-				if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
-				{
-					YUI().use('inputex', function(Y) 
-		    			{
-		    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
-					});
-				}
-
-	    		   	$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widget_groups[i].widgets[j].id).show().toggleClass("isInvisible");
-			}
-	   	}
-	   }
-    }
-    for (i in solutionData.steps[temporaryCurrentStep].widgets)
-    {
-    	if (solutionData.steps[temporaryCurrentStep].widgets[i].visible==false)
-	{
-		if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
-		{
-			YUI().use('inputex', function(Y) 
-    			{
-    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: false});
-			});
-		}
-
-    		$("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).hide().toggleClass("isInvisible");
-	}
-   	else
-	{
-		if (solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==true || solutionData.steps[temporaryCurrentStep].widgets[i].IsRequired==undefined)
-		{
-			YUI().use('inputex', function(Y) 
-    			{
-    				window["step"+temporaryCurrentStep+"FieldsList"][solutionData.steps[temporaryCurrentStep].widgets[i].id].setOptions({required: true});
-			});
-		}
-
-		   $("#"+"step_"+temporaryCurrentStep+"_widget_"+solutionData.steps[temporaryCurrentStep].widgets[i].id).show().toggleClass("isInvisible");
-	}
-    }
   }
   
   if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
+  {
+    YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) 
     {
-      YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) {
-        var destroyButton = new Y.inputEx.widget.Button({
+        var destroyButton = new Y.inputEx.widget.Button(
+        {
           parentEl: 'stepsWrapper',
           id: 'submitForm',
           type: 'submit',
           value: 'Submit the form',
-          onClick: function(){
+          onClick: function()
+          {
             SaveFormData();
           }
         });
-      });
-    }
+    });
+  }
     
     //Набросок альтернативного варианта показа шагов (с багами, надо дописывать)
     /*YUI().use('inputex-string', 'inputex-form', 'inputex-datepicker', 'inputex-timeinterval', 'inputex-group', function(Y) {
@@ -123,90 +53,214 @@ function ShowProperStep()
      }
      });*/
 }
-     
-function SaveFormData( curStep, nextStep, callback ) {
 
-  for (key in stepsHistory) {
-    if ( stepsHistory[key].id == nextStep ) {
+function SaveFormData( curStep, nextStep, callback ) 
+{
+  for (key in stepsHistory) 
+  {
+    if ( stepsHistory[key].id == nextStep ) 
+    {
       stepsHistory[key].prevStep = curStep;
       break;
     }
   }
 
-  var formData = CollectFormData();
-
-  $.ajax({
-    url: window.location.pathname + '/submitForm'
-    , type:'POST'
-    , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(formData))
-    , success: function(res) {
-            callback();
-		}
-	, error: function(jqXHR, textStatus, errorThrown) {
-	        // [TODO]
-        }
-  });    
-}
-
-function CollectWidgetData(step_index, widget_id)
-{
-  var data;
-  YUI().use('inputex', function(Y)
-  {
-    if ((step_index < 0) || (step_index >= groups.length)) {
-      data = undefined;
-    }
-    data = groups[step_index][widget_id].getValue();
-  });
-  return data;
-}
-
-function CollectFormData()
-{
-  var data = new Array();
   YUI().use('inputex', function(Y) 
   {
+    var data = new Array();
     for(var i = 0 ; i < groups.length ; i++)
     {
       data[i] = new Object();
       for(var widg in groups[i])
         data[i][widg] = groups[i][widg].getValue();
     }
+    
+    $.ajax(
+    {
+        url: window.location.pathname + '/submitForm'
+        , type:'POST'
+        , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data))
+        , success: function(res) 
+        {
+            callback();
+	    }
+	    , error: function(jqXHR, textStatus, errorThrown) 
+	    {
+	        // [TODO]
+        }
+    });    
+
   });
-  return data;
+
 }
 
-//Валидация всех виджетов на шаге
-function ValidateStep(step_id)
+function CheckPredicate(predicate) 
 {
-  step_index = currentCaseData.GetStepIndexById(step_id);
-  var isValid = true;
+    var value;
+    if (predicate.step_id!=undefined)
+        value=GetWidgetValue(currentCaseData.GetStepIndexById(predicate.step_id), predicate.widget_id);
+    else
+        value=GetWidgetValue(currentCaseData.GetStepIndexById(step_id), predicate.widget_id);
+        
+    if (typeof value == "undefined") 
+    {
+        return false;
+    }
+  
+    switch(predicate.cond) 
+    {
+        case "==":	return (value == predicate.value);
+        case "!=":	return (value != predicate.value);
+        case "<=":	return (value <= predicate.value);
+        case ">=":	return (value >= predicate.value);
+        case ">":	return (value > predicate.value);
+        case "<":	return (value < predicate.value);
+        default:	return false;
+    }
+}
+
+function NextStep() 
+{
+  $("#validationFailedMessage").hide("fast"); 
+  
+  //Производим валидацию шага
+  
   YUI().use('inputex', function(Y) 
   {
+      step_index = currentCaseData.GetStepIndexById(currentStepId);
+      var isValid = true;
+      
     for(var widg in groups[step_index])
-      if(!groups[step_index][widg].validate()) {
-        isValid = false; break;
-      }
+    {
+        if(!groups[step_index][widg].validate()) 
+        {
+            isValid = false; break;
+        }
+    }
+    if (isValid) FindNextStep(step_index);
+    else //Радуем пользователя сообщением о неправильном заполнении формы
+    {
+        $("#validationFailedMessage").show("slow");
+    }
   });
-  return isValid;    
+} 
+
+function SetWidgetValue (sn, wid, data)
+{
+    var st=solutionData.steps[sn];
+
+    for (var i in st.widgets)
+    {
+        if (st.widgets[i].id==wid)
+            st.widgets[i].widget_value=data; 
+    }
+    for (var i in st.widget_groups)
+    {
+        for (var j in st.widget_groups[i].widgets)
+        {
+            if (st.widget_groups[i].widgets[j].id==wid)
+                st.widget_groups[i].widgets[j].widget_value=data;
+        }
+    }
 }
 
-// Обработчик нажатия кнопки следующего шага
-function CheckPredicate(predicate, step_index) {
-  var value = CollectWidgetData(step_index, predicate.widget_id);
-  
-  if (typeof value === "undefined") {
-    return false;
+function GetWidgetValue (sn, wid)
+{
+    var st=solutionData.steps[sn];
+    var value="undefined";
+    
+    for (var i in st.widgets)
+    {
+        var w=st.widgets[i];
+        if (w.id==wid)
+            value=w.widget_value;
+    }
+    
+    for (var i in st.widget_groups)
+    {
+        var wg=st.widget_groups[i];
+        for (var j in wg.widgets)
+        {
+            var w=wg.widgets[j];
+            if (w.id==wid)
+                value=w.widget_value;
+        }
+    }
+
+    return value;
+}
+ 
+function FindNextStep(step_index)
+{
+  //Собираем информацию о виджетах, необходимых для проверки предикатов
+  YUI().use('inputex', function(Y)
+  {
+    var nextInfo = solutionData.steps[step_index].next;
+    for (var i in nextInfo)
+    {
+        var sid=nextInfo[i].step_id;
+        var wid=nextInfo[i].widget_id;
+        if (wid!=undefined)
+        {
+            var sn;
+            if (sid==undefined) sn=step_index;
+            else sn=currentCaseData.GetStepIndexById(sid);
+            var data;
+            if ((sn < 0) || (sn >= groups.length)) 
+            {
+                data = undefined;
+            }
+            data = groups[sn][wid].getValue();
+            SetWidgetValue(sn, wid, data);
+        }
+        for (var j in nextInfo[i].predicates)
+        {
+            var sid=nextInfo[i].predicates[j].step_id;
+            var sn;
+            if (sid==undefined) sn=step_index;
+            else sn=currentCaseData.GetStepIndexById(sid);
+            var wid=nextInfo[i].predicates[j].widget_id;
+            var data;
+            if ((sn < 0) || (sn >= groups.length)) 
+            {
+                data = undefined;
+            }
+            data = groups[sn][wid].getValue();
+            SetWidgetValue(sn, wid, data);
+        }
+    }
+    var nextStepId;
+    if ( nextStepId = getNextStepId (currentStepId, nextInfo) ) 
+    {      
+        previousStepId = currentStepId;      
+        currentStepId = nextStepId;
+      
+        //Сохраняем на сервере введенные данные
+        SaveFormData( previousStepId, currentStepId, function()
+        {
+            ShowProperStep();
+            CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+        });
+    }
+  } ); 
+}
+
+function getNextStepId (stepId, nextInfo) 
+{
+  var step_index;
+  for (i in nextInfo) 
+  {
+    step_index = CheckNextInfo(nextInfo[i]);	
+    if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) break;
   }
-  
-  switch(predicate.cond) {
-    case "==":	return (value == predicate.value);
-    case "!=":	return (value != predicate.value);
-    case "<=":	return (value <= predicate.value);
-    case ">=":	return (value >= predicate.value);
-    case ">":	return (value > predicate.value);
-    case "<":	return (value < predicate.value);
-    default:	return false;
+  if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) 
+  {
+    return solutionData.steps[step_index].id;
+  }
+  else 
+  {
+    alert('Next step not found');
+    return false;
   }
 }
 
@@ -215,47 +269,52 @@ function CheckNextInfo(nextInfo)
   var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   
   var sourceStep;
-  if (nextInfo.type == "default") {
+  if (nextInfo.type == "default") 
+  {
     return currentCaseData.GetStepIndexById(nextInfo.value);
   }
-  if (nextInfo.type == "list") {
-    if (nextInfo.step_id == undefined) {
-      sourceStep = temporaryCurrentStep;
-    }
-    
-    else {
+  if (nextInfo.type == "list") 
+  {
+    if (nextInfo.step_id == undefined) 
+    {
+        sourceStep = temporaryCurrentStep;
+    }    
+    else 
+    {
       sourceStep = currentCaseData.GetStepIndexById(nextInfo.step_id);
-      if (sourceStep < 0) {
+      if (sourceStep < 0) 
+      {
         return -1;
       }
     }
-    var value = CollectWidgetData(sourceStep, nextInfo.widget_id);
+    var value = GetWidgetValue(sourceStep, nextInfo.widget_id);
     var radioWidgetInfo = currentCaseData.GetWidgetData(sourceStep, nextInfo.widget_id);
-    if (radioWidgetInfo == undefined) {
-      return -1;
+    if (radioWidgetInfo == undefined) 
+    {
+        return -1;
     }
-    for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) {
-      if (radioWidgetInfo.value_list[i].value == value) {
-        return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
-      }
+    for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) 
+    {
+        if (radioWidgetInfo.value_list[i].value == value) 
+        {
+            return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
+        }
     }
     return -1;
   }
-  else if (nextInfo.type == undefined) {
-    var check = false;
-    for (j in nextInfo.predicates) {
-      if (nextInfo.predicates[j].step_id == undefined) {
-        sourceStep = temporaryCurrentStep;
-      } else {
-        sourceStep = currentCaseData.GetStepIndexById(nextInfo.predicates[j].step_id);
-      }
-      if (sourceStep < 0) {
-        return -1;
-      }
-      check = this.CheckPredicate(nextInfo.predicates[j], sourceStep);
-      if (check == false) {
-        return -1;
-      }
+  else 
+  {
+    if (nextInfo.type == undefined) 
+    {
+        var check = false;
+        for (var j in nextInfo.predicates) 
+        {
+            check = this.CheckPredicate(nextInfo.predicates[j]);
+            if (check == false) 
+            {
+                return -1;
+            }
+        }
     }
     return currentCaseData.GetStepIndexById(nextInfo.id);
   }
@@ -301,58 +360,121 @@ function PrevStep() {
     
     //Сохраняем на сервере введенные данные
     SaveFormData( previousStepId, currentStepId, function(){
-        CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
         ShowProperStep();
+        CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
     });    
   }
   else alert('Previous step doesn\'t exist');
 }
 
-function getNextStepId (stepId) {
-  var step_index;
-  var nextInfo = solutionData.steps[currentCaseData.GetStepIndexById(stepId)].next;
-  for (i in nextInfo) {
-    step_index = CheckNextInfo(nextInfo[i]);	
-    if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) break;
-  }
-  if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) {
-    return solutionData.steps[step_index].id;
-  }
-  else {
-    alert('Next step not found');
-    return false;
-  }
-}
-
-function NextStep() {
-  $("#validationFailedMessage").hide("fast");  
- 
-  //Если они верны, то переходим на один из следующих шагов
-  if(ValidateStep(currentStepId)) {    
-    var nextStepId;
-    if ( nextStepId = getNextStepId (currentStepId) ) {      
-      
-      previousStepId = currentStepId;      
-      currentStepId = nextStepId;
-      
-      //Сохраняем на сервере введенные данные
-      SaveFormData( previousStepId, currentStepId, function(){
-            CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
-            ShowProperStep();
-      });
-    }
-  }
-  else //Радуем пользователя сообщением о неправильном заполнении формы
-  {
-    $("#validationFailedMessage").show("slow");
-  }
+function OnWidgetChanged()
+{
+    CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
 }
 
 function CheckWidgetsVisibility (stepnum)
 {
+   
+    //собираем информацию о виджетах, которые должны быть использованы в предикатах видимости
+    YUI().use('inputex', function(Y)
+    {
+        var tcp=solutionData.steps[stepnum];
+
+        if (tcp.widgets!=undefined)
+        {
+            for (var i in tcp.widgets)
+            {
+                var iv=tcp.widgets[i].isVisible;
+                if (iv!=undefined)
+                {
+                    if (iv.predicates!=undefined)
+                    {
+                        for (var j in iv.predicates)
+                        {
+                            var sid=iv.predicates[j].step_id;
+                            var sn;
+                            if (sid==undefined) sn=stepnum;
+                            else sn=currentCaseData.GetStepIndexById(sid);
+                            var wid=iv.predicates[j].widget_id;
+                            var data;
+                            if ((sn < 0) || (sn >= groups.length)) 
+                            {
+                                data = undefined;
+                            }
+                            data = groups[sn][wid].getValue();
+                            SetWidgetValue(sn, wid, data);
+                        }
+                    }
+                }
+            }
+        }
+        if (tcp.widget_groups!=undefined)
+        {
+            for (var i in tcp.widget_groups)
+            {
+                var iv=tcp.widget_groups[i].isVisible;
+                if (iv!=undefined)
+                {
+                    if (iv.predicates!=undefined)
+                    {
+                        for (var j in iv.predicates)
+                        {
+                            var sid=iv.predicates[j].step_id;
+                            var sn;
+                            if (sid==undefined) sn=stepnum;
+                            else sn=currentCaseData.GetStepIndexById(sid);
+                            var wid=iv.predicates[j].widget_id;
+                            var data;
+                            if ((sn < 0) || (sn >= groups.length)) 
+                            {
+                                data = undefined;
+                            }
+                            data = groups[sn][wid].getValue();
+                            SetWidgetValue(sn, wid, data);
+                        }
+                    }
+                }
+                if (tcp.widget_groups[i].widgets!=undefined)
+                {    
+                    for (var k in tcp.widget_groups[i].widgets)
+                    {
+                        var iv=tcp.widget_groups[i].widgets[k].IsVisible;
+                        if (iv!=undefined)
+                        {
+                            if (iv.predicates!=undefined)
+                            {
+                                for (var j in iv.predicates)
+                                {
+                                   var sid=iv.predicates[j].step_id;
+                                   var sn;
+                                   if (sid==undefined) sn=stepnum;
+                                   else sn=currentCaseData.GetStepIndexById(sid);
+                                   var wid=iv.predicates[j].widget_id;
+                                   var data;
+                                   if ((sn < 0) || (sn >= groups.length)) 
+                                   {
+                                       data = undefined;
+                                   }
+                                   data = groups[sn][wid].getValue();
+                                   SetWidgetValue(sn, wid, data);
+                               }
+                            }
+                        }
+                    }
+                }
+            }    
+        }
+        CountVisibility(stepnum);
+        HideInvisible(stepnum);
+            //дописать проверку предикатов и скрытие виджетов
+    }); 
+}
+
+function CountVisibility(stepnum)
+{
     var tcp=solutionData.steps[stepnum];
     
-   	for (i in tcp.widget_groups)
+   	for (var i in tcp.widget_groups)
    	{
    		var gr=tcp.widget_groups[i];
    		if (gr.isVisible == undefined || gr.isVisible=="true")
@@ -364,7 +486,7 @@ function CheckWidgetsVisibility (stepnum)
     		else
     		{
     		    gr.visible = true;
-			    for (j in gr.isVisible.predicates)
+			    for (var j in gr.isVisible.predicates)
 			    {
 			        sourceStep = currentCaseData.GetStepIndexById(gr.isVisible.predicates[j].step_id);
 			        if (sourceStep==undefined || sourceStep < 0) { gr.visible=false; }
@@ -377,7 +499,7 @@ function CheckWidgetsVisibility (stepnum)
     	}
     	if (gr.visible==true)
     	{
-    		for (j in gr.widgets)
+    		for (var j in gr.widgets)
     		{
     			var w=gr.widgets[j];
     			if (w.isVisible==undefined || w.isVisible=="true")
@@ -388,7 +510,7 @@ function CheckWidgetsVisibility (stepnum)
 						w.visible=false;
 					else
 					{
-						w.visible=true;
+						w.visible=true;tcp.widgets[i]
 						for (k in w.isVisible.predicates)
 						{
 					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
@@ -404,7 +526,7 @@ function CheckWidgetsVisibility (stepnum)
     	}
     }
     
-    for (i in tcp.widgets)
+    for (var i in tcp.widgets)
     {
     	var w=tcp.widgets[i];
 		if (w.isVisible==undefined || w.isVisible=="true")
@@ -416,7 +538,7 @@ function CheckWidgetsVisibility (stepnum)
 			else
 			{
 				w.visible=true;
-				for (k in w.isVisible.predicates)
+				for (var k in w.isVisible.predicates)
 				{
 			        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
 			        if (sourceStep==undefined || sourceStep < 0) { w.visible=false; }
@@ -430,74 +552,69 @@ function CheckWidgetsVisibility (stepnum)
     }
 }
 
-function OnWidgetChanged()
+function HideInvisible(stepnum)
 {
-  previousStepId=getPreviousStepId(currentStepId);
-  SaveFormData (previousStepId, currentStepId, function()
-  {
-  CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
-  
-  var tcs=currentCaseData.GetStepIndexById(currentStepId)
+  var tcs=stepnum;
       
-  for (i in solutionData.steps[tcs].widget_groups)
+  for (var i in solutionData.steps[tcs].widget_groups)
   {
     	if (solutionData.steps[tcs].widget_groups[i].visible==false)
     	{
-    		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
-		{
-			if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
-			{
-				YUI().use('inputex', function(Y) 
+    		for (var j in solutionData.steps[tcs].widget_groups[i].widgets)
+		    {
+			    if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+			    {
+				    YUI().use('inputex', function(Y) 
     				{
     					window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
-				});
-			}
+				    });
+			    }
 
-    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
-		}
+    		    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+		    }
     	}
     	else
     	{
-    		for (j in solutionData.steps[tcs].widget_groups[i].widgets)
+    		for (var j in solutionData.steps[tcs].widget_groups[i].widgets)
     		{
     			if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible==false)
-			{
-				if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
-				{
-					YUI().use('inputex', function(Y) 
-		    			{
-		    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
-					});
-				}
+			    {
+			    	if (solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
+			    	{
+			    		YUI().use('inputex', function(Y) 
+		       			{
+		    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: false});
+			    		});
+			    	}
 
-	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
-			}
+	    	        $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+			    }
 	    		else
-			{
-				if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
-				{
-					YUI().use('inputex', function(Y) 
+			    {
+				    if (solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
+				    {
+				    	YUI().use('inputex', function(Y) 
     					{
-    						window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
-					});
-				}
+    						window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: true});
+				    	});
+				    }
 
 	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).show();
-			}
+			    }
 	   		}
 	   	}
     }
-    for (i in solutionData.steps[tcs].widgets)
+    for (var i in solutionData.steps[tcs].widgets)
     {
     	if (solutionData.steps[tcs].widgets[i].visible==false)
     	{
-		if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
-		{
-			YUI().use('inputex', function(Y) 
+		    if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
+		    {
+			    YUI().use('inputex', function(Y) 
     			{
     				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
-			});
-		}
+			    });
+		    }
     		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
     	}
    		else
@@ -505,24 +622,25 @@ function OnWidgetChanged()
 			if (solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
 			{
 				YUI().use('inputex', function(Y) 
-	    			{
+	    		{
 	    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
 				});
 			}
-			   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+			$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
 
 		}
     }
-	});
 }
 
-function SaveAndExit() {
+function SaveAndExit() 
+{
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
 }
 
 var autoSaveTime = 2 * 1000; 
-function AutoSave() {
+function AutoSave() 
+{
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
 }
@@ -543,8 +661,13 @@ $(document).ready(function() {
   } 
   currentCaseData = new CaseDataController(solutionData);
   
-  CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
+  previousStepId=getPreviousStepId(currentStepId);
+
   ShowProperStep();
     
   setTimeout(AutoSave, autoSaveTime);
+
+  CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
 });
+
+
