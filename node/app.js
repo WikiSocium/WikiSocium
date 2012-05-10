@@ -28,6 +28,7 @@ var models = require('./models')
     ,User
     ,LoginToken
     ,SolutionStatistics
+    ,Organizations
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
     ;
@@ -71,6 +72,7 @@ models.defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
   app.SolutionStatistics = SolutionStatistics = mongoose.model('SolutionStatistics');
+  app.Organizations = Organizations = mongoose.model('Organizations');
   db = mongoose.connect(app.set('db-uri'));
 })
 
@@ -111,7 +113,9 @@ function authenticateFromLoginToken(req, res, next) {
                        series: cookie.series,
                        token: cookie.token }, (function(err, token) {
     if (!token) {
-      res.redirect('/sessions/new');
+      req.currentUser = {}
+      req.currentUser.guest = 1;
+      next();
       return;
     }
 
@@ -126,7 +130,9 @@ function authenticateFromLoginToken(req, res, next) {
           next();
         });
       } else {
-        res.redirect('/sessions/new');
+        req.currentUser = {}
+        req.currentUser.guest = 1;
+        next();
       }
     });
   }));
@@ -185,7 +191,7 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
     }
     solution[field_name]++;
     solution.save(function(err) {
-      console.log(err);
+      if (err != null) console.log(err);
     });
   }); 
 }
@@ -193,32 +199,33 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
-        res.render('index', {
-                'title':"Usage",
-                'user':req.currentUser, 
-                scripts:[],
-                styles:[]});
-        });
+  res.render('index', {
+    'title':"Usage",
+    'user':req.currentUser, 
+    'scripts':[],
+    'styles':[]
+  });
+});
 
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, function(req, res){
-		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problemsList = JSON.parse(data);
-							res.render('problems', {
-									   'title' : "Problems list",
-									   'user':req.currentUser,
-									   'problemsList' : problemsList.problemsList,
-									   'scripts' : [],
-                      styles:[]
-									   });
-						}
-						else
-							Render404(req,res, err);
-					});
-		});
+  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+	  if(!err)
+		{
+		  var problemsList = JSON.parse(data);
+			res.render('problems', {
+			  'title' : "Problems list",
+				'user':req.currentUser,
+				'problemsList' : problemsList.problemsList,
+				'scripts' : [],
+        'styles':[]
+			});
+		}
+		else
+		  Render404(req,res, err);
+	});
+});
 
 //
 // Обработка запроса на показ проблемы и списка ее решений
@@ -754,6 +761,111 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
     });
   }
 });
+
+
+
+// Admin pages
+app.get('/admin', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    res.render('admin/index.jade', {
+      title: "Админка",
+      user:req.currentUser,
+      scripts:[],
+      styles:[]
+    })
+  }
+});
+
+app.get('/admin/organizations/show_list', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    res.render('admin/organizations/show.jade', {
+      title: "Админка",
+      user:req.currentUser,
+      scripts:[],
+      styles:[]
+    })
+  }
+});
+
+app.get('/admin/organizations/add', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    var regions_list = fs.readFileSync('data/regions.json', "utf-8");
+    
+    Organizations.find({}, [], { sort: ['organization_name', 'descending'] },
+                  function(err, organizations) {
+      organizations = organizations.map(function(d) {
+        return d.organization_name;
+      });
+      res.render('admin/organizations/add.jade', {
+        'title':    "Организации / добавить",
+        'user':     req.currentUser,
+        'scripts':  [],
+        'styles':   [],
+        'regions_list': JSON.parse(regions_list),
+        'existing_organization_names': organizations
+      })
+    });
+  }
+});
+
+app.post('/admin/organizations/add', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    var new_organization = {
+      'title': req.body.title,
+      'short_descr': req.body.short_descr,
+      'description': {
+        'text': req.body.text,
+        'web': req.body.web,
+        'phone': req.body.phone,
+        'postal_address': req.body.postal_address,
+        'electronic_address': {
+          'email': req.body.email,
+          'webform': req.body.webform
+        }
+      }
+    }
+    Organizations.findOne ({ organization_name: req.body.organization_name }, function(e, organization_item) {
+      if (!organization_item) {
+        var organization_item = new Organizations({
+          'organization_name': req.body.organization_name,
+          'regions_list': [
+            {
+              'region_name': req.body.region_name,
+              'organizations_list': []
+            }
+          ]
+        });
+		  }
+		  var add_key = -1;
+		  for (var key in organization_item.regions_list) {
+        if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
+          add_key = key;
+          break;
+        }
+      }
+      if ( add_key == -1 ) {
+        var new_region = {
+          'region_name': req.body.region_name,
+          'organizations_list': []
+        }
+        new_region.organizations_list.push(new_organization);
+        organization_item.regions_list.push(new_region);
+		  }
+      else organization_item.regions_list[key].organizations_list.push(new_organization);
+      organization_item.save(function(err) {
+        if (err != null) console.log(err);
+        else res.redirect('/admin/organizations/show_list');
+      });
+    });
+  }
+});
+
+
+
 ///
 /// Compiling documents templates to client-side javascript
 ///

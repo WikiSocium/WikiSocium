@@ -10,6 +10,9 @@ var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
+var autoSaveTime = 2 * 1000;
+var lastSaved;
+
 function checkStepExists ( step_id ) {
   for (key in solutionData.steps) {
     if ( solutionData.steps[key].id == step_id ) return true;
@@ -141,11 +144,12 @@ function SaveFormData( curStep, nextStep, callback ) {
     , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(formData))
     , success: function(res) {
             callback();
+            lastSaved = new Date();
 		}
 	, error: function(jqXHR, textStatus, errorThrown) {
 	        // [TODO]
         }
-  });    
+  });
 }
 
 function CollectWidgetData(step_index, widget_id)
@@ -516,15 +520,15 @@ function OnWidgetChanged()
 	});
 }
 
-function SaveAndExit() {
+function Save() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
+  SaveFormData( previousStepId, currentStepId, function() {} );
 }
 
-var autoSaveTime = 2 * 1000; 
 function AutoSave() {
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
+  
 }
 
 /*
@@ -546,5 +550,6 @@ $(document).ready(function() {
   CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
   ShowProperStep();
     
-  setTimeout(AutoSave, autoSaveTime);
+  setTimeout(AutoSave, autoSaveTime);  
+  window.onbeforeunload = Save();
 });

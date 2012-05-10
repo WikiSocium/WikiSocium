@@ -10,9 +10,9 @@ function defineModels(mongoose, fn) {
 
 
 
-  /**
-    * Model: User
-    */
+/**
+  * Model: User
+  */
   function validatePresenceOf(value) {
     return value && value.length;
   }
@@ -56,11 +56,11 @@ function defineModels(mongoose, fn) {
     }
   });
 
-  /**
-    * Model: LoginToken
-    *
-    * Used for session persistence.
-    */
+/**
+  * Model: LoginToken
+  *
+  * Used for session persistence.
+  */
   LoginToken = new Schema({
     email: { type: String, index: true },
     series: { type: String, index: true },
@@ -92,10 +92,10 @@ function defineModels(mongoose, fn) {
     });
   
   
-    /**
-    * Model: Solution Statistics
-    */
-  SolutionStatistics = new Schema({
+/**
+  * Model: Solution Statistics
+  */
+  var SolutionStatistics = new Schema({
     'solution_name': { type: String, index: true },
     'started': Number,
 	  'finished_successful': Number,
@@ -116,11 +116,42 @@ function defineModels(mongoose, fn) {
     next();
   });
   
+  
+/**
+  * Model: Organizations
+  */
+  
+  var organization = new Schema({
+    'title': String,
+    'short_descr': String,
+    'description': {
+      'text': String,
+      'web': String,
+      'phone': String,
+      'postal_address': String,
+      'electronic_address': {
+        'email': String,
+        'webform': String
+      }
+    }
+  });
+  
+  var region_with_organizations = new Schema({
+    'region_name': { type: String, index: true },
+    'organizations_list': [ organization ]
+  });
+  
+  var Organizations = new Schema({
+    'organization_name': { type: String, index: true },
+    'regions_list': [ region_with_organizations ]
+  });
+  
 
 //  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
   mongoose.model('SolutionStatistics', SolutionStatistics);
+  mongoose.model('Organizations', Organizations);
 
   fn();
 }
