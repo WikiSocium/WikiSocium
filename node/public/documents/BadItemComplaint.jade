@@ -8,7 +8,7 @@ div
   if data["0"].IsItemPrePaid
     Предоплата составила #{data["0"].ItemPrePaidPrice} рублей. 
   if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 1
-    Товар должен был быть доставлен мне TODO: "дата доставки", но доставка была выполнена c опозданием на #{data["0"].DeliveryDelayDays} дней.
+    Товар должен был быть доставлен мне data["1"].DeliveryDate, но доставка была выполнена c опозданием на #{data["0"].DeliveryDelayDays} дней.
   elif data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 0
     До настоящего времени товар доставлен не был.   
 div
@@ -19,3 +19,4 @@ div
   Руководствуясь нормами Закона Российской Федерации о Защите прав Потребителей, ТРЕБУЮ: 
   li TODO: куча требований
   li TODO: куча требований 
+

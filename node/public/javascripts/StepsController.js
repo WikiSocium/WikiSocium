@@ -7,12 +7,12 @@ var stepsHistory = null;
 var groups = []; //Список групп полей (шагов) для формы (из них будем вытягивать данные)
 var currentCaseData;
 
-function checkStepExists ( step_id ) 
-{
-  for (key in solutionData.steps) 
-  {
-    if ( solutionData.steps[key].id == step_id ) 
-        return true;
+var autoSaveTime = 2 * 1000;
+var lastSaved;
+
+function checkStepExists ( step_id ) {
+  for (key in solutionData.steps) {
+    if ( solutionData.steps[key].id == step_id ) return true;
   }
   return false;
 }
@@ -21,7 +21,7 @@ function ShowProperStep()
 {
   var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
   if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) 
-  {
+  { 
     $(".step").hide().toggleClass("isInvisible");
     $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
   }
@@ -83,15 +83,14 @@ function SaveFormData( curStep, nextStep, callback )
         , success: function(res) 
         {
             callback();
-	    }
-	    , error: function(jqXHR, textStatus, errorThrown) 
-	    {
+            lastSaved = new Date();
+		}
+	, error: function(jqXHR, textStatus, errorThrown) {
 	        // [TODO]
         }
     });    
 
   });
-
 }
 
 function CheckPredicate(predicate) 
@@ -100,7 +99,7 @@ function CheckPredicate(predicate)
     if (predicate.step_id!=undefined)
         value=GetWidgetValue(currentCaseData.GetStepIndexById(predicate.step_id), predicate.widget_id);
     else
-        value=GetWidgetValue(currentCaseData.GetStepIndexById(step_id), predicate.widget_id);
+        value=GetWidgetValue(currentCaseData.GetStepIndexById(currentStepId), predicate.widget_id);
         
     if (typeof value == "undefined") 
     {
@@ -632,17 +631,15 @@ function HideInvisible(stepnum)
     }
 }
 
-function SaveAndExit() 
-{
+function Save() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId, function() { window.location = '/mycases'; } );
+  SaveFormData( previousStepId, currentStepId, function() {} );
 }
 
-var autoSaveTime = 2 * 1000; 
-function AutoSave() 
-{
+function AutoSave() {
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
+  
 }
 
 /*
@@ -665,7 +662,8 @@ $(document).ready(function() {
 
   ShowProperStep();
     
-  setTimeout(AutoSave, autoSaveTime);
+  setTimeout(AutoSave, autoSaveTime);  
+  window.onbeforeunload = Save();
 
   CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
 });
