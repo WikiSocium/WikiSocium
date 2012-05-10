@@ -477,6 +477,12 @@
 								"widget_id"	:	"IsTechComplicated",
 								"cond"		:	"==",								
 								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
 							}
 						]
 					}
