@@ -67,12 +67,12 @@ function SaveFormData( curStep, nextStep, callback )
 
   YUI().use('inputex', function(Y) 
   {
-    var data = new Array();
+    var data = {};
     for(var i = 0 ; i < groups.length ; i++)
     {
-      data[i] = new Object();
-      for(var widg in groups[i])
-        data[i][widg] = groups[i][widg].getValue();
+        data[solutionData.steps[i].id] = {};
+        for(var widg in groups[i])
+            data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
     }
     
     $.ajax(
