@@ -172,8 +172,7 @@
 							"label"	:	"Товар не привезли",
 							"value"	:	"0"
 						},
-						{
-												
+						{			
 							"label"	:	"Товар привезли с опозданием",
 							"value"	:	"1"
 						},
@@ -450,7 +449,7 @@
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"RequestsDeliveryDelayMoney",
-					"label"		:	"Требуем уплаты неустойки в размере 0.5% за каждый день опоздания",
+					"label"		:	"Требуем уплаты неустойки в размере 3% за каждый день опоздания (если товар не привезли - за каждый день от даты доставки по договору до текущего дня)",
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -458,8 +457,8 @@
 							{
 								"step_id"	:	"1",
 								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
+								"cond"		:	"!=",								
+								"value"		:	"2"
 							}
 						]
 					}
@@ -477,6 +476,12 @@
 								"widget_id"	:	"IsTechComplicated",
 								"cond"		:	"==",								
 								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"0"
 							},
 							{
 								"step_id"	:	"2",

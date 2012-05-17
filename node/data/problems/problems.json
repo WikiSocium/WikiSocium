@@ -3,6 +3,7 @@
         "TestProblem",
 	"Violation",
 	"BadItem",
-	"Heating"
+	"Heating",
+	"BadService"
     ]
 }
