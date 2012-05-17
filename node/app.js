@@ -29,6 +29,7 @@ var models = require('./models')
     ,LoginToken
     ,SolutionStatistics
     ,Organizations
+    ,Texts
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
     ;
@@ -72,7 +73,8 @@ models.defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
   app.SolutionStatistics = SolutionStatistics = mongoose.model('SolutionStatistics');
-  app.Organizations = Organizations = mongoose.model('Organizations');
+  app.Organizations = Organizations = mongoose.model('Organizations');  
+  app.Texts = Texts = mongoose.model('Texts');
   db = mongoose.connect(app.set('db-uri'));
 })
 
@@ -763,18 +765,6 @@ app.get('/admin', loadUser, function(req, res) {
   }
 });
 
-app.get('/admin/organizations/show_list', loadUser, function(req, res) {
-  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {   
-    res.render('admin/organizations/show.jade', {
-      title: "Админка",
-      user:req.currentUser,
-      scripts:[],
-      styles:[]
-    })
-  }
-});
-
 app.get('/admin/organizations/add', loadUser, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
@@ -791,7 +781,8 @@ app.get('/admin/organizations/add', loadUser, function(req, res) {
         'scripts':  [],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
-        'existing_organization_names': organizations
+        'existing_organization_names': organizations,
+        'adding_result': req.query.adding_result
       })
     });
   }
@@ -843,9 +834,79 @@ app.post('/admin/organizations/add', loadUser, function(req, res) {
 		  }
       else organization_item.regions_list[key].organizations_list.push(new_organization);
       organization_item.save(function(err) {
-        if (err != null) console.log(err);
-        else res.redirect('/admin/organizations/show_list');
+        if (err != null) {
+          console.log(err);
+          res.redirect('/admin/organizations/add?adding_result=error');
+          // выдавать ошибку
+		    }
+        else {
+          res.redirect('/admin/organizations/add?adding_result=success');
+          // отправляем на /add обратно и говорим, что добавлено успешно
+        }
       });
+    });
+  }
+});
+
+app.get('/admin/texts/add', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    res.render('admin/texts/add.jade', {
+      'title':    "Тексты / добавить",
+      'user':     req.currentUser,
+      'scripts':  [],
+      'styles':   [],
+      'adding_result': req.query.adding_result,
+      'data': {
+        'text_name': '',
+        'title': '',
+        'short_descr': '',
+        'text': ''  
+      }
+    })
+    
+  }
+});
+
+app.post('/admin/texts/add', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    var new_text = new Texts({
+      'text_name': req.body.text_name,
+      'title': req.body.title,
+      'short_descr': req.body.short_descr,
+      'text': req.body.text
+    });
+    
+    Texts.find({ 'text_name': new_text.text_name }, function (err, arr) {
+      if ( arr.length > 0 ) {
+        res.render('admin/texts/add.jade', {
+          'title':    "Тексты / добавить",
+          'user':     req.currentUser,
+          'scripts':  [],
+          'styles':   [],
+          'adding_result': "text_name_exists",
+          'data':     {
+            'text_name': req.body.text_name,
+            'title': req.body.title,
+            'short_descr': req.body.short_descr,
+            'text': req.body.text
+          }
+        });
+      }
+      else {
+        new_text.save(function(err) {
+          if (err != null) {
+            console.log(err);
+            res.redirect('/admin/texts/add?adding_result=error');
+            // выдавать ошибку
+          }
+          else {
+            res.redirect('/admin/texts/add?adding_result=success');
+            // отправляем на /add обратно и говорим, что добавлено успешно
+          }
+        });
+      }
     });
   }
 });
