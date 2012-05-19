@@ -314,7 +314,7 @@ function CheckNextInfo(nextInfo)
   {
     if (nextInfo.type == undefined) 
     {
-        var check = false;
+        var check = true;
         for (var j in nextInfo.predicates) 
         {
             check = this.CheckPredicate(nextInfo.predicates[j]);
@@ -696,7 +696,7 @@ function CheckNextText (stepnum)
                     }
                     if (nextInfo[i].type == undefined) 
                     {
-                        var check = false;
+                        var check = true;
                         for (var j in nextInfo[i].predicates) 
                         {
                             check = this.CheckPredicate(nextInfo[i].predicates[j]);
