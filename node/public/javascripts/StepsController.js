@@ -19,13 +19,13 @@ function checkStepExists ( step_id ) {
 
 function ShowProperStep()
 {
-  var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
-  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) 
-  { 
-    $(".step").hide().toggleClass("isInvisible");
-    $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
-  }
-  
+    var temporaryCurrentStep = currentCaseData.GetStepIndexById ( currentStepId );
+    if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) 
+    { 
+        $(".step").hide().toggleClass("isInvisible");
+        $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
+    }
+ 
   if(temporaryCurrentStep >= currentCaseData.GetNumberOfSteps()) //Последний шаг
   {
     YUI().use('inputex', 'inputex-button', 'inputex-group', 'json-stringify', function(Y) 
@@ -237,8 +237,15 @@ function FindNextStep(step_index)
         //Сохраняем на сервере введенные данные
         SaveFormData( previousStepId, currentStepId, function()
         {
-            ShowProperStep();
-            CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+            if (currentStepId=="endOfCase")
+            {
+                ShowEndCasePopup();
+            }
+            else
+            {
+                ShowProperStep();
+                CheckWidgetsVisibilityAndNextText( currentCaseData.GetStepIndexById(currentStepId) );
+            }
         });
     }
   } ); 
@@ -246,20 +253,22 @@ function FindNextStep(step_index)
 
 function getNextStepId (stepId, nextInfo) 
 {
+  var newStepId;
   var step_index;
   for (i in nextInfo) 
   {
-    step_index = CheckNextInfo(nextInfo[i]);	
-    if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) break;
+    newStepId = CheckNextInfo(nextInfo[i]);
+    step_index=currentCaseData.GetStepIndexById(newStepId);
+    if (solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null || newStepId=="endOfCase") break;
   }
-  if ( solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null ) 
+  if (solutionData.steps[step_index] !== undefined && solutionData.steps[step_index].id !== null || newStepId=="endOfCase")
   {
-    return solutionData.steps[step_index].id;
+    return newStepId;
   }
   else 
   {
     alert('Next step not found');
-    return false;
+    return undefined;
   }
 }
 
@@ -270,7 +279,7 @@ function CheckNextInfo(nextInfo)
   var sourceStep;
   if (nextInfo.type == "default") 
   {
-    return currentCaseData.GetStepIndexById(nextInfo.value);
+    return nextInfo.value;
   }
   if (nextInfo.type == "list") 
   {
@@ -281,25 +290,25 @@ function CheckNextInfo(nextInfo)
     else 
     {
       sourceStep = currentCaseData.GetStepIndexById(nextInfo.step_id);
-      if (sourceStep < 0) 
+      if (sourceStep < 0 && nextInfo.step_id!="endOfCase") 
       {
-        return -1;
+        return undefined;
       }
     }
     var value = GetWidgetValue(sourceStep, nextInfo.widget_id);
     var radioWidgetInfo = currentCaseData.GetWidgetData(sourceStep, nextInfo.widget_id);
     if (radioWidgetInfo == undefined) 
     {
-        return -1;
+        return undefined;
     }
     for (var i = 0; i < radioWidgetInfo.value_list.length; i ++) 
     {
         if (radioWidgetInfo.value_list[i].value == value) 
         {
-            return currentCaseData.GetStepIndexById(nextInfo.next_list[i]);
+            return nextInfo.next_list[i];
         }
     }
-    return -1;
+    return undefined;
   }
   else 
   {
@@ -311,11 +320,11 @@ function CheckNextInfo(nextInfo)
             check = this.CheckPredicate(nextInfo.predicates[j]);
             if (check == false) 
             {
-                return -1;
+                return undefined;
             }
         }
     }
-    return currentCaseData.GetStepIndexById(nextInfo.id);
+    return nextInfo.id;
   }
 }
 
@@ -360,7 +369,7 @@ function PrevStep() {
     //Сохраняем на сервере введенные данные
     SaveFormData( previousStepId, currentStepId, function(){
         ShowProperStep();
-        CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+        CheckWidgetsVisibilityAndNextText( currentCaseData.GetStepIndexById(currentStepId) );
     });    
   }
   else alert('Previous step doesn\'t exist');
@@ -368,10 +377,10 @@ function PrevStep() {
 
 function OnWidgetChanged()
 {
-    CheckWidgetsVisibility( currentCaseData.GetStepIndexById(currentStepId) );
+    CheckWidgetsVisibilityAndNextText( currentCaseData.GetStepIndexById(currentStepId) );
 }
 
-function CheckWidgetsVisibility (stepnum)
+function CheckWidgetsVisibilityAndNextText (stepnum)
 {
    
     //собираем информацию о виджетах, которые должны быть использованы в предикатах видимости
@@ -465,7 +474,8 @@ function CheckWidgetsVisibility (stepnum)
         }
         CountVisibility(stepnum);
         HideInvisible(stepnum);
-            //дописать проверку предикатов и скрытие виджетов
+        
+        CheckNextText(stepnum);
     }); 
 }
 
@@ -631,6 +641,89 @@ function HideInvisible(stepnum)
     }
 }
 
+function CheckNextText (stepnum)
+{
+    var nextInfo = solutionData.steps[stepnum].next;
+    var endExists=false;
+    for (var i in nextInfo)
+    {
+        if (nextInfo[i].id=="endOfCase")
+            endExists=true;
+    }
+    if (endExists==false)
+    {
+        $("#next_btn").text("Следующий шаг");
+    }
+    else
+    {
+        YUI().use('inputex', function(Y)
+        {
+            var nextInfo = solutionData.steps[stepnum].next;
+            var end=false;
+            for (var i in nextInfo)
+            {
+                if (nextInfo[i].id=="endOfCase")
+                {
+                    var sid=nextInfo[i].step_id;
+                    var wid=nextInfo[i].widget_id;
+                    if (wid!=undefined)
+                    {
+                        var sn;
+                        if (sid==undefined) sn=stepnum;
+                        else sn=currentCaseData.GetStepIndexById(sid);
+                        var data;
+                        if ((sn < 0) || (sn >= groups.length)) 
+                        {
+                            data = undefined;
+                        }
+                        data = groups[sn][wid].getValue();
+                        SetWidgetValue(sn, wid, data);
+                    }
+                    for (var j in nextInfo[i].predicates)
+                    {
+                        var sid=nextInfo[i].predicates[j].step_id;
+                        var sn;
+                        if (sid==undefined) sn=stepnum;
+                        else sn=currentCaseData.GetStepIndexById(sid);
+                        var wid=nextInfo[i].predicates[j].widget_id;
+                        var data;
+                        if ((sn < 0) || (sn >= groups.length)) 
+                        {
+                            data = undefined;
+                        }
+                        data = groups[sn][wid].getValue();
+                        SetWidgetValue(sn, wid, data);
+                    }
+                    if (nextInfo[i].type == undefined) 
+                    {
+                        var check = false;
+                        for (var j in nextInfo[i].predicates) 
+                        {
+                            check = this.CheckPredicate(nextInfo[i].predicates[j]);
+                            if (check == false) 
+                            {
+                                break;
+                            }
+                        }
+                        if (check==true)
+                        {
+                            end=true;
+                        }  
+                    }
+                }
+            }
+            if (end==true)
+            {
+               $("#next_btn").text("Завершить");
+            }
+            else
+            {
+               $("#next_btn").text("Следующий шаг");
+            }
+      } ); 
+    }
+}
+
 function Save() {
   previousStepId = getPreviousStepId ( currentStepId );
   SaveFormData( previousStepId, currentStepId, function() {} );
@@ -665,7 +758,7 @@ $(document).ready(function() {
   setTimeout(AutoSave, autoSaveTime);  
   window.onbeforeunload = Save();
 
-  CheckWidgetsVisibility(currentCaseData.GetStepIndexById(currentStepId));
+  CheckWidgetsVisibilityAndNextText(currentCaseData.GetStepIndexById(currentStepId));
 });
 
 
