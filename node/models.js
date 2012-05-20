@@ -1,5 +1,4 @@
 var crypto = require('crypto'),
-    Document,
     User,
     LoginToken;
 var fs = require('fs');
@@ -147,11 +146,24 @@ function defineModels(mongoose, fn) {
   });
   
 
+/**
+ * Model: Texts
+ */
+
+  var Texts = new Schema({
+    'text_name': { type: String, index: true },
+    'title': String,
+    'short_descr': String,
+    'text': String
+  });
+  
+
 //  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
   mongoose.model('SolutionStatistics', SolutionStatistics);
-  mongoose.model('Organizations', Organizations);
+  mongoose.model('Organizations', Organizations);  
+  mongoose.model('Texts', Texts);
 
   fn();
 }

@@ -2,6 +2,11 @@ div(class="offset1")
   div(class="row")
     
     h1 Добавление организации в БД
+        
+    - if (adding_result == 'success')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
+    - if (adding_result == 'error')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
     
     script
       $(function() {
@@ -29,13 +34,13 @@ div(class="offset1")
       p
         label
           Короткое описание
-          textarea(name="short_descr")
+          textarea(name="short_descr", rows="6", style="width: 300px")
       p
         fieldset
           legend Описание организации
           label
             Текстовое описание
-            textarea(name="text")
+            textarea(name="text", rows="8", style="width: 400px")
           label
             Веб-сайт:
             input(name="web",placeholder="http://example.com")
