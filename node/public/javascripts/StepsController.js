@@ -641,6 +641,22 @@ function HideInvisible(stepnum)
     }
 }
 
+// We need this method for current document mechanism
+function CollectFormData()
+{
+  var data = new Array();
+  YUI().use('inputex', function(Y) 
+  {
+    for(var i = 0 ; i < groups.length ; i++)
+    {
+      data[i] = new Object();
+      for(var widg in groups[i])
+        data[i][widg] = groups[i][widg].getValue();
+    }
+  });
+  return data;
+}
+
 function CheckNextText (stepnum)
 {
     var nextInfo = solutionData.steps[stepnum].next;
