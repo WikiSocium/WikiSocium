@@ -379,9 +379,19 @@ app.post('/GetRegionalizedData', function(req, res) {
     var db     = req.body.db;
     var dataId = req.body.dataId;
     
-    // [TODO] Use mondodb interface
-    
-    res.send(region + "|" + db + "|" + dataId);
+    if(db == "organizations")
+    {
+        Organizations.findOne ({ organization_name: dataId }, function(e, organization_item)
+        {
+          if(organization_item)          
+              for(var anotherRegion in organization_item.regions_list)
+                  if(organization_item.regions_list[anotherRegion].region_name == region)
+                  {
+                      res.send(organization_item.regions_list[anotherRegion].organizations_list);
+                      break;
+                  }
+        });
+    }
 });
 
 //        

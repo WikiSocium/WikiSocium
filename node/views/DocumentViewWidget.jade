@@ -1,10 +1,13 @@
 extends BaseWidget
 
 block content
-  div(onclick="RegionalizedData.GetDataFromDBWithRegion('myRegion', 'neededDB', 'neededDataId')") PRESS ME!
   input(type="button", class="generatePDFFromDocumentButton", value="PDF", onClick="GeneratePDFFrom(#documentView_#{widget.doc_name})");
   <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
+  <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations"></div>
   script
+    RegionalizedData.GetDataFromDBWithRegion('Адыгея', 'organizations', 'ГИБДД', function(data) {
+        $("#documentOrganizationsView_#{widget.doc_name}").html(JSON.stringify(data)); // [TODO] implement markup
+    });
     $('#documentView_#{widget.doc_name}').markItUp(mySettings);    
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){
             GenerateDocument_#{widget.doc_name}();
