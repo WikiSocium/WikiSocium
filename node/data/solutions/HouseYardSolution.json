@@ -124,7 +124,7 @@
 										"step_id"	:	"0",
 										"widget_id"	:	"TypeOfProblem",
 										"cond"		:	"==",
-										"value"		:	"14"	
+										"value"		:	"1"	
 									}								
 								]
 							}	
