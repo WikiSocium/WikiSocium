@@ -4,6 +4,7 @@
 	"Violation",
 	"BadItem",
 	"Heating",
-	"BadService"
+	"BadService",
+	"HouseYard"
     ]
 }
