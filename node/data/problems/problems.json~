@@ -2,19 +2,19 @@
     "problemsList": [
 	{
         "Name":"TestProblem",
-	"Categories": ["T1", "T2", "T3"]
+	"Tags": ["T1", "T2", "T3"]
 	},
 	{
         "Name":"Violation",
-	"Categories": ["T2", "T3"]
+	"Tags": ["T2", "T3"]
 	},
 	{
         "Name":"BadItem",
-	"Categories": ["T1"]
+	"Tags": ["T1"]
 	},
 	{
         "Name":"Heating",
-	"Categories": ["T3"]
+	"Tags": ["T3"]
 	}
     ]
 }

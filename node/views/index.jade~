@@ -5,7 +5,7 @@ div.row
 div.row
   #main-block.span8.offset1.wikiBlock  
   - each aCategory in categoryList
-      !=partial('aCategory', {aCategory:aCategory})
+      !=partial('aCategory', {aCategory:aCategory.Name})
   #right-block.span2.hero-unit.wikiBlock
     b
             Может быть вы думаете, что:

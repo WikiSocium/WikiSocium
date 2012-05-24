@@ -196,11 +196,10 @@ app.get('/', loadUser, function(req, res) {
 		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
 						if(!err)
 						{
-							var categoryList = JSON.parse(data); 
+							var problemsList = JSON.parse(data); 
 							res.render('index', {
 									'title':"Usage",
 									'user':req.currentUser, 
-									'categoryList' : categoryList.categoryList,
 									scripts:[],
 									styles:[]});
 									}
