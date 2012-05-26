@@ -3,6 +3,18 @@
 #steps
 {}
 
+.document_organizations
+{
+    background-color: #f5f5ea;
+    
+    display: inline-block;
+    position: absolute;
+    
+    width: 25%;
+    margin-left: 60%;
+    margin-top: -300px;    
+}
+
 .generatePDFFromDocumentButton
 {
     display: inline-block;
@@ -101,6 +113,12 @@
     padding-right: 10px;
     
     cursor: pointer;
+}
+
+.mediaWidgetButton
+{
+    margin-bottom: 20px;
+    margin-top: 0px;    
 }
 
 .openURLRemoveButton:hover,

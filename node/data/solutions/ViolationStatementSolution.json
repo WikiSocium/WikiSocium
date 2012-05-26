@@ -252,7 +252,10 @@
             "id"         : "7",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
-            "next" : [],     
+            "next" : [{
+                        "id" : "endOfCase",
+                        "predicates": []
+                    }],     
             "widget_groups": 
             [
                   {
@@ -270,7 +273,10 @@
             "id"         : "8",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
-            "next" : [],     
+            "next" : [{
+                        "id" : "endOfCase",
+                        "predicates": []
+                    }],     
             "widget_groups": 
             [
                   {

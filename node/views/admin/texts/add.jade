@@ -1,0 +1,31 @@
+div(class="offset1")
+  div(class="row")
+    
+    h1 Добавление текста в БД
+        
+    - if (adding_result == 'success')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Текст успешно добавлен
+    - if (adding_result == 'error')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении текста возникла ошибка
+    - if (adding_result == 'text_name_exists')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении текста возникла ошибка: название уже существует
+    
+    form(method="POST")
+      p
+        label
+          Название текста
+          input(name="text_name", value="#{data.text_name}")
+      p
+        label
+          Заголовок для текста:
+          input(name="title", value="#{data.title}")
+      p
+        label
+          Короткое описание
+          textarea(name="short_descr") #{data.short_descr}
+      p
+        label
+          Текст
+          textarea(name="text", rows="8", style="width: 400px") #{data.text}
+      p
+        input(type="submit")

@@ -5,5 +5,5 @@ block content
     YUI().use('inputex', 'inputex-string'
     , function(Y) 
     {
-    step#{step_id}FieldsList['!{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value}', required:true, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    step#{step_id}FieldsList['!{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
     });
