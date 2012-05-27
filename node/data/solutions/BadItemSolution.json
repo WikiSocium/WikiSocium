@@ -30,7 +30,16 @@
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
 							"IsRequired"    : false,
-							"label"		:	"Что купили? TODO:(Например: мобильный телефон)" 
+							"InfoText"  :
+							{
+							    "name": "Что купили?",
+							    "comment": "Например: мобильный телефон",
+							    "description":
+							    {
+							        "name": "Текст по ссылке",
+							        "id"  : "Ссылка1"
+							    }
+							}
 						},
 						{
 							"widget_type"	:	"CheckBoxWidget",
@@ -229,8 +238,8 @@
 					[	
 						{
 							"widget_id"	:	"IsDeliveryProblems",
-							"cond"		:	"!=",
-							"value"		:	"0" 						
+							"cond"		:	"==",
+							"value"		:	"1" 						
 						}
 					]
 				},
@@ -244,6 +253,17 @@
 							"value"		:	"0" 						
 						}
 					]
+				},
+				{
+				    "id"    :   "endOfCase",
+				    "predicates":
+				    [
+				        {
+				            "widget_id" : "IsDeliveryProblems",
+				            "cond"      : "==",
+				            "value"     : "2"
+				        }
+				    ]
 				}
 			]
 		},

@@ -392,6 +392,14 @@ app.post('/GetRegionalizedData', function(req, res) {
                   }
         });
     }
+    if (db=="texts")
+    {
+        Texts.findOne({ text_name: dataId}, function(e, text_item)
+        {
+            res.send(text_item);
+        });
+        console.log('запросили тексты');
+    }
 });
 
 //        
