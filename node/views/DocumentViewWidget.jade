@@ -2,8 +2,14 @@ extends BaseWidget
 
 block content
   input(type="button", class="generatePDFFromDocumentButton", value="PDF", onClick="GeneratePDFFrom(#documentView_#{widget.doc_name})");
-  <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
+  
+  <div class="document_container">
+  <div class="document_textarea">
+  <div id="documentView_#{widget.doc_name}"></div>
+  </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations"></div>
+  </div>
+  
   script
     RegionalizedData.GetDataFromDBWithRegion('Адыгея', 'organizations', 'ГИБДД', function(data) {
         $("#documentOrganizationsView_#{widget.doc_name}").html(JSON.stringify(data)); // [TODO] implement markup
@@ -15,7 +21,7 @@ block content
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
        setTimeout(function(){
            GenerateDocument_#{widget.doc_name}();    
-           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
+           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}', {hasPanel : true});
        }, 1000); // [TODO] #(document).ready() doesn't workk properly
        
     
