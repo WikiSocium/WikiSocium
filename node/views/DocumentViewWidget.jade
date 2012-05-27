@@ -16,6 +16,6 @@ block content
        setTimeout(function(){
            GenerateDocument_#{widget.doc_name}();    
            new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
-       }, 1000); // [ATENTION] correct behavior of this timeout depends on page loading
+       }, 1000); // [TODO] #(document).ready() doesn't workk properly
        
     
