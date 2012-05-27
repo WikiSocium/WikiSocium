@@ -8,12 +8,14 @@ block content
     RegionalizedData.GetDataFromDBWithRegion('Адыгея', 'organizations', 'ГИБДД', function(data) {
         $("#documentOrganizationsView_#{widget.doc_name}").html(JSON.stringify(data)); // [TODO] implement markup
     });
-    $('#documentView_#{widget.doc_name}').markItUp(mySettings);    
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){
-            GenerateDocument_#{widget.doc_name}();
-        }, 100, "");
+           GenerateDocument_#{widget.doc_name}();
+           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
+       }, 100, "");
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
-        setTimeout(function(){
-            GenerateDocument_#{widget.doc_name}();    
-        }, 1000); // [ATENTION] correct behavior of this timeout depends on page loading
+       setTimeout(function(){
+           GenerateDocument_#{widget.doc_name}();    
+           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
+       }, 1000); // [ATENTION] correct behavior of this timeout depends on page loading
+       
     

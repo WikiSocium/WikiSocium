@@ -331,7 +331,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 {
                   for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
                   if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
-                  scriptsToInject.push("/javascripts/jquery.markitup.js");
+                  scriptsToInject.push("/javascripts/nicEdit.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
                   stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
