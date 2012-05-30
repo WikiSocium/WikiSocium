@@ -1,0 +1,27 @@
+block content
+    - if (InfoText.name!=undefined)
+        div(class="NameText")
+            !{InfoText.name}
+    - if (InfoText.comment!=undefined)
+        div(class="CommentText")
+            !{InfoText.comment} 
+    - if (InfoText.description!=undefined)
+        div(class="DescriptionText", onclick="DescriptionClicked()")
+            - if (InfoText.description.name==undefined)
+                Подробнее...
+            - else
+                !{InfoText.description.name}
+
+script(type='text/javascript')         
+    function DescriptionClicked()
+    {
+        RegionalizedData.GetDataFromDBWithRegion('myRegion', 'texts', "#{InfoText.description.id}", function(data)
+        {
+            var modal_title = "Подсказка!";
+            var html="<h1>"+data.title+"</h1>"+"<p>"+data.short_descr+"<p>"+data.text;
+            var buttons = [];
+            buttons.push(new modalButton ( "Закрыть", function() { $( this ).dialog( "close" ); } ) );
+            showModalWindow ( modal_title, html, buttons, 550, 320, "descriptionPopup");
+        });
+    } 
+               

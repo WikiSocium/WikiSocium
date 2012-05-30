@@ -217,3 +217,22 @@
   padding: 10px;
   border: 1px solid #3F3F3F;
 }
+
+.NameText
+{
+    font-size: 14px;
+}
+
+.CommentText
+{
+    font-size: 10px;
+    font-style: italic;
+}
+
+.DescriptionText
+{
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+}
