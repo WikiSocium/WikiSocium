@@ -1,6 +1,5 @@
 {
     "problemsList": [
-<<<<<<< HEAD
 	{
         "Name":"TestProblem",
 	"Categories": ["T1", "T2", "T3"]
@@ -16,14 +15,14 @@
 	{
         "Name":"Heating",
 	"Categories": ["T3"]
-	}
-=======
-        "TestProblem",
-	"Violation",
-	"BadItem",
-	"Heating",
-	"BadService",
-	"HouseYard"
->>>>>>> 32cc0e2ce3e5a173189b497ef60d8535352fa26f
+	},
+	{
+        "Name":"BadService",
+	"Categories": ["T3"]
+	},
+	{
+        "Name":"HouseYard",
+	"Categories": ["T3"]
+	},
     ]
 }

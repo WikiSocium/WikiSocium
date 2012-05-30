@@ -201,7 +201,6 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
-<<<<<<< HEAD
 		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
 						if(!err)
 						{
@@ -218,20 +217,11 @@ app.get('/', loadUser, function(req, res) {
 					});
 
         });
-=======
-  res.render('index', {
-    'title':"Usage",
-    'user':req.currentUser, 
-    'scripts':[],
-    'styles':[]
-  });
-});
->>>>>>> 32cc0e2ce3e5a173189b497ef60d8535352fa26f
+
 
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, function(req, res){
-<<<<<<< HEAD
 		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 						if(!err)
 						{
@@ -251,42 +241,7 @@ app.get('/Problems', loadUser, function(req, res){
 
 //
 
-// Обработка запроса на показ списка проблем 
-app.get('/Problems', loadUser, function(req, res){
-		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problemsList = JSON.parse(data);              
-							res.render('problems', {
-									   'title' : "Problems list",
-									   'user':req.currentUser,
-									   'problemsList' : problemsList.problemsList,
-									   'scripts' : [],
-                      styles:[]
-									   });
-						}
-						else
-							Render404(req,res, err);
-					});
-		});
-=======
-  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-	  if(!err)
-		{
-		  var problemsList = JSON.parse(data);
-			res.render('problems', {
-			  'title' : "Problems list",
-				'user':req.currentUser,
-				'problemsList' : problemsList.problemsList,
-				'scripts' : [],
-        'styles':[]
-			});
-		}
-		else
-		  Render404(req,res, err);
-	});
-});
->>>>>>> 32cc0e2ce3e5a173189b497ef60d8535352fa26f
+
 
 //
 
