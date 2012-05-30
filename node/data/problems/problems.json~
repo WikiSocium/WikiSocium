@@ -1,0 +1,20 @@
+{
+    "problemsList": [
+	{
+        "Name":"TestProblem",
+	"Tags": ["T1", "T2", "T3"]
+	},
+	{
+        "Name":"Violation",
+	"Tags": ["T2", "T3"]
+	},
+	{
+        "Name":"BadItem",
+	"Tags": ["T1"]
+	},
+	{
+        "Name":"Heating",
+	"Tags": ["T3"]
+	}
+    ]
+}

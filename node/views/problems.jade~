@@ -2,4 +2,4 @@ div(class="offset1")
   div(class="row")
     #problems
     - each aProblem in problemsList
-      !=partial('aProblem', {aProblem:aProblem.Name})
+      !=partial('aProblem', {aProblem:aProblem})
