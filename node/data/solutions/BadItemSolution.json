@@ -255,7 +255,7 @@
 					]
 				},
 				{
-				    "id"    :   "endOfCase",
+				    "id"    :   "2",
 				    "predicates":
 				    [
 				        {
@@ -753,7 +753,58 @@
 			"next"		:	[ { "id" : "6" } ] 					
 		},	
 		{
-			"id"		:	"6",
+		  "id"  : "6",
+		  "title" : "Все хорошо?",
+		  "widgets" : 
+		  [
+		    {
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"EndOfCaseQuestion",
+					"label"		:	"Получили ли Вы положительный ответ?",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Да, моя претензия не удовлетворена!"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Нет, ответ меня не удовлетворил"
+						}
+
+					]
+				}
+		  
+		  ],  
+		  "next"		:	
+			[
+			  { 
+					"id" 		:	"7",
+					"predicates" 	:	
+					[
+						{
+							"widget_id"	:	"EndOfCaseQuestion",
+							"cond"		:	"==",
+							"value"		:	"1" 						
+						}
+					]
+				},
+				{
+				    "id"    :   "endOfCase",
+				    "predicates":
+				    [
+				        {
+				            "widget_id" : "EndOfCaseQuestion",
+				            "cond"      : "==",
+				            "value"     : "0"
+				        }
+				    ]
+				} 
+			
+			]
+		},
+		{
+			"id"		:	"7",
 			"title"		:	"Отстаиваем свои права в суде",
 			"type"		:	"general_data",
 			"widgets"	:
@@ -764,8 +815,8 @@
 					"label"		: "TODO: Рекомендации по подаче заявления в суд"	
 				}
 
-			],
-			"next"		:	[] 					
+			]
+			 					
 		}	
 
 	]
