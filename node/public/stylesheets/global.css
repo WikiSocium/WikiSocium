@@ -37,7 +37,7 @@ a:hover, a:active {
 }
 
 #footer-block {
-  background: #d2d2d2 url(../images/bgfooter.png) top repeat-x;
+  background: #f9f9f8 url(../images/bgfooter.png) top repeat-x;
   border-top: 1px solid #d2d2d2;
   min-height: 39px;
   margin: 100px 0 0 0;
@@ -149,7 +149,7 @@ a:hover, a:active {
 }
 
 .gray-rounded-block-1 {
-  background: #fff;
+  background: #fdfdfd;
   background:
     url('../images/gray-rounded-block-1-bg-lefttop.png') no-repeat left top,
     url('../images/gray-rounded-block-1-bg-righttop.png') no-repeat right top,
@@ -162,7 +162,7 @@ a:hover, a:active {
 }
 
 .gray-rounded-block-2 {
-  background: url('../images/gray-rounded-block-2-bg.png');
+  background: #f5f5f5 url('../images/gray-rounded-block-2-bg.png');
 }
 
 #footer * {
