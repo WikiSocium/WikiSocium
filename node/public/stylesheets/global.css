@@ -19,14 +19,14 @@ a:hover, a:active {
 }
 
 #heading-block {
-  background: #d2d2d2 url(../images/bgheader.png) top repeat-x;
+  background: #e6e5e5 url(../images/bgheader.png) top repeat-x;
   border-bottom: 1px #d2d2d2 solid;
   min-height: 91px;
   padding: 25px 0 0 0;
 }
 
 #menu-block {
-  background: #d2d2d2 url(../images/bgmenu.png) top repeat-x;
+  background: #fcfcfc url(../images/bgmenu.png) top repeat-x;
   border-bottom: 1px solid #d2d2d2;
   min-height: 58px;
   margin: 0 0 30px 0;
