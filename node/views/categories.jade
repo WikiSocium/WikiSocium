@@ -1,5 +1,3 @@
-div(class="offset1")
-  div(class="row")
-    #problems
-    - each aCategory in categoryList
-      !=partial('aCategory', {aCategory:aCategory.Name})
+#problems
+  - each aCategory in categoryList
+    !=partial('aCategory', {aCategory:aCategory.Name})

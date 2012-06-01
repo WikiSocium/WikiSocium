@@ -258,7 +258,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
                      	               'user':req.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['/javascripts/modal_window.js'],
-                      styles:[]
+                     'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
 						   });
 					}
 					else
@@ -557,29 +557,29 @@ app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', loadUser, function(req, res){
-	var userName = req.param('UserName', null);
+  var userName = req.param('UserName', null);
 
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-  if (req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
-    else{
-			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
-				if(!err)
-				{
-					var requestedUser = JSON.parse(data);
-						res.render('user', {
-								'title': userName,
-                                'user':req.currentUser, 
-								'requestedUser': requestedUser,
-								'scripts': [],
-                'styles': []
-						   });
-				}
-				else
-					Render404(req,res, err);				  
-			});
+    if (req.currentUser.email!=userName) {
+      res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
     }
-}
+    else {
+      fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
+      	if(!err) {
+      	  var requestedUser = JSON.parse(data);
+	  res.render('user', {
+	    'title': userName,
+	    'user':req.currentUser, 
+	    'requestedUser': requestedUser,
+	    'scripts': [],
+	    'styles': []
+	  });
+	}
+	else Render404(req,res, err);
+      });
+    }
+  }
 });
 
 app.get('/mycases', loadUser, function(req, res) {

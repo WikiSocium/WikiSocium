@@ -1,62 +1,59 @@
-div(class="offset1")
-  div(class="row")
+h1 Добавление организации в БД
     
-    h1 Добавление организации в БД
-        
-    - if (adding_result == 'success')
-      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
-    - if (adding_result == 'error')
-      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
-    
-    script
-      $(function() {
-        var organization_names = !{JSON.stringify(existing_organization_names)};
-        $( "#organization_name" ).autocomplete({
-          source: organization_names
-        });
-      });
-    
-    form(method="POST")
-      p
-        label
-          Название категории организаций
-          input(name="organization_name", id="organization_name")
-      p
-        label
-          Регион: 
-          select(name="region_name")
-            - each region in regions_list
-              option #{region}
-      p
-        label
-          Название:
-          input(name="title")
-      p
-        label
-          Короткое описание
-          textarea(name="short_descr", rows="6", style="width: 300px")
-      p
-        fieldset
-          legend Описание организации
-          label
-            Текстовое описание
-            textarea(name="text", rows="8", style="width: 400px")
-          label
-            Веб-сайт:
-            input(name="web",placeholder="http://example.com")
-          label
-            Телефон:
-            input(name="phone")
-          label
-            Почтовый адрес:
-            input(name="postal_address")
-        fieldset
-          legend Электронные адреса:
-          label
-            Эл. почта:
-            input(name="email", placeholder="name@example.com")
-          label
-            Форма на сайте:
-            input(name="webform", placeholder="http://example.com/some-page.html")
-      p
-        input(type="submit")
+- if (adding_result == 'success')
+  p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
+- if (adding_result == 'error')
+  p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
+
+script
+  $(function() {
+    var organization_names = !{JSON.stringify(existing_organization_names)};
+    $( "#organization_name" ).autocomplete({
+      source: organization_names
+    });
+  });
+
+form(method="POST")
+  p
+    label
+      Название категории организаций
+      input(name="organization_name", id="organization_name")
+  p
+    label
+      Регион: 
+      select(name="region_name")
+        - each region in regions_list
+          option #{region}
+  p
+    label
+      Название:
+      input(name="title")
+  p
+    label
+      Короткое описание
+      textarea(name="short_descr", rows="6", style="width: 300px")
+  p
+    fieldset
+      legend Описание организации
+      label
+        Текстовое описание
+        textarea(name="text", rows="8", style="width: 400px")
+      label
+        Веб-сайт:
+        input(name="web",placeholder="http://example.com")
+      label
+        Телефон:
+        input(name="phone")
+      label
+        Почтовый адрес:
+        input(name="postal_address")
+    fieldset
+      legend Электронные адреса:
+      label
+        Эл. почта:
+        input(name="email", placeholder="name@example.com")
+      label
+        Форма на сайте:
+        input(name="webform", placeholder="http://example.com/some-page.html")
+  p
+    input(type="submit")

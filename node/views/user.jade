@@ -1,20 +1,18 @@
-div(class="offset1")
-  div(class="row")
+div(class="userFullName")
+ #{requestedUser.fullName}
 
-    div(class="userFullName")
-      #{requestedUser.fullName}
+div(class="userStuff")
+  div= requestedUser.id
+  div= requestedUser.cases.length
 
-    div(class="userStuff")
-      div= requestedUser.id
-      div= requestedUser.cases.length
-
-    #cases
-      h2 Активные дела
-      - each aCase in requestedUser.cases
-        - if (aCase.state == 'active')
-          !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
-        
-      h2 Завершенные дела
-      - each aCase in requestedUser.cases
-        - if (aCase.state == "completed")
-          !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+#cases
+  h2 Активные дела
+  - each aCase in requestedUser.cases
+    - if (aCase.state == 'active')
+      !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+    
+  h2 Завершенные дела
+  - each aCase in requestedUser.cases
+    - if (aCase.state == "completed")
+      !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+ 

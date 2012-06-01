@@ -1,32 +1,30 @@
-div(class="offset1")
-  div(class="row")
-    h1(class="problemId")
-      #{problem.id}
+h1(class="problemId")
+  #{problem.id}
 
-    div(class="problemDescription")
-      p
-        !{problem.description}
+div(class="problemDescription")
+  p
+    !{problem.description}
 
-    #solutions
-      - each aSolution in problem.solutions
-        !=partial('aSolution', {aSolution:aSolution})
+#solutions
+  - each aSolution in problem.solutions
+    !=partial('aSolution', {aSolution:aSolution})
 
-    #modal_window
+#modal_window
 
-    script(type='text/javascript')
-      if (user.guest) {
-        $(".useSolutionButton").click( function() {
-          location.href = '/login?return_to='+document.URL;
-        } );
-      }
-      else {
-        var modal_title = "Введите название решения";
-        var modal_body;
-        var buttons = [];
-        buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
-        buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); } ) );
-        $(".useSolutionButton").click( function() {
-          modal_body = '<p><form id="addCaseForm" method="post", action="/addcasetouser/'+$(this).attr("id")+'"><input type="text" name ="case_id" /></form></p><p>Решение с этим названием будет добавлено в список ваших дел</p>';
-          showModalWindow ( modal_title, modal_body, buttons, 550, 285 );
-        } );
-      }
+script(type='text/javascript')
+  if (user.guest) {
+    $(".useSolutionButton").click( function() {
+      location.href = '/login?return_to='+document.URL;
+    } );
+  }
+  else {
+    var modal_title = "Введите название решения";
+    var modal_body;
+    var buttons = [];
+    buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+    buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); } ) );
+    $(".useSolutionButton").click( function() {
+      modal_body = '<p><form id="addCaseForm" method="post", action="/addcasetouser/'+$(this).attr("id")+'"><input type="text" name ="case_id" /></form></p><p>Решение с этим названием будет добавлено в список ваших дел</p>';
+      showModalWindow ( modal_title, modal_body, buttons, 550, 285 );
+    } );
+  }
