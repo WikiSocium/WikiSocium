@@ -258,7 +258,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
                      	               'user':req.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['/javascripts/modal_window.js'],
-                      styles:[]
+                     'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
 						   });
 					}
 					else

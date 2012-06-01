@@ -1,28 +1,28 @@
 {
-    "problemsList": [
-	{
-        "Name":"TestProblem",
-	"Categories": ["T1", "T2", "T3"]
-	},
-	{
-        "Name":"Violation",
-	"Categories": ["T2", "T3"]
-	},
-	{
-        "Name":"BadItem",
-	"Categories": ["T1"]
-	},
-	{
-        "Name":"Heating",
-	"Categories": ["T3"]
-	},
-	{
-        "Name":"BadService",
-	"Categories": ["T3"]
-	},
-	{
-        "Name":"HouseYard",
-	"Categories": ["T3"]
-	}
-    ]
+  "problemsList": [
+	  {
+      "Name":"TestProblem",
+      "Categories": ["customer_protection", "auto", "customer_protection"]
+    },
+	  {
+      "Name":"Violation",
+	    "Categories": ["auto", "T3"]
+	  },
+	  {
+      "Name":"BadItem",
+	    "Categories": ["customer_protection"]
+	  },
+	  {
+      "Name":"Heating",
+	    "Categories": ["ZKH"]
+	  },
+	  {
+      "Name":"BadService",
+	    "Categories": ["customer_protection"]
+	  },
+	  {
+      "Name":"HouseYard",
+	    "Categories": ["ZKH"]
+	  }
+  ]
 }

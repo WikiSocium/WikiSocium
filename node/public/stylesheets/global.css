@@ -1,0 +1,231 @@
+html {
+  min-width: 403px;
+}
+
+* {
+  color: #6e6e6e;
+  font-family: Trebuchet MS;
+  font-size: 12pt;
+  line-height: 16pt;
+}
+
+a:link, a:visited {
+  color: #34b0bf;
+  text-decoration: underline;
+}
+
+a:hover, a:active {
+  text-decoration: none;
+}
+
+#heading-block {
+  background: #d2d2d2 url(../images/bgheader.png) top repeat-x;
+  border-bottom: 1px #d2d2d2 solid;
+  min-height: 91px;
+  padding: 25px 0 0 0;
+}
+
+#menu-block {
+  background: #d2d2d2 url(../images/bgmenu.png) top repeat-x;
+  border-bottom: 1px solid #d2d2d2;
+  min-height: 58px;
+  margin: 0 0 30px 0;
+}
+
+#content-block {
+  /*margin: 0 70px;*/
+}
+
+#footer-block {
+  background: #d2d2d2 url(../images/bgfooter.png) top repeat-x;
+  border-top: 1px solid #d2d2d2;
+  min-height: 39px;
+  margin: 100px 0 0 0;
+}
+
+#heading, #menu {
+  /*margin: 0px 0 0px 70px;*/
+}
+
+#footer {
+  /*margin: 0px 0 0px 70px;*/
+  padding-top: 10px;
+}
+
+@media (max-width: 767px) {
+
+  #content-block {
+    margin: 0 30px;
+  }
+
+  #footer-block {
+    margin: 0 30px;
+  }
+  
+  #heading, #menu {
+    margin: 0px 0 0px 30px;
+  }
+}
+
+
+#grid {
+  margin: 0 70px;
+  margin-bottom: 100px;
+}
+#grid div {
+  background-color: #eee;
+}
+
+
+#logo {
+  background-image: url(../images/logo.png);
+  background-repeat: no-repeat;
+  background-position: left center;
+  margin: 0 20px 0 0;
+  height: 76px;
+  width: 303px;
+}
+#logo a {
+  display: none;
+}
+
+#heading-stat {
+  padding-top: 14px;
+  text-align: center;
+}
+
+#menu .navbar {
+  margin-bottom: 0;
+}
+
+#menu .navbar .nav > li {
+}
+
+#menu .navbar .nav > li > a {
+  color: #6e6e6e;
+  font-family: Tahoma;
+  font-size: 13pt;
+  line-height: 58px;
+  padding: 0px 34px 0 0;
+  text-shadow: none;
+}
+
+#menu .navbar .nav > li > a:hover {
+  background-color: transparent;
+  color: #3e3e3e;
+  text-decoration: none;
+}
+#menu .navbar .nav .active > a,
+#menu .navbar .nav .active > a:hover {
+  background: url(../images/bgmenu-active.png) top repeat-x;
+  border-left: 1px solid #d2d2d2;
+  border-right: 1px solid #d2d2d2;
+  color: #f7941e;
+  padding: 0px 34px;
+  text-decoration: none;
+}
+
+#heading-login-form * {
+  font-family: Trebuchet MS;
+  font-size: 10pt;
+}
+#heading-login-form input {
+  margin-right: 2px;
+  width: 70px;
+} 
+
+.gray-rounded-corners {
+  background: #f8f8f8;
+  border: 1px solid #d2d2d2;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  padding: 19px;
+}
+
+.gray-rounded-corners hr {
+  background: #ccc;
+  border: 0;
+  height: 1px;
+}
+
+.gray-rounded-block-1 {
+  background: #fff;
+  background:
+    url('../images/gray-rounded-block-1-bg-lefttop.png') no-repeat left top,
+    url('../images/gray-rounded-block-1-bg-righttop.png') no-repeat right top,
+    url('../images/gray-rounded-block-1-bg-leftbottom.png') no-repeat left bottom,
+    url('../images/gray-rounded-block-1-bg-rightbottom.png') no-repeat right bottom,
+    url('../images/gray-rounded-block-1-bg-top.png') repeat-x center top,
+    url('../images/gray-rounded-block-1-bg-bottom.png') repeat-x center bottom,
+    url('../images/gray-rounded-block-1-bg-left.png') repeat-y left,
+    url('../images/gray-rounded-block-1-bg-right.png') repeat-y right;
+}
+
+.gray-rounded-block-2 {
+  background: url('../images/gray-rounded-block-2-bg.png');
+}
+
+#footer * {
+  font-size: 9pt;
+}
+
+.orange {
+  color: #f7941e;
+}
+
+.mainProblemBlock {
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.mainProblemBlock  .mainProblemIcon, .mainProblemBlock  .mainProblemName, .mainProblemBlock  .mainProblemStat {
+  float: left;
+}
+
+.mainProblemBlock hr {
+  clear: both;
+}
+
+.mainProblemBlock .mainProblemIcon {
+  margin-left: 8%;
+  width: 12%;
+  max-width: 70px;
+}
+
+.mainProblemBlock  .mainProblemName {
+  margin-left: 4%;
+  width: 31%;
+}
+
+.mainProblemBlock  a.problemLink:link, .mainProblemBlock  a.problemLink:visited {
+  border-bottom: 1px solid #6e6e6e;
+  color: #6e6e6e;
+  font-size: 13pt;
+  line-height: 150%;
+  text-decoration: none;
+}
+
+.mainProblemBlock  a.problemLink:hover {
+  border-bottom: 0;
+  text-decoration: none;
+}
+
+.problemLinkAllProblems {
+  margin-top: 20px;
+}
+
+.mainProblemBlock  .mainProblemStat {
+  margin-left: 4%;
+  width: 41%;
+}
+
+.mainProblemBlock  .mainProblemStat .stat-figures img {
+  margin-right: 5px;
+  margin-top: -5px;
+}
+
+.mainProblemBlock  .mainProblemStat .stat-figures span.mainStatValue {
+  color: #6e6e6e;
+  font-size: 12pt;
+  margin-right: 15px;
+}

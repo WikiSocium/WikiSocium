@@ -1,16 +1,19 @@
 !!!
 html
   head
-    meta (http-equiv='Content-Type', content='text/html; charset=UTF-8')
     title= title
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
-    link(rel='stylesheet', href='/stylesheets/main.css')
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.css')
+    link(rel='stylesheet', href='/stylesheets/global.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/Aristo-jquery-ui/Aristo.css')
+        
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js')
-    script(type='text/javascript', src='/javascripts/bootstrap.js')
-
+    script(type='text/javascript', src='/javascripts/global.js')
+    script(type='text/javascript', src='/bootstrap/js/bootstrap.js')
 
     -each style in styles
       link(rel='stylesheet', href=style)
@@ -22,40 +25,52 @@ html
       user.guest = #{user.guest};  
 
   body
-    div.container-fluid
-    #heading.row
-      a(href="/")
-        #logo.span4.offset1
-      #heading-stat.span3 3 проблемы, 3 решения, 152 дела, 114 пользователей
-      #heading-login-form.span4
-        div.formline
-          -if (user.guest)
-            form.form-inline(method='post', action='/sessions')
-              input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
-              input#user-password.input-small(name='user[password]', value=user.password || '', type='password')
-              button.btn.btn-success(type='submit')Войти
-            a(href='/users/new') Регистрация
-          -else
-            #{user.email}
-            a(href='/Logout').btn(type='submit')Выйти
-    #menu.row
-      div.span11.offset1
-        a.menu-element О проекте 
-        a.menu-element(href='/Problems') Проблемы  и решения
-        //-a.menu-element Карта
-        - if (!user.guest)
-          a.menu-element(href='/UserData/#{user.email}') Мои дела
-    div.row
-      #content
-        !{flashMessages}
-        != body
-      script(type='text/javascript', src='/javascripts/flash.js')
     
-    #footer.row
-      div.span3.offset1
-        &copy; ВикиСоциум 2011&ndash;2012
-      div.span3
-        a(href='mailto:feedback@wikisocium.ru') feedback@wikisocium.ru
-      div.span3.offset2
-        a(href="#about") О проекте 
-        a(href="#help") Помочь
+    #heading-block
+      #heading.container
+        .row
+          .span5
+            h1#logo
+              a(href="/") ВикиСоциум
+          #heading-stat.span3 3 проблемы, 3 решения,<br />152 дела, 114 пользователей
+          #heading-login-form.span3.offset1
+            div.formline
+              -if (user.guest)
+                form.form-inline(method='post', action='/sessions')
+                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
+                  input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
+                  button.btn.btn-success(type='submit')Войти
+                a(href='/users/new') Регистрация
+              -else
+                #{user.email} &nbsp;
+                a(href='/Logout').btn(type='submit') Выйти
+                
+    #menu-block
+      #menu.container
+        .row
+          .span12.navbar
+            ul.nav
+              li
+                a(href="/About") О проекте
+              li
+                a(href="/Problems") Проблемы  и решения
+              - if (!user.guest)
+                li
+                  a(href="/UserData/#{user.email}") Мои дела
+    
+    #content-block.container      
+      != body    
+    
+    //!{flashMessages}
+    //script(type='text/javascript', src='/javascripts/flash.js')
+    
+    #footer-block
+      #footer.container
+        .row
+          .span3 © ВикиСоциум 2011&mdash;2012
+          .span2
+            a(href="mailto:feedback@wikisocium.ru") feedback@wikisocium.ru
+          .span2.offset3
+            a(href="#about") О проекте
+            &nbsp;
+            a(href="#help") Помочь
