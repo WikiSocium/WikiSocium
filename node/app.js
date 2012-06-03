@@ -201,22 +201,20 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
-		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var categoryList = JSON.parse(data); 
-							res.render('index', {
-									'title':"Usage",
-									'user':req.currentUser, 
-									'categoryList' : categoryList.categoryList,
-									scripts:[],
-									styles:[]});
-									}
-						else
-							Render404(req,res, err);
-					});
-
-        });
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+    if(!err) {
+      var categoryList = JSON.parse(data);
+      res.render('index', {
+        'title':"ВикиСоциум development",
+        'user':req.currentUser, 
+        'categoryList' : categoryList.categoryList,
+        scripts:[],
+        styles:[]
+      });
+    }
+  	else Render404(req,res, err);
+	});
+});
 
 
 //
