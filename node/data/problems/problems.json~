@@ -2,19 +2,27 @@
     "problemsList": [
 	{
         "Name":"TestProblem",
-	"Tags": ["T1", "T2", "T3"]
+	"Categories": ["T1", "T2", "T3"]
 	},
 	{
         "Name":"Violation",
-	"Tags": ["T2", "T3"]
+	"Categories": ["T2", "T3"]
 	},
 	{
         "Name":"BadItem",
-	"Tags": ["T1"]
+	"Categories": ["T1"]
 	},
 	{
         "Name":"Heating",
-	"Tags": ["T3"]
-	}
+	"Categories": ["T3"]
+	},
+	{
+        "Name":"BadService",
+	"Categories": ["T3"]
+	},
+	{
+        "Name":"HouseYard",
+	"Categories": ["T3"]
+	},
     ]
 }
