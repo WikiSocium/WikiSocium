@@ -1,3 +1,0 @@
-  div.row.mainProblemBlock
-      div.span1.mainProblemIcon
-        img(src='#{aCategory.Image}')
