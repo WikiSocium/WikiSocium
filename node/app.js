@@ -5,11 +5,11 @@
 function Render404(req,res, err)
 {
 	res.render('404', {
-				   'title':'404',
-				   user: req.currentUser,
-				   'err': err,
-				   'scripts':[]
-			   });
+    'title':'404',
+    'user': req.currentUser,
+		'err': err,
+		'scripts':[]
+	});
 }
 
 /**
@@ -212,129 +212,101 @@ app.get('/', loadUser, function(req, res) {
         styles:[]
       });
     }
-  	else Render404(req,res, err);
-	});
+    else Render404(req,res, err);
+  });
 });
 
 
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, function(req, res){
-		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problemsList = JSON.parse(data);              
-							res.render('problems', {
-									   'title' : "Problems list",
-									   'user':req.currentUser,
-									   'problemsList' : problemsList.problemsList,
-									   'scripts' : [],
-                      styles:[]
-									   });
-						}
-						else
-							Render404(req,res, err);
-					});
-		});
-
-//
-
-
-
-//
+  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+	if(!err) {
+    var problemsList = JSON.parse(data);              
+		res.render('problems', {
+		  'title' : "Problems list",
+      'user':req.currentUser,
+			'problemsList' : problemsList.problemsList,
+			'scripts' : [],
+      'styles': []
+	  });
+	}
+	else
+		Render404(req,res, err);
+	});
+});
 
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, function(req, res){
-		var problemName = req.param('ProblemName', null);
+	var problemName = req.param('ProblemName', null);
 		
-		fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
-					if(!err)
-					{
-						var problem = JSON.parse(data);
-						res.render('problem', {
-									   'title' : problemName,
-                     	               'user':req.currentUser, 
-									   'problem' : problem,
-									   'scripts' : ['/javascripts/modal_window.js'],
-                     'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
-						   });
-					}
-					else
-						Render404(req,res, err);
-				});
-		});
+	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
+    if(!err) {
+			var problem = JSON.parse(data);
+			res.render('problem', {
+        'title' : problemName,
+        'user':req.currentUser, 
+				'problem' : problem,
+				'scripts' : ['/javascripts/modal_window.js'],
+        'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
+			 });
+		}
+		else Render404(req,res, err);
+	});
+});
 
 //
 
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, function(req, res){
-		var categoryName = req.param('CategoryName', null);
-		
-		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problemsList = JSON.parse(data);
+	var categoryName = req.param('CategoryName', null);
+	
+	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+		if(!err) {
+			var problemsList = JSON.parse(data);
 
-							//Здесь я сделаю массив с нужным из problemsList
+			//Здесь я сделаю массив с нужным из problemsList
 							
-							var categoryList = [];
-							var i;
-							for(i = 0; i < problemsList.problemsList.length; i++)
-							{
-							var j;
-							  for(j = 0; j < problemsList.problemsList[i].Categories.length; j++)
-							  {
-							    if(categoryName == problemsList.problemsList[i].Categories[j])
-							    {
-							    	categoryList.push(problemsList.problemsList[i])
-							    	break;
-							    }
-							  }
-							}
-							//
-							res.render('problems', {
-									   'title' : categoryName,
-									   'user':req.currentUser,
-									   'problemsList' : categoryList,
-									   'scripts' : [],
-                      styles:[]
-									   });
-						}
-						else
-							Render404(req,res, err);
-					});
-		});
-
-//
-
-//
-app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
-  
-    if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-    else
-        { 
-          var SolutionNew = req.param('SolutionName', null);
- 	      	res.render('AddCaseForUser', {
-                                        locals: {Solution: SolutionNew},
-                                        user: req.currentUser, 
-			                            title: '',
-			                            scripts: [],
-                                  styles:[]
-			                                  }
-                    );
-      }
+			var categoryList = [];
+			var i;
+			for(i = 0; i < problemsList.problemsList.length; i++) {
+				var j;
+			  for (j = 0; j < problemsList.problemsList[i].Categories.length; j++) {
+          if (categoryName == problemsList.problemsList[i].Categories[j]) {
+					  categoryList.push(problemsList.problemsList[i])
+						break;
+					}
+				}
+			}
+			
+			res.render('problems', {
+			  'title' : categoryName,
+			  'user':req.currentUser,
+			  'problemsList' : categoryList,
+			  'scripts' : [],
+        'styles':[]
+			});
+		}
+		else Render404(req,res, err);
 	});
+});
+
+app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else { 
+    var SolutionNew = req.param('SolutionName', null);
+ 	  res.render('AddCaseForUser', {
+      locals: {Solution: SolutionNew},
+      user: req.currentUser, 
+      title: '',
+      scripts: [],
+      styles:[]
+		});
+  }
+});
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId/', loadUser , function(req, res) {
-
-    var userName = req.param('UserName', null);
-    var caseId = req.param('CaseId', null);
-
-    res.redirect("/UserData/" + userName + "/" + caseId);
-});
-
 app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
   var userName = req.param('UserName', null);
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
@@ -431,70 +403,66 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
 //
 // Механизм запросов регионализируеммых данных
 app.post('/GetRegionalizedData', function(req, res) {
-    var region = req.body.region;
-    var db     = req.body.db;
-    var dataId = req.body.dataId;
-    
-    if(db == "organizations")
-    {
-        Organizations.findOne ({ organization_name: dataId }, function(e, organization_item)
-        {
-          if(organization_item)          
-              for(var anotherRegion in organization_item.regions_list)
-                  if(organization_item.regions_list[anotherRegion].region_name == region)
-                  {
-                      res.send(organization_item.regions_list[anotherRegion].organizations_list);
-                      break;
-                  }
-        });
-    }
-    if (db=="texts")
-    {
-        Texts.findOne({ text_name: dataId}, function(e, text_item)
-        {
-            res.send(text_item);
-        });
-        console.log('запросили тексты');
-    }
+  var region = req.body.region;
+  var db     = req.body.db;
+  var dataId = req.body.dataId;
+  
+  if(db == "organizations") {
+    Organizations.findOne ({ organization_name: dataId }, function(e, organization_item) {
+      if(organization_item)          
+        for(var anotherRegion in organization_item.regions_list)
+          if(organization_item.regions_list[anotherRegion].region_name == region)
+          {
+              res.send(organization_item.regions_list[anotherRegion].organizations_list);
+              break;
+          }
+    });
+  }
+  if (db=="texts") {
+    Texts.findOne({ text_name: dataId}, function(e, text_item) {
+        res.send(text_item);
+    });
+    console.log('запросили тексты');
+  }
 });
 
 //        
 //Сохранение данных кейса        
 app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
-    var userName = req.param('UserName', null);
-    var caseId = req.param('CaseId', null);
+  var userName = req.param('UserName', null);
+  var caseId = req.param('CaseId', null);
 
-    fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
-      if (err) {
-        fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');
-        var caseContents = {};
-        caseContents.name = caseId;
-        err = false;
-      }
-      else {
-        var caseContents = JSON.parse(caseContentsJson);
-        if (caseContents == null) var caseContents = {};
-        caseContents.name = caseId;
-      }
-      caseContents.data = JSON.parse(req.body.jsonData);
+  fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+    if (err) {
+      fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');
+      var caseContents = {};
+      caseContents.name = caseId;
+      err = false;
+    }
+    else {
+      var caseContents = JSON.parse(caseContentsJson);
+      if (caseContents == null) var caseContents = {};
+      caseContents.name = caseId;
+    }
+    caseContents.data = JSON.parse(req.body.jsonData);
 
-      var curStep = req.body.curStep;
-      var nextStep = req.body.nextStep;
-      
-      for (var key in caseContents.steps) {
-        if (caseContents.steps[key].id == nextStep) {
-          caseContents.steps[key].prevStep = curStep;
-          break;
-        }
+    var curStep = req.body.curStep;
+    var nextStep = req.body.nextStep;
+    
+    for (var key in caseContents.steps) {
+      if (caseContents.steps[key].id == nextStep) {
+        caseContents.steps[key].prevStep = curStep;
+        break;
       }
-      caseContents.currentStep = nextStep;
-      
-      //console.log(req.body.jsonData);
-      fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-            if (err) console.log(err);
-      });
-      res.send(req.body);
+    }
+    caseContents.currentStep = nextStep;
+    
+    //console.log(req.body.jsonData);
+    fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
+          if (err) console.log(err);
     });
+    res.send(req.body);
+  });
 });
 
 //
@@ -566,8 +534,8 @@ app.get('/UserData/:UserName', loadUser, function(req, res){
       fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
       	if(!err) {
       	  var requestedUser = JSON.parse(data);
-	  res.render('user', {
-	    'title': userName,
+	  res.render('mycases', {
+	    'title': 'Мои дела',
 	    'user':req.currentUser, 
 	    'requestedUser': requestedUser,
 	    'scripts': [],
@@ -899,6 +867,7 @@ app.post('/admin/organizations/add', loadUser, function(req, res) {
           'organization_name': req.body.organization_name,
           'regions_list': [
             {
+
               'region_name': req.body.region_name,
               'organizations_list': []
             }

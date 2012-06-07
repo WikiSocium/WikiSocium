@@ -219,12 +219,12 @@ a:hover, a:active {
   width: 41%;
 }
 
-.mainProblemBlock  .mainProblemStat .stat-figures img {
+.stat-figures img {
   margin-right: 5px;
   margin-top: -5px;
 }
 
-.mainProblemBlock  .mainProblemStat .stat-figures span.mainStatValue {
+.stat-figures span.mainStatValue {
   color: #6e6e6e;
   font-size: 12pt;
   margin-right: 15px;

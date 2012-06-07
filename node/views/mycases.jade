@@ -1,0 +1,51 @@
+.row
+  .span12
+    Сортировать по: 
+    a(href="#") названию дела
+    | | 
+    a(href="#") дате создания
+    | | 
+    a(href="#") дате обновления
+
+- each aCase in requestedUser.cases
+  - if (aCase.state == 'active')
+    .row
+      .span8
+        p <span class="to-var">Ждать 7 дней ремонтно-восстановительных работ</span>
+        p 
+          a(href="#") #{aCase.solutionId}
+          |: #{aCase.caseId} (создано <span class="to-var">15.07.2011</span>)
+        .row
+          .span2
+            p.stat-figures      
+             <img src="/images/solved.png" /><span class="mainStatValue">6</span>
+             <img src="/images/inprocess.png" /><span class="mainStatValue">15</span>
+             <img src="/images/notsolved.png" /><span class="mainStatValue">8</span>
+          .span4 
+            a(href="#")ЖКХ
+            |, 
+            a(href="#")Защита прав потребителей
+        p Осталось ждать 2 дня
+            
+      .span3.offset1
+        обновлено <span class="to-var">23.10.2011</span>
+
+//
+  div(class="userFullName")
+   #{requestedUser.fullName}
+
+  div(class="userStuff")
+    div= requestedUser.id
+    div= requestedUser.cases.length
+
+  #cases
+    h2 Активные дела
+    - each aCase in requestedUser.cases
+      - if (aCase.state == 'active')
+        !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+      
+    h2 Завершенные дела
+    - each aCase in requestedUser.cases
+      - if (aCase.state == "completed")
+        !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+   
