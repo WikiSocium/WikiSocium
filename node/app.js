@@ -345,97 +345,89 @@ app.get ('/addcase/:SolutionName', loadUser, generateMenu,function(req,res) {
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId', loadUser, generateMenu, function(req, res) {
-  var userName = req.param('UserName', null);
+app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
-  {
-    if (req.currentUser.email != userName) 
-    {
-      res.redirect('/');
-      req.flash('info', 'Не смотрите чужие документы');
-    }
-    else 
-    {
-      var caseId = req.param('CaseId', null);
-      fs.readFile('data/UserData/' + req.currentUser.email + '/user.json', "utf-8", function(err, data){
-        if (!err) {
-          var userJSON = JSON.parse(data);
-          solutionId = false;
-          for (var key in userJSON.cases) {
-              if (userJSON.cases[key].caseId == caseId) {
-                solutionId = userJSON.cases[key].solutionId;
-                break;
-              }
-          }
-          if (solutionId)
-            fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
-              if(!err) 
-              {
-                var solutionData = JSON.parse(data);
-                var stylesToInject = [];
-                var scriptsToInject = [
-                  'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
-                  'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
-				          'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                  'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
-                  '/inputex/src/loader.js',
-				          '/javascripts/jquery.json-2.3.min.js',
-				          '/javascripts/CaseDataController.js',
-				          '/javascripts/StepsController.js',
-                  '/javascripts/customWidgets/timer.js',
-				          '/javascripts/runtime.min.js',
-				          '/javascripts/jquery.watch-2.0.min.js',
-				          '/javascripts/jquery.prettyPhoto.js',
-				          '/javascripts/modal_window.js',
-				          '/javascripts/RegionalizedData.js'
-				        ];
-				        
-                // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
-                var requiredDocuments = solutionData.data.documents;
-                if(requiredDocuments)
-                {
-                  for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                  if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
-                  scriptsToInject.push("/javascripts/nicEdit.js");
-                  scriptsToInject.push("/markitup/sets/default/set.js");            
-                  stylesToInject.push("/markitup/sets/default/style.css");
-                  stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
-                  stylesToInject.push("/markitup/skins/simple/style.css");            
-                  stylesToInject.push("/stylesheets/prettyPhoto.css");
-                }
-                fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
-                  if (err) {
-                    var caseContents = {};
-                    err = false;
-                  }
-                  else {
-                    var caseContents = JSON.parse(caseContentsJson);
-                    if (caseContents == null) var caseContents = {};
-                  }
-
-                  res.render('userCase', 
-                  {
-                    'title': userName + " : " + caseId,
-                    'user':req.currentUser,
-                    'menu':res.menu, 
-                    'solutionData' : solutionData,
-                    'caseData' : caseContents.data,
-                    'caseName' : caseContents.name,
-                    'currentStep' : caseContents.currentStep,
-                    'stepsHistory' : caseContents.steps,
-                    'scripts' : scriptsToInject,
-                    'styles' : stylesToInject
-                  });
-                });
-              }
-              else Render404(req,res, err);
-            });
-          else Render404(req,res,'У вас нет дела с этим id')
+  {    
+    var userName = req.currentUser.email;
+    var caseId = req.param('CaseId', null);
+    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+      if (!err) {
+        var userJSON = JSON.parse(data);
+        solutionId = false;
+        for (var key in userJSON.cases) {
+            if (userJSON.cases[key].caseId == caseId) {
+              solutionId = userJSON.cases[key].solutionId;
+              break;
+            }
         }
-        else Render404(req,res, err);
-      });
-    }
+        if (solutionId)
+          fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
+            if(!err) 
+            {
+              var solutionData = JSON.parse(data);
+              var stylesToInject = [];
+              var scriptsToInject = [
+                'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
+                'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                '/inputex/src/loader.js',
+                '/javascripts/jquery.json-2.3.min.js',
+                '/javascripts/CaseDataController.js',
+                '/javascripts/StepsController.js',
+                '/javascripts/customWidgets/timer.js',
+                '/javascripts/runtime.min.js',
+                '/javascripts/jquery.watch-2.0.min.js',
+                '/javascripts/jquery.prettyPhoto.js',
+                '/javascripts/modal_window.js',
+                '/javascripts/RegionalizedData.js'
+              ];
+              
+              // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+              var requiredDocuments = solutionData.data.documents;
+              if(requiredDocuments)
+              {
+                for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
+                scriptsToInject.push("/javascripts/nicEdit.js");
+                scriptsToInject.push("/markitup/sets/default/set.js");            
+                stylesToInject.push("/markitup/sets/default/style.css");
+                stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
+                stylesToInject.push("/markitup/skins/simple/style.css");            
+                stylesToInject.push("/stylesheets/prettyPhoto.css");
+              }
+              fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+                if (err) {
+                  var caseContents = {};
+                  err = false;
+                }
+                else {
+                  var caseContents = JSON.parse(caseContentsJson);
+                  if (caseContents == null) var caseContents = {};
+                }
+
+                res.render('userCase', 
+                {
+                  'title': userName + " : " + caseId,
+                  'user':req.currentUser,
+                  'menu':res.menu, 
+                  'solutionData' : solutionData,
+                  'caseData' : caseContents.data,
+                  'caseName' : caseContents.name,
+                  'currentStep' : caseContents.currentStep,
+                  'stepsHistory' : caseContents.steps,
+                  'scripts' : scriptsToInject,
+                  'styles' : stylesToInject
+                });
+              });
+            }
+            else Render404(req,res, err);
+          });
+        else Render404(req,res,'У вас нет дела с этим id')
+      }
+      else Render404(req,res, err);
+    });
   }
 });
 
