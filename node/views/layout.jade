@@ -20,12 +20,9 @@ html
 
     -each script in scripts 
       script(type='text/javascript', src=script)
-    script(type='text/javascript')
-      var user = {};
-      user.guest = #{user.guest};  
+    
 
   body
-    
     #heading-block
       #heading.container
         .row
@@ -35,13 +32,13 @@ html
           #heading-stat.span3 3 проблемы, 3 решения,<br />152 дела, 114 пользователей
           #heading-login-form.span3.offset1
             div.formline
-              -if (user.guest)
+              - if (user.guest)
                 form.form-inline(method='post', action='/sessions')
                   input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
                   input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
                   button.btn.btn-success(type='submit')Войти
                 a(href='/users/new') Регистрация
-              -else
+              - else
                 #{user.email} &nbsp;
                 a(href='/Logout').btn(type='submit') Выйти
                 
@@ -50,19 +47,26 @@ html
         .row
           .span12.navbar
             ul.nav
+              - each item in menu
+                - if (item.active)
+                  li.active: a(href="/#{item.id}") #{item.name}
+                - else
+                  li: a(href="/#{item.id}") #{item.name}
+            //
               li
                 a(href="/About") О проекте
               li
                 a(href="/Problems") Проблемы  и решения
               - if (!user.guest)
-                li
+                li.active
                   a(href="/UserData/#{user.email}") Мои дела
     
     #content-block.container      
       != body    
     
-    //!{flashMessages}
-    //script(type='text/javascript', src='/javascripts/flash.js')
+    //
+      !{flashMessages}
+      script(type='text/javascript', src='/javascripts/flash.js')
     
     #footer-block
       #footer.container

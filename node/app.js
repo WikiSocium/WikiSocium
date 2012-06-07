@@ -162,6 +162,39 @@ function loadUser(req, res, next) {
   }
 }
 
+function generateMenu(req, res, next) {
+  var menu = [
+    {
+      'id': 'About',
+      'name': 'О проекте',
+      'guest': true
+    },
+    {
+      'id': 'Problems',
+      'name': 'Проблемы и решения',
+      'guest': true
+    },
+    {
+      'id': 'MyCases',
+      'name': 'Мои дела',
+      'guest': false
+    }
+  ];
+  res.menu = [];
+  for (var i in menu) {
+    if (menu[i].guest || !menu[i].guest && !req.currentUser.guest) {
+      var is_active = false;
+      if (req.url.indexOf(menu[i].id) == 1) is_active = true;
+      res.menu.push({
+        'id': menu[i].id,
+        'name': menu[i].name,
+        'active': is_active
+      });
+    }
+  }
+  next();
+}
+
 function userCreateEnv( user_id ) {
   fs.mkdir('data/UserData/'+user_id);
   fs.mkdir('data/UserData/'+user_id+'/cases');
@@ -200,16 +233,17 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 
 //
 // Обработка корня
-app.get('/', loadUser, function(req, res) {
+app.get('/', loadUser, generateMenu, function(req, res) {
   fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
     if(!err) {
       var categoryList = JSON.parse(data);
       res.render('index', {
         'title':"ВикиСоциум development",
-        'user':req.currentUser, 
+        'user':req.currentUser,
+        'menu':res.menu,
         'categoryList' : categoryList.categoryList,
-        scripts:[],
-        styles:[]
+        'scripts':[],
+        'styles':[]
       });
     }
     else Render404(req,res, err);
@@ -219,13 +253,14 @@ app.get('/', loadUser, function(req, res) {
 
 //
 // Обработка запроса на показ списка проблем
-app.get('/Problems', loadUser, function(req, res){
+app.get('/Problems', loadUser, generateMenu, function(req, res){
   fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 	if(!err) {
     var problemsList = JSON.parse(data);              
 		res.render('problems', {
 		  'title' : "Problems list",
       'user':req.currentUser,
+      'menu':res.menu,
 			'problemsList' : problemsList.problemsList,
 			'scripts' : [],
       'styles': []
@@ -237,7 +272,7 @@ app.get('/Problems', loadUser, function(req, res){
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
-app.get('/Problems/:ProblemName', loadUser, function(req, res){
+app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 	var problemName = req.param('ProblemName', null);
 		
 	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
@@ -245,7 +280,8 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 			var problem = JSON.parse(data);
 			res.render('problem', {
         'title' : problemName,
-        'user':req.currentUser, 
+        'user':req.currentUser,
+        'menu':res.menu,
 				'problem' : problem,
 				'scripts' : ['/javascripts/modal_window.js'],
         'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
@@ -258,7 +294,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
 //
 
 // Обработка запроса на показ списка проблем из категории
-app.get('/Categories/:CategoryName', loadUser, function(req, res){
+app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 	var categoryName = req.param('CategoryName', null);
 	
 	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
@@ -282,6 +318,7 @@ app.get('/Categories/:CategoryName', loadUser, function(req, res){
 			res.render('problems', {
 			  'title' : categoryName,
 			  'user':req.currentUser,
+        'menu':res.menu,
 			  'problemsList' : categoryList,
 			  'scripts' : [],
         'styles':[]
@@ -291,13 +328,14 @@ app.get('/Categories/:CategoryName', loadUser, function(req, res){
 	});
 });
 
-app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
+app.get ('/addcase/:SolutionName', loadUser, generateMenu,function(req,res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else { 
     var SolutionNew = req.param('SolutionName', null);
  	  res.render('AddCaseForUser', {
       locals: {Solution: SolutionNew},
-      user: req.currentUser, 
+      'user': req.currentUser,
+      'menu':res.menu,
       title: '',
       scripts: [],
       styles:[]
@@ -307,7 +345,7 @@ app.get ('/addcase/:SolutionName', loadUser,function(req,res) {
 
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
+app.get('/UserData/:UserName/:CaseId', loadUser, generateMenu, function(req, res) {
   var userName = req.param('UserName', null);
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
@@ -379,7 +417,8 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                   res.render('userCase', 
                   {
                     'title': userName + " : " + caseId,
-                    'user':req.currentUser, 
+                    'user':req.currentUser,
+                    'menu':res.menu, 
                     'solutionData' : solutionData,
                     'caseData' : caseContents.data,
                     'caseName' : caseContents.name,
@@ -467,7 +506,7 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 
 //
 //Завершение кейса
-app.post('/UserData/:UserName/:CaseId/endCase', loadUser, function(req, res) {
+app.post('/UserData/:UserName/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
   var userName = req.param('UserName', null);
   var caseId = req.param('CaseId', null);
     
@@ -522,37 +561,22 @@ app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
-app.get('/UserData/:UserName', loadUser, function(req, res){
-  var userName = req.param('UserName', null);
-
+app.get('/MyCases', loadUser, generateMenu, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-    if (req.currentUser.email!=userName) {
-      res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
-    }
-    else {
-      fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
-      	if(!err) {
-      	  var requestedUser = JSON.parse(data);
-	  res.render('mycases', {
-	    'title': 'Мои дела',
-	    'user':req.currentUser, 
-	    'requestedUser': requestedUser,
-	    'scripts': [],
-	    'styles': []
-	  });
-	}
-	else Render404(req,res, err);
-      });
-    }
-  }
-});
-
-app.get('/mycases', loadUser, function(req, res) {
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
-    var userName = req.currentUser.email;
-    res.redirect('/UserData/'+userName);
+    fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
+      if(!err) {
+        res.render('mycases', {
+          'title': 'Мои дела',
+          'user':req.currentUser,
+          'menu':res.menu, 
+          'userData': JSON.parse(data),
+          'scripts': [],
+          'styles': []
+        });
+      }
+      else Render404(req,res, err);
+    });
   }
 });
 
@@ -562,10 +586,11 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 // Users
-app.get('/users/new', loadUser, function(req, res) {
+app.get('/users/new', loadUser, generateMenu, function(req, res) {
   res.render('users/new.jade', {
     locals: { return_to: parseReturnTo(req.query.return_to) },
-    user:req.currentUser, 
+    'user':req.currentUser,
+    'menu':res.menu, 
     title: '',
     scripts: [],
     styles:[]
@@ -596,7 +621,7 @@ function createCaseFile ( userName, caseId, solutionId ) {
   });
 }
 
-app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
+app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, res) {
   
   var solutionId = req.param('SolutionName', null);
   //solution -> case
@@ -635,14 +660,15 @@ app.post('/addcasetouser/:SolutionName', loadUser, function(req, res) {
 
 
 
-app.post('/users.:format?', loadUser, function(req, res) {
+app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
     req.flash('error', 'Не удалось создать аккаунт');
     res.render('users/new.jade', {
       locals: { return_to: parseReturnTo(req.query.return_to) },
-      user:req.currentUser, 
+      'user':req.currentUser,
+      'menu':res.menu, 
       title: '',
       scripts: [],
       styles:[]
@@ -675,10 +701,11 @@ app.post('/users.:format?', loadUser, function(req, res) {
 
 
 // Sessions
-app.get('/sessions/new', loadUser, function(req, res) {
+app.get('/sessions/new', loadUser, generateMenu, function(req, res) {
 
   res.render('sessions/new.jade', {
-    user:req.currentUser,
+    'user':req.currentUser,
+    'menu':res.menu,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: [],
@@ -744,12 +771,12 @@ app.post('/sessions', function(req, res) {
    
 });
 
-app.get('/login', loadUser, function(req, res) {
+app.get('/login', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.query.return_to);
   else res.redirect('/');
 });
 
-app.get('/logout', loadUser, function(req, res) {
+app.get('/logout', loadUser, generateMenu, function(req, res) {
   if (req.session) {
     LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
@@ -760,7 +787,7 @@ app.get('/logout', loadUser, function(req, res) {
 
 // Statistics
 
-app.get('/statistics/solutions', loadUser, function(req, res) {
+app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   
     fs.readdir("data/solutions", function (err, files) {
@@ -796,7 +823,8 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
       async.forEach(solutions, f, function(err) {
         res.render('statistics/solutions.jade', {
           title: "Статистики по решениям",
-          user:req.currentUser,
+          'user':req.currentUser,
+          'menu':res.menu,
           solutions: solutions, 
           scripts:[],
           styles:[]
@@ -809,19 +837,20 @@ app.get('/statistics/solutions', loadUser, function(req, res) {
 
 
 // Admin pages
-app.get('/admin', loadUser, function(req, res) {
+app.get('/admin', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   
     res.render('admin/index.jade', {
       title: "Админка",
-      user:req.currentUser,
+      'user':req.currentUser,
+      'menu':res.menu,
       scripts:[],
       styles:[]
     })
   }
 });
 
-app.get('/admin/organizations/add', loadUser, function(req, res) {
+app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var regions_list = fs.readFileSync('data/regions.json', "utf-8");
@@ -834,6 +863,7 @@ app.get('/admin/organizations/add', loadUser, function(req, res) {
       res.render('admin/organizations/add.jade', {
         'title':    "Организации / добавить",
         'user':     req.currentUser,
+        'menu':     res.menu,
         'scripts':  [],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
@@ -844,7 +874,7 @@ app.get('/admin/organizations/add', loadUser, function(req, res) {
   }
 });
 
-app.post('/admin/organizations/add', loadUser, function(req, res) {
+app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var new_organization = {
@@ -905,12 +935,13 @@ app.post('/admin/organizations/add', loadUser, function(req, res) {
   }
 });
 
-app.get('/admin/texts/add', loadUser, function(req, res) {
+app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {    
     res.render('admin/texts/add.jade', {
       'title':    "Тексты / добавить",
       'user':     req.currentUser,
+      'menu':     res.menu,
       'scripts':  [],
       'styles':   [],
       'adding_result': req.query.adding_result,
@@ -925,7 +956,7 @@ app.get('/admin/texts/add', loadUser, function(req, res) {
   }
 });
 
-app.post('/admin/texts/add', loadUser, function(req, res) {
+app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var new_text = new Texts({
