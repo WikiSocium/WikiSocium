@@ -23,6 +23,10 @@
 	  {
       "Name":"HouseYard",
 	    "Categories": ["ZKH"]
+	  },
+	  {
+	  "Name":"BadItemCopy",
+	  "Categories":["customer_protection"]
 	  }
   ]
 }

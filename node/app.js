@@ -428,6 +428,12 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
   }
 });
 
+//Запрос списка регионов
+app.post('/GetRegions', function(req, res) {
+    var regions_list = fs.readFileSync('data/regions.json', "utf-8");
+    res.send(JSON.parse(regions_list));
+});
+
 //
 // Механизм запросов регионализируеммых данных
 app.post('/GetRegionalizedData', function(req, res) {
