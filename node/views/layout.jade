@@ -17,19 +17,29 @@ html
 
     -each style in styles
       link(rel='stylesheet', href=style)
-
     -each script in scripts 
       script(type='text/javascript', src=script)
     
 
   body
+    p
+      span.to-var Салатовым 
+      цветом выделено то, что надо заменить на данные из json или БД
     #heading-block
       #heading.container
         .row
           .span5
             h1#logo
               a(href="/") ВикиСоциум
-          #heading-stat.span3 3 проблемы, 3 решения,<br />152 дела, 114 пользователей
+          #heading-stat.span3
+            span.to-var 3 
+            проблемы, 
+            span.to-var 3 
+            решения,<br />
+            span.to-var 152 
+            дела, 
+            span.to-var 114 
+            пользователей
           #heading-login-form.span3.offset1
             div.formline
               - if (user.guest)
@@ -52,14 +62,6 @@ html
                   li.active: a(href="/#{item.id}") #{item.name}
                 - else
                   li: a(href="/#{item.id}") #{item.name}
-            //
-              li
-                a(href="/About") О проекте
-              li
-                a(href="/Problems") Проблемы  и решения
-              - if (!user.guest)
-                li.active
-                  a(href="/UserData/#{user.email}") Мои дела
     
     #content-block.container      
       != body    

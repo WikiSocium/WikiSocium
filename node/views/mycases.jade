@@ -1,5 +1,5 @@
-.row
-  .span12
+.row.sortlinks
+  .span11.offsethalf
     Сортировать по: 
     a(href="#") названию дела
     | | 
@@ -7,45 +7,54 @@
     | | 
     a(href="#") дате обновления
 
-- each aCase in requestedUser.cases
+- each aCase in userData.cases
   - if (aCase.state == 'active')
-    .row
-      .span8
-        p <span class="to-var">Ждать 7 дней ремонтно-восстановительных работ</span>
+    hr
+    .row.user-case-list-item
+      .span7.offsethalf
+        p.status
+          a(href="/MyCases/#{aCase.caseId}"): span.to-var Здесь будет текст статуса дела. Чтобы войти в дело &mdash; кликать по нему
         p 
           a(href="#") #{aCase.solutionId}
           |: #{aCase.caseId} (создано <span class="to-var">15.07.2011</span>)
-        .row
+        .row(style="margin-bottom: 25px; margin-top: 25px;")
           .span2
-            p.stat-figures      
-             <img src="/images/solved.png" /><span class="mainStatValue">6</span>
-             <img src="/images/inprocess.png" /><span class="mainStatValue">15</span>
-             <img src="/images/notsolved.png" /><span class="mainStatValue">8</span>
-          .span4 
-            a(href="#")ЖКХ
+            p.stat-figures
+             img(src="/images/solved.png")
+             span.mainStatValue.to-var 6
+             img(src="/images/inprocess.png")
+             span.mainStatValue.to-var 15
+             img(src="/images/notsolved.png")
+             span.mainStatValue.to-var 8
+          .span4
+            a(href="#"): span.to-var ЖКХ
             |, 
-            a(href="#")Защита прав потребителей
-        p Осталось ждать 2 дня
+            a(href="#"): span.to-var Защита прав потребителей
+        p.todo
+          img(src="/images/status-icon-info.png")
+          span.to-var Осталось ждать 2 дня
             
       .span3.offset1
-        обновлено <span class="to-var">23.10.2011</span>
+        p.updated
+          обновлено 
+          span.to-var 23.10.2011
 
 //
   div(class="userFullName")
-   #{requestedUser.fullName}
+   #{userData.fullName}
 
   div(class="userStuff")
-    div= requestedUser.id
-    div= requestedUser.cases.length
+    div= userData.id
+    div= userData.cases.length
 
   #cases
     h2 Активные дела
-    - each aCase in requestedUser.cases
+    - each aCase in userData.cases
       - if (aCase.state == 'active')
-        !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+        !=partial('aCase', {user:userData.id, aCase:aCase.caseId})
       
     h2 Завершенные дела
-    - each aCase in requestedUser.cases
+    - each aCase in userData.cases
       - if (aCase.state == "completed")
-        !=partial('aCase', {user:requestedUser.id, aCase:aCase.caseId})
+        !=partial('aCase', {user:userData.id, aCase:aCase.caseId})
    

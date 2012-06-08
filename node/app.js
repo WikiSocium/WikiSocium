@@ -431,12 +431,6 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
   }
 });
 
-//Запрос списка регионов
-app.post('/GetRegions', function(req, res) {
-    var regions_list = fs.readFileSync('data/regions.json', "utf-8");
-    res.send(JSON.parse(regions_list));
-});
-
 //
 // Механизм запросов регионализируеммых данных
 app.post('/GetRegionalizedData', function(req, res) {
@@ -565,9 +559,9 @@ app.get('/MyCases', loadUser, generateMenu, function(req, res){
     fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
       if(!err) {
         res.render('mycases', {
-          'title': 'Мои дела',
-          'user':req.currentUser,
-          'menu':res.menu, 
+          'title':  'Мои дела',
+          'user':   req.currentUser,
+          'menu':   res.menu, 
           'userData': JSON.parse(data),
           'scripts': [],
           'styles': []
@@ -652,7 +646,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
       else Render404(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/UserData/'+userName+'/'+caseId);
+    res.redirect('/MyCases/'+caseId);
 	}; 
 });
 
