@@ -2,7 +2,7 @@ html {
   min-width: 403px;
 }
 
-* {
+body, p {
   color: #6e6e6e;
   font-family: Trebuchet MS;
   font-size: 12pt;
@@ -101,12 +101,16 @@ a:hover, a:active {
 #menu .navbar .nav > li {
 }
 
+#menu .navbar ul.nav {
+  margin-left: -34px;
+}
+
 #menu .navbar .nav > li > a {
   color: #6e6e6e;
   font-family: Tahoma;
   font-size: 13pt;
   line-height: 58px;
-  padding: 0px 34px 0 0;
+  padding: 0px 34px 0 34px;
   text-shadow: none;
 }
 
@@ -142,7 +146,7 @@ a:hover, a:active {
   padding: 19px;
 }
 
-.gray-rounded-corners hr {
+hr {
   background: #ccc;
   border: 0;
   height: 1px;
@@ -219,13 +223,53 @@ a:hover, a:active {
   width: 41%;
 }
 
-.mainProblemBlock  .mainProblemStat .stat-figures img {
+.stat-figures img {
   margin-right: 5px;
   margin-top: -5px;
 }
 
-.mainProblemBlock  .mainProblemStat .stat-figures span.mainStatValue {
+.stat-figures span.mainStatValue {
   color: #6e6e6e;
   font-size: 12pt;
   margin-right: 15px;
+}
+
+.to-var {
+  color: #adff2f;
+}
+
+.offsethalf {
+  margin-left: 75px;
+}
+
+.sortlinks {
+  margin-bottom: 50px;
+  margin-top: 10px;
+}
+
+.user-case-list-item  {
+  font-size: 13pt;
+  line-height: 2;
+  padding-bottom: 5px;
+  padding-top: 15px;
+}
+
+.user-case-list-item .status a {
+  border-bottom: 1px solid #6e6e6e;
+  color: #6e6e6e;
+  font-size: 13.5pt;
+  text-decoration: none;
+}
+
+.user-case-list-item .status a:hover {
+  border-bottom: 0;
+}
+
+.user-case-list-item .updated {
+  font-size: 10pt;
+}
+
+
+.user-case-list-item .todo img {
+  margin-right: 20px;
 }

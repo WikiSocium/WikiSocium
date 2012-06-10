@@ -17,31 +17,38 @@ html
 
     -each style in styles
       link(rel='stylesheet', href=style)
-
     -each script in scripts 
       script(type='text/javascript', src=script)
-    script(type='text/javascript')
-      var user = {};
-      user.guest = #{user.guest};  
+    
 
   body
-    
+    p
+      span.to-var Салатовым 
+      цветом выделено то, что надо заменить на данные из json или БД
     #heading-block
       #heading.container
         .row
           .span5
             h1#logo
               a(href="/") ВикиСоциум
-          #heading-stat.span3 3 проблемы, 3 решения,<br />152 дела, 114 пользователей
+          #heading-stat.span3
+            span.to-var 3 
+            проблемы, 
+            span.to-var 3 
+            решения,<br />
+            span.to-var 152 
+            дела, 
+            span.to-var 114 
+            пользователей
           #heading-login-form.span3.offset1
             div.formline
-              -if (user.guest)
+              - if (user.guest)
                 form.form-inline(method='post', action='/sessions')
                   input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
                   input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
                   button.btn.btn-success(type='submit')Войти
                 a(href='/users/new') Регистрация
-              -else
+              - else
                 #{user.email} &nbsp;
                 a(href='/Logout').btn(type='submit') Выйти
                 
@@ -50,19 +57,18 @@ html
         .row
           .span12.navbar
             ul.nav
-              li
-                a(href="/About") О проекте
-              li
-                a(href="/Problems") Проблемы  и решения
-              - if (!user.guest)
-                li
-                  a(href="/UserData/#{user.email}") Мои дела
+              - each item in menu
+                - if (item.active)
+                  li.active: a(href="/#{item.id}") #{item.name}
+                - else
+                  li: a(href="/#{item.id}") #{item.name}
     
     #content-block.container      
       != body    
     
-    //!{flashMessages}
-    //script(type='text/javascript', src='/javascripts/flash.js')
+    //
+      !{flashMessages}
+      script(type='text/javascript', src='/javascripts/flash.js')
     
     #footer-block
       #footer.container

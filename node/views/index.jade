@@ -11,7 +11,23 @@
         - if (aCategory.on_index)
           - if ( key > 0 )
             hr
-          !=partial('index_aCategory', {aCategory:aCategory})
+          .row.mainProblemBlock
+            .mainProblemIcon
+              img(src="/images/#{aCategory.Icon}")
+            .mainProblemName
+              a.problemLink(href="/Categories/#{aCategory.id}") #{aCategory.Name}
+            .mainProblemStat
+              p
+                a.problemLink(href="#"): span.to-var Отсутствие отопления
+              p.stat-figures
+                img(src="/images/solved.png")
+                span.mainStatValue: span.to-var 6
+                img(src="/images/inprocess.png")
+                span.mainStatValue: span.to-var 15
+                img(src="/images/notsolved.png")
+                span.mainStatValue: span.to-var 8
+              p.problemLinkAllProblems
+                a(href="#"): span.to-var Ещё 158 проблем
   #right-block.span3
     .gray-rounded-corners.gray-rounded-block-2
       p
