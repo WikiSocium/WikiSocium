@@ -12,7 +12,8 @@ div(class="problemDescription")
 #modal_window
 
 script(type='text/javascript')
-  if (user.guest) {
+  var is_guest = #{user.guest}
+  if (is_guest) {
     $(".useSolutionButton").click( function() {
       location.href = '/login?return_to='+document.URL;
     } );

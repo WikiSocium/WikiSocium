@@ -236,4 +236,12 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+/* Radio Field */
+label.inputEx-RadioField-rightLabel
+{
+	cursor: pointer;
+	display: inline;
+}
+
 }
