@@ -201,7 +201,6 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 //
 // Обработка корня
 app.get('/', loadUser, function(req, res) {
-<<<<<<< HEAD
 		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
 						if(!err)
 						{
@@ -218,20 +217,42 @@ app.get('/', loadUser, function(req, res) {
 					});
 
         });
-=======
-  res.render('index', {
-    'title':"Usage",
-    'user':req.currentUser, 
-    'scripts':[],
-    'styles':[]
-  });
-});
->>>>>>> 32cc0e2ce3e5a173189b497ef60d8535352fa26f
+//
+// Это обработка редиректа с вконтакта (тест)
+app.get('/auth/vkontakte', loadUser, function(req, res) {
+	console.log('ololololo');
+	var code = req.query.code;
+	console.log(code);
+	var request = require('request');
+  	request({uri:'https://oauth.vk.com/access_token?client_id='+'2981571'+'&client_secret='+'mJloUt73SYT6K9vFmxfi'+'&code='+code}, function (error, response, body) {
+  		if (!error && response.statusCode == 200) {
+  			console.log(body);
+  			var answer = JSON.parse(body);
+  			console.log(answer);
+  			console.log('...');
+  			console.log(answer.user_id); 			
+   		}	
+  	})
+	
+		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var categoryList = JSON.parse(data); 
+							res.render('index', {
+									'title':"Usage",
+									'user':req.currentUser, 
+									'categoryList' : categoryList.categoryList,
+									scripts:[],
+									styles:[]});
+									}
+						else
+							Render404(req,res, err);
+					});
 
+        });
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, function(req, res){
-<<<<<<< HEAD
 		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 						if(!err)
 						{
@@ -251,42 +272,7 @@ app.get('/Problems', loadUser, function(req, res){
 
 //
 
-// Обработка запроса на показ списка проблем 
-app.get('/Problems', loadUser, function(req, res){
-		fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var problemsList = JSON.parse(data);              
-							res.render('problems', {
-									   'title' : "Problems list",
-									   'user':req.currentUser,
-									   'problemsList' : problemsList.problemsList,
-									   'scripts' : [],
-                      styles:[]
-									   });
-						}
-						else
-							Render404(req,res, err);
-					});
-		});
-=======
-  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-	  if(!err)
-		{
-		  var problemsList = JSON.parse(data);
-			res.render('problems', {
-			  'title' : "Problems list",
-				'user':req.currentUser,
-				'problemsList' : problemsList.problemsList,
-				'scripts' : [],
-        'styles':[]
-			});
-		}
-		else
-		  Render404(req,res, err);
-	});
-});
->>>>>>> 32cc0e2ce3e5a173189b497ef60d8535352fa26f
+
 
 //
 
@@ -303,7 +289,7 @@ app.get('/Problems/:ProblemName', loadUser, function(req, res){
                      	               'user':req.currentUser, 
 									   'problem' : problem,
 									   'scripts' : ['/javascripts/modal_window.js'],
-                      styles:[]
+                     'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
 						   });
 					}
 					else
@@ -434,7 +420,7 @@ app.get('/UserData/:UserName/:CaseId', loadUser, function(req, res) {
                 {
                   for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
                   if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
-                  scriptsToInject.push("/javascripts/jquery.markitup.js");
+                  scriptsToInject.push("/javascripts/nicEdit.js");
                   scriptsToInject.push("/markitup/sets/default/set.js");            
                   stylesToInject.push("/markitup/sets/default/style.css");
                   stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
@@ -494,6 +480,14 @@ app.post('/GetRegionalizedData', function(req, res) {
                       break;
                   }
         });
+    }
+    if (db=="texts")
+    {
+        Texts.findOne({ text_name: dataId}, function(e, text_item)
+        {
+            res.send(text_item);
+        });
+        console.log('запросили тексты');
     }
 });
 
@@ -594,29 +588,29 @@ app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
 app.get('/UserData/:UserName', loadUser, function(req, res){
-	var userName = req.param('UserName', null);
+  var userName = req.param('UserName', null);
 
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-  if (req.currentUser.email!=userName) {res.redirect('/');req.flash('info', 'Не смотрите чужие документы');}
-    else{
-			fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
-				if(!err)
-				{
-					var requestedUser = JSON.parse(data);
-						res.render('user', {
-								'title': userName,
-                                'user':req.currentUser, 
-								'requestedUser': requestedUser,
-								'scripts': [],
-                'styles': []
-						   });
-				}
-				else
-					Render404(req,res, err);				  
-			});
+    if (req.currentUser.email!=userName) {
+      res.redirect('/');req.flash('info', 'Не смотрите чужие документы');
     }
-}
+    else {
+      fs.readFile('data/UserData/'+userName+'/user.json', "utf-8", function(err, data){
+      	if(!err) {
+      	  var requestedUser = JSON.parse(data);
+	  res.render('user', {
+	    'title': userName,
+	    'user':req.currentUser, 
+	    'requestedUser': requestedUser,
+	    'scripts': [],
+	    'styles': []
+	  });
+	}
+	else Render404(req,res, err);
+      });
+    }
+  }
 });
 
 app.get('/mycases', loadUser, function(req, res) {

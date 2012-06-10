@@ -1,19 +1,30 @@
-div.row
-  div.span4.offset1 
-        Добро пожаловать на <span class='orange'>ВикиСоциум </span> - сайт для тех, кто устал разговаривать о том, как всё плохо, в ЖЖ или на кухнях, но не хочет кровавых революций и гражданских войн. Для тех, кто хочет жить в лучшей стране и готов для этого действовать. Что Вы можете сделать? Именно для ответа на этот вопрос мы и делаем <span class='orange'>ВикиСоциум </span>.
-  div.span4 <span class='orange'>ВикиСоциум </span> - коллекция простых, пошаговых решений для самых разных социальных вопросов. Наша задача - сделать решения удобными и доступными, но только с Вашей помощью мы сможем выбрать лучшие и доказать, что они работают!
-div.row
-  #main-block.span8.offset1.wikiBlock  
-  - each aCategory in categoryList
-      !=partial('aCategory', {aCategory:aCategory.Name})
-  #right-block.span2.hero-unit.wikiBlock
-    b
-            Может быть вы думаете, что:
-    p
-      a(href='#')Бесполезно, всем на всё наплевать?
-    p
-      a(href='#')Сначала нужно менять законы, суды, чиновников?
-    p
-      a(href='#')Нет уж, потрачу кучу времени, и без толку?
-div.row  
-  div.span8.offset1 Вы - юрист, общественный деятель, политик, журналист, чиновник? Вступайте в наше экспертное сообщество - участвуйте в наполнении коллекции <span class='orange'>ВикиСоциума </span>!
+.row
+  .span5
+    Добро пожаловать на&nbsp;<span class="orange">ВикиСоциум</span>&nbsp;&mdash; сайт для тех, кто устал разговаривать о&nbsp;том, как всё плохо, в&nbsp;ЖЖ или на&nbsp;кухнях, но&nbsp;не&nbsp;хочет кровавых революций и&nbsp;гражданских войн. Для тех, кто хочет жить в&nbsp;лучшей стране и&nbsp;готов для этого действовать. Что Вы&nbsp;можете сделать? Именно для ответа на&nbsp;этот вопрос мы&nbsp;и&nbsp;делаем <span class="orange">ВикиСоциум</span>.
+  .span4
+    <span class="orange">ВикиСоциум</span>&nbsp;&mdash; коллекция простых, пошаговых решений для самых разных социальных вопросов. Наша задача&nbsp;&mdash; сделать решения удобными и&nbsp;доступными, но&nbsp;только с&nbsp;Вашей помощью мы&nbsp;сможем выбрать лучшие и&nbsp;доказать, что они работают!
+  
+.row(style="margin-top: 34px;")
+  .span9
+    .gray-rounded-corners.gray-rounded-block-1
+      - each aCategory, key in categoryList
+        - if (aCategory.on_index)
+          - if ( key > 0 )
+            hr
+          !=partial('index_aCategory', {aCategory:aCategory})
+  #right-block.span3
+    .gray-rounded-corners.gray-rounded-block-2
+      p
+        b Может быть<br />вы думаете, что:
+      p
+        a(href="#") Бесполезно, всем на всё наплевать?
+      p
+        a(href="#") Сначала нужно менять законы, суды, чиновников?
+      p
+        a(href="#") Нет уж, потрачу кучу времени, и без толку?
+      p
+        a(href="http://oauth.vk.com/authorize?client_id=2981571&scope=friends&redirect_uri=127.0.0.1:3000&response_type=code") А это регистрация через Вконтакте, и не спрашивайте, почему тут.
+  
+      
+.row(style="margin-top: 50px;")
+  .span9 Вы&nbsp;&mdash; юрист, общественный деятель, политик, журналист, чиновник? Вступайте в&nbsp;наше экспертное сообщество&nbsp;&mdash; участвуйте в&nbsp;наполнении коллекции <span class="orange">ВикиСоциума</span>!
