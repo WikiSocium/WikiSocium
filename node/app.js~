@@ -233,22 +233,24 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 
 //
 // Обработка корня
-app.get('/', loadUser, generateMenu, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
-        'scripts':[],
-        'styles':[]
-      });
-    }
-    else Render404(req,res, err);
-  });
-});
+<<<<<<< HEAD
+app.get('/', loadUser, function(req, res) {
+		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var categoryList = JSON.parse(data); 
+							res.render('index', {
+									'title':"Usage",
+									'user':req.currentUser, 
+									'categoryList' : categoryList.categoryList,
+									scripts:[],
+									styles:[]});
+									}
+						else
+							Render404(req,res, err);
+					});
+
+        });
 //
 // Это обработка редиректа с вконтакта (тест)
 app.get('/auth/vkontakte', loadUser, function(req, res) {
@@ -274,7 +276,23 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
    		}	
   	})
 	
-fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+						if(!err)
+						{
+							var categoryList = JSON.parse(data); 
+							res.render('index', {
+									'title':"Usage",
+									'user':req.currentUser, 
+									'categoryList' : categoryList.categoryList,
+									scripts:[],
+									styles:[]});
+									}
+						else
+							Render404(req,res, err);
+					});
+=======
+app.get('/', loadUser, generateMenu, function(req, res) {
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
     if(!err) {
       var categoryList = JSON.parse(data);
       res.render('index', {
@@ -288,22 +306,8 @@ fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
     }
     else Render404(req,res, err);
   });
-
-app.get('/About', loadUser, generateMenu, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('about', {
-        'title':"О проекте",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'scripts':[],
-        'styles':[]
-      });
-    }
-    else Render404(req,res, err);
-  });
 });
+>>>>>>> 9f10f7755574ce2e9175d7006aaa3e6bd42c0a1d
 
         });
 //
@@ -313,7 +317,7 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 	if(!err) {
     var problemsList = JSON.parse(data);              
 		res.render('problems', {
-		  'title' : "Проблемы и решения",
+		  'title' : "Problems list",
       'user':req.currentUser,
       'menu':res.menu,
 			'problemsList' : problemsList.problemsList,
