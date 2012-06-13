@@ -8,6 +8,23 @@ div(class="problemDescription")
 #solutions
   - each aSolution in problem.solutions
     !=partial('aSolution', {aSolution:aSolution})
+    
+ul#myTab.nav.nav-tabs
+  li.active <a href="#home">Home</a></li>
+  li <a href="#profile">Profile</a></li>
+  li <a href="#messages">Messages</a></li>
+  li <a href="#settings">Settings</a></li>
+ 
+.tab-content
+  .tab-pane.active#home 123 
+  .tab-pane#profile 456
+  .tab-pane#messages 789
+  .tab-pane#settings 101112
+ 
+script
+  $(function () {
+    $('#myTab a:last').tab('show');
+  })
 
 #modal_window
 

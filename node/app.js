@@ -250,6 +250,21 @@ app.get('/', loadUser, generateMenu, function(req, res) {
   });
 });
 
+app.get('/About', loadUser, generateMenu, function(req, res) {
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+    if(!err) {
+      var categoryList = JSON.parse(data);
+      res.render('about', {
+        'title':"О проекте",
+        'user':req.currentUser,
+        'menu':res.menu,
+        'scripts':[],
+        'styles':[]
+      });
+    }
+    else Render404(req,res, err);
+  });
+});
 
 //
 // Обработка запроса на показ списка проблем
@@ -258,7 +273,7 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 	if(!err) {
     var problemsList = JSON.parse(data);              
 		res.render('problems', {
-		  'title' : "Problems list",
+		  'title' : "Проблемы и решения",
       'user':req.currentUser,
       'menu':res.menu,
 			'problemsList' : problemsList.problemsList,
