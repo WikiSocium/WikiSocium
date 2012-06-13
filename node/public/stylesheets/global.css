@@ -2,7 +2,7 @@ html {
   min-width: 403px;
 }
 
-body, p {
+body, p, div {
   color: #6e6e6e;
   font-family: Trebuchet MS;
   font-size: 12pt;
@@ -107,7 +107,6 @@ h3 { font-size: 12pt; }
 
 #heading-stat {
   padding-top: 14px;
-  text-align: center;
 }
 
 #menu .navbar {

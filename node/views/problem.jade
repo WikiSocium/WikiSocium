@@ -1,5 +1,19 @@
 h1(class="problemId")
   #{problem.id}
+  
+.row(style="margin-bottom: 20px; margin-top: 20px;")
+  .span2
+    p.stat-figures
+     img(src="/images/solved.png")
+     span.mainStatValue.to-var 6
+     img(src="/images/inprocess.png")
+     span.mainStatValue.to-var 15
+     img(src="/images/notsolved.png")
+     span.mainStatValue.to-var 8
+  .span4
+    a(href="#"): span.to-var ЖКХ
+    |, 
+    a(href="#"): span.to-var Защита прав потребителей
 
 div(class="problemDescription")
   p

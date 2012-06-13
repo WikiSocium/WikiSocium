@@ -241,7 +241,7 @@ app.get('/', loadUser, generateMenu, function(req, res) {
         'title':"ВикиСоциум development",
         'user':req.currentUser,
         'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
+        'categoryList' : categoryList,
         'scripts':[],
         'styles':[]
       });
@@ -298,7 +298,7 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
         'title':"ВикиСоциум development",
         'user':req.currentUser,
         'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
+        'categoryList' : categoryList,
         'scripts':[],
         'styles':[]
       });
@@ -350,7 +350,7 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
-	var categoryName = req.param('CategoryName', null);
+	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
 	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 		if(!err) {

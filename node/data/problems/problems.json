@@ -2,31 +2,31 @@
   "problemsList": [
 	  {
       "Name":"TestProblem",
-      "Categories": ["customer_protection", "auto", "customer_protection"]
+      "Categories": ["Защита прав потребителей", "Авто", "Защита прав потребителей"]
     },
 	  {
       "Name":"Violation",
-	    "Categories": ["auto", "T3"]
+	    "Categories": ["Авто", "Экология"]
 	  },
 	  {
       "Name":"BadItem",
-	    "Categories": ["customer_protection"]
+	    "Categories": ["Защита прав потребителей"]
 	  },
 	  {
       "Name":"Heating",
-	    "Categories": ["ZKH"]
+	    "Categories": ["ЖКХ"]
 	  },
 	  {
       "Name":"BadService",
-	    "Categories": ["customer_protection"]
+	    "Categories": ["Защита прав потребителей"]
 	  },
 	  {
       "Name":"HouseYard",
-	    "Categories": ["ZKH"]
+	    "Categories": ["ЖКХ"]
 	  },
 	  {
 	  "Name":"BadItemTest",
-	  "Categories":["customer_protection"]
+	  "Categories":["Защита прав потребителей"]
 	  }
   ]
 }
