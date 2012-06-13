@@ -54,8 +54,7 @@ function ShowProperStep()
      });*/
 }
 
-function SaveFormData( curStep, nextStep, callback ) 
-{
+function SaveFormData( curStep, nextStep, callback ) {
   for (key in stepsHistory) 
   {
     if ( stepsHistory[key].id == nextStep ) 
@@ -77,15 +76,14 @@ function SaveFormData( curStep, nextStep, callback )
     
     $.ajax(
     {
-        url: window.location.pathname + '/submitForm'
-        , type:'POST'
-        , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data))
-        , success: function(res) 
-        {
+        url: window.location.pathname + '/submitForm',
+        type: 'POST',
+        data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data)),
+        success: function(res) {
             callback();
             lastSaved = new Date();
-		}
-	, error: function(jqXHR, textStatus, errorThrown) {
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
 	        // [TODO]
         }
     });    
@@ -332,9 +330,9 @@ function ShowEndCasePopup()
 {
   var modal_title = "Завершение дела";
   var buttons = [];
-  buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+  buttons.push(new modalButton ( "Отменить", 'cancel' ) );
   buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
-  showModalWindow ( modal_title, "", buttons, 550, 320, "endCasePopup" );
+  showModalWindow ( modal_title, "", buttons, "endCasePopup" );
 }
 
 function HideEndCasePopup()

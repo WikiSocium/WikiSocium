@@ -5,26 +5,33 @@ div(class="problemDescription")
   p
     !{problem.description}
 
-#solutions
-  - each aSolution in problem.solutions
-    !=partial('aSolution', {aSolution:aSolution})
-    
-ul#myTab.nav.nav-tabs
-  li.active <a href="#home">Home</a></li>
-  li <a href="#profile">Profile</a></li>
-  li <a href="#messages">Messages</a></li>
-  li <a href="#settings">Settings</a></li>
- 
-.tab-content
-  .tab-pane.active#home 123 
-  .tab-pane#profile 456
-  .tab-pane#messages 789
-  .tab-pane#settings 101112
- 
-script
-  $(function () {
-    $('#myTab a:last').tab('show');
-  })
+#SolutionTabs.tabs.gray-rounded-corners-tabs
+  ul.nav.nav-tabs
+    li.active <a href="#solution" data-toggle="tab">Решение</a></li>
+    li <a href="#documents" data-toggle="tab">Нормативные документы</a></li>
+   
+  .tab-content.gray-rounded-corners.gray-rounded-block-1
+    .tab-pane.fade.in.active#solution
+      div(style="float: right; width: 130px; height: 40px; margin-left: 30px; margin-right: 3%;")
+        button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;") Воспользоваться
+      p.to-var
+        Решение позволяет добиться бесплатного ремонта, при условии, что отопление действительно не соответствует санитарным нормам.
+      ol.to-var
+        li
+          Подача заявления<br />
+          Заполняем заявление для подачи в обслуживающую организацию и подаем его.
+        li
+          Установление факта отсутствия отопления<br />
+          Необходимо убедиться, что обслуживающая организация признает факт некачественного предоставления услуг и готова обеспечить бесплатный ремонт.
+        li
+          Ремонт отопления<br />
+          В течение 7 дней от момента признания факта непредоставления услуг должны быть произведены ремонтные работы.
+        li
+          Обращаемся в суд<br />
+          Рекомендации по тому, как обращаться с исковым заявлением в суд.
+    .tab-pane.fade#documents
+      p.to-var.
+        456<br />123<br />123
 
 #modal_window
 
@@ -39,10 +46,10 @@ script(type='text/javascript')
     var modal_title = "Введите название решения";
     var modal_body;
     var buttons = [];
-    buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
-    buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); } ) );
+    buttons.push(new modalButton ( "Отменить", 'cancel' ) );
+    buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); }, 'btn-success' ) );
     $(".useSolutionButton").click( function() {
-      modal_body = '<p><form id="addCaseForm" method="post", action="/addcasetouser/'+$(this).attr("id")+'"><input type="text" name ="case_id" /></form></p><p>Решение с этим названием будет добавлено в список ваших дел</p>';
-      showModalWindow ( modal_title, modal_body, buttons, 550, 285 );
+      modal_body = '<p><form id="addCaseForm" method="post", action="/addcasetouser/'+$(this).attr("id")+'"><input type="text" name ="case_id" /></form></p><p>Решение с этим названием будет добавлено<br />в список ваших дел</p>';
+      showModalWindow ( modal_title, modal_body, buttons );
     } );
   }

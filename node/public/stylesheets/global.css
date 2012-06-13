@@ -18,6 +18,22 @@ a:hover, a:active {
   text-decoration: none;
 }
 
+a.btn {
+  text-decoration: none;
+}
+
+a.btn {
+  color: #333;
+}
+
+a.btn-primary, a.btn-warning, a.btn-danger, a.btn-success, a.btn-info, a.btn-inverse {
+  color: white;
+}
+
+h1 { font-size: 14pt; }
+h2 { font-size: 13pt; }
+h3 { font-size: 12pt; }
+
 #heading-block {
   background: #e6e5e5 url(../images/bgheader.png) top repeat-x;
   border-bottom: 1px #d2d2d2 solid;
@@ -129,6 +145,32 @@ a:hover, a:active {
   text-decoration: none;
 }
 
+.gray-rounded-corners-tabs {
+  margin-top: 50px;
+}
+
+.gray-rounded-corners-tabs .nav-tabs {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.nav-tabs a {
+  text-decoration: none;
+}
+
+.gray-rounded-corners-tabs .nav-tabs > li > a:hover {
+  background: none;
+  border-color: #fff #fff #d2d2d2;
+  text-decoration: underline;
+}
+
+.gray-rounded-corners-tabs .nav-tabs > .active > a,
+.gray-rounded-corners-tabs .nav-tabs > .active > a:hover {
+  background: rgb(248,248,248);
+  border-color: #d2d2d2 #d2d2d2 rgb(248,248,248);
+  text-decoration: none;
+}
+
 #heading-login-form * {
   font-family: Trebuchet MS;
   font-size: 10pt;
@@ -144,6 +186,11 @@ a:hover, a:active {
   border-radius: 6px;
   -webkit-border-radius: 6px;
   padding: 19px;
+}
+
+.gray-rounded-corners-tabs .gray-rounded-corners {
+  border-top-left-radius: 0px;  
+  -webkit-border-radius: 0px 6px 6px 6px;
 }
 
 hr {
@@ -163,6 +210,7 @@ hr {
     url('../images/gray-rounded-block-1-bg-bottom.png') repeat-x center bottom,
     url('../images/gray-rounded-block-1-bg-left.png') repeat-y left,
     url('../images/gray-rounded-block-1-bg-right.png') repeat-y right;
+  min-height: 48px;
 }
 
 .gray-rounded-block-2 {
@@ -272,4 +320,10 @@ hr {
 
 .user-case-list-item .todo img {
   margin-right: 20px;
+}
+
+.modal-header {
+  background: #e6e5e3;  
+  -webkit-border-radius: 6px 6px 0px 0px;
+  border-top-left-radius: 6px 6px 0px 0px;
 }
