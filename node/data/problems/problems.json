@@ -1,32 +1,31 @@
-{
-  "problemsList": [
-	  {
-      "Name":"TestProblem",
-      "Categories": ["Защита прав потребителей", "Авто", "Защита прав потребителей"]
-    },
-	  {
-      "Name":"Violation",
-	    "Categories": ["Авто", "Экология"]
-	  },
-	  {
-      "Name":"BadItem",
-	    "Categories": ["Защита прав потребителей"]
-	  },
-	  {
-      "Name":"Heating",
-	    "Categories": ["ЖКХ"]
-	  },
-	  {
-      "Name":"BadService",
-	    "Categories": ["Защита прав потребителей"]
-	  },
-	  {
-      "Name":"HouseYard",
-	    "Categories": ["ЖКХ"]
-	  },
-	  {
-	  "Name":"BadItemTest",
-	  "Categories":["Защита прав потребителей"]
-	  }
-  ]
-}
+[
+  {
+    "name":"TestProblem",
+    "categories": ["Защита прав потребителей", "Авто", "Экология"]
+  },
+  {
+    "name":"Violation",
+    "categories": ["Авто", "Экология"]
+  },
+  {
+    "name":"BadItem",
+    "categories": ["Защита прав потребителей"]
+  },
+  {
+    "name":"Heating",
+    "categories": ["ЖКХ"]
+  },
+  {
+    "name":"BadService",
+    "categories": ["Защита прав потребителей"]
+  },
+  {
+    "name":"HouseYard",
+    "categories": ["ЖКХ"]
+  },
+  {
+    "name":"BadItemTest",
+    "categories":["Защита прав потребителей"]
+  }
+]
+

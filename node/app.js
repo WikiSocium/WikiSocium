@@ -316,7 +316,7 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 		  'title' : "Проблемы и решения",
       'user':req.currentUser,
       'menu':res.menu,
-			'problemsList' : problemsList.problemsList,
+			'problemsList' : problemsList,
 			'scripts' : [],
       'styles': []
 	  });
@@ -333,14 +333,27 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
     if(!err) {
 			var problem = JSON.parse(data);
-			res.render('problem', {
-        'title' : problemName,
-        'user':req.currentUser,
-        'menu':res.menu,
-				'problem' : problem,
-				'scripts' : ['/javascripts/modal_window.js'],
-        'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
-			 });
+      
+      fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
+        if(!err) {
+          var problems = JSON.parse(data);
+          for (var key in problems) {
+            if (problems[key].name == problemName) {
+              problem.categories = problems[key].categories;
+              break;              
+            }
+            problem.categories = new Array();
+          }
+          res.render('problem', {
+            'title' : problem.name,
+            'user':req.currentUser,
+            'menu':res.menu,
+            'problem' : problem,
+            'scripts' : ['/javascripts/modal_window.js'],
+            'styles'  : []
+          });
+        }
+      });
 		}
 		else Render404(req,res, err);
 	});
@@ -360,11 +373,11 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 							
 			var categoryList = [];
 			var i;
-			for(i = 0; i < problemsList.problemsList.length; i++) {
+			for(i = 0; i < problemsList.length; i++) {
 				var j;
-			  for (j = 0; j < problemsList.problemsList[i].Categories.length; j++) {
-          if (categoryName == problemsList.problemsList[i].Categories[j]) {
-					  categoryList.push(problemsList.problemsList[i])
+			  for (j = 0; j < problemsList[i].categories.length; j++) {
+          if (categoryName == problemsList[i].categories[j]) {
+					  categoryList.push(problemsList[i])
 						break;
 					}
 				}
@@ -375,6 +388,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 			  'user':req.currentUser,
         'menu':res.menu,
 			  'problemsList' : categoryList,
+        'CategoryName': categoryName,
 			  'scripts' : [],
         'styles':[]
 			});

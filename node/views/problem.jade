@@ -1,5 +1,5 @@
 h1(class="problemId")
-  #{problem.id}
+  #{problem.name}
   
 .row(style="margin-bottom: 20px; margin-top: 20px;")
   .span2
@@ -10,10 +10,11 @@ h1(class="problemId")
      span.mainStatValue.to-var 15
      img(src="/images/notsolved.png")
      span.mainStatValue.to-var 8
-  .span4
-    a(href="#"): span.to-var ЖКХ
-    |, 
-    a(href="#"): span.to-var Защита прав потребителей
+  .span8
+    - each aCategory, key in problem.categories
+      - if ( key > 0 )
+        |, 
+      a(href="/Categories/"+aCategory.replace(/ /g,"_")) #{aCategory}
 
 div(class="problemDescription")
   p
