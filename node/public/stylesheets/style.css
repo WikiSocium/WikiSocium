@@ -231,9 +231,7 @@
 
 .DescriptionText
 {
-    font-size: 12px;
-    text-decoration: underline;
-    cursor: pointer;
+    font-size: 10px;
 }
 
 /* Radio Field */
