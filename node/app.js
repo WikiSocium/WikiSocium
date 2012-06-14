@@ -232,6 +232,17 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
   }); 
 }
 
+function getCurrentDateTime() {
+  date = new Date();  
+  var d = date.getDate(); if (d < 10) d = '0'+d;
+  var m = date.getMonth()+1; if (m < 10) m = '0'+m;
+  var y = date.getFullYear();
+  var h = date.getHours();
+  var min = date.getMinutes();
+  var s = date.getSeconds();  
+  return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
+}
+
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, function(req, res) {
@@ -330,7 +341,7 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 	var problemName = req.param('ProblemName', null).replace(/_/g," ");
-		
+  
 	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 		if(!err) {
 			var problemsList = JSON.parse(data);
@@ -429,7 +440,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
   else 
   {    
     var userName = req.currentUser.email;
-    var caseId = req.param('CaseId', null);
+    var caseId = req.param('CaseId', null).replace(/_/g," ");
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = JSON.parse(data);
@@ -540,7 +551,7 @@ app.post('/GetRegionalizedData', function(req, res) {
 //Сохранение данных кейса        
 app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
   var userName = req.currentUser.email;
-  var caseId = req.param('CaseId', null);
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
 
   fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
     if (err) {
@@ -579,7 +590,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
 //Завершение кейса
 app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
   var userName = req.currentUser.email;
-  var caseId = req.param('CaseId', null);
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
     
   // [TODO]
   // 0. Проверить, что пользователь аутентифицирован
@@ -692,9 +703,7 @@ function createCaseFile ( userName, caseId, solutionId ) {
   });
 }
 
-app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, res) {
-  
-  var solutionId = req.param('SolutionName', null);
+app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
@@ -702,6 +711,9 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
     
     var userName = req.currentUser.email;
     var caseId = req.body.case_id;
+    var ProblemName = req.body.ProblemName;
+    var solutionId = req.body.SolutionName;
+    
     if (caseId == "") {
       RenderError(req,res,"Невозможно добавить дело с пустым названием");
       return;
@@ -711,9 +723,11 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
       if (!err) {
         var userJSON = JSON.parse(data);
         var case_obj = {
+          problemName: ProblemName,
           solutionId: solutionId,
           caseId: caseId,
-          state: "active"
+          state: "active",
+          createDate: getCurrentDateTime()
         };
         userJSON.cases.push (case_obj);
                 
@@ -729,7 +743,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
       else RenderError(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/MyCases/'+caseId);
+    res.redirect('/MyCases/'+caseId.replace(/ /g,"_"));
 	}; 
 });
 

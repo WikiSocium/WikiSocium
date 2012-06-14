@@ -7,16 +7,29 @@
     | | 
     a(href="#") дате обновления
 
+mixin formatDate(date)
+  - date = new Date(date);
+  - var d = date.getDate(); if (d < 10) d = '0'+d;
+  - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
+  - var y = date.getFullYear()
+  #{d + '.' + m + '.' + y}
+    
 - each aCase in userData.cases
   - if (aCase.state == 'active')
     hr
     .row.user-case-list-item
       .span7.offsethalf
         p.status
-          a(href="/MyCases/#{aCase.caseId}"): span.to-var Здесь будет текст статуса дела. Чтобы войти в дело &mdash; кликать по нему
-        p 
-          a(href="#") #{aCase.solutionId}
-          |: #{aCase.caseId} (создано <span class="to-var">15.07.2011</span>)
+          a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")): span.to-var Здесь будет текст статуса дела. Чтобы войти в дело &mdash; кликать по нему
+        p
+          - if ( aCase.problemName != undefined)
+            a(href="/Problems/" + aCase.problemName.replace(/ /g,"_")) #{aCase.problemName}
+            |: 
+          #{aCase.caseId} 
+          - if ( aCase.createDate != undefined)
+            |(создано 
+            mixin formatDate(aCase.createDate)
+            |)
         .row(style="margin-bottom: 25px; margin-top: 25px;")
           .span2
             p.stat-figures
