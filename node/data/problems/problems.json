@@ -1,32 +1,38 @@
-{
-  "problemsList": [
-	  {
-      "Name":"TestProblem",
-      "Categories": ["customer_protection", "auto", "customer_protection"]
-    },
-	  {
-      "Name":"Violation",
-	    "Categories": ["auto", "T3"]
-	  },
-	  {
-      "Name":"BadItem",
-	    "Categories": ["customer_protection"]
-	  },
-	  {
-      "Name":"Heating",
-	    "Categories": ["ZKH"]
-	  },
-	  {
-      "Name":"BadService",
-	    "Categories": ["customer_protection"]
-	  },
-	  {
-      "Name":"HouseYard",
-	    "Categories": ["ZKH"]
-	  },
-	  {
-	  "Name":"BadItemTest",
-	  "Categories":["customer_protection"]
-	  }
-  ]
-}
+[
+  {    
+    "name" : "TestProblem",
+    "filename": "TestProblem",
+    "categories": ["Защита прав потребителей", "Авто", "Экология"]
+  },
+  {
+    "name" : "Правонарушение",
+    "filename": "Violation",
+    "categories": ["Авто", "Экология"]
+  },
+  {
+    "name" : "Некачественнный товар или проблемы с доставкой",
+    "filename": "BadItem",
+    "categories": ["Защита прав потребителей"]
+  },
+  {
+    "name" : "Heating",
+    "filename": "Heating",
+    "categories": ["ЖКХ"]
+  },
+  {
+    "name" : "Плохо или не вовремя сделали работу или услугу",
+    "filename": "BadService",
+    "categories": ["Защита прав потребителей"]
+  },
+  {
+    "name" : "Двор, подъезд, дом не поддерживаются в порядке",
+    "filename": "HouseYard",
+    "categories": ["ЖКХ"]
+  },
+  {
+    "name" : "Некачественнный товар или проблемы с доставкой (для разработки)",
+    "filename": "BadItemTest",
+    "categories":["Защита прав потребителей"]
+  }
+]
+

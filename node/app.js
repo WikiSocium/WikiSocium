@@ -2,13 +2,14 @@
 	Functions
  */
 
-function Render404(req,res, err)
-{
-	res.render('404', {
-    'title':'404',
+function RenderError(req,res,err) {
+	res.render('Error', {
+    'title':'Ошибка!',
     'user': req.currentUser,
+    'menu':res.menu,
 		'err': err,
-		'scripts':[]
+		'scripts': [],
+    'styles': []
 	});
 }
 
@@ -231,6 +232,17 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
   }); 
 }
 
+function getCurrentDateTime() {
+  date = new Date();  
+  var d = date.getDate(); if (d < 10) d = '0'+d;
+  var m = date.getMonth()+1; if (m < 10) m = '0'+m;
+  var y = date.getFullYear();
+  var h = date.getHours();
+  var min = date.getMinutes();
+  var s = date.getSeconds();  
+  return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
+}
+
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, function(req, res) {
@@ -241,16 +253,71 @@ app.get('/', loadUser, generateMenu, function(req, res) {
         'title':"ВикиСоциум development",
         'user':req.currentUser,
         'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
+        'categoryList' : categoryList,
         'scripts':[],
         'styles':[]
       });
     }
-    else Render404(req,res, err);
+    else RenderError(req,res, err);
   });
 });
 
+app.get('/About', loadUser, generateMenu, function(req, res) {
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+    if(!err) {
+      var categoryList = JSON.parse(data);
+      res.render('about', {
+        'title':"О проекте",
+        'user':req.currentUser,
+        'menu':res.menu,
+        'scripts':[],
+        'styles':[]
+      });
+    }
+    else RenderError(req,res, err);
+  });
+});
 
+//
+// Это обработка редиректа с вконтакта (тест)
+app.get('/auth/vkontakte', loadUser, function(req, res) {
+	console.log('ololololo');
+	var code = req.query.code;
+	console.log(code);
+	var request = require('request');
+  	request({uri:'https://oauth.vk.com/access_token?client_id='+'2981571'+'&client_secret='+'mJloUt73SYT6K9vFmxfi'+'&code='+code}, function (error, response, body) {
+  		if (!error && response.statusCode == 200) {
+  			console.log(body);
+  			var answer = JSON.parse(body);
+  			console.log(answer);
+  			console.log('...');
+  			console.log(answer.user_id); 
+  			
+  			request({uri:'https://api.vk.com/method/getProfiles?uid='+answer.user_id+'&access_token='+answer.access_token}, function (error, response, body) {
+  				if (!error && response.statusCode == 200) {
+  					console.log(body);
+  					var answer = JSON.parse(body);
+	   			}	
+  			})
+  						
+   		}	
+  	})
+	
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+    if(!err) {
+      var categoryList = JSON.parse(data);
+      res.render('index', {
+        'title':"ВикиСоциум development",
+        'user':req.currentUser,
+        'menu':res.menu,
+        'categoryList' : categoryList,
+        'scripts':[],
+        'styles':[]
+      });
+    }
+    else RenderError(req,res, err);
+  });
+});
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, generateMenu, function(req, res){
@@ -258,44 +325,66 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 	if(!err) {
     var problemsList = JSON.parse(data);              
 		res.render('problems', {
-		  'title' : "Problems list",
+		  'title' : "Проблемы и решения",
       'user':req.currentUser,
       'menu':res.menu,
-			'problemsList' : problemsList.problemsList,
+			'problemsList' : problemsList,
 			'scripts' : [],
       'styles': []
 	  });
 	}
 	else
-		Render404(req,res, err);
+		RenderError(req,res, err);
 	});
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
-	var problemName = req.param('ProblemName', null);
-		
-	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
-    if(!err) {
-			var problem = JSON.parse(data);
-			res.render('problem', {
-        'title' : problemName,
-        'user':req.currentUser,
-        'menu':res.menu,
-				'problem' : problem,
-				'scripts' : ['/javascripts/modal_window.js'],
-        'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
-			 });
-		}
-		else Render404(req,res, err);
-	});
+	var problemName = req.param('ProblemName', null).replace(/_/g," ");
+  
+	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+		if(!err) {
+			var problemsList = JSON.parse(data);
+      var problemFileName;
+      for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
+        
+      fs.readFile('data/problems/'+ problemFileName +'.json', "utf-8", function(err, data){
+        if(!err) {
+          var problem = JSON.parse(data);
+          
+          fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
+            if(!err) {
+              var problems = JSON.parse(data);
+              for (var key in problems) {
+                if (problems[key].name == problemName) {
+                  problem.categories = problems[key].categories;
+                  break;              
+                }
+                problem.categories = new Array();
+              }
+              res.render('problem', {
+                'title' : problem.name,
+                'user':req.currentUser,
+                'menu':res.menu,
+                'problem' : problem,
+                'scripts' : ['/javascripts/modal_window.js'],
+                'styles'  : []
+              });
+            }
+          });
+        }
+        else RenderError(req,res, err);
+      });
+    }
+    else RenderError(req,res, err);
+  });
 });
 
 //
 
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
-	var categoryName = req.param('CategoryName', null);
+	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
 	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 		if(!err) {
@@ -305,11 +394,11 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 							
 			var categoryList = [];
 			var i;
-			for(i = 0; i < problemsList.problemsList.length; i++) {
+			for(i = 0; i < problemsList.length; i++) {
 				var j;
-			  for (j = 0; j < problemsList.problemsList[i].Categories.length; j++) {
-          if (categoryName == problemsList.problemsList[i].Categories[j]) {
-					  categoryList.push(problemsList.problemsList[i])
+			  for (j = 0; j < problemsList[i].categories.length; j++) {
+          if (categoryName == problemsList[i].categories[j]) {
+					  categoryList.push(problemsList[i])
 						break;
 					}
 				}
@@ -320,11 +409,12 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 			  'user':req.currentUser,
         'menu':res.menu,
 			  'problemsList' : categoryList,
+        'CategoryName': categoryName,
 			  'scripts' : [],
         'styles':[]
 			});
 		}
-		else Render404(req,res, err);
+		else RenderError(req,res, err);
 	});
 });
 
@@ -350,7 +440,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
   else 
   {    
     var userName = req.currentUser.email;
-    var caseId = req.param('CaseId', null);
+    var caseId = req.param('CaseId', null).replace(/_/g," ");
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = JSON.parse(data);
@@ -422,13 +512,19 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 });
               });
             }
-            else Render404(req,res, err);
+            else RenderError(req,res, err);
           });
-        else Render404(req,res,'У вас нет дела с этим id')
+        else RenderError(req,res,'У вас нет дела с этим id')
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
+});
+
+//Запрос списка регионов
+app.post('/GetRegions', function(req, res) {
+    var regions_list = fs.readFileSync('data/regions.json', "utf-8");
+    res.send(JSON.parse(regions_list));
 });
 
 //
@@ -459,9 +555,9 @@ app.post('/GetRegionalizedData', function(req, res) {
 
 //        
 //Сохранение данных кейса        
-app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
-  var userName = req.param('UserName', null);
-  var caseId = req.param('CaseId', null);
+app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
+  var userName = req.currentUser.email;
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
 
   fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
     if (err) {
@@ -498,9 +594,9 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 
 //
 //Завершение кейса
-app.post('/UserData/:UserName/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
-  var userName = req.param('UserName', null);
-  var caseId = req.param('CaseId', null);
+app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
+  var userName = req.currentUser.email;
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
     
   // [TODO]
   // 0. Проверить, что пользователь аутентифицирован
@@ -542,13 +638,13 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, generateMenu, function
 		    else console.log("Error at case finish: " + err);
 		  });
       // 3. Отправить на главную страницу
-      res.redirect('/UserData/'+userName);
+      res.redirect('/MyCases');
     }
   }
 });
 
-app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
-  res.redirect('/UserData/'+req.param('UserName')+'/'+req.param('CaseId'));
+app.get('/MyCases/:CaseId/endCase', function(req, res) {
+  res.redirect('MyCases/'+req.param('CaseId'));
 });
 
 //
@@ -567,7 +663,7 @@ app.get('/MyCases', loadUser, generateMenu, function(req, res){
           'styles': []
         });
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
 });
@@ -613,9 +709,7 @@ function createCaseFile ( userName, caseId, solutionId ) {
   });
 }
 
-app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, res) {
-  
-  var solutionId = req.param('SolutionName', null);
+app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
@@ -623,14 +717,23 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
     
     var userName = req.currentUser.email;
     var caseId = req.body.case_id;
+    var ProblemName = req.body.ProblemName;
+    var solutionId = req.body.SolutionName;
+    
+    if (caseId == "") {
+      RenderError(req,res,"Невозможно добавить дело с пустым названием");
+      return;
+    }    
     
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
         var userJSON = JSON.parse(data);
         var case_obj = {
+          problemName: ProblemName,
           solutionId: solutionId,
           caseId: caseId,
-          state: "active"
+          state: "active",
+          createDate: getCurrentDateTime()
         };
         userJSON.cases.push (case_obj);
                 
@@ -643,10 +746,10 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
         
         createCaseFile ( userName, caseId, solutionId );
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/MyCases/'+caseId);
+    res.redirect('/MyCases/'+caseId.replace(/ /g,"_"));
 	}; 
 });
 

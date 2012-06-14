@@ -20,8 +20,8 @@ script(type='text/javascript')
             var modal_title = "Подсказка!";
             var html="<h1>"+data.title+"</h1>"+"<p>"+data.short_descr+"<p>"+data.text;
             var buttons = [];
-            buttons.push(new modalButton ( "Закрыть", function() { $( this ).dialog( "close" ); } ) );
-            showModalWindow ( modal_title, html, buttons, 550, 320, "descriptionPopup");
+            buttons.push(new modalButton ( "Закрыть", 'cancel' ) );
+            showModalWindow ( modal_title, html, buttons, "descriptionPopup");
         });
     } 
                

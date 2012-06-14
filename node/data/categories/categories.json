@@ -1,28 +1,22 @@
-{
-  "categoryList": [
-    {
-      "id":"ZKH",
-      "Name":"ЖКХ",
-      "Icon":"icon_ZKH.png",
-      "on_index": true
-    },
-    {
-      "id":"customer_protection",
-      "Name":"Защита прав потребителей",
-      "Icon":"icon_customer_protection.png",
-      "on_index": true
-    },
-    {
-      "id":"ecology",
-      "Name":"Экология",
-      "Icon":"icon_ecology.png",
-      "on_index": true
-    },
-    {
-      "id":"auto",
-      "Name":"Авто",
-      "Icon":"icon_auto.png",
-      "on_index": false
-    }
-  ]
-}
+[
+  {
+    "name":"ЖКХ",
+    "icon":"icon_ZKH.png",
+    "on_index": true
+  },
+  {
+    "name":"Защита прав потребителей",
+    "icon":"icon_customer_protection.png",
+    "on_index": true
+  },
+  {
+    "name":"Экология",
+    "icon":"icon_ecology.png",
+    "on_index": true
+  },
+  {
+    "name":"Авто",
+    "icon":"icon_auto.png",
+    "on_index": false
+  }
+]

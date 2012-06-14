@@ -10,5 +10,6 @@
     , "mongoose": ">= 2.3.13"
     , "connect-mongodb": ">= 1.1.1"
     , "async": ">= 0.1.15"
+    , "request": ">=1.9.6"
   }
 }

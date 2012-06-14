@@ -24,6 +24,8 @@ div
   div(class="btn", id="prev_btn", onClick="PrevStep()") Предыдущий шаг
   div(class="btn", id="next_btn", onClick="NextStep()") Следующий шаг
   a(href="/mycases") Перейти к списку кейсов
-div(id="endCasePopup")
+
+#endCasePopup
   != partial('endCasePopup', {caseName: caseName})
-div(id="descriptionPopup")
+  
+#descriptionPopup
