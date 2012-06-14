@@ -234,6 +234,13 @@
     font-size: 10px;
 }
 
+iref
+{
+    font-size: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 /* Radio Field */
 label.inputEx-RadioField-rightLabel
 {
