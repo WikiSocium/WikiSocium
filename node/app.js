@@ -2,13 +2,14 @@
 	Functions
  */
 
-function Render404(req,res, err)
-{
-	res.render('404', {
-    'title':'404',
+function RenderError(req,res,err) {
+	res.render('Error', {
+    'title':'Ошибка!',
     'user': req.currentUser,
+    'menu':res.menu,
 		'err': err,
-		'scripts':[]
+		'scripts': [],
+    'styles': []
 	});
 }
 
@@ -246,7 +247,7 @@ app.get('/', loadUser, generateMenu, function(req, res) {
         'styles':[]
       });
     }
-    else Render404(req,res, err);
+    else RenderError(req,res, err);
   });
 });
 
@@ -262,7 +263,7 @@ app.get('/About', loadUser, generateMenu, function(req, res) {
         'styles':[]
       });
     }
-    else Render404(req,res, err);
+    else RenderError(req,res, err);
   });
 });
 
@@ -303,7 +304,7 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
         'styles':[]
       });
     }
-    else Render404(req,res, err);
+    else RenderError(req,res, err);
   });
 });
 //
@@ -322,41 +323,50 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 	  });
 	}
 	else
-		Render404(req,res, err);
+		RenderError(req,res, err);
 	});
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
-	var problemName = req.param('ProblemName', null);
+	var problemName = req.param('ProblemName', null).replace(/_/g," ");
 		
-	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
-    if(!err) {
-			var problem = JSON.parse(data);
-      
-      fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
+	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
+		if(!err) {
+			var problemsList = JSON.parse(data);
+      var problemFileName;
+      for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
+        
+      fs.readFile('data/problems/'+ problemFileName +'.json', "utf-8", function(err, data){
         if(!err) {
-          var problems = JSON.parse(data);
-          for (var key in problems) {
-            if (problems[key].name == problemName) {
-              problem.categories = problems[key].categories;
-              break;              
+          var problem = JSON.parse(data);
+          
+          fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
+            if(!err) {
+              var problems = JSON.parse(data);
+              for (var key in problems) {
+                if (problems[key].name == problemName) {
+                  problem.categories = problems[key].categories;
+                  break;              
+                }
+                problem.categories = new Array();
+              }
+              res.render('problem', {
+                'title' : problem.name,
+                'user':req.currentUser,
+                'menu':res.menu,
+                'problem' : problem,
+                'scripts' : ['/javascripts/modal_window.js'],
+                'styles'  : []
+              });
             }
-            problem.categories = new Array();
-          }
-          res.render('problem', {
-            'title' : problem.name,
-            'user':req.currentUser,
-            'menu':res.menu,
-            'problem' : problem,
-            'scripts' : ['/javascripts/modal_window.js'],
-            'styles'  : []
           });
         }
+        else RenderError(req,res, err);
       });
-		}
-		else Render404(req,res, err);
-	});
+    }
+    else RenderError(req,res, err);
+  });
 });
 
 //
@@ -393,7 +403,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
         'styles':[]
 			});
 		}
-		else Render404(req,res, err);
+		else RenderError(req,res, err);
 	});
 });
 
@@ -491,11 +501,11 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 });
               });
             }
-            else Render404(req,res, err);
+            else RenderError(req,res, err);
           });
-        else Render404(req,res,'У вас нет дела с этим id')
+        else RenderError(req,res,'У вас нет дела с этим id')
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
 });
@@ -636,7 +646,7 @@ app.get('/MyCases', loadUser, generateMenu, function(req, res){
           'styles': []
         });
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
 });
@@ -692,6 +702,10 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
     
     var userName = req.currentUser.email;
     var caseId = req.body.case_id;
+    if (caseId == "") {
+      RenderError(req,res,"Невозможно добавить дело с пустым названием");
+      return;
+    }    
     
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
@@ -712,7 +726,7 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
         
         createCaseFile ( userName, caseId, solutionId );
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
     increaseSolutionStatistics ( solutionId, 'started' );
     res.redirect('/MyCases/'+caseId);

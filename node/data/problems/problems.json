@@ -1,30 +1,37 @@
 [
-  {
-    "name":"TestProblem",
+  {    
+    "name" : "TestProblem",
+    "filename": "TestProblem",
     "categories": ["Защита прав потребителей", "Авто", "Экология"]
   },
   {
-    "name":"Violation",
+    "name" : "Правонарушение",
+    "filename": "Violation",
     "categories": ["Авто", "Экология"]
   },
   {
-    "name":"BadItem",
+    "name" : "Некачественнный товар или проблемы с доставкой",
+    "filename": "BadItem",
     "categories": ["Защита прав потребителей"]
   },
   {
-    "name":"Heating",
+    "name" : "Heating",
+    "filename": "Heating",
     "categories": ["ЖКХ"]
   },
   {
-    "name":"BadService",
+    "name" : "Плохо или не вовремя сделали работу или услугу",
+    "filename": "BadService",
     "categories": ["Защита прав потребителей"]
   },
   {
-    "name":"HouseYard",
+    "name" : "Двор, подъезд, дом не поддерживаются в порядке",
+    "filename": "HouseYard",
     "categories": ["ЖКХ"]
   },
   {
-    "name":"BadItemTest",
+    "name" : "Некачественнный товар или проблемы с доставкой (для разработки)",
+    "filename": "BadItemTest",
     "categories":["Защита прав потребителей"]
   }
 ]
