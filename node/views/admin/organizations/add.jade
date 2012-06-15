@@ -15,8 +15,8 @@
           div#organization_name_fields
             div(style="margin-bottom: 4px;")
               input.input-xlarge(type="text", name="organization_name[0]", data-provide="typeahead", data-source=JSON.stringify(existing_organization_names))
-              button.btn.btn-danger.remove_organization_category(type="button", style="margin-left: 3px;") ×
-          button.btn.btn-success.add_organization_category(type="button") +
+              button.btn.btn-danger.remove_organization_name(type="button", style="margin-left: 3px;") ×
+          button.btn.btn-success.add_organization_name(type="button") +
       .control-group
         label.control-label Регион
         .controls
@@ -45,7 +45,11 @@
         .control-group
           label.control-label Телефон
           .controls
-            input(name="phone")
+            div#phone_fields
+              div(style="margin-bottom: 4px;")
+                input(name="phone[0]")
+                button.btn.btn-danger.remove_phone(type="button", style="margin-left: 3px;") ×
+            button.btn.btn-success.add_phone(type="button") +
         .control-group
           label.control-label Почтовый адрес
           .controls
@@ -55,7 +59,11 @@
         .control-group
           label.control-label Эл. почта
           .controls
-            input(name="email", placeholder="name@example.com")
+            div#email_fields
+              div(style="margin-bottom: 4px;")
+                input(name="email[0]", placeholder="name@example.com")
+                button.btn.btn-danger.remove_email(type="button", style="margin-left: 3px;") ×
+            button.btn.btn-success.add_email(type="button") +
         .control-group
           label.control-label Интернет-приемная
           .controls
@@ -65,17 +73,6 @@
           button.btn.btn-success(type="submit") Сохранить организацию
           
 script
-  $('.add_organization_category').click(function(){
-    $('#organization_name_fields').append('<div style="margin-bottom: 4px;">'+$('#organization_name_fields').children(":first").html()+'</div>');
-    for (var i=0; i < $('#organization_name_fields').children().length; i++) {
-      $('#organization_name_fields').children().eq(i).children('input').attr('name','organization_name['+i+']');
-    }
-  });
-  $('.remove_organization_category').live('click', function(){
-    if ( $('#organization_name_fields').children().length > 1 ) {
-      $(this).parent().remove();
-      for (var i=0; i < $('#organization_name_fields').children().length; i++) {
-        $('#organization_name_fields').children().eq(i).children('input').attr('name','organization_name['+i+']');
-      }
-    }
-  });
+  AddRemoveTextFields ('organization_name');
+  AddRemoveTextFields ('phone');
+  AddRemoveTextFields ('email');

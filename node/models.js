@@ -126,10 +126,10 @@ function defineModels(mongoose, fn) {
     'description': {
       'text': String,
       'web': String,
-      'phone': String,
+      'phone': [ String ],
       'postal_address': String,
       'electronic_address': {
-        'email': String,
+        'email': [ String] ,
         'webform': String
       }
     }

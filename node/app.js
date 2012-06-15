@@ -959,7 +959,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
         'title':    "Организации / добавить",
         'user':     req.currentUser,
         'menu':     res.menu,
-        'scripts':  [],
+        'scripts':  ['/javascripts/admin.js'],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
         'existing_organization_names': organizations,
