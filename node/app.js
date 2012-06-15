@@ -971,7 +971,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
 
 app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
+  else {    
     var new_organization = {
       'title': req.body.title,
       'short_descr': req.body.short_descr,
@@ -986,47 +986,57 @@ app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) 
         }
       }
     }
-    Organizations.findOne ({ organization_name: req.body.organization_name }, function(e, organization_item) {
-      if (!organization_item) {
-        var organization_item = new Organizations({
-          'organization_name': req.body.organization_name,
-          'regions_list': [
-            {
-
-              'region_name': req.body.region_name,
-              'organizations_list': []
-            }
-          ]
+    var arr_counter = req.body.organization_name.length;
+    var global_err;
+    
+    async.forEach(req.body.organization_name, function(organization_name, callback){      
+      Organizations.findOne ({ organization_name: organization_name }, function(e, organization_item) {
+        if (!organization_item) {
+          var organization_item = new Organizations({
+            'organization_name': organization_name,
+            'regions_list': [
+              {
+                'region_name': req.body.region_name,
+                'organizations_list': []
+              }
+            ]
+          });
+        }
+        var add_key = -1;
+        for (var key in organization_item.regions_list) {
+          if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
+            add_key = key;
+            break;
+          }
+        }
+        if ( add_key == -1 ) {
+          var new_region = {
+            'region_name': req.body.region_name,
+            'organizations_list': []
+          }
+          new_region.organizations_list.push(new_organization);
+          organization_item.regions_list.push(new_region);
+        }
+        else organization_item.regions_list[key].organizations_list.push(new_organization);
+        organization_item.save(function(err) {
+          if (err != null) {
+            console.log(err);
+          }        
+          callback(err);
         });
-		  }
-		  var add_key = -1;
-		  for (var key in organization_item.regions_list) {
-        if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
-          add_key = key;
-          break;
-        }
-      }
-      if ( add_key == -1 ) {
-        var new_region = {
-          'region_name': req.body.region_name,
-          'organizations_list': []
-        }
-        new_region.organizations_list.push(new_organization);
-        organization_item.regions_list.push(new_region);
-		  }
-      else organization_item.regions_list[key].organizations_list.push(new_organization);
-      organization_item.save(function(err) {
-        if (err != null) {
-          console.log(err);
-          res.redirect('/admin/organizations/add?adding_result=error');
-          // выдавать ошибку
-		    }
-        else {
-          res.redirect('/admin/organizations/add?adding_result=success');
-          // отправляем на /add обратно и говорим, что добавлено успешно
-        }
       });
+    },
+    function(err){
+      if (err == null) {
+        res.redirect('/admin/organizations/add?adding_result=success');
+        // отправляем на /add обратно и говорим, что добавлено успешно
+      }
+      else {
+        res.redirect('/admin/organizations/add?adding_result=error');
+        // выдавать ошибку
+      }
     });
+    
   }
 });
 

@@ -1,59 +1,81 @@
-h1 Добавление организации в БД
-    
-- if (adding_result == 'success')
-  p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
-- if (adding_result == 'error')
-  p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
+.row
+  .span10.offset1
 
+    h1 Добавление организации в БД
+        
+    - if (adding_result == 'success')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
+    - if (adding_result == 'error')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
+
+    form.form-horizontal(method="POST")
+      .control-group
+        label.control-label Название категорий
+        .controls
+          div#organization_name_fields
+            div(style="margin-bottom: 4px;")
+              input.input-xlarge(type="text", name="organization_name[0]", data-provide="typeahead", data-source=JSON.stringify(existing_organization_names))
+              button.btn.btn-danger.remove_organization_category(type="button", style="margin-left: 3px;") ×
+          button.btn.btn-success.add_organization_category(type="button") +
+      .control-group
+        label.control-label Регион
+        .controls
+          select(name="region_name")
+            - each region in regions_list
+              option #{region}
+      .control-group
+        label.control-label Название
+        .controls
+          input(name="title")
+      .control-group
+        label.control-label Короткое описание
+        .controls
+          textarea(name="short_descr", rows="6", style="width: 300px")
+      
+      fieldset
+        legend Описание организации
+        .control-group
+          label.control-label Текстовое описание
+          .controls
+            textarea(name="text", rows="8", style="width: 400px")
+        .control-group
+          label.control-label Веб-сайт
+          .controls
+            input(name="web",placeholder="http://example.com")
+        .control-group
+          label.control-label Телефон
+          .controls
+            input(name="phone")
+        .control-group
+          label.control-label Почтовый адрес
+          .controls
+            input(name="postal_address")
+      fieldset
+        legend Электронные адреса:
+        .control-group
+          label.control-label Эл. почта
+          .controls
+            input(name="email", placeholder="name@example.com")
+        .control-group
+          label.control-label Интернет-приемная
+          .controls
+            input(name="webform", placeholder="http://example.com/some-page.html")
+      .control-group
+        .controls
+          button.btn.btn-success(type="submit") Сохранить организацию
+          
 script
-  $(function() {
-    var organization_names = !{JSON.stringify(existing_organization_names)};
-    $( "#organization_name" ).autocomplete({
-      source: organization_names
-    });
+  $('.add_organization_category').click(function(){
+    $('#organization_name_fields').append('<div style="margin-bottom: 4px;">'+$('#organization_name_fields').children(":first").html()+'</div>');
+    for (var i=0; i < $('#organization_name_fields').children().length; i++) {
+      $('#organization_name_fields').children().eq(i).children('input').attr('name','organization_name['+i+']');
+    }
   });
-
-form(method="POST")
-  p
-    label
-      Название категории организаций
-      input(name="organization_name", id="organization_name")
-  p
-    label
-      Регион: 
-      select(name="region_name")
-        - each region in regions_list
-          option #{region}
-  p
-    label
-      Название:
-      input(name="title")
-  p
-    label
-      Короткое описание
-      textarea(name="short_descr", rows="6", style="width: 300px")
-  p
-    fieldset
-      legend Описание организации
-      label
-        Текстовое описание
-        textarea(name="text", rows="8", style="width: 400px")
-      label
-        Веб-сайт:
-        input(name="web",placeholder="http://example.com")
-      label
-        Телефон:
-        input(name="phone")
-      label
-        Почтовый адрес:
-        input(name="postal_address")
-    fieldset
-      legend Электронные адреса:
-      label
-        Эл. почта:
-        input(name="email", placeholder="name@example.com")
-      label
-        Форма на сайте:
-        input(name="webform", placeholder="http://example.com/some-page.html")
-  p
-    input(type="submit")
+  $('.remove_organization_category').live('click', function(){
+    if ( $('#organization_name_fields').children().length > 1 ) {
+      $(this).parent().remove();
+      for (var i=0; i < $('#organization_name_fields').children().length; i++) {
+        $('#organization_name_fields').children().eq(i).children('input').attr('name','organization_name['+i+']');
+      }
+    }
+  });
