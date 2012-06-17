@@ -294,8 +294,35 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
   });
 }
 
-function getProblemStatistics ( problem_name ) {
+function getProblemStatistics ( problemName, callback ) {
+  var returnStat = {
+    solved: 0,
+    inprocess: 0,
+    notsolved: 0
+  }
+
+  var data = fs.readFileSync('data/problems/problems.json', "utf-8");
+	
+  var problemsList = JSON.parse(data);
+  var problemFileName;
+  for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
+        
+  data = fs.readFileSync('data/problems/'+ problemFileName +'.json', "utf-8");
+  var problem = JSON.parse(data);
   
+  async.forEach(problem.solutions, function(solution, callback) {
+    Solution.findOne ({ name: solution }, function(err, document) {
+      if (document) {
+        returnStat.solved += document.statistics.finished_successful;
+        returnStat.inprocess += ( document.statistics.started - document.statistics.finished_successful - document.statistics.finished_failed );
+        returnStat.notsolved +=  document.statistics.finished_failed;
+      }
+      callback(err);
+    });
+  },
+  function (err) {
+    callback(err, returnStat);
+  });
 }
 
 // / Solutions
@@ -318,12 +345,24 @@ function findAllProblemsInACategory ( categoryName ) {
   return categoryList;
 }
 
-function getTopProblem ( problemsList ) {
+function getTopProblem ( problemsList, callback ) {
   async.forEach(problemsList, function(aProblem, callback) {
-    
+    var problemName = aProblem.name;
+    getProblemStatistics ( problemName, function(err, stat) {
+      aProblem.stats = stat;
+      aProblem.score = stat.solved + stat.inprocess - stat.notsolved;
+      callback();
+    });
   },
   function(err) {
-  
+    problemsList.sort(function compare(a,b) {
+      if (a.score > b.score)
+        return -1;
+      if (a.score < b.score)
+        return 1;
+      return 0;
+    });
+    callback(err, problemsList[0]);
   });
 }
 
@@ -346,24 +385,32 @@ app.get('/', loadUser, generateMenu, function(req, res) {
       var categoryList = JSON.parse(data);
       
       var indexCategories = [];
-      for (var key in categoryList)
-        if ( categoryList[key].on_index ) {
-          var problemsList = findAllProblemsInACategory ( categoryList[key].name );
-          indexCategories.push({
-            name: categoryList[key].name,
-            icon: categoryList[key].icon,
-            problemsNumber: problemsList.length,
-            topProblem: getTopProblem( problemsList )
+      async.forEach( categoryList, function(aCategory, callback) {
+        if ( aCategory.on_index ) {
+          var problemsList = findAllProblemsInACategory ( aCategory.name );
+          getTopProblem ( problemsList, function(err,topProblem) {
+            indexCategories.push({
+              name: aCategory.name,
+              icon: aCategory.icon,
+              problemsNumber: problemsList.length,
+              topProblem: topProblem
+            });
+            callback();
           });
         }
-      
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : indexCategories,
-        'scripts':[],
-        'styles':[]
+        else callback();
+      },
+      function(err) {
+        if (!err)
+          res.render('index', {
+            'title':"ВикиСоциум development",
+            'user':req.currentUser,
+            'menu':res.menu,
+            'categoryList' : indexCategories,
+            'scripts':[],
+            'styles':[]
+          });
+        else console.log(err);
       });
     }
     else RenderError(req,res, err);
@@ -459,17 +506,17 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
       fs.readFile('data/problems/'+ problemFileName +'.json', "utf-8", function(err, data){
         if(!err) {
           var problem = JSON.parse(data);
-          
-          fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
-            if(!err) {
-              var problems = JSON.parse(data);
-              for (var key in problems) {
-                if (problems[key].name == problemName) {
-                  problem.categories = problems[key].categories;
-                  break;              
-                }
-                problem.categories = new Array();
-              }
+          problem.categories = new Array();
+          for (var key in problemsList) {
+            if (problemsList[key].name == problemName) {
+              problem.categories = problemsList[key].categories;
+              break;              
+            }
+          }
+          getProblemStatistics ( problemName, function(err, stat) {
+            if (err) console.log(err);
+            else {
+              problem.stats = stat;
               res.render('problem', {
                 'title' : problem.name,
                 'user':req.currentUser,

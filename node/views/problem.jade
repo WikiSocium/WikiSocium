@@ -5,11 +5,11 @@ h1(class="problemId")
   .span2
     p.stat-figures
      img(src="/images/solved.png")
-     span.mainStatValue.to-var 6
+     span.mainStatValue #{problem.stats.solved}
      img(src="/images/inprocess.png")
-     span.mainStatValue.to-var 15
+     span.mainStatValue #{problem.stats.inprocess}
      img(src="/images/notsolved.png")
-     span.mainStatValue.to-var 8
+     span.mainStatValue #{problem.stats.notsolved}
   .span8
     - each aCategory, key in problem.categories
       - if ( key > 0 )
