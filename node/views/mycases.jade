@@ -48,9 +48,10 @@ mixin formatDate(date)
           span.to-var Осталось ждать 2 дня
             
       .span2.offset1
-        p.updated
-          обновлено 
-          span.to-var 23.10.2011
+        - if ( aCase.updateDate != undefined)
+          p.updated
+            обновлено 
+            mixin formatDate(aCase.updateDate)
 
 //
   div(class="userFullName")

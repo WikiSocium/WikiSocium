@@ -4,30 +4,39 @@
   .span4
     <span class="orange">ВикиСоциум</span>&nbsp;&mdash; коллекция простых, пошаговых решений для самых разных социальных вопросов. Наша задача&nbsp;&mdash; сделать решения удобными и&nbsp;доступными, но&nbsp;только с&nbsp;Вашей помощью мы&nbsp;сможем выбрать лучшие и&nbsp;доказать, что они работают!
 
+mixin getProblemWordEnding ( number )
+  - var mod10 = number % 10;
+  - if ( number < 10 || number > 20 )
+    - if ( mod10 == 1 )
+      |а
+    - if ( mod10 >= 2 && mod10 <= 4 )
+      |ы
+    
 .row(style="margin-top: 34px;")
   .span9
     .gray-rounded-corners.gray-rounded-block-1
-      - each aCategory, key in categoryList
-        - if (aCategory.on_index)
-          - if ( key > 0 )
-            hr
-          .row.mainProblemBlock
-            .mainProblemIcon
-              img(src="/images/#{aCategory.icon}")
-            .mainProblemName
-              a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
-            .mainProblemStat
-              p
-                a.problemLink(href="#"): span.to-var Отсутствие отопления
-              p.stat-figures
-                img(src="/images/solved.png")
-                span.mainStatValue: span.to-var 6
-                img(src="/images/inprocess.png")
-                span.mainStatValue: span.to-var 15
-                img(src="/images/notsolved.png")
-                span.mainStatValue: span.to-var 8
-              p.problemLinkAllProblems
-                a(href="#"): span.to-var Ещё 158 проблем
+      - each aCategory, key in categoryList      
+        - if ( key > 0 )
+          hr
+        .row.mainProblemBlock
+          .mainProblemIcon
+            img(src="/images/#{aCategory.icon}")
+          .mainProblemName
+            a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
+          .mainProblemStat
+            p
+              a.problemLink(href="#"): span.to-var Отсутствие отопления
+            p.stat-figures
+              img(src="/images/solved.png")
+              span.mainStatValue: span.to-var 6
+              img(src="/images/inprocess.png")
+              span.mainStatValue: span.to-var 15
+              img(src="/images/notsolved.png")
+              span.mainStatValue: span.to-var 8
+            p.problemLinkAllProblems
+              a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+                Ещё #{aCategory.problemsNumber} проблем
+                mixin getProblemWordEnding (aCategory.problemsNumber)
   #right-block.span3
     .gray-rounded-corners.gray-rounded-block-2
       p

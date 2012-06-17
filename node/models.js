@@ -92,24 +92,26 @@ function defineModels(mongoose, fn) {
   
   
 /**
-  * Model: Solution Statistics
+  * Model: Solution
   */
-  var SolutionStatistics = new Schema({
-    'solution_name': { type: String, index: true },
-    'started': Number,
-	  'finished_successful': Number,
-	  'finished_failed': Number,
-	  'finished_good_solution': Number,
-	  'finished_bad_solution': Number,
-	  'different_users': Number
+  var Solution = new Schema({
+    'name': { type: String, unique: true },
+    'filename': String,
+    'statistics': {
+      'started': Number,
+      'finished_successful': Number,
+      'finished_failed': Number,
+      'finished_good_solution': Number,
+      'finished_bad_solution': Number
+    }
   });
   
-  SolutionStatistics.pre('save', function(next) {  
+  Solution.pre('save', function(next) {
     try {
-      stats = fs.lstatSync('data/solutions/' + this.solution_name + '.json');
+      stats = fs.lstatSync('data/solutions/' + this.filename);
     }
     catch (e) {
-      console.log("Failed save solution statistics for " + this.solution_name + ": " + e);
+      console.log("Failed save solution statistics for " + this.filename + ": " + e);
       next(new Error('Solution doesn\'t exist'));
     }
     next();
@@ -129,7 +131,7 @@ function defineModels(mongoose, fn) {
       'phone': [ String ],
       'postal_address': String,
       'electronic_address': {
-        'email': [ String] ,
+        'email': [ String ] ,
         'webform': String
       }
     }
@@ -161,7 +163,7 @@ function defineModels(mongoose, fn) {
 //  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
-  mongoose.model('SolutionStatistics', SolutionStatistics);
+  mongoose.model('Solution', Solution);
   mongoose.model('Organizations', Organizations);  
   mongoose.model('Texts', Texts);
 
