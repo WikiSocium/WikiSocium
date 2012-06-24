@@ -221,8 +221,12 @@ function updateSolutionsCollection () {
     
     var solutions = new Array();
     for (var key in files) {
-      solutions[key] = new Object();
-      solutions[key].filename = files[key];
+      var filenameParts = files[key].split(".");
+      if(filenameParts[filenameParts.length - 1] == "json")
+      {
+          solutions[key] = new Object();
+          solutions[key].filename = files[key];
+      }
     }
 
     async.forEach(solutions, function(solution, callback) {

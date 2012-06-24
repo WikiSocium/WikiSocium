@@ -7,4 +7,18 @@ block content
             !{InfoText.comment} 
     - if (InfoText.description!=undefined)
         div(class="DescriptionText")
-            !{InfoText.description}               
+            !{InfoText.description}   
+            script(type="text/javascript")
+                $("iref").click(function()
+                {
+                    var dataIds=[];
+                    dataIds.push($(this).attr("dataId"));
+                    RegionalizedData.GetDataFromDBWithRegion('myRegion', $(this).attr("baseId"), dataIds, function(data)
+                    {
+                        var d=data[0];
+                        var modal_title = "Подсказка!";
+                        var html="<h1>"+d.title+"</h1>"+"<p>"+d.short_descr+"<p>"+d.text;
+                        var buttons = [];
+                        showModalWindow ( modal_title, html, buttons, "descriptionPopup", 550, 320);
+                    });
+                });
