@@ -28,7 +28,7 @@ var models = require('./models')
     ,db
     ,User
     ,LoginToken
-    ,SolutionStatistics
+    ,Solution
     ,Organizations
     ,Texts
 //    ,Settings = { development: {}, test: {}, production: {} }
@@ -73,7 +73,7 @@ models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
-  app.SolutionStatistics = SolutionStatistics = mongoose.model('SolutionStatistics');
+  app.Solution = Solution = mongoose.model('Solution');
   app.Organizations = Organizations = mongoose.model('Organizations');  
   app.Texts = Texts = mongoose.model('Texts');
   db = mongoose.connect(app.set('db-uri'));
@@ -213,23 +213,157 @@ function userCreateEnv( user_id ) {
   console.log ('Creating user folder and user.json for ', user_id);
 }
 
-function increaseSolutionStatistics ( solution_name, field_name ) {
-  SolutionStatistics.findOne ({ solution_name: solution_name }, function(e, solution) {
-    if (!solution) {
-      var solution = new SolutionStatistics({
-        solution_name:solution_name,
-        started: 0,
-        finished_successful: 0,
-	      finished_failed: 0,
-	      finished_good_solution: 0,
-        finished_bad_solution: 0
-      });
+// Solutions
+
+function updateSolutionsCollection () {
+  fs.readdir("data/solutions", function (err, files) {
+    if (err) throw err;
+    
+    var solutions = new Array();
+    for (var key in files) {
+      solutions[key] = new Object();
+      solutions[key].filename = files[key];
     }
-    solution[field_name]++;
+
+    async.forEach(solutions, function(solution, callback) {
+      fs.readFile('data/solutions/'+solution.filename, "utf-8", function(err, data) {
+        if(!err) {
+          var solutionData = JSON.parse(data);
+          solution.name = solutionData.name;
+          Solution.findOne ({ name: solution.name }, function(err, document) {
+            if (document) {
+              if ( document.filename != solution.filename) document.filename = solution.filename;
+            }
+            else {
+              document = new Solution({
+                name: solution.name,
+                filename: solution.filename,
+                'statistics': {
+                  'started': 0,
+                  'finished_successful': 0,
+                  'finished_failed': 0,
+                  'finished_good_solution': 0,
+                  'finished_bad_solution': 0
+                }
+              });
+            }
+            document.save(function(err) {
+              if (err != null) console.log(err);
+              callback(err);
+            });
+            callback(err);
+          });          
+        }
+        else callback(err);
+      }); 
+    },
+    function(err) {
+      
+      Solution.find({}, function(err,documents) {
+        async.forEach(documents, function(document,callback) {
+          fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+            if(!err) var solutionData = JSON.parse(data);
+            if (err || solutionData.name != document.name) {
+              console.log(solutionData.name+' '+document.name+' '+err);
+              document.remove();
+            }
+            callback();
+          });
+        },
+        function(err) {
+          
+        });
+      });
+    
+      if (!err) console.log('Synced solutions collection and json files successfully');
+      else console.log('Error in syncing solutions collection and json files '+err);
+    });
+  });
+}
+
+function increaseSolutionStatistics ( solution_name, field_name ) {
+  Solution.findOne ({ name: solution_name }, function(err, solution) {
+    if (!solution) {
+      console.log('Didn\'t find a solution to increase stats:'+solution_name);
+      return;
+    }
+    solution.statistics[field_name]++;
     solution.save(function(err) {
       if (err != null) console.log(err);
     });
-  }); 
+  });
+}
+
+function getProblemStatistics ( problemName, callback ) {
+  var returnStat = {
+    solved: 0,
+    inprocess: 0,
+    notsolved: 0
+  }
+
+  var data = fs.readFileSync('data/problems/problems.json', "utf-8");
+	
+  var problemsList = JSON.parse(data);
+  var problemFileName;
+  for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
+        
+  data = fs.readFileSync('data/problems/'+ problemFileName +'.json', "utf-8");
+  var problem = JSON.parse(data);
+  
+  async.forEach(problem.solutions, function(solution, callback) {
+    Solution.findOne ({ name: solution }, function(err, document) {
+      if (document) {
+        returnStat.solved += document.statistics.finished_successful;
+        returnStat.inprocess += ( document.statistics.started - document.statistics.finished_successful - document.statistics.finished_failed );
+        returnStat.notsolved +=  document.statistics.finished_failed;
+      }
+      callback(err);
+    });
+  },
+  function (err) {
+    callback(err, returnStat);
+  });
+}
+
+// / Solutions
+
+function findAllProblemsInACategory ( categoryName ) {
+  var data = fs.readFileSync('data/problems/problems.json', "utf-8");
+  var problemsList = JSON.parse(data);
+  
+  var categoryList = [];
+  var i;
+  for(i = 0; i < problemsList.length; i++) {
+    var j;
+    for (j = 0; j < problemsList[i].categories.length; j++) {
+      if (categoryName == problemsList[i].categories[j]) {
+        categoryList.push(problemsList[i])
+        break;
+      }
+    }
+  }
+  return categoryList;
+}
+
+function getTopProblem ( problemsList, callback ) {
+  async.forEach(problemsList, function(aProblem, callback) {
+    var problemName = aProblem.name;
+    getProblemStatistics ( problemName, function(err, stat) {
+      aProblem.stats = stat;
+      aProblem.score = stat.solved + stat.inprocess - stat.notsolved;
+      callback();
+    });
+  },
+  function(err) {
+    problemsList.sort(function compare(a,b) {
+      if (a.score > b.score)
+        return -1;
+      if (a.score < b.score)
+        return 1;
+      return 0;
+    });
+    callback(err, problemsList[0]);
+  });
 }
 
 function getCurrentDateTime() {
@@ -237,25 +371,46 @@ function getCurrentDateTime() {
   var d = date.getDate(); if (d < 10) d = '0'+d;
   var m = date.getMonth()+1; if (m < 10) m = '0'+m;
   var y = date.getFullYear();
-  var h = date.getHours();
-  var min = date.getMinutes();
-  var s = date.getSeconds();  
+  var h = date.getHours(); if (h < 10) h = '0'+h;
+  var min = date.getMinutes(); if (min < 10) min = '0'+min;
+  var s = date.getSeconds(); if (s < 10) s = '0'+s;
   return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
 }
 
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data) {
     if(!err) {
       var categoryList = JSON.parse(data);
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : categoryList,
-        'scripts':[],
-        'styles':[]
+      
+      var indexCategories = [];
+      async.forEach( categoryList, function(aCategory, callback) {
+        if ( aCategory.on_index ) {
+          var problemsList = findAllProblemsInACategory ( aCategory.name );
+          getTopProblem ( problemsList, function(err,topProblem) {
+            indexCategories.push({
+              name: aCategory.name,
+              icon: aCategory.icon,
+              problemsNumber: problemsList.length,
+              topProblem: topProblem
+            });
+            callback();
+          });
+        }
+        else callback();
+      },
+      function(err) {
+        if (!err)
+          res.render('index', {
+            'title':"ВикиСоциум development",
+            'user':req.currentUser,
+            'menu':res.menu,
+            'categoryList' : indexCategories,
+            'scripts':[],
+            'styles':[]
+          });
+        else console.log(err);
       });
     }
     else RenderError(req,res, err);
@@ -351,17 +506,17 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
       fs.readFile('data/problems/'+ problemFileName +'.json', "utf-8", function(err, data){
         if(!err) {
           var problem = JSON.parse(data);
-          
-          fs.readFile('data/problems/problems.json', "utf-8", function(err, data) {
-            if(!err) {
-              var problems = JSON.parse(data);
-              for (var key in problems) {
-                if (problems[key].name == problemName) {
-                  problem.categories = problems[key].categories;
-                  break;              
-                }
-                problem.categories = new Array();
-              }
+          problem.categories = new Array();
+          for (var key in problemsList) {
+            if (problemsList[key].name == problemName) {
+              problem.categories = problemsList[key].categories;
+              break;              
+            }
+          }
+          getProblemStatistics ( problemName, function(err, stat) {
+            if (err) console.log(err);
+            else {
+              problem.stats = stat;
               res.render('problem', {
                 'title' : problem.name,
                 'user':req.currentUser,
@@ -386,53 +541,17 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
-	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-		if(!err) {
-			var problemsList = JSON.parse(data);
-
-			//Здесь я сделаю массив с нужным из problemsList
-							
-			var categoryList = [];
-			var i;
-			for(i = 0; i < problemsList.length; i++) {
-				var j;
-			  for (j = 0; j < problemsList[i].categories.length; j++) {
-          if (categoryName == problemsList[i].categories[j]) {
-					  categoryList.push(problemsList[i])
-						break;
-					}
-				}
-			}
-			
-			res.render('problems', {
-			  'title' : categoryName,
-			  'user':req.currentUser,
-        'menu':res.menu,
-			  'problemsList' : categoryList,
-        'CategoryName': categoryName,
-			  'scripts' : [],
-        'styles':[]
-			});
-		}
-		else RenderError(req,res, err);
-	});
+  res.render('problems', {
+    'title' : categoryName,
+    'user':req.currentUser,
+    'menu':res.menu,
+    'problemsList' : findAllProblemsInACategory( categoryName ),
+    'CategoryName': categoryName,
+    'scripts' : [],
+    'styles':[]
+  });
+  
 });
-
-app.get ('/addcase/:SolutionName', loadUser, generateMenu,function(req,res) {
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else { 
-    var SolutionNew = req.param('SolutionName', null);
- 	  res.render('AddCaseForUser', {
-      locals: {Solution: SolutionNew},
-      'user': req.currentUser,
-      'menu':res.menu,
-      title: '',
-      scripts: [],
-      styles:[]
-		});
-  }
-});
-
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
@@ -444,77 +563,81 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = JSON.parse(data);
-        solutionId = false;
+        var solutionName = false;
         for (var key in userJSON.cases) {
             if (userJSON.cases[key].caseId == caseId) {
-              solutionId = userJSON.cases[key].solutionId;
+              solutionName = userJSON.cases[key].solutionId;
               break;
             }
         }
-        if (solutionId)
-          fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
-            if(!err) 
-            {
-              var solutionData = JSON.parse(data);
-              var stylesToInject = [];
-              var scriptsToInject = [
-                'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
-                'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
-                'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
-                '/inputex/src/loader.js',
-                '/javascripts/jquery.json-2.3.min.js',
-                '/javascripts/CaseDataController.js',
-                '/javascripts/StepsController.js',
-                '/javascripts/customWidgets/timer.js',
-                '/javascripts/runtime.min.js',
-                '/javascripts/jquery.watch-2.0.min.js',
-                '/javascripts/jquery.prettyPhoto.js',
-                '/javascripts/modal_window.js',
-                '/javascripts/RegionalizedData.js'
-              ];
-              
-              // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
-              var requiredDocuments = solutionData.data.documents;
-              if(requiredDocuments)
-              {
-                for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
-                scriptsToInject.push("/javascripts/nicEdit.js");
-                scriptsToInject.push("/markitup/sets/default/set.js");            
-                stylesToInject.push("/markitup/sets/default/style.css");
-                stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
-                stylesToInject.push("/markitup/skins/simple/style.css");            
-                stylesToInject.push("/stylesheets/prettyPhoto.css");
-              }
-              fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
-                if (err) {
-                  var caseContents = {};
-                  err = false;
-                }
-                else {
-                  var caseContents = JSON.parse(caseContentsJson);
-                  if (caseContents == null) var caseContents = {};
-                }
-
-                res.render('userCase', 
+        if (solutionName)
+          Solution.findOne ({ name: solutionName }, function(err, document) {
+            if (document) {    
+              fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+                if(!err) 
                 {
-                  'title': userName + " : " + caseId,
-                  'user':req.currentUser,
-                  'menu':res.menu, 
-                  'solutionData' : solutionData,
-                  'caseData' : caseContents.data,
-                  'caseName' : caseContents.name,
-                  'currentStep' : caseContents.currentStep,
-                  'stepsHistory' : caseContents.steps,
-                  'scripts' : scriptsToInject,
-                  'styles' : stylesToInject
-                });
+                  var solutionData = JSON.parse(data);
+                  var stylesToInject = [];
+                  var scriptsToInject = [
+                    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
+                    'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                    'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                    'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                    '/inputex/src/loader.js',
+                    '/javascripts/jquery.json-2.3.min.js',
+                    '/javascripts/CaseDataController.js',
+                    '/javascripts/StepsController.js',
+                    '/javascripts/customWidgets/timer.js',
+                    '/javascripts/runtime.min.js',
+                    '/javascripts/jquery.watch-2.0.min.js',
+                    '/javascripts/jquery.prettyPhoto.js',
+                    '/javascripts/modal_window.js',
+                    '/javascripts/RegionalizedData.js'
+                  ];
+                  
+                  // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+                  var requiredDocuments = solutionData.data.documents;
+                  if(requiredDocuments)
+                  {
+                    for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                    if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
+                    scriptsToInject.push("/javascripts/nicEdit.js");
+                    scriptsToInject.push("/markitup/sets/default/set.js");            
+                    stylesToInject.push("/markitup/sets/default/style.css");
+                    stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
+                    stylesToInject.push("/markitup/skins/simple/style.css");            
+                    stylesToInject.push("/stylesheets/prettyPhoto.css");
+                  }
+                  fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+                    if (err) {
+                      var caseContents = {};
+                      err = false;
+                    }
+                    else {
+                      var caseContents = JSON.parse(caseContentsJson);
+                      if (caseContents == null) var caseContents = {};
+                    }
+
+                    res.render('userCase', 
+                    {
+                      'title': userName + " : " + caseId,
+                      'user':req.currentUser,
+                      'menu':res.menu, 
+                      'solutionData' : solutionData,
+                      'caseData' : caseContents.data,
+                      'caseName' : caseContents.name,
+                      'currentStep' : caseContents.currentStep,
+                      'stepsHistory' : caseContents.steps,
+                      'scripts' : scriptsToInject,
+                      'styles' : stylesToInject
+                    });
+                  });
+                }
+                else RenderError(req,res, err);
               });
             }
-            else RenderError(req,res, err);
           });
-        else RenderError(req,res,'У вас нет дела с этим id')
+        else RenderError(req,res,'У вас нет дела с таким именем')
       }
       else RenderError(req,res, err);
     });
@@ -586,7 +709,18 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
     
     //console.log(req.body.jsonData);
     fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-          if (err) console.log(err);
+      if (err) console.log(err);
+      else fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, userJson) {
+        if (err) {
+          console.log(err);
+        }
+        else {
+          var userFileContents = JSON.parse( userJson );
+          for (var key in userFileContents.cases)
+            if ( userFileContents.cases[key].caseId == caseId ) userFileContents.cases[key].updateDate = getCurrentDateTime();
+          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userFileContents, null, "\t"), function (err) {});
+        }
+      });
     });
     res.send(req.body);
   });
@@ -685,26 +819,36 @@ app.get('/users/new', loadUser, generateMenu, function(req, res) {
   });
 });
 
-function createCaseFile ( userName, caseId, solutionId ) {
+function createCaseFile ( userName, caseId, solutionName ) {
 
-  fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
-    if(!err) {
-      var solutionData = JSON.parse(data);
-      
-      var caseContents = {};
-      caseContents.name = caseId;
-      caseContents.steps = [];
-      
-      for (var key in solutionData.steps) {
-        caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
-      }
-      
-      caseContents.currentStep = solutionData.initialStep;
-      
-      fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
-      fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-        if (err) console.log(err);
-      });
+  Solution.findOne ({ name: solutionName }, function(err, document) {
+    if (document) {
+      fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+        if(!err) {
+          var solutionData = JSON.parse(data);
+          
+          var caseContents = {};
+          caseContents.name = caseId;
+          caseContents.steps = [];
+          
+          for (var key in solutionData.steps) {
+            caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
+          }
+          
+          caseContents.currentStep = solutionData.initialStep;
+          
+          fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
+          fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
+            if (err) console.log(err);
+          });
+        }
+        else {
+          console.log('Solution json file for '+solutionName+' not found');
+        }
+      });    
+    }
+    else {
+      console.log('Solution '+solutionName+' not found');
     }
   });
 }
@@ -714,13 +858,12 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     //Добавляем кейс в спиок кейсов юзера
-    
     var userName = req.currentUser.email;
-    var caseId = req.body.case_id;
+    var caseName = req.body.case_id.replace(/_/g," ");
     var ProblemName = req.body.ProblemName;
-    var solutionId = req.body.SolutionName;
+    var solutionName = req.body.SolutionName;
     
-    if (caseId == "") {
+    if (caseName == "") {
       RenderError(req,res,"Невозможно добавить дело с пустым названием");
       return;
     }    
@@ -730,8 +873,8 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
         var userJSON = JSON.parse(data);
         var case_obj = {
           problemName: ProblemName,
-          solutionId: solutionId,
-          caseId: caseId,
+          solutionId: solutionName,
+          caseId: caseName,
           state: "active",
           createDate: getCurrentDateTime()
         };
@@ -744,12 +887,12 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
             if (err) throw err;
         });
         
-        createCaseFile ( userName, caseId, solutionId );
+        createCaseFile ( userName, caseName, solutionName );
       }
       else RenderError(req,res, err);
     });
-    increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/MyCases/'+caseId.replace(/ /g,"_"));
+    increaseSolutionStatistics ( solutionName, 'started' );
+    res.redirect('/MyCases/'+caseName.replace(/ /g,"_"));
 	}; 
 });
 
@@ -882,10 +1025,20 @@ app.get('/logout', loadUser, generateMenu, function(req, res) {
 
 // Statistics
 
-app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
+app.get('/Statistics/Solutions', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {   
-    fs.readdir("data/solutions", function (err, files) {
+  else {
+    Solution.find( {}, function(err, solutions) {      
+      res.render('statistics/solutions.jade', {
+        title: "Статистики по решениям",
+        'user':req.currentUser,
+        'menu':res.menu,
+        solutions: solutions, 
+        scripts:[],
+        styles:[]
+      });
+    });
+    /*fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
       
       var solutions = new Array();
@@ -898,7 +1051,7 @@ app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
       }
 
       var f = function(arg, callback) {
-        SolutionStatistics.findOne ({ solution_name: arg.name }, function(e, solution) {
+        Solution.findOne ({ solution_name: arg.name }, function(e, solution) {
           var stats_obj = new Object();
           if (solution) {
             arg.statistics = solution;
@@ -925,7 +1078,7 @@ app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
           styles:[]
         })
       });
-    });
+    });*/
   }
 });
 
@@ -959,7 +1112,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
         'title':    "Организации / добавить",
         'user':     req.currentUser,
         'menu':     res.menu,
-        'scripts':  [],
+        'scripts':  ['/javascripts/admin.js'],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
         'existing_organization_names': organizations,
@@ -971,7 +1124,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
 
 app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
+  else {    
     var new_organization = {
       'title': req.body.title,
       'short_descr': req.body.short_descr,
@@ -986,47 +1139,57 @@ app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) 
         }
       }
     }
-    Organizations.findOne ({ organization_name: req.body.organization_name }, function(e, organization_item) {
-      if (!organization_item) {
-        var organization_item = new Organizations({
-          'organization_name': req.body.organization_name,
-          'regions_list': [
-            {
-
-              'region_name': req.body.region_name,
-              'organizations_list': []
-            }
-          ]
+    var arr_counter = req.body.organization_name.length;
+    var global_err;
+    
+    async.forEach(req.body.organization_name, function(organization_name, callback){      
+      Organizations.findOne ({ organization_name: organization_name }, function(e, organization_item) {
+        if (!organization_item) {
+          var organization_item = new Organizations({
+            'organization_name': organization_name,
+            'regions_list': [
+              {
+                'region_name': req.body.region_name,
+                'organizations_list': []
+              }
+            ]
+          });
+        }
+        var add_key = -1;
+        for (var key in organization_item.regions_list) {
+          if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
+            add_key = key;
+            break;
+          }
+        }
+        if ( add_key == -1 ) {
+          var new_region = {
+            'region_name': req.body.region_name,
+            'organizations_list': []
+          }
+          new_region.organizations_list.push(new_organization);
+          organization_item.regions_list.push(new_region);
+        }
+        else organization_item.regions_list[key].organizations_list.push(new_organization);
+        organization_item.save(function(err) {
+          if (err != null) {
+            console.log(err);
+          }        
+          callback(err);
         });
-		  }
-		  var add_key = -1;
-		  for (var key in organization_item.regions_list) {
-        if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
-          add_key = key;
-          break;
-        }
-      }
-      if ( add_key == -1 ) {
-        var new_region = {
-          'region_name': req.body.region_name,
-          'organizations_list': []
-        }
-        new_region.organizations_list.push(new_organization);
-        organization_item.regions_list.push(new_region);
-		  }
-      else organization_item.regions_list[key].organizations_list.push(new_organization);
-      organization_item.save(function(err) {
-        if (err != null) {
-          console.log(err);
-          res.redirect('/admin/organizations/add?adding_result=error');
-          // выдавать ошибку
-		    }
-        else {
-          res.redirect('/admin/organizations/add?adding_result=success');
-          // отправляем на /add обратно и говорим, что добавлено успешно
-        }
       });
+    },
+    function(err){
+      if (err == null) {
+        res.redirect('/admin/organizations/add?adding_result=success');
+        // отправляем на /add обратно и говорим, что добавлено успешно
+      }
+      else {
+        res.redirect('/admin/organizations/add?adding_result=error');
+        // выдавать ошибку
+      }
     });
+    
   }
 });
 
@@ -1095,6 +1258,8 @@ app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
 });
 
 
+
+updateSolutionsCollection();
 
 ///
 /// Compiling documents templates to client-side javascript

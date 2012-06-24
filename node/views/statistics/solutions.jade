@@ -1,3 +1,11 @@
+h1 Статистики по решениям
+
+mixin StatOrZero (number)
+  - if (number == undefined)
+    0
+  - else
+    #{number}
+
 table
   tr
     th(rowspan='2') Решение
@@ -12,8 +20,13 @@ table
   - each solution in solutions
     tr
       td #{solution.name}
-      td(align='right') #{solution.statistics.started}
-      td(align='right') #{solution.statistics.finished_successful}
-      td(align='right') #{solution.statistics.finished_failed}
-      td(align='right') #{solution.statistics.finished_good_solution}
-      td(align='right') #{solution.statistics.finished_bad_solution}
+      td(align='right')
+        mixin StatOrZero (solution.statistics.started)
+      td(align='right') 
+        mixin StatOrZero (solution.statistics.finished_successful)
+      td(align='right') 
+        mixin StatOrZero (solution.statistics.finished_failed)
+      td(align='right') 
+        mixin StatOrZero (solution.statistics.finished_good_solution)
+      td(align='right') 
+        mixin StatOrZero (solution.statistics.finished_bad_solution)
