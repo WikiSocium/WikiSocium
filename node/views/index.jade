@@ -25,14 +25,14 @@ mixin getProblemWordEnding ( number )
             a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
           .mainProblemStat
             p
-              a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")): #{aCategory.topProblem.name}
+              a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
             p.stat-figures
               img(src="/images/solved.png")
-              span.mainStatValue: #{aCategory.topProblem.stats.solved}
+              span.mainStatValue #{aCategory.topProblem.stats.solved}
               img(src="/images/inprocess.png")
-              span.mainStatValue: #{aCategory.topProblem.stats.inprocess}
+              span.mainStatValue #{aCategory.topProblem.stats.inprocess}
               img(src="/images/notsolved.png")
-              span.mainStatValue: #{aCategory.topProblem.stats.notsolved}
+              span.mainStatValue #{aCategory.topProblem.stats.notsolved}
             p.problemLinkAllProblems
               a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
                 Ещё #{aCategory.problemsNumber} проблем
