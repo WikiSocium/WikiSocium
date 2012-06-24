@@ -58,7 +58,8 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-  app.set('db-uri', 'mongodb://localhost/wikisocium-development');
+  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
+  //app.set('db-uri', 'mongodb://test:test@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -67,7 +68,6 @@ app.configure('production', function(){
 });
 
 var db = mongoose.connect(app.set('db-uri'));
-
 
 models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
@@ -1125,16 +1125,29 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
 app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {    
+    var input_email = [];
+    for (var key in req.body.email)
+      input_email[key] = {
+        'email_who': req.body.email_who[key],
+        'email': req.body.email[key]
+      };
+    var input_phone = [];
+    for (var key in req.body.phone)
+      input_phone[key] = {
+        'phone_who': req.body.phone_who[key],
+        'phone': req.body.phone[key]
+      };
+    
     var new_organization = {
       'title': req.body.title,
-      'short_descr': req.body.short_descr,
+      'short_description': req.body.short_description,
       'description': {
         'text': req.body.text,
         'web': req.body.web,
-        'phone': req.body.phone,
+        'phone': input_phone,
         'postal_address': req.body.postal_address,
         'electronic_address': {
-          'email': req.body.email,
+          'email': input_email,
           'webform': req.body.webform
         }
       }
@@ -1206,7 +1219,7 @@ app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
       'data': {
         'text_name': '',
         'title': '',
-        'short_descr': '',
+        'short_description': '',
         'text': ''  
       }
     })
@@ -1220,7 +1233,7 @@ app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
     var new_text = new Texts({
       'text_name': req.body.text_name,
       'title': req.body.title,
-      'short_descr': req.body.short_descr,
+      'short_description': req.body.short_description,
       'text': req.body.text
     });
     
@@ -1235,7 +1248,7 @@ app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
           'data':     {
             'text_name': req.body.text_name,
             'title': req.body.title,
-            'short_descr': req.body.short_descr,
+            'short_description': req.body.short_description,
             'text': req.body.text
           }
         });

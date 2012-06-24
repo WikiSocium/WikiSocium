@@ -116,35 +116,36 @@ function defineModels(mongoose, fn) {
     }
     next();
   });
-  
-  
+
 /**
   * Model: Organizations
   */
   
-  var organization = new Schema({
-    'title': String,
-    'short_descr': String,
-    'description': {
-      'text': String,
-      'web': String,
-      'phone': [ String ],
-      'postal_address': String,
-      'electronic_address': {
-        'email': [ String ] ,
-        'webform': String
-      }
-    }
-  });
-  
-  var region_with_organizations = new Schema({
-    'region_name': { type: String, index: true },
-    'organizations_list': [ organization ]
-  });
-  
   var Organizations = new Schema({
     'organization_name': { type: String, index: true },
-    'regions_list': [ region_with_organizations ]
+    'regions_list': [ {
+      'region_name': String,
+      'organizations_list': [ {
+        'title': String,
+        'short_description': String,
+        'description': {
+          'text': String,
+          'web': String,
+          'phone': [ {
+            'phone_who': String,
+            'phone': String
+          } ],
+          'postal_address': String,
+          'electronic_address': {
+            'email': [ {
+              'email_who': String,
+              'email': String
+            } ] ,
+            'webform': String
+          }
+        }
+      } ]
+    } ]
   });
   
 
@@ -155,12 +156,11 @@ function defineModels(mongoose, fn) {
   var Texts = new Schema({
     'text_name': { type: String, index: true },
     'title': String,
-    'short_descr': String,
+    'short_description': String,
     'text': String
   });
   
 
-//  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
   mongoose.model('Solution', Solution);
