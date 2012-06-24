@@ -89,25 +89,6 @@ app.dynamicHelpers({
    
 });
 
-// Routes
-
-//app.get('/templates/:caseName/', function(req, res){
-//		var caseName = req.param('caseName', null);
-//		res.render('caseOverview', {
-//				   title: "overview of selected case",
-//				   selectedCase: allTemplates[caseName],
-//				   scripts: ['/javascripts/Curry-1.0.1.js',
-//							 '/javascripts/raphael-min.js',
-//							 '/javascripts/dracula_algorithms.js',
-//							 '/javascripts/dracula_graffle.js',
-//							 '/javascripts/dracula_graph.js',
-//							 '/javascripts/seedrandom.js']
-//				   });
-//});
-
-// [FYI]
-// req <=> request
-// res <=> response
 
 function authenticateFromLoginToken(req, res, next) {
   var cookie = JSON.parse(req.cookies.logintoken);
@@ -221,12 +202,8 @@ function updateSolutionsCollection () {
     
     var solutions = new Array();
     for (var key in files) {
-      var filenameParts = files[key].split(".");
-      if(filenameParts[filenameParts.length - 1] == "json")
-      {
-          solutions[key] = new Object();
-          solutions[key].filename = files[key];
-      }
+      solutions[key] = new Object();
+      solutions[key].filename = files[key];
     }
 
     async.forEach(solutions, function(solution, callback) {
@@ -380,6 +357,12 @@ function getCurrentDateTime() {
   var s = date.getSeconds(); if (s < 10) s = '0'+s;
   return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
 }
+
+
+
+
+// Routes
+
 
 //
 // Обработка корня
