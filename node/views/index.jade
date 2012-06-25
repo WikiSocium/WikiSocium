@@ -11,6 +11,9 @@ mixin getProblemWordEnding ( number )
       |а
     - if ( mod10 >= 2 && mod10 <= 4 )
       |ы
+mixin typograf ( str )
+  - str = str.replace(/ (.|..) /g," $1&nbsp;")
+  |#{str}
     
 .row(style="margin-top: 34px;")
   .span9
@@ -22,10 +25,12 @@ mixin getProblemWordEnding ( number )
           .mainProblemIcon
             img(src="/images/#{aCategory.icon}")
           .mainProblemName
-            a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
+            a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+              mixin typograf(aCategory.name)
           .mainProblemStat
             p
-              a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
+              a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_"))
+                mixin typograf(aCategory.topProblem.name)
             p.stat-figures
               img(src="/images/solved.png")
               span.mainStatValue #{aCategory.topProblem.stats.solved}
