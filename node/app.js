@@ -177,6 +177,10 @@ function generateMenu(req, res, next) {
   next();
 }
 
+function getHeaderStats(req, res, next) {
+  next();
+}
+
 function userCreateEnv( user_id ) {
   fs.mkdir('data/UserData/'+user_id);
   fs.mkdir('data/UserData/'+user_id+'/cases');
@@ -217,15 +221,8 @@ function updateSolutionsCollection () {
             }
             else {
               document = new Solution({
-                name: solution.name,
-                filename: solution.filename,
-                'statistics': {
-                  'started': 0,
-                  'finished_successful': 0,
-                  'finished_failed': 0,
-                  'finished_good_solution': 0,
-                  'finished_bad_solution': 0
-                }
+                'name': solution.name,
+                'filename': solution.filename
               });
             }
             document.save(function(err) {
@@ -366,7 +363,7 @@ function getCurrentDateTime() {
 
 //
 // Обработка корня
-app.get('/', loadUser, generateMenu, function(req, res) {
+app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
   fs.readFile('data/categories/categories.json', "utf-8", function(err, data) {
     if(!err) {
       var categoryList = JSON.parse(data);
@@ -404,7 +401,7 @@ app.get('/', loadUser, generateMenu, function(req, res) {
   });
 });
 
-app.get('/About', loadUser, generateMenu, function(req, res) {
+app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
   fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
     if(!err) {
       var categoryList = JSON.parse(data);
@@ -462,7 +459,7 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
 });
 //
 // Обработка запроса на показ списка проблем
-app.get('/Problems', loadUser, generateMenu, function(req, res){
+app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
   fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
 	if(!err) {
     var problemsList = JSON.parse(data);              
@@ -481,7 +478,7 @@ app.get('/Problems', loadUser, generateMenu, function(req, res){
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
-app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
+app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
 	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
@@ -525,7 +522,7 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
 //
 
 // Обработка запроса на показ списка проблем из категории
-app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
+app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
   res.render('problems', {
@@ -541,7 +538,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
 });
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
+app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
   {    
@@ -715,7 +712,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
 
 //
 //Завершение кейса
-app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
+app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var userName = req.currentUser.email;
   var caseId = req.param('CaseId', null).replace(/_/g," ");
     
@@ -770,7 +767,7 @@ app.get('/MyCases/:CaseId/endCase', function(req, res) {
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
-app.get('/MyCases', loadUser, generateMenu, function(req, res){
+app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
@@ -795,7 +792,7 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 // Users
-app.get('/users/new', loadUser, generateMenu, function(req, res) {
+app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
   res.render('users/new.jade', {
     locals: { return_to: parseReturnTo(req.query.return_to) },
     'user':req.currentUser,
@@ -840,7 +837,7 @@ function createCaseFile ( userName, caseId, solutionName ) {
   });
 }
 
-app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
+app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
@@ -885,7 +882,7 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, function(req, res) {
 
 
 
-app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
+app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
@@ -926,7 +923,7 @@ app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
 
 
 // Sessions
-app.get('/sessions/new', loadUser, generateMenu, function(req, res) {
+app.get('/sessions/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
 
   res.render('sessions/new.jade', {
     'user':req.currentUser,
@@ -996,12 +993,12 @@ app.post('/sessions', function(req, res) {
    
 });
 
-app.get('/login', loadUser, generateMenu, function(req, res) {
+app.get('/login', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.query.return_to);
   else res.redirect('/');
 });
 
-app.get('/logout', loadUser, generateMenu, function(req, res) {
+app.get('/logout', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.session) {
     LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
@@ -1012,7 +1009,7 @@ app.get('/logout', loadUser, generateMenu, function(req, res) {
 
 // Statistics
 
-app.get('/Statistics/Solutions', loadUser, generateMenu, function(req, res) {
+app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     Solution.find( {}, function(err, solutions) {      
@@ -1072,7 +1069,7 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, function(req, res) {
 
 
 // Admin pages
-app.get('/admin', loadUser, generateMenu, function(req, res) {
+app.get('/admin', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   
     res.render('admin/index.jade', {
@@ -1085,7 +1082,7 @@ app.get('/admin', loadUser, generateMenu, function(req, res) {
   }
 });
 
-app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
+app.get('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var regions_list = fs.readFileSync('data/regions.json', "utf-8");
@@ -1109,7 +1106,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   }
 });
 
-app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
+app.post('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {    
     var input_email = [];
@@ -1193,7 +1190,7 @@ app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) 
   }
 });
 
-app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
+app.get('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {    
     res.render('admin/texts/add.jade', {
@@ -1214,7 +1211,7 @@ app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
   }
 });
 
-app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
+app.post('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var new_text = new Texts({

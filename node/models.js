@@ -114,6 +114,21 @@ function defineModels(mongoose, fn) {
       console.log("Failed save solution statistics for " + this.filename + ": " + e);
       next(new Error('Solution doesn\'t exist'));
     }
+    if ( this.statistics == undefined ||
+      this.statistics.started == undefined ||
+      this.statistics.finished_successful == undefined ||
+      this.statistics.finished_failed == undefined ||
+      this.statistics.finished_good_solution == undefined ||
+      this.statistics.finished_bad_solution == undefined
+    ) {
+      this.statistics = {
+        'started': 0,
+        'finished_successful': 0,
+        'finished_failed': 0,
+        'finished_good_solution': 0,
+        'finished_bad_solution': 0
+      };
+    }
     next();
   });
 
