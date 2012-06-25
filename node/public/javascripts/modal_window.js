@@ -54,11 +54,14 @@ function showModalWindow ( in_title, in_body, in_buttons, in_modal_container_id,
   $( "#"+modal_container_id ).css('height',in_height);
   
   var modal_html = '<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+in_title+'</h3> </div>  <div class="modal-body">'+in_body+'</div>';
-  modal_html += '<div class="modal-footer">';
-  for (var key in in_buttons) {
-    modal_html += '<button class="btn '+in_buttons[key].style+'" id="'+modal_container_id+'_'+in_buttons[key].text+'">'+in_buttons[key].text+'</button>';
+ 
+  if ( typeof(in_buttons)=="object" && in_buttons.length > 0) {
+    modal_html += '<div class="modal-footer">';
+    for (var key in in_buttons) {
+      modal_html += '<button class="btn '+in_buttons[key].style+'" id="'+modal_container_id+'_'+in_buttons[key].text+'">'+in_buttons[key].text+'</button>';
+    }
+    modal_html += '</div>';
   }
-  modal_html += '</div>';  
   $( "#"+modal_container_id ).html( modal_html );
   
   for (var key in in_buttons) {
