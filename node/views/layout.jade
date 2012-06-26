@@ -19,8 +19,7 @@ html
       link(rel='stylesheet', href=style)
     -each script in scripts 
       script(type='text/javascript', src=script)
-    
-
+       
   body
     p
       span.to-var Салатовым 
@@ -32,14 +31,50 @@ html
             h1#logo
               a(href="/") ВикиСоциум
           #heading-stat.span3
-            span.to-var 3 
-            проблемы, 
-            span.to-var 3 
-            решения,<br />
-            span.to-var 152 
-            дела, 
-            span.to-var 114 
-            пользователей
+            mixin getProblemWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |а
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |ы
+            mixin getSolutionWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number <= 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |е
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |я
+                - else
+                  |ий
+              - else
+                |ий
+            mixin getCaseWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |о
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |а
+            mixin getUserWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |ь
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |я
+                - else
+                  |ей
+              - else
+                |ей
+            |#{headerStats.problems_number} проблем
+            mixin getProblemWordEnding ( headerStats.problems_number )
+            |, #{headerStats.solutions_number} решени
+            mixin getSolutionWordEnding ( headerStats.solutions_number )
+            |,<br />#{headerStats.cases_number} дел
+            mixin getCaseWordEnding ( headerStats.cases_number )
+            |, #{headerStats.users_number} пользовател
+            mixin getUserWordEnding ( headerStats.users_number )
           #heading-login-form.span3.offset1
             div.formline
               - if (user.guest)

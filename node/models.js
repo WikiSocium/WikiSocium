@@ -89,9 +89,30 @@ function defineModels(mongoose, fn) {
     .get(function() {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series });
     });
+
   
+  /**
+  * Model: Category
+  */
+  var Category = new Schema({
+    'name': { type: String, unique: true },
+    'icon': String,
+    'on_index': Boolean,
+    'index_order': Number
+  });
   
-/**
+  /**
+  * Model: Problem
+  */
+  var Problem = new Schema({
+    'name': { type: String, unique: true },
+    'description': String,
+    'categories': [ String ], 
+    'solutions': [ String ]
+  });
+  
+    
+  /**
   * Model: Solution
   */
   var Solution = new Schema({
@@ -178,6 +199,8 @@ function defineModels(mongoose, fn) {
 
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
+  mongoose.model('Category', Category);
+  mongoose.model('Problem', Problem);
   mongoose.model('Solution', Solution);
   mongoose.model('Organizations', Organizations);  
   mongoose.model('Texts', Texts);

@@ -12,7 +12,7 @@ mixin formatDate(date)
   - var d = date.getDate(); if (d < 10) d = '0'+d;
   - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
   - var y = date.getFullYear();
-  #{d + '.' + m + '.' + y}
+  |#{d + '.' + m + '.' + y}
     
 - each aCase in userData.cases
   - if (aCase.state == 'active')
@@ -25,7 +25,7 @@ mixin formatDate(date)
           - if ( aCase.problemName != undefined)
             a(href="/Problems/" + aCase.problemName.replace(/ /g,"_")) #{aCase.problemName}
             |: 
-          #{aCase.caseId} 
+          |#{aCase.caseId} 
           - if ( aCase.createDate != undefined)
             |(создано 
             mixin formatDate(aCase.createDate)
@@ -50,7 +50,7 @@ mixin formatDate(date)
       .span2.offset1
         - if ( aCase.updateDate != undefined)
           p.updated
-            обновлено 
+            |обновлено 
             mixin formatDate(aCase.updateDate)
 
 //

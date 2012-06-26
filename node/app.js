@@ -3,10 +3,12 @@
  */
 
 function RenderError(req,res,err) {
-	res.render('Error', {
+	console.log(err);
+  res.render('Error', {
     'title':'Ошибка!',
     'user': req.currentUser,
     'menu':res.menu,
+    'headerStats': res.headerStats,
 		'err': err,
 		'scripts': [],
     'styles': []
@@ -28,6 +30,8 @@ var models = require('./models')
     ,db
     ,User
     ,LoginToken
+    ,Category
+    ,Problem
     ,Solution
     ,Organizations
     ,Texts
@@ -73,6 +77,8 @@ models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
+  app.Category = Category = mongoose.model('Category');
+  app.Problem = Problem = mongoose.model('Problem');
   app.Solution = Solution = mongoose.model('Solution');
   app.Organizations = Organizations = mongoose.model('Organizations');  
   app.Texts = Texts = mongoose.model('Texts');
@@ -178,7 +184,22 @@ function generateMenu(req, res, next) {
 }
 
 function getHeaderStats(req, res, next) {
-  next();
+  res.headerStats = {
+    problems_number: 0,
+    solutions_number: 0,
+    cases_number: 0,
+    users_number: 0
+  }
+  Problem.count({}, function(err, problems_number) {
+    res.headerStats.problems_number = problems_number;
+    Solution.count({}, function(err, solutions_number) {
+      res.headerStats.solutions_number = solutions_number;
+      User.count({}, function(err, users_number) {
+        res.headerStats.users_number = users_number;
+        next();
+      });
+    });
+  });
 }
 
 function userCreateEnv( user_id ) {
@@ -278,50 +299,28 @@ function getProblemStatistics ( problemName, callback ) {
     inprocess: 0,
     notsolved: 0
   }
-
-  var data = fs.readFileSync('data/problems/problems.json', "utf-8");
-	
-  var problemsList = JSON.parse(data);
-  var problemFileName;
-  for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
-        
-  data = fs.readFileSync('data/problems/'+ problemFileName +'.json', "utf-8");
-  var problem = JSON.parse(data);
-  
-  async.forEach(problem.solutions, function(solution, callback) {
-    Solution.findOne ({ name: solution }, function(err, document) {
-      if (document) {
-        returnStat.solved += document.statistics.finished_successful;
-        returnStat.inprocess += ( document.statistics.started - document.statistics.finished_successful - document.statistics.finished_failed );
-        returnStat.notsolved +=  document.statistics.finished_failed;
-      }
-      callback(err);
-    });
-  },
-  function (err) {
-    callback(err, returnStat);
+  Problem.findOne({ name: problemName }, ['solutions'], function (err, problem){
+    if (problem == null) callback("Problem not found", returnStat);
+    else {
+      async.forEach(problem.solutions, function(solution, callback) {
+        Solution.findOne ({ name: solution }, function(err, document) {
+          if (document) {
+            returnStat.solved += document.statistics.finished_successful;
+            returnStat.inprocess += ( document.statistics.started - document.statistics.finished_successful - document.statistics.finished_failed );
+            returnStat.notsolved +=  document.statistics.finished_failed;
+          }
+          callback(err);
+        });
+      },
+      function (err) {
+        callback(err, returnStat);
+      });
+    }
   });
 }
 
 // / Solutions
 
-function findAllProblemsInACategory ( categoryName ) {
-  var data = fs.readFileSync('data/problems/problems.json', "utf-8");
-  var problemsList = JSON.parse(data);
-  
-  var categoryList = [];
-  var i;
-  for(i = 0; i < problemsList.length; i++) {
-    var j;
-    for (j = 0; j < problemsList[i].categories.length; j++) {
-      if (categoryName == problemsList[i].categories[j]) {
-        categoryList.push(problemsList[i])
-        break;
-      }
-    }
-  }
-  return categoryList;
-}
 
 function getTopProblem ( problemsList, callback ) {
   async.forEach(problemsList, function(aProblem, callback) {
@@ -364,57 +363,43 @@ function getCurrentDateTime() {
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data) {
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      
-      var indexCategories = [];
-      async.forEach( categoryList, function(aCategory, callback) {
-        if ( aCategory.on_index ) {
-          var problemsList = findAllProblemsInACategory ( aCategory.name );
-          getTopProblem ( problemsList, function(err,topProblem) {
-            indexCategories.push({
-              name: aCategory.name,
-              icon: aCategory.icon,
-              problemsNumber: problemsList.length,
-              topProblem: topProblem
-            });
-            callback();
-          });
-        }
-        else callback();
-      },
-      function(err) {
-        if (!err)
-          res.render('index', {
-            'title':"ВикиСоциум development",
-            'user':req.currentUser,
-            'menu':res.menu,
-            'categoryList' : indexCategories,
-            'scripts':[],
-            'styles':[]
-          });
-        else console.log(err);
+  Category.find({on_index: true}, ['name', 'icon'],
+    { sort: { index_order: 1 } }, function(err, categories)
+    {    
+    async.forEach( categories, function(aCategory, callback) {       
+      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        getTopProblem ( problems, function(err,topProblem) {
+          aCategory.problemsNumber = problems.length;
+          aCategory.topProblem = topProblem;
+          callback();
+        });
       });
-    }
-    else RenderError(req,res, err);
+    },
+    function(err) {
+      if (!err)
+        res.render('index', {
+          'title':"ВикиСоциум development",
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'categoryList' : categories,
+          'scripts':[],
+          'styles':[]
+        });
+      else console.log(err);
+    });
   });
 });
 
 app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('about', {
-        'title':"О проекте",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'scripts':[],
-        'styles':[]
-      });
-    }
-    else RenderError(req,res, err);
-  });
+  res.render('about', {
+    'title':"О проекте",
+    'user':req.currentUser,
+    'menu':res.menu,
+    'headerStats': res.headerStats,
+    'scripts':[],
+    'styles':[]
+  });    
 });
 
 //
@@ -442,38 +427,21 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
    		}	
   	})
 	
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : categoryList,
-        'scripts':[],
-        'styles':[]
-      });
-    }
-    else RenderError(req,res, err);
-  });
+  res.redirect('/');
 });
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
-  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-	if(!err) {
-    var problemsList = JSON.parse(data);              
+  Problem.find(['name'], {}, function(err, problems) {            
 		res.render('problems', {
 		  'title' : "Проблемы и решения",
       'user':req.currentUser,
       'menu':res.menu,
-			'problemsList' : problemsList,
+      'headerStats': res.headerStats,
+			'problemsList' : problems,
 			'scripts' : [],
       'styles': []
 	  });
-	}
-	else
-		RenderError(req,res, err);
 	});
 });
 
@@ -481,41 +449,22 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
 app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
-	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-		if(!err) {
-			var problemsList = JSON.parse(data);
-      var problemFileName;
-      for (var key in problemsList) if (problemsList[key].name == problemName) problemFileName = problemsList[key].filename;
-        
-      fs.readFile('data/problems/'+ problemFileName +'.json', "utf-8", function(err, data){
-        if(!err) {
-          var problem = JSON.parse(data);
-          problem.categories = new Array();
-          for (var key in problemsList) {
-            if (problemsList[key].name == problemName) {
-              problem.categories = problemsList[key].categories;
-              break;              
-            }
-          }
-          getProblemStatistics ( problemName, function(err, stat) {
-            if (err) console.log(err);
-            else {
-              problem.stats = stat;
-              res.render('problem', {
-                'title' : problem.name,
-                'user':req.currentUser,
-                'menu':res.menu,
-                'problem' : problem,
-                'scripts' : ['/javascripts/modal_window.js'],
-                'styles'  : []
-              });
-            }
-          });
-        }
-        else RenderError(req,res, err);
-      });
-    }
-    else RenderError(req,res, err);
+	Problem.findOne({ name: problemName }, function(err, problem) {            
+    getProblemStatistics ( problemName, function(err, stat) {
+      if (err) console.log(err);
+      else {
+        problem.stats = stat;
+        res.render('problem', {
+          'title' : problem.name,
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'problem' : problem,
+          'scripts' : ['/javascripts/modal_window.js'],
+          'styles'  : []
+        });
+      }
+    });        
   });
 });
 
@@ -525,14 +474,19 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
 app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
-  res.render('problems', {
-    'title' : categoryName,
-    'user':req.currentUser,
-    'menu':res.menu,
-    'problemsList' : findAllProblemsInACategory( categoryName ),
-    'CategoryName': categoryName,
-    'scripts' : [],
-    'styles':[]
+  Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
+  
+    res.render('problems', {
+      'title' : categoryName,
+      'user':req.currentUser,
+      'menu':res.menu,
+      'headerStats': res.headerStats,
+      'problemsList' : problems,
+      'CategoryName': categoryName,
+      'scripts' : [],
+      'styles':[]
+    });
+  
   });
   
 });
@@ -606,7 +560,8 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     {
                       'title': userName + " : " + caseId,
                       'user':req.currentUser,
-                      'menu':res.menu, 
+                      'menu':res.menu,
+                      'headerStats': res.headerStats,
                       'solutionData' : solutionData,
                       'caseData' : caseContents.data,
                       'caseName' : caseContents.name,
@@ -776,6 +731,7 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
           'title':  'Мои дела',
           'user':   req.currentUser,
           'menu':   res.menu, 
+          'headerStats': res.headerStats,
           'userData': JSON.parse(data),
           'scripts': [],
           'styles': []
@@ -797,6 +753,7 @@ app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res)
     locals: { return_to: parseReturnTo(req.query.return_to) },
     'user':req.currentUser,
     'menu':res.menu, 
+    'headerStats': res.headerStats,
     title: '',
     scripts: [],
     styles:[]
@@ -891,6 +848,7 @@ app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req
       locals: { return_to: parseReturnTo(req.query.return_to) },
       'user':req.currentUser,
       'menu':res.menu, 
+      'headerStats': res.headerStats,
       title: '',
       scripts: [],
       styles:[]
@@ -928,6 +886,7 @@ app.get('/sessions/new', loadUser, generateMenu, getHeaderStats, function(req, r
   res.render('sessions/new.jade', {
     'user':req.currentUser,
     'menu':res.menu,
+    'headerStats': res.headerStats,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: [],
@@ -1017,6 +976,7 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
         title: "Статистики по решениям",
         'user':req.currentUser,
         'menu':res.menu,
+        'headerStats': res.headerStats,
         solutions: solutions, 
         scripts:[],
         styles:[]
@@ -1076,6 +1036,7 @@ app.get('/admin', loadUser, generateMenu, getHeaderStats, function(req, res) {
       title: "Админка",
       'user':req.currentUser,
       'menu':res.menu,
+      'headerStats': res.headerStats,
       scripts:[],
       styles:[]
     })
@@ -1096,6 +1057,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, func
         'title':    "Организации / добавить",
         'user':     req.currentUser,
         'menu':     res.menu,
+        'headerStats': res.headerStats,
         'scripts':  ['/javascripts/admin.js'],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
@@ -1197,6 +1159,7 @@ app.get('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(req
       'title':    "Тексты / добавить",
       'user':     req.currentUser,
       'menu':     res.menu,
+      'headerStats': res.headerStats,
       'scripts':  [],
       'styles':   [],
       'adding_result': req.query.adding_result,
@@ -1255,6 +1218,222 @@ app.post('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(re
 });
 
 
+app.get('/admin/problems', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    
+    Problem.find({}, ['name'], { sort: ['name', 'descending'] },
+                  function(err, problems) {
+      problems = problems.map(function(d) {
+        return d.name;
+      });
+    
+      Category.find({}, ['name'], { sort: ['name', 'descending'] },
+                    function(err, categories) {
+        categories = categories.map(function(d) {
+          return d.name;
+        });
+        
+        Solution.find({}, ['name'], { sort: ['name', 'descending'] },
+                      function(err, solutions) {
+          solutions = solutions.map(function(d) {
+            return d.name;
+          });
+          
+          res.render('admin/problems/show.jade', {
+            'title':    "Проблемы",
+            'user':     req.currentUser,
+            'menu':     res.menu,
+            'headerStats': res.headerStats,
+            'scripts':  ['/javascripts/admin.js'],
+            'styles':   [],
+            'categories': categories,
+            'problems': problems,
+            'solutions': solutions,
+            'result': req.query.result
+          })
+        });
+      });
+    });
+  }
+});
+
+app.get('/admin/problems/:ProblemName/edit', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var problemName = req.param('ProblemName', null).replace(/_/g," ");
+    
+    Problem.findOne({ name: problemName },  function (err, problem){
+          
+      Category.find({}, ['name'], { sort: ['name', 'descending'] },
+                    function(err, categories) {
+        categories = categories.map(function(d) {
+          return d.name;
+        });
+        
+        Solution.find({}, ['name'], { sort: ['name', 'descending'] },
+                      function(err, solutions) {
+          solutions = solutions.map(function(d) {
+            return d.name;
+          });
+          
+          res.render('admin/problems/edit.jade', {
+            'title':    "Проблемы",
+            'user':     req.currentUser,
+            'menu':     res.menu,
+            'headerStats': res.headerStats,
+            'scripts':  ['/javascripts/admin.js'],
+            'styles':   [],
+            'categories': categories,
+            'problem': problem,
+            'solutions': solutions
+          })
+        });
+      });
+    });
+  }
+});
+
+
+
+app.post('/admin/problems/save', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    var f = function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/problems?result=error');
+      }        
+      else res.redirect('/admin/problems?result=added');
+    };    
+    if ( req.body.categories[0] == "- нет" ) var categories = [];
+    else var categories = req.body.categories;
+    if ( req.body._id == undefined ) {
+      var new_problem = new Problem({
+        'name': req.body.name,
+        'description': req.body.description,
+        'categories': categories, 
+        'solutions': req.body.solutions
+      });
+      new_problem.save(f);
+    }
+    else {
+      Problem.findOne({ _id: req.body._id },  function (err, problem){
+        problem.name = req.body.name;
+        problem.description = req.body.description;
+        problem.categories = categories;
+        problem.solutions = req.body.solutions;
+        problem.save(f);
+      });
+    }
+  }
+});
+
+app.get('/admin/problems/:ProblemName/delete', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var problemName = req.param('ProblemName', null).replace(/_/g," ");
+    
+    Problem.findOne({ name: problemName },  function (err, problem){
+      Problem.remove({ _id: problem._id }, function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/problems?result=error');
+      }        
+      else res.redirect('/admin/problems?result=removed');
+    });
+    });
+  }
+});
+
+app.get('/admin/categories', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    
+    Category.find({}, [], { sort: {on_index: -1, index_order: 1} },
+                  function(err, categories) {          
+      res.render('admin/categories/show.jade', {
+        'title':    "Категории",
+        'user':     req.currentUser,
+        'menu':     res.menu,
+        'headerStats': res.headerStats,
+        'scripts':  ['/javascripts/admin.js'],
+        'styles':   [],
+        'categories': categories,
+        'result': req.query.result
+      })
+    });
+  }
+});
+
+app.get('/admin/categories/:CategoryName/edit', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var categoryName = req.param('CategoryName', null).replace(/_/g," ");
+    
+    Category.findOne({ name: categoryName },  function (err, category){
+      res.render('admin/categories/edit.jade', {
+        'title':    "Проблемы",
+        'user':     req.currentUser,
+        'menu':     res.menu,
+        'headerStats': res.headerStats,
+        'scripts':  ['/javascripts/admin.js'],
+        'styles':   [],
+        'category': category
+      })
+    });
+  }
+});
+
+app.post('/admin/categories/save', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    var f = function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/categories?result=error');
+      }        
+      else res.redirect('/admin/categories?result=added');
+    };
+    var on_index = false;
+    if (req.body.on_index == "1") on_index = true;
+    if ( req.body._id == undefined ) {
+      var new_category = new Category({
+        'name': req.body.name,
+        'icon': req.body.icon,
+        'on_index': on_index,
+        'index_order': req.body.index_order
+      });
+      new_category.save(f);
+    }
+    else {
+      Category.findOne({ _id: req.body._id },  function (err, category){
+        category.name = req.body.name;
+        category.icon = req.body.icon;
+        category.on_index = on_index;
+        category.index_order = req.body.index_order;
+        category.save(f);
+      });
+    }
+  }
+});
+
+app.get('/admin/categories/:CategoryName/delete', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var categoryName = req.param('CategoryName', null).replace(/_/g," ");
+    
+    Category.findOne({ name: categoryName },  function (err, category){
+      Category.remove({ _id: category._id }, function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/categories?result=error');
+      }        
+      else res.redirect('/admin/categories?result=removed');
+    });
+    });
+  }
+});
 
 updateSolutionsCollection();
 

@@ -1,0 +1,69 @@
+form.form-horizontal(method="POST", action="/admin/problems/save")
+  - if (problem._id != undefined)
+    input(type="hidden", name="_id", value=problem._id)
+  .control-group
+    label.control-label Название проблемы
+    .controls
+      - if (problem.name != undefined)
+        input.input-xlarge(name="name", value="#{problem.name}")
+      -else
+        input.input-xlarge(name="name")
+  - categories.unshift("- нет");
+  .control-group
+    label.control-label Категории
+    .controls
+      div#categories_fields
+        - if (problem.categories != undefined && problem.categories.length > 0)
+          - each selected_category in problem.categories          
+            div(style="margin-bottom: 4px;")
+              select.categories(name="categories[0]")
+                - each category in categories
+                  - if (selected_category == category)
+                    option(selected="true") #{category}
+                  - else
+                    option #{category}
+              button.btn.btn-danger.remove_categories(type="button", style="margin-left: 3px;") ×
+        - else
+          div(style="margin-bottom: 4px;")
+            select.categories(name="categories[0]")
+              - each category in categories
+                option #{category}
+            button.btn.btn-danger.remove_categories(type="button", style="margin-left: 3px;") ×
+      button.btn.btn-success.add_categories(type="button") +
+  .control-group
+    label.control-label Описание проблемы
+    .controls
+      - if (problem.description != undefined)
+        textarea(name="description", rows="6", style="width: 300px") #{problem.description}
+      - else
+        textarea(name="description", rows="6", style="width: 300px")
+  .control-group
+    label.control-label Решения
+    .controls
+      div#solutions_fields
+        - if (problem.solutions != undefined && problem.solutions.length > 0)
+          - each selected_solution, key in problem.solutions          
+            div(style="margin-bottom: 4px;")
+              select.input-xlarge.solutions(name="solutions[#{key}]")
+                - each solution in solutions
+                  - if (selected_solution == solution)
+                    option(selected="true") #{solution}
+                  - else
+                    option #{solution}
+              button.btn.btn-danger.remove_solutions(type="button", style="margin-left: 3px;") ×
+        - else
+          div(style="margin-bottom: 4px;")
+            select.input-xlarge.solutions(name="solutions[0]")
+              - each solution in solutions
+                option #{solution}
+            button.btn.btn-danger.remove_solutions(type="button", style="margin-left: 3px;") ×
+      button.btn.btn-success.add_solutions(type="button") +
+  .control-group
+    .controls
+      button.btn.btn-success(type="submit") Сохранить проблему
+      | 
+      button.btn(type="reset") Отменить изменения
+  
+  script
+    AddRemoveTextFields ('categories');
+    AddRemoveTextFields ('solutions');

@@ -1,0 +1,30 @@
+.row
+  .span10.offset1
+  
+    - if (result == 'added')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Категория успешно сохранена
+    - if (result == 'removed')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Категория успешно удалена
+    - if (result == 'error')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При выполнении запроса возникла ошибка
+
+    h1 Список категорий
+    table.table
+      thead
+        th
+        th
+        th(colspan="2") На главной? И номер
+        th
+        th
+      tbody
+        - each category, key in categories
+          tr
+            td #{key+1}
+            td #{category.name}
+            td #{category.on_index}
+            td #{category.index_order}
+            td: a( href="/admin/categories/" + category.name.replace(/ /g,"_") + "/edit" ) править
+            td: a( href="/admin/categories/" + category.name.replace(/ /g,"_") + "/delete", style="color: red" ) удалить
+    
+    h1 Добавить проблему
+    != partial('category_form', { category: [] })

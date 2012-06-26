@@ -1,0 +1,22 @@
+.row
+  .span10.offset1
+  
+    - if (result == 'added')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Проблема успешно сохранена
+    - if (result == 'removed')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Проблема успешно удалена
+    - if (result == 'error')
+      p(style="color: darkred; background: #ffbfbf; padding: 10px;") При выполнении запроса возникла ошибка
+
+    h1 Список проблем
+    table.table
+      tbody
+        - each problem, key in problems
+          tr
+            td #{key+1}
+            td #{problem}
+            td: a( href="/admin/problems/" + problem.replace(/ /g,"_") + "/edit" ) править
+            td: a( href="/admin/problems/" + problem.replace(/ /g,"_") + "/delete", style="color: red" ) удалить
+    
+    h1 Добавить проблему
+    != partial('problem_form', { problem: [] })
