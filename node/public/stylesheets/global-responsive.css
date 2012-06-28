@@ -10,8 +10,6 @@
   body, p, div {
     color: #6e6e6e;
     font-family: Trebuchet MS;
-    font-size: 10pt;
-    line-height: 15pt;
   }
   
   #heading-block {
@@ -43,10 +41,6 @@
     margin: 0px 0 0px 12%;
   }
   
-  #logo {
-    background-size: 81.5%;
-  }
-  
   #heading-login-form .btn, #heading-login-form input {
     margin-top: -4px;
     padding: 3px;
@@ -62,7 +56,6 @@
   }
   
   #menu .navbar .nav > li > a {
-    font-size: 11pt;
     line-height: 32px;
   }
   
@@ -101,7 +94,6 @@
   #indexMainBlock .mainCategoryBlock  a.problemLink:link,
   #indexMainBlock .mainCategoryBlock  a.problemLink:visited {
     border: 0;
-    font-size: 10.5pt;
     text-decoration: underline;
   }
   #indexMainBlock .mainCategoryBlock  .mainCategoryStat {
@@ -115,9 +107,6 @@
     height: 13px;
     width: 13px;  
   }
-  #indexMainBlock .mainCategoryBlock  .mainCategoryStat .stat-figures span.mainStatValue {
-    font-size: 10pt;
-  }
   #indexMainBlock .mainCategoryBlock  .mainCategoryStat .problemLinkAllProblems {
     margin-top: 12px;
   }
@@ -129,9 +118,34 @@
   }
 }
 
+@media (max-width: 480px) {
+  body, p, div {
+    font-size: 10pt;
+    line-height: 15pt;
+  }
+  #logo {
+    background-size: 81.5%;
+  }
+  #menu .navbar .nav > li > a {
+    font-size: 11pt;
+  }
+  #indexMainBlock .mainCategoryBlock  a.problemLink:visited {
+    font-size: 10.5pt;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryStat .stat-figures span.mainStatValue {
+    font-size: 10pt;
+  }
+}
+
 @media (min-width: 768px) and (max-width: 979px) {
   #logo {
     background-size: 90%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  #heading, #menu, #content-block, #footer {
+    margin: 0 10px;
   }
 }
 

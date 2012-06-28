@@ -16,6 +16,10 @@ body, p, div {
   line-height: 16pt;
 }
 
+#heading, #menu, #content-block, #footer {
+  margin: 0 5%;
+}
+
 a:link, a:visited {
   color: #34b0bf;
   text-decoration: underline;
@@ -60,7 +64,6 @@ h3 { font-size: 12pt; }
 }
 
 #content-block {
-  margin: 0 5%;
   margin-bottom: 100px;
 }
 
@@ -76,12 +79,7 @@ h3 { font-size: 12pt; }
 	width: 100%;
 }
 
-#heading, #menu {
-  margin: 0 5%;
-}
-
 #footer {
-  margin: 0 5%;
   padding-top: 10px;
 }
 
