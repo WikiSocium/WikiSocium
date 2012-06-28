@@ -17,7 +17,13 @@ block content
                     {
                         var d=data[0];
                         var modal_title = "Подсказка!";
-                        var html="<h1>"+d.title+"</h1>"+"<p>"+d.short_descr+"<p>"+d.text;
+                        var html="";
+                        if (d.title!=undefined)
+                            html=html+"<h1>"+d.title+"</h1>";
+                        if (d.short_descr!=undefined)
+                            html=html+"<p>"+d.short_descr;
+                        if (d.text!=undefined)
+                            html=html+"<p>"+d.text;
                         var buttons = [];
                         showModalWindow ( modal_title, html, buttons, "descriptionPopup", 550, 320);
                     });

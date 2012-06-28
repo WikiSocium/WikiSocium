@@ -39,7 +39,7 @@
 							{
 							    "name": "Что купили?",
 							    "comment": "Например: мобильный телефон.",
-							    "description" : "А это описание виджета, в котором я не знаю, что написать, но для примера сделаю ссылочку, ну, например, на <a href=http://wikisocium.ru onclick=\"this.target='target'\">основную страницу ВикиСоциума</a> и еще какую-нибудь <iref dataId=\"myDataId\" baseId=\"texts\">внутреннюю ссылочку</iref> и даже <iref dataId=\"Ссылка1\" baseId=\"texts\">две</iref>"
+							    "description" : "А это описание виджета, в котором я не знаю, что написать, но для примера сделаю ссылочку, ну, например, на <a href=http://wikisocium.ru onclick=\"this.target='target'\">основную страницу ВикиСоциума</a> и еще какую-нибудь <iref dataId=\"Адресат претензии\" baseId=\"texts\">внутреннюю ссылочку</iref> и даже <iref dataId=\"Ссылка1\" baseId=\"texts\">две</iref>"
 							}
 						},
 						{
