@@ -1,5 +1,12 @@
 html {
-  min-width: 403px;
+	height:100%;
+}
+
+body {
+	margin: 0;
+	min-height:100%;
+  padding-bottom: 1px;
+	position:relative;
 }
 
 body, p, div {
@@ -35,52 +42,47 @@ h2 { font-size: 13pt; }
 h3 { font-size: 12pt; }
 
 #heading-block {
-  background: #e6e5e5 url(../images/bgheader.png) top repeat-x;
+  background: #e6e5e5 url(../images/bgheader.png);
   border-bottom: 1px #d2d2d2 solid;
   min-height: 91px;
-  padding: 25px 0 0 0;
+  padding-top: 25px;
 }
 
 #menu-block {
-  background: #fcfcfc url(../images/bgmenu.png) top repeat-x;
+  background-color: #fcfcfc;
+  background:
+    url(../images/bgmenu-top.png) top repeat-x,
+    url(../images/bgmenu-bottom.png) bottom repeat-x,
+    url(../images/bgmenu-middle.png);
   border-bottom: 1px solid #d2d2d2;
   min-height: 58px;
   margin: 0 0 30px 0;
 }
 
 #content-block {
-  /*margin: 0 70px;*/
+  margin: 0 5%;
+  margin-bottom: 100px;
 }
 
 #footer-block {
   background: #f9f9f8 url(../images/bgfooter.png) top repeat-x;
   border-top: 1px solid #d2d2d2;
-  min-height: 39px;
+  bottom: 0;
+	left: 0;
+	overflow:hidden;
+	position: absolute;
   margin: 100px 0 0 0;
+  min-height: 39px;
+	width: 100%;
 }
 
 #heading, #menu {
-  /*margin: 0px 0 0px 70px;*/
+  margin: 0 5%;
 }
 
 #footer {
-  /*margin: 0px 0 0px 70px;*/
+  margin: 0 5%;
   padding-top: 10px;
-}
-
-@media (max-width: 767px) {
-
-  #content-block {
-    margin: 0 30px;
-  }
-
-  #footer-block {
-    margin: 0 30px;
-  }
-  
-  #heading, #menu {
-    margin: 0px 0 0px 30px;
-  }
 }
 
 
@@ -91,7 +93,6 @@ h3 { font-size: 12pt; }
 #grid div {
   background-color: #eee;
 }
-
 
 #logo {
   background-image: url(../images/logo.png);
@@ -106,7 +107,7 @@ h3 { font-size: 12pt; }
 }
 
 #heading-stat {
-  padding-top: 14px;
+  margin-top: 14px;
 }
 
 #menu .navbar {
@@ -224,31 +225,38 @@ hr {
   color: #f7941e;
 }
 
-.mainProblemBlock {
+#indexMainBlock {
+  margin-top: 34px;
+}
+
+#indexMainBlock .mainCategoryBlock {
   padding-bottom: 15px;
   padding-top: 15px;
 }
 
-.mainProblemBlock  .mainProblemIcon, .mainProblemBlock  .mainProblemName, .mainProblemBlock  .mainProblemStat {
+#indexMainBlock .mainCategoryBlock  .mainCategoryIcon,
+#indexMainBlock .mainCategoryBlock  .mainCategoryName,
+#indexMainBlock .mainCategoryBlock  .mainCategoryStat {
   float: left;
 }
 
-.mainProblemBlock hr {
+#indexMainBlock .mainCategoryBlock hr {
   clear: both;
 }
 
-.mainProblemBlock .mainProblemIcon {
+#indexMainBlock .mainCategoryBlock .mainCategoryIcon {
   margin-left: 8%;
   width: 12%;
   max-width: 70px;
 }
 
-.mainProblemBlock  .mainProblemName {
+#indexMainBlock .mainCategoryBlock  .mainCategoryName {
   margin-left: 4%;
   width: 31%;
 }
 
-.mainProblemBlock  a.problemLink:link, .mainProblemBlock  a.problemLink:visited {
+#indexMainBlock .mainCategoryBlock  a.problemLink:link,
+#indexMainBlock .mainCategoryBlock  a.problemLink:visited {
   border-bottom: 1px solid #6e6e6e;
   color: #6e6e6e;
   font-size: 13pt;
@@ -256,7 +264,7 @@ hr {
   text-decoration: none;
 }
 
-.mainProblemBlock  a.problemLink:hover {
+#indexMainBlock .mainCategoryBlock  a.problemLink:hover {
   border-bottom: 0;
   text-decoration: none;
 }
@@ -265,7 +273,7 @@ hr {
   margin-top: 20px;
 }
 
-.mainProblemBlock  .mainProblemStat {
+#indexMainBlock .mainCategoryBlock  .mainCategoryStat {
   margin-left: 4%;
   width: 41%;
 }
@@ -279,6 +287,10 @@ hr {
   color: #6e6e6e;
   font-size: 12pt;
   margin-right: 15px;
+}
+
+#indexBottom {
+  margin-top: 50px;
 }
 
 .to-var {

@@ -8,6 +8,7 @@ html
     link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
     link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.css')
     link(rel='stylesheet', href='/stylesheets/global.css')
+    link(rel='stylesheet', href='/stylesheets/global-responsive.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
         
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
@@ -21,16 +22,13 @@ html
       script(type='text/javascript', src=script)
        
   body
-    p
-      span.to-var Салатовым 
-      цветом выделено то, что надо заменить на данные из json или БД
     #heading-block
-      #heading.container
-        .row
+      #heading.container-fluid
+        .row-fluid
           .span5
             h1#logo
               a(href="/") ВикиСоциум
-          #heading-stat.span3
+          #heading-stat.span4
             mixin getProblemWordEnding ( number )
               - var mod10 = number % 10;
               - if ( number < 10 || number > 20 )
@@ -67,15 +65,22 @@ html
                   |ей
               - else
                 |ей
-            |#{headerStats.problems_number} проблем
+            b #{headerStats.problems_number}
+            |&nbsp;проблем
             mixin getProblemWordEnding ( headerStats.problems_number )
-            |, #{headerStats.solutions_number} решени
+            |, 
+            b #{headerStats.solutions_number}
+            |&nbsp;решени
             mixin getSolutionWordEnding ( headerStats.solutions_number )
-            |,<br />#{headerStats.cases_number} дел
+            |,<br />
+            b #{headerStats.cases_number}
+            |&nbsp;дел
             mixin getCaseWordEnding ( headerStats.cases_number )
-            |, #{headerStats.users_number} пользовател
+            |, 
+            b #{headerStats.users_number}
+            |&nbsp;пользовател
             mixin getUserWordEnding ( headerStats.users_number )
-          #heading-login-form.span3.offset1
+          #heading-login-form.span3
             div.formline
               - if (user.guest)
                 form.form-inline(method='post', action='/sessions')
@@ -88,8 +93,8 @@ html
                 a(href='/Logout').btn(type='submit') Выйти
                 
     #menu-block
-      #menu.container
-        .row
+      #menu.container-fluid
+        .row-fluid
           .span12.navbar
             ul.nav
               - each item in menu
@@ -98,7 +103,7 @@ html
                 - else
                   li: a(href="/#{item.id}") #{item.name}
     
-    #content-block.container      
+    #content-block.container-fluid      
       != body    
     
     //
@@ -106,15 +111,16 @@ html
       script(type='text/javascript', src='/javascripts/flash.js')
     
     #footer-block
-      #footer.container
-        .row
+      #footer.container-fluid
+        .row-fluid
           .span3 © ВикиСоциум 2011&ndash;2012
-          .span2
+          .span5
             a(href="mailto:feedback@wikisocium.ru") feedback@wikisocium.ru
-          .span2.offset3
+          .span3
             a(href="#about") О проекте
             &nbsp;
             a(href="#help") Помочь
             
-            script(type='text/javascript', src='/javascripts/reformal.js')
+    //
+      script(type='text/javascript', src='/javascripts/reformal.js')
            

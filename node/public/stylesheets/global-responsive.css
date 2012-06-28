@@ -1,0 +1,149 @@
+@media (max-width: 767px) {
+  html {
+    min-width: 320px;
+  }
+  body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  body, p, div {
+    color: #6e6e6e;
+    font-family: Trebuchet MS;
+    font-size: 10pt;
+    line-height: 15pt;
+  }
+  
+  #heading-block {
+    padding-top: 12px;
+  }
+  #menu-block {
+    margin-bottom: 12px;
+  }
+  
+  #heading-stat {
+    margin: 15px auto;
+  }
+  #heading-login-form {
+    margin: 15px auto;
+  }
+  
+  #content-block {
+    margin-left: 12%;
+    margin-right: 12%;
+  }
+
+  #footer-block {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 20px;
+  }
+  
+  #heading, #menu , #footer{
+    margin: 0px 0 0px 12%;
+  }
+  
+  #logo {
+    background-size: 81.5%;
+  }
+  
+  #heading-login-form .btn, #heading-login-form input {
+    margin-top: -4px;
+    padding: 3px;
+  }
+  
+  #menu .navbar {
+    padding-bottom: 3px;
+    padding-top: 3px;
+  }
+  
+  #menu .navbar .nav > li {
+    float: none;
+  }
+  
+  #menu .navbar .nav > li > a {
+    font-size: 11pt;
+    line-height: 32px;
+  }
+  
+  #menu .navbar .nav .active > a,
+  #menu .navbar .nav .active > a:hover {
+    background: transparent;
+    border: 0;
+  }
+    
+  #content-block [class*="span"] {
+    margin: 12px auto;
+  }
+  .gray-rounded-corners {
+    padding: 19px;
+  }
+  
+  #indexMainBlock {
+    margin-top: 0;
+  }
+  #indexMainBlock .mainCategoryBlock {
+    padding: 0;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryIcon  {    
+    margin-left: 19px;
+    width: auto;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryIcon  img {
+    height: 40px;
+    width: 40px;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryName  {
+    margin-left: 19px;
+    margin-top: 10px;
+    width: auto;
+  }
+  #indexMainBlock .mainCategoryBlock  a.problemLink:link,
+  #indexMainBlock .mainCategoryBlock  a.problemLink:visited {
+    border: 0;
+    font-size: 10.5pt;
+    text-decoration: underline;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryStat {
+    clear: both;
+    float: none;
+    margin-left: 19px;
+    padding-top: 10px;
+    width: auto;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryStat .stat-figures  img {
+    height: 13px;
+    width: 13px;  
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryStat .stat-figures span.mainStatValue {
+    font-size: 10pt;
+  }
+  #indexMainBlock .mainCategoryBlock  .mainCategoryStat .problemLinkAllProblems {
+    margin-top: 12px;
+  }
+  #indexMainBlock hr {
+    margin: 12px 0;
+  }
+  #indexBottom {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+  #logo {
+    background-size: 90%;
+  }
+}
+
+@media (min-width: 1300px) {
+  #heading, #menu, #footer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+  }
+  #content-block {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+  }
+}
