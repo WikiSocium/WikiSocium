@@ -414,6 +414,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
                 '/inputex/src/loader.js',
                 '/javascripts/jquery.json-2.3.min.js',
+                '/javascripts/jquery.valid8/jquery.valid8.source.js',
                 '/javascripts/CaseDataController.js',
                 '/javascripts/StepsController.js',
                 '/javascripts/customWidgets/timer.js',

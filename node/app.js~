@@ -233,24 +233,22 @@ function increaseSolutionStatistics ( solution_name, field_name ) {
 
 //
 // Обработка корня
-<<<<<<< HEAD
-app.get('/', loadUser, function(req, res) {
-		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var categoryList = JSON.parse(data); 
-							res.render('index', {
-									'title':"Usage",
-									'user':req.currentUser, 
-									'categoryList' : categoryList.categoryList,
-									scripts:[],
-									styles:[]});
-									}
-						else
-							Render404(req,res, err);
-					});
-
-        });
+app.get('/', loadUser, generateMenu, function(req, res) {
+  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+    if(!err) {
+      var categoryList = JSON.parse(data);
+      res.render('index', {
+        'title':"ВикиСоциум development",
+        'user':req.currentUser,
+        'menu':res.menu,
+        'categoryList' : categoryList.categoryList,
+        'scripts':[],
+        'styles':[]
+      });
+    }
+    else Render404(req,res, err);
+  });
+});
 //
 // Это обработка редиректа с вконтакта (тест)
 app.get('/auth/vkontakte', loadUser, function(req, res) {
@@ -276,23 +274,7 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
    		}	
   	})
 	
-		fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-						if(!err)
-						{
-							var categoryList = JSON.parse(data); 
-							res.render('index', {
-									'title':"Usage",
-									'user':req.currentUser, 
-									'categoryList' : categoryList.categoryList,
-									scripts:[],
-									styles:[]});
-									}
-						else
-							Render404(req,res, err);
-					});
-=======
-app.get('/', loadUser, generateMenu, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
+fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
     if(!err) {
       var categoryList = JSON.parse(data);
       res.render('index', {
@@ -306,8 +288,7 @@ app.get('/', loadUser, generateMenu, function(req, res) {
     }
     else Render404(req,res, err);
   });
-});
->>>>>>> 9f10f7755574ce2e9175d7006aaa3e6bd42c0a1d
+
 
         });
 //
@@ -433,6 +414,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
                 '/inputex/src/loader.js',
                 '/javascripts/jquery.json-2.3.min.js',
+                '/javascripts/jquery.valid8/jquery.valid8.js',
                 '/javascripts/CaseDataController.js',
                 '/javascripts/StepsController.js',
                 '/javascripts/customWidgets/timer.js',

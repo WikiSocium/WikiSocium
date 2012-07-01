@@ -1111,19 +1111,28 @@ input[type="checkbox"][readonly] {
   border-color: #c09853;
 }
 
+.validationMessage {
+  padding: 10px;
+  color: #b94a48;
+}
+
+.baseWidget.error > label,
 .control-group.error > label,
 .control-group.error .help-block,
 .control-group.error .help-inline {
   color: #b94a48;
 }
 
+.baseWidget.error input,
 .control-group.error input,
 .control-group.error select,
 .control-group.error textarea {
   color: #b94a48;
   border-color: #b94a48;
+  background-color: #FFE0DE;
 }
 
+.baseWidget.error input:focus,
 .control-group.error input:focus,
 .control-group.error select:focus,
 .control-group.error textarea:focus {
