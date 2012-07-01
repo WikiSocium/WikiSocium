@@ -89,60 +89,99 @@ function defineModels(mongoose, fn) {
     .get(function() {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series });
     });
+
   
-  
-/**
-  * Model: Solution Statistics
+  /**
+  * Model: Category
   */
-  var SolutionStatistics = new Schema({
-    'solution_name': { type: String, index: true },
-    'started': Number,
-	  'finished_successful': Number,
-	  'finished_failed': Number,
-	  'finished_good_solution': Number,
-	  'finished_bad_solution': Number,
-	  'different_users': Number
+  var Category = new Schema({
+    'name': { type: String, unique: true },
+    'icon': String,
+    'on_index': Boolean,
+    'index_order': Number
   });
   
-  SolutionStatistics.pre('save', function(next) {  
+  /**
+  * Model: Problem
+  */
+  var Problem = new Schema({
+    'name': { type: String, unique: true },
+    'description': String,
+    'categories': [ String ], 
+    'solutions': [ String ]
+  });
+  
+    
+  /**
+  * Model: Solution
+  */
+  var Solution = new Schema({
+    'name': { type: String, unique: true },
+    'filename': String,
+    'statistics': {
+      'started': Number,
+      'finished_successful': Number,
+      'finished_failed': Number,
+      'finished_good_solution': Number,
+      'finished_bad_solution': Number
+    }
+  });
+  
+  Solution.pre('save', function(next) {
     try {
-      stats = fs.lstatSync('data/solutions/' + this.solution_name + '.json');
+      stats = fs.lstatSync('data/solutions/' + this.filename);
     }
     catch (e) {
-      console.log("Failed save solution statistics for " + this.solution_name + ": " + e);
+      console.log("Failed save solution statistics for " + this.filename + ": " + e);
       next(new Error('Solution doesn\'t exist'));
+    }
+    if ( this.statistics == undefined ||
+      this.statistics.started == undefined ||
+      this.statistics.finished_successful == undefined ||
+      this.statistics.finished_failed == undefined ||
+      this.statistics.finished_good_solution == undefined ||
+      this.statistics.finished_bad_solution == undefined
+    ) {
+      this.statistics = {
+        'started': 0,
+        'finished_successful': 0,
+        'finished_failed': 0,
+        'finished_good_solution': 0,
+        'finished_bad_solution': 0
+      };
     }
     next();
   });
-  
-  
+
 /**
   * Model: Organizations
   */
   
-  var organization = new Schema({
-    'title': String,
-    'short_descr': String,
-    'description': {
-      'text': String,
-      'web': String,
-      'phone': String,
-      'postal_address': String,
-      'electronic_address': {
-        'email': String,
-        'webform': String
-      }
-    }
-  });
-  
-  var region_with_organizations = new Schema({
-    'region_name': { type: String, index: true },
-    'organizations_list': [ organization ]
-  });
-  
   var Organizations = new Schema({
     'organization_name': { type: String, index: true },
-    'regions_list': [ region_with_organizations ]
+    'regions_list': [ {
+      'region_name': String,
+      'organizations_list': [ {
+        'title': String,
+        'short_description': String,
+        'description': {
+          'text': String,
+          'web': String,
+          'phone': [ {
+            'phone_who': String,
+            'phone': String
+          } ],
+          'postal_address': String,
+          'electronic_address': {
+            'email': [ {
+              'email_who': String,
+              'email': String
+            } ] ,
+            'webform': String
+          }
+        }
+      } ]
+    } ]
   });
   
 
@@ -153,15 +192,16 @@ function defineModels(mongoose, fn) {
   var Texts = new Schema({
     'text_name': { type: String, index: true },
     'title': String,
-    'short_descr': String,
+    'short_description': String,
     'text': String
   });
   
 
-//  mongoose.model('Document', Document);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
-  mongoose.model('SolutionStatistics', SolutionStatistics);
+  mongoose.model('Category', Category);
+  mongoose.model('Problem', Problem);
+  mongoose.model('Solution', Solution);
   mongoose.model('Organizations', Organizations);  
   mongoose.model('Texts', Texts);
 

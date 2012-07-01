@@ -6,22 +6,25 @@ block content
         div(class="CommentText")
             !{InfoText.comment} 
     - if (InfoText.description!=undefined)
-        div(class="DescriptionText", onclick="DescriptionClicked()")
-            - if (InfoText.description.name==undefined)
-                Подробнее...
-            - else
-                !{InfoText.description.name}
-
-script(type='text/javascript')         
-    function DescriptionClicked()
-    {
-        RegionalizedData.GetDataFromDBWithRegion('myRegion', 'texts', "#{InfoText.description.id}", function(data)
-        {
-            var modal_title = "Подсказка!";
-            var html="<h1>"+data.title+"</h1>"+"<p>"+data.short_descr+"<p>"+data.text;
-            var buttons = [];
-            buttons.push(new modalButton ( "Закрыть", function() { $( this ).dialog( "close" ); } ) );
-            showModalWindow ( modal_title, html, buttons, 550, 320, "descriptionPopup");
-        });
-    } 
-               
+        div(class="DescriptionText")
+            !{InfoText.description}   
+            script(type="text/javascript")
+                $("iref").click(function()
+                {
+                    var dataIds=[];
+                    dataIds.push($(this).attr("dataId"));
+                    RegionalizedData.GetDataFromDBWithRegion('myRegion', $(this).attr("baseId"), dataIds, function(data)
+                    {
+                        var d=data[0];
+                        var modal_title = "Подсказка!";
+                        var html="";
+                        if (d.title!=undefined)
+                            html=html+"<h1>"+d.title+"</h1>";
+                        if (d.short_descr!=undefined)
+                            html=html+"<p>"+d.short_descr;
+                        if (d.text!=undefined)
+                            html=html+"<p>"+d.text;
+                        var buttons = [];
+                        showModalWindow ( modal_title, html, buttons, "descriptionPopup", 550, 320);
+                    });
+                });

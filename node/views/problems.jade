@@ -1,3 +1,6 @@
+- if (typeof(CategoryName) != 'undefined')
+  h1 Категория #{CategoryName}
+
 #problems
   - each aProblem in problemsList
-    !=partial('aProblem', {aProblem:aProblem.Name})
+    !=partial('aProblem', {aProblem:aProblem.name})

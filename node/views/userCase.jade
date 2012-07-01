@@ -4,8 +4,15 @@ script(type='text/javascript')
   else currentStepId = "#{solutionData.initialStep}";
   stepsHistory = !{JSON.stringify(stepsHistory)};
   
-h1
-  #{solutionData.name}
+//h1 
+    #{solutionData.name}: #{caseName} > #{currentStep}
+    - if (solutionData.sections!=undefined)
+      - each section, i in solutionData.sections
+        - each id, j in section.steps
+          - if (id=="#{currentStep}")
+            #{section.name}
+            #{j+1}/#{section.steps.length}
+
 
 div(class="caseDescription")
   p
@@ -16,14 +23,16 @@ div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завер
 div(class = "steps", id = "stepsWrapper")
   - each step, i in solutionData.steps
     - if (caseData == null)
-      !=partial('aStep', {step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
+      !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:null, step_index:i, sectionData:solutionData.sections})
     - else
-      !=partial('aStep', {step:step, stepData:caseData[step.id], step_index:i, sectionData:solutionData.sections})
+      !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], step_index:i, sectionData:solutionData.sections})
 div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
 div
   div(class="btn", id="prev_btn", onClick="PrevStep()") Предыдущий шаг
   div(class="btn", id="next_btn", onClick="NextStep()") Следующий шаг
   a(href="/mycases") Перейти к списку кейсов
-div(id="endCasePopup")
+
+#endCasePopup
   != partial('endCasePopup', {caseName: caseName})
-div(id="descriptionPopup")
+  
+#descriptionPopup

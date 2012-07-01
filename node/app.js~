@@ -2,13 +2,16 @@
 	Functions
  */
 
-function Render404(req,res, err)
-{
-	res.render('404', {
-    'title':'404',
+function RenderError(req,res,err) {
+	console.log(err);
+  res.render('Error', {
+    'title':'Ошибка!',
     'user': req.currentUser,
+    'menu':res.menu,
+    'headerStats': res.headerStats,
 		'err': err,
-		'scripts':[]
+		'scripts': [],
+    'styles': []
 	});
 }
 
@@ -27,7 +30,9 @@ var models = require('./models')
     ,db
     ,User
     ,LoginToken
-    ,SolutionStatistics
+    ,Category
+    ,Problem
+    ,Solution
     ,Organizations
     ,Texts
 //    ,Settings = { development: {}, test: {}, production: {} }
@@ -57,7 +62,8 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-  app.set('db-uri', 'mongodb://localhost/wikisocium-development');
+  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
+  //app.set('db-uri', 'mongodb://test:test@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -67,12 +73,13 @@ app.configure('production', function(){
 
 var db = mongoose.connect(app.set('db-uri'));
 
-
 models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
-  app.SolutionStatistics = SolutionStatistics = mongoose.model('SolutionStatistics');
+  app.Category = Category = mongoose.model('Category');
+  app.Problem = Problem = mongoose.model('Problem');
+  app.Solution = Solution = mongoose.model('Solution');
   app.Organizations = Organizations = mongoose.model('Organizations');  
   app.Texts = Texts = mongoose.model('Texts');
   db = mongoose.connect(app.set('db-uri'));
@@ -88,25 +95,6 @@ app.dynamicHelpers({
    
 });
 
-// Routes
-
-//app.get('/templates/:caseName/', function(req, res){
-//		var caseName = req.param('caseName', null);
-//		res.render('caseOverview', {
-//				   title: "overview of selected case",
-//				   selectedCase: allTemplates[caseName],
-//				   scripts: ['/javascripts/Curry-1.0.1.js',
-//							 '/javascripts/raphael-min.js',
-//							 '/javascripts/dracula_algorithms.js',
-//							 '/javascripts/dracula_graffle.js',
-//							 '/javascripts/dracula_graph.js',
-//							 '/javascripts/seedrandom.js']
-//				   });
-//});
-
-// [FYI]
-// req <=> request
-// res <=> response
 
 function authenticateFromLoginToken(req, res, next) {
   var cookie = JSON.parse(req.cookies.logintoken);
@@ -195,6 +183,25 @@ function generateMenu(req, res, next) {
   next();
 }
 
+function getHeaderStats(req, res, next) {
+  res.headerStats = {
+    problems_number: 0,
+    solutions_number: 0,
+    cases_number: 0,
+    users_number: 0
+  }
+  Problem.count({}, function(err, problems_number) {
+    res.headerStats.problems_number = problems_number;
+    Solution.count({}, function(err, solutions_number) {
+      res.headerStats.solutions_number = solutions_number;
+      User.count({}, function(err, users_number) {
+        res.headerStats.users_number = users_number;
+        next();
+      });
+    });
+  });
+}
+
 function userCreateEnv( user_id ) {
   fs.mkdir('data/UserData/'+user_id);
   fs.mkdir('data/UserData/'+user_id+'/cases');
@@ -212,43 +219,189 @@ function userCreateEnv( user_id ) {
   console.log ('Creating user folder and user.json for ', user_id);
 }
 
-function increaseSolutionStatistics ( solution_name, field_name ) {
-  SolutionStatistics.findOne ({ solution_name: solution_name }, function(e, solution) {
-    if (!solution) {
-      var solution = new SolutionStatistics({
-        solution_name:solution_name,
-        started: 0,
-        finished_successful: 0,
-	      finished_failed: 0,
-	      finished_good_solution: 0,
-        finished_bad_solution: 0
-      });
+// Solutions
+
+function updateSolutionsCollection () {
+  fs.readdir("data/solutions", function (err, files) {
+    if (err) throw err;
+    
+    var solutions = new Array();
+    for (var key in files) {
+      solutions[key] = new Object();
+      solutions[key].filename = files[key];
     }
-    solution[field_name]++;
+
+    async.forEach(solutions, function(solution, callback) {
+      fs.readFile('data/solutions/'+solution.filename, "utf-8", function(err, data) {
+        if(!err) {
+          var solutionData = JSON.parse(data);
+          solution.name = solutionData.name;
+          Solution.findOne ({ name: solution.name }, function(err, document) {
+            if (document) {
+              if ( document.filename != solution.filename) document.filename = solution.filename;
+            }
+            else {
+              document = new Solution({
+                'name': solution.name,
+                'filename': solution.filename
+              });
+            }
+            document.save(function(err) {
+              if (err != null) console.log(err);
+              callback(err);
+            });
+            callback(err);
+          });          
+        }
+        else callback(err);
+      }); 
+    },
+    function(err) {
+      
+      Solution.find({}, function(err,documents) {
+        async.forEach(documents, function(document,callback) {
+          fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+            if(!err) var solutionData = JSON.parse(data);
+            if (err || solutionData.name != document.name) {
+              console.log(solutionData.name+' '+document.name+' '+err);
+              document.remove();
+            }
+            callback();
+          });
+        },
+        function(err) {
+          
+        });
+      });
+    
+      if (!err) console.log('Synced solutions collection and json files successfully');
+      else console.log('Error in syncing solutions collection and json files '+err);
+    });
+  });
+}
+
+function increaseSolutionStatistics ( solution_name, field_name ) {
+  Solution.findOne ({ name: solution_name }, function(err, solution) {
+    if (!solution) {
+      console.log('Didn\'t find a solution to increase stats:'+solution_name);
+      return;
+    }
+    solution.statistics[field_name]++;
     solution.save(function(err) {
       if (err != null) console.log(err);
     });
-  }); 
+  });
 }
+
+function getProblemStatistics ( problemName, callback ) {
+  var returnStat = {
+    solved: 0,
+    inprocess: 0,
+    notsolved: 0
+  }
+  Problem.findOne({ name: problemName }, ['solutions'], function (err, problem){
+    if (problem == null) callback("Problem not found", returnStat);
+    else {
+      async.forEach(problem.solutions, function(solution, callback) {
+        Solution.findOne ({ name: solution }, function(err, document) {
+          if (document) {
+            returnStat.solved += document.statistics.finished_successful;
+            returnStat.inprocess += ( document.statistics.started - document.statistics.finished_successful - document.statistics.finished_failed );
+            returnStat.notsolved +=  document.statistics.finished_failed;
+          }
+          callback(err);
+        });
+      },
+      function (err) {
+        callback(err, returnStat);
+      });
+    }
+  });
+}
+
+// / Solutions
+
+
+function getTopProblem ( problemsList, callback ) {
+  async.forEach(problemsList, function(aProblem, callback) {
+    var problemName = aProblem.name;
+    getProblemStatistics ( problemName, function(err, stat) {
+      aProblem.stats = stat;
+      aProblem.score = stat.solved + stat.inprocess - stat.notsolved;
+      callback();
+    });
+  },
+  function(err) {
+    problemsList.sort(function compare(a,b) {
+      if (a.score > b.score)
+        return -1;
+      if (a.score < b.score)
+        return 1;
+      return 0;
+    });
+    callback(err, problemsList[0]);
+  });
+}
+
+function getCurrentDateTime() {
+  date = new Date();  
+  var d = date.getDate(); if (d < 10) d = '0'+d;
+  var m = date.getMonth()+1; if (m < 10) m = '0'+m;
+  var y = date.getFullYear();
+  var h = date.getHours(); if (h < 10) h = '0'+h;
+  var min = date.getMinutes(); if (min < 10) min = '0'+min;
+  var s = date.getSeconds(); if (s < 10) s = '0'+s;
+  return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
+}
+
+
+
+
+// Routes
+
 
 //
 // Обработка корня
-app.get('/', loadUser, generateMenu, function(req, res) {
-  fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
-        'scripts':[],
-        'styles':[]
+app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  Category.find({on_index: true}, ['name', 'icon'],
+    { sort: { index_order: 1 } }, function(err, categories)
+    {    
+    async.forEach( categories, function(aCategory, callback) {       
+      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        getTopProblem ( problems, function(err,topProblem) {
+          aCategory.problemsNumber = problems.length;
+          aCategory.topProblem = topProblem;
+          callback();
+        });
       });
-    }
-    else Render404(req,res, err);
+    },
+    function(err) {
+      if (!err)
+        res.render('index', {
+          'title':"ВикиСоциум development",
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'categoryList' : categories,
+          'scripts':[],
+          'styles':[]
+        });
+      else console.log(err);
+    });
   });
 });
+
+app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  res.render('about', {
+    'title':"О проекте",
+    'user':req.currentUser,
+    'menu':res.menu,
+    'headerStats': res.headerStats,
+    'scripts':[],
+    'styles':[]
+  });    
+});
+
 //
 // Это обработка редиректа с вконтакта (тест)
 app.get('/auth/vkontakte', loadUser, function(req, res) {
@@ -274,133 +427,88 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
    		}	
   	})
 	
-fs.readFile('data/categories/categories.json', "utf-8", function(err, data){
-    if(!err) {
-      var categoryList = JSON.parse(data);
-      res.render('index', {
-        'title':"ВикиСоциум development",
-        'user':req.currentUser,
-        'menu':res.menu,
-        'categoryList' : categoryList.categoryList,
-        'scripts':[],
-        'styles':[]
-      });
-    }
-    else Render404(req,res, err);
-  });
-
-
-        });
+  res.redirect('/');
+});
 //
 // Обработка запроса на показ списка проблем
-app.get('/Problems', loadUser, generateMenu, function(req, res){
-  fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-	if(!err) {
-    var problemsList = JSON.parse(data);              
+app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
+  Problem.find(['name'], {}, function(err, problems) {            
 		res.render('problems', {
-		  'title' : "Problems list",
+		  'title' : "Проблемы и решения",
       'user':req.currentUser,
       'menu':res.menu,
-			'problemsList' : problemsList.problemsList,
+      'headerStats': res.headerStats,
+			'problemsList' : problems,
 			'scripts' : [],
       'styles': []
 	  });
-	}
-	else
-		Render404(req,res, err);
 	});
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
-app.get('/Problems/:ProblemName', loadUser, generateMenu, function(req, res){
-	var problemName = req.param('ProblemName', null);
-		
-	fs.readFile('data/problems/'+ problemName +'.json', "utf-8", function(err, data){
-    if(!err) {
-			var problem = JSON.parse(data);
-			res.render('problem', {
-        'title' : problemName,
-        'user':req.currentUser,
-        'menu':res.menu,
-				'problem' : problem,
-				'scripts' : ['/javascripts/modal_window.js'],
-        'styles'  : ['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css']
-			 });
-		}
-		else Render404(req,res, err);
-	});
+app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
+	var problemName = req.param('ProblemName', null).replace(/_/g," ");
+  
+	Problem.findOne({ name: problemName }, function(err, problem) {            
+    getProblemStatistics ( problemName, function(err, stat) {
+      if (err) console.log(err);
+      else {
+        problem.stats = stat;
+        res.render('problem', {
+          'title' : problem.name,
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'problem' : problem,
+          'scripts' : ['/javascripts/modal_window.js'],
+          'styles'  : []
+        });
+      }
+    });        
+  });
 });
 
 //
 
 // Обработка запроса на показ списка проблем из категории
-app.get('/Categories/:CategoryName', loadUser, generateMenu, function(req, res){
-	var categoryName = req.param('CategoryName', null);
+app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
+	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
 	
-	fs.readFile('data/problems/problems.json', "utf-8", function(err, data){
-		if(!err) {
-			var problemsList = JSON.parse(data);
-
-			//Здесь я сделаю массив с нужным из problemsList
-							
-			var categoryList = [];
-			var i;
-			for(i = 0; i < problemsList.problemsList.length; i++) {
-				var j;
-			  for (j = 0; j < problemsList.problemsList[i].Categories.length; j++) {
-          if (categoryName == problemsList.problemsList[i].Categories[j]) {
-					  categoryList.push(problemsList.problemsList[i])
-						break;
-					}
-				}
-			}
-			
-			res.render('problems', {
-			  'title' : categoryName,
-			  'user':req.currentUser,
-        'menu':res.menu,
-			  'problemsList' : categoryList,
-			  'scripts' : [],
-        'styles':[]
-			});
-		}
-		else Render404(req,res, err);
-	});
-});
-
-app.get ('/addcase/:SolutionName', loadUser, generateMenu,function(req,res) {
-  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else { 
-    var SolutionNew = req.param('SolutionName', null);
- 	  res.render('AddCaseForUser', {
-      locals: {Solution: SolutionNew},
-      'user': req.currentUser,
+  Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
+  
+    res.render('problems', {
+      'title' : categoryName,
+      'user':req.currentUser,
       'menu':res.menu,
-      title: '',
-      scripts: [],
-      styles:[]
-		});
-  }
+      'headerStats': res.headerStats,
+      'problemsList' : problems,
+      'CategoryName': categoryName,
+      'scripts' : [],
+      'styles':[]
+    });
+  
+  });
+  
 });
-
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
-app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
+app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else 
   {    
     var userName = req.currentUser.email;
-    var caseId = req.param('CaseId', null);
+    var caseId = req.param('CaseId', null).replace(/_/g," ");
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = JSON.parse(data);
-        solutionId = false;
+        var solutionName = false;
         for (var key in userJSON.cases) {
             if (userJSON.cases[key].caseId == caseId) {
-              solutionId = userJSON.cases[key].solutionId;
+              solutionName = userJSON.cases[key].solutionId;
               break;
             }
         }
+<<<<<<< HEAD
         if (solutionId)
           fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
             if(!err) 
@@ -414,7 +522,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
                 '/inputex/src/loader.js',
                 '/javascripts/jquery.json-2.3.min.js',
-                '/javascripts/jquery.valid8/jquery.valid8.js',
+                '/javascripts/jquery.valid8/jquery.valid8.source.js',
                 '/javascripts/CaseDataController.js',
                 '/javascripts/StepsController.js',
                 '/javascripts/customWidgets/timer.js',
@@ -449,27 +557,87 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, function(req, res) {
                 }
 
                 res.render('userCase', 
+=======
+        if (solutionName)
+          Solution.findOne ({ name: solutionName }, function(err, document) {
+            if (document) {    
+              fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+                if(!err) 
+>>>>>>> master
                 {
-                  'title': userName + " : " + caseId,
-                  'user':req.currentUser,
-                  'menu':res.menu, 
-                  'solutionData' : solutionData,
-                  'caseData' : caseContents.data,
-                  'caseName' : caseContents.name,
-                  'currentStep' : caseContents.currentStep,
-                  'stepsHistory' : caseContents.steps,
-                  'scripts' : scriptsToInject,
-                  'styles' : stylesToInject
-                });
+                  var solutionData = JSON.parse(data);
+                  var stylesToInject = [];
+                  var scriptsToInject = [
+                    'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
+                    'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                    'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
+                    'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                    '/inputex/src/loader.js',
+                    '/javascripts/jquery.json-2.3.min.js',
+                    '/javascripts/CaseDataController.js',
+                    '/javascripts/StepsController.js',
+                    '/javascripts/customWidgets/timer.js',
+                    '/javascripts/runtime.min.js',
+                    '/javascripts/jquery.watch-2.0.min.js',
+                    '/javascripts/jquery.prettyPhoto.js',
+                    '/javascripts/modal_window.js',
+                    '/javascripts/RegionalizedData.js'
+                  ];
+                  
+                  // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
+                  var requiredDocuments = solutionData.data.documents;
+                  if(requiredDocuments)
+                  {
+                    for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
+                    if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
+                    scriptsToInject.push("/javascripts/nicEdit.js");
+                    scriptsToInject.push("/markitup/sets/default/set.js");            
+                    stylesToInject.push("/markitup/sets/default/style.css");
+                    stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
+                    stylesToInject.push("/markitup/skins/simple/style.css");            
+                    stylesToInject.push("/stylesheets/prettyPhoto.css");
+                  }
+                  fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+                    if (err) {
+                      var caseContents = {};
+                      err = false;
+                    }
+                    else {
+                      var caseContents = JSON.parse(caseContentsJson);
+                      if (caseContents == null) var caseContents = {};
+                    }
+
+                    res.render('userCase', 
+                    {
+                      'title': userName + " : " + caseId,
+                      'user':req.currentUser,
+                      'menu':res.menu,
+                      'headerStats': res.headerStats,
+                      'solutionData' : solutionData,
+                      'caseData' : caseContents.data,
+                      'caseName' : caseContents.name,
+                      'currentStep' : caseContents.currentStep,
+                      'stepsHistory' : caseContents.steps,
+                      'scripts' : scriptsToInject,
+                      'styles' : stylesToInject
+                    });
+                  });
+                }
+                else RenderError(req,res, err);
               });
             }
-            else Render404(req,res, err);
           });
-        else Render404(req,res,'У вас нет дела с этим id')
+        else RenderError(req,res,'У вас нет дела с таким именем')
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
+});
+
+//Запрос списка регионов
+app.post('/GetRegions', function(req, res) {
+    var regions_list = fs.readFileSync('data/regions.json', "utf-8");
+    res.send(JSON.parse(regions_list));
 });
 
 //
@@ -500,9 +668,9 @@ app.post('/GetRegionalizedData', function(req, res) {
 
 //        
 //Сохранение данных кейса        
-app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
-  var userName = req.param('UserName', null);
-  var caseId = req.param('CaseId', null);
+app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
+  var userName = req.currentUser.email;
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
 
   fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
     if (err) {
@@ -531,7 +699,18 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
     
     //console.log(req.body.jsonData);
     fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-          if (err) console.log(err);
+      if (err) console.log(err);
+      else fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, userJson) {
+        if (err) {
+          console.log(err);
+        }
+        else {
+          var userFileContents = JSON.parse( userJson );
+          for (var key in userFileContents.cases)
+            if ( userFileContents.cases[key].caseId == caseId ) userFileContents.cases[key].updateDate = getCurrentDateTime();
+          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userFileContents, null, "\t"), function (err) {});
+        }
+      });
     });
     res.send(req.body);
   });
@@ -539,9 +718,9 @@ app.post('/UserData/:UserName/:CaseId/submitForm', function(req, res) {
 
 //
 //Завершение кейса
-app.post('/UserData/:UserName/:CaseId/endCase', loadUser, generateMenu, function(req, res) {
-  var userName = req.param('UserName', null);
-  var caseId = req.param('CaseId', null);
+app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  var userName = req.currentUser.email;
+  var caseId = req.param('CaseId', null).replace(/_/g," ");
     
   // [TODO]
   // 0. Проверить, что пользователь аутентифицирован
@@ -583,18 +762,18 @@ app.post('/UserData/:UserName/:CaseId/endCase', loadUser, generateMenu, function
 		    else console.log("Error at case finish: " + err);
 		  });
       // 3. Отправить на главную страницу
-      res.redirect('/UserData/'+userName);
+      res.redirect('/MyCases');
     }
   }
 });
 
-app.get('/UserData/:UserName/:CaseId/endCase', function(req, res) {
-  res.redirect('/UserData/'+req.param('UserName')+'/'+req.param('CaseId'));
+app.get('/MyCases/:CaseId/endCase', function(req, res) {
+  res.redirect('MyCases/'+req.param('CaseId'));
 });
 
 //
 // Обработка запроса на показ информации о пользователе и списка всех его кейсов
-app.get('/MyCases', loadUser, generateMenu, function(req, res){
+app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
@@ -603,12 +782,13 @@ app.get('/MyCases', loadUser, generateMenu, function(req, res){
           'title':  'Мои дела',
           'user':   req.currentUser,
           'menu':   res.menu, 
+          'headerStats': res.headerStats,
           'userData': JSON.parse(data),
           'scripts': [],
           'styles': []
         });
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
   }
 });
@@ -619,59 +799,76 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 // Users
-app.get('/users/new', loadUser, generateMenu, function(req, res) {
+app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
   res.render('users/new.jade', {
     locals: { return_to: parseReturnTo(req.query.return_to) },
     'user':req.currentUser,
     'menu':res.menu, 
+    'headerStats': res.headerStats,
     title: '',
     scripts: [],
     styles:[]
   });
 });
 
-function createCaseFile ( userName, caseId, solutionId ) {
+function createCaseFile ( userName, caseId, solutionName ) {
 
-  fs.readFile('data/solutions/'+solutionId+'.json', "utf-8", function(err, data) {
-    if(!err) {
-      var solutionData = JSON.parse(data);
-      
-      var caseContents = {};
-      caseContents.name = caseId;
-      caseContents.steps = [];
-      
-      for (var key in solutionData.steps) {
-        caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
-      }
-      
-      caseContents.currentStep = solutionData.initialStep;
-      
-      fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
-      fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-        if (err) console.log(err);
-      });
+  Solution.findOne ({ name: solutionName }, function(err, document) {
+    if (document) {
+      fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
+        if(!err) {
+          var solutionData = JSON.parse(data);
+          
+          var caseContents = {};
+          caseContents.name = caseId;
+          caseContents.steps = [];
+          
+          for (var key in solutionData.steps) {
+            caseContents.steps.push( {id:solutionData.steps[key].id, prevStep:""} );
+          }
+          
+          caseContents.currentStep = solutionData.initialStep;
+          
+          fs.open('data/UserData/' + userName + '/cases/' + caseId + '.json', 'w');      
+          fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
+            if (err) console.log(err);
+          });
+        }
+        else {
+          console.log('Solution json file for '+solutionName+' not found');
+        }
+      });    
+    }
+    else {
+      console.log('Solution '+solutionName+' not found');
     }
   });
 }
 
-app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, res) {
-  
-  var solutionId = req.param('SolutionName', null);
+app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   //solution -> case
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     //Добавляем кейс в спиок кейсов юзера
-    
     var userName = req.currentUser.email;
-    var caseId = req.body.case_id;
+    var caseName = req.body.case_id.replace(/_/g," ");
+    var ProblemName = req.body.ProblemName;
+    var solutionName = req.body.SolutionName;
+    
+    if (caseName == "") {
+      RenderError(req,res,"Невозможно добавить дело с пустым названием");
+      return;
+    }    
     
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
         var userJSON = JSON.parse(data);
         var case_obj = {
-          solutionId: solutionId,
-          caseId: caseId,
-          state: "active"
+          problemName: ProblemName,
+          solutionId: solutionName,
+          caseId: caseName,
+          state: "active",
+          createDate: getCurrentDateTime()
         };
         userJSON.cases.push (case_obj);
                 
@@ -682,18 +879,18 @@ app.post('/addcasetouser/:SolutionName', loadUser, generateMenu, function(req, r
             if (err) throw err;
         });
         
-        createCaseFile ( userName, caseId, solutionId );
+        createCaseFile ( userName, caseName, solutionName );
       }
-      else Render404(req,res, err);
+      else RenderError(req,res, err);
     });
-    increaseSolutionStatistics ( solutionId, 'started' );
-    res.redirect('/MyCases/'+caseId);
+    increaseSolutionStatistics ( solutionName, 'started' );
+    res.redirect('/MyCases/'+caseName.replace(/ /g,"_"));
 	}; 
 });
 
 
 
-app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
+app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var user = new User(req.body.user);
 
   function userSaveFailed() {
@@ -702,6 +899,7 @@ app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
       locals: { return_to: parseReturnTo(req.query.return_to) },
       'user':req.currentUser,
       'menu':res.menu, 
+      'headerStats': res.headerStats,
       title: '',
       scripts: [],
       styles:[]
@@ -734,11 +932,12 @@ app.post('/users.:format?', loadUser, generateMenu, function(req, res) {
 
 
 // Sessions
-app.get('/sessions/new', loadUser, generateMenu, function(req, res) {
+app.get('/sessions/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
 
   res.render('sessions/new.jade', {
     'user':req.currentUser,
     'menu':res.menu,
+    'headerStats': res.headerStats,
     locals: { return_to: parseReturnTo(req.query.return_to) },
     title: '',
     scripts: [],
@@ -804,12 +1003,12 @@ app.post('/sessions', function(req, res) {
    
 });
 
-app.get('/login', loadUser, generateMenu, function(req, res) {
+app.get('/login', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.query.return_to);
   else res.redirect('/');
 });
 
-app.get('/logout', loadUser, generateMenu, function(req, res) {
+app.get('/logout', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.session) {
     LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
@@ -820,10 +1019,21 @@ app.get('/logout', loadUser, generateMenu, function(req, res) {
 
 // Statistics
 
-app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
+app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {   
-    fs.readdir("data/solutions", function (err, files) {
+  else {
+    Solution.find( {}, function(err, solutions) {      
+      res.render('statistics/solutions.jade', {
+        title: "Статистики по решениям",
+        'user':req.currentUser,
+        'menu':res.menu,
+        'headerStats': res.headerStats,
+        solutions: solutions, 
+        scripts:[],
+        styles:[]
+      });
+    });
+    /*fs.readdir("data/solutions", function (err, files) {
       if (err) throw err;
       
       var solutions = new Array();
@@ -836,7 +1046,7 @@ app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
       }
 
       var f = function(arg, callback) {
-        SolutionStatistics.findOne ({ solution_name: arg.name }, function(e, solution) {
+        Solution.findOne ({ solution_name: arg.name }, function(e, solution) {
           var stats_obj = new Object();
           if (solution) {
             arg.statistics = solution;
@@ -863,27 +1073,28 @@ app.get('/statistics/solutions', loadUser, generateMenu, function(req, res) {
           styles:[]
         })
       });
-    });
+    });*/
   }
 });
 
 
 
 // Admin pages
-app.get('/admin', loadUser, generateMenu, function(req, res) {
+app.get('/admin', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   
     res.render('admin/index.jade', {
       title: "Админка",
       'user':req.currentUser,
       'menu':res.menu,
+      'headerStats': res.headerStats,
       scripts:[],
       styles:[]
     })
   }
 });
 
-app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
+app.get('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var regions_list = fs.readFileSync('data/regions.json', "utf-8");
@@ -897,7 +1108,8 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
         'title':    "Организации / добавить",
         'user':     req.currentUser,
         'menu':     res.menu,
-        'scripts':  [],
+        'headerStats': res.headerStats,
+        'scripts':  ['/javascripts/admin.js'],
         'styles':   [],
         'regions_list': JSON.parse(regions_list),
         'existing_organization_names': organizations,
@@ -907,81 +1119,105 @@ app.get('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
   }
 });
 
-app.post('/admin/organizations/add', loadUser, generateMenu, function(req, res) {
+app.post('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
+  else {    
+    var input_email = [];
+    for (var key in req.body.email)
+      input_email[key] = {
+        'email_who': req.body.email_who[key],
+        'email': req.body.email[key]
+      };
+    var input_phone = [];
+    for (var key in req.body.phone)
+      input_phone[key] = {
+        'phone_who': req.body.phone_who[key],
+        'phone': req.body.phone[key]
+      };
+    
     var new_organization = {
       'title': req.body.title,
-      'short_descr': req.body.short_descr,
+      'short_description': req.body.short_description,
       'description': {
         'text': req.body.text,
         'web': req.body.web,
-        'phone': req.body.phone,
+        'phone': input_phone,
         'postal_address': req.body.postal_address,
         'electronic_address': {
-          'email': req.body.email,
+          'email': input_email,
           'webform': req.body.webform
         }
       }
     }
-    Organizations.findOne ({ organization_name: req.body.organization_name }, function(e, organization_item) {
-      if (!organization_item) {
-        var organization_item = new Organizations({
-          'organization_name': req.body.organization_name,
-          'regions_list': [
-            {
-
-              'region_name': req.body.region_name,
-              'organizations_list': []
-            }
-          ]
+    var arr_counter = req.body.organization_name.length;
+    var global_err;
+    
+    async.forEach(req.body.organization_name, function(organization_name, callback){      
+      Organizations.findOne ({ organization_name: organization_name }, function(e, organization_item) {
+        if (!organization_item) {
+          var organization_item = new Organizations({
+            'organization_name': organization_name,
+            'regions_list': [
+              {
+                'region_name': req.body.region_name,
+                'organizations_list': []
+              }
+            ]
+          });
+        }
+        var add_key = -1;
+        for (var key in organization_item.regions_list) {
+          if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
+            add_key = key;
+            break;
+          }
+        }
+        if ( add_key == -1 ) {
+          var new_region = {
+            'region_name': req.body.region_name,
+            'organizations_list': []
+          }
+          new_region.organizations_list.push(new_organization);
+          organization_item.regions_list.push(new_region);
+        }
+        else organization_item.regions_list[key].organizations_list.push(new_organization);
+        organization_item.save(function(err) {
+          if (err != null) {
+            console.log(err);
+          }        
+          callback(err);
         });
-		  }
-		  var add_key = -1;
-		  for (var key in organization_item.regions_list) {
-        if ( organization_item.regions_list[key].region_name == req.body.region_name ) {
-          add_key = key;
-          break;
-        }
-      }
-      if ( add_key == -1 ) {
-        var new_region = {
-          'region_name': req.body.region_name,
-          'organizations_list': []
-        }
-        new_region.organizations_list.push(new_organization);
-        organization_item.regions_list.push(new_region);
-		  }
-      else organization_item.regions_list[key].organizations_list.push(new_organization);
-      organization_item.save(function(err) {
-        if (err != null) {
-          console.log(err);
-          res.redirect('/admin/organizations/add?adding_result=error');
-          // выдавать ошибку
-		    }
-        else {
-          res.redirect('/admin/organizations/add?adding_result=success');
-          // отправляем на /add обратно и говорим, что добавлено успешно
-        }
       });
+    },
+    function(err){
+      if (err == null) {
+        res.redirect('/admin/organizations/add?adding_result=success');
+        // отправляем на /add обратно и говорим, что добавлено успешно
+      }
+      else {
+        res.redirect('/admin/organizations/add?adding_result=error');
+        // выдавать ошибку
+      }
     });
+    
   }
 });
 
-app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
+app.get('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {    
     res.render('admin/texts/add.jade', {
       'title':    "Тексты / добавить",
       'user':     req.currentUser,
       'menu':     res.menu,
+      'headerStats': res.headerStats,
       'scripts':  [],
       'styles':   [],
       'adding_result': req.query.adding_result,
       'data': {
         'text_name': '',
         'title': '',
-        'short_descr': '',
+        'short_description': '',
         'text': ''  
       }
     })
@@ -989,13 +1225,13 @@ app.get('/admin/texts/add', loadUser, generateMenu, function(req, res) {
   }
 });
 
-app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
+app.post('/admin/texts/add', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     var new_text = new Texts({
       'text_name': req.body.text_name,
       'title': req.body.title,
-      'short_descr': req.body.short_descr,
+      'short_description': req.body.short_description,
       'text': req.body.text
     });
     
@@ -1010,7 +1246,7 @@ app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
           'data':     {
             'text_name': req.body.text_name,
             'title': req.body.title,
-            'short_descr': req.body.short_descr,
+            'short_description': req.body.short_description,
             'text': req.body.text
           }
         });
@@ -1033,6 +1269,224 @@ app.post('/admin/texts/add', loadUser, generateMenu, function(req, res) {
 });
 
 
+app.get('/admin/problems', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    
+    Problem.find({}, ['name'], { sort: ['name', 'descending'] },
+                  function(err, problems) {
+      problems = problems.map(function(d) {
+        return d.name;
+      });
+    
+      Category.find({}, ['name'], { sort: ['name', 'descending'] },
+                    function(err, categories) {
+        categories = categories.map(function(d) {
+          return d.name;
+        });
+        
+        Solution.find({}, ['name'], { sort: ['name', 'descending'] },
+                      function(err, solutions) {
+          solutions = solutions.map(function(d) {
+            return d.name;
+          });
+          
+          res.render('admin/problems/show.jade', {
+            'title':    "Проблемы",
+            'user':     req.currentUser,
+            'menu':     res.menu,
+            'headerStats': res.headerStats,
+            'scripts':  ['/javascripts/admin.js'],
+            'styles':   [],
+            'categories': categories,
+            'problems': problems,
+            'solutions': solutions,
+            'result': req.query.result
+          })
+        });
+      });
+    });
+  }
+});
+
+app.get('/admin/problems/:ProblemName/edit', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var problemName = req.param('ProblemName', null).replace(/_/g," ");
+    
+    Problem.findOne({ name: problemName },  function (err, problem){
+          
+      Category.find({}, ['name'], { sort: ['name', 'descending'] },
+                    function(err, categories) {
+        categories = categories.map(function(d) {
+          return d.name;
+        });
+        
+        Solution.find({}, ['name'], { sort: ['name', 'descending'] },
+                      function(err, solutions) {
+          solutions = solutions.map(function(d) {
+            return d.name;
+          });
+          
+          res.render('admin/problems/edit.jade', {
+            'title':    "Проблемы",
+            'user':     req.currentUser,
+            'menu':     res.menu,
+            'headerStats': res.headerStats,
+            'scripts':  ['/javascripts/admin.js'],
+            'styles':   [],
+            'categories': categories,
+            'problem': problem,
+            'solutions': solutions
+          })
+        });
+      });
+    });
+  }
+});
+
+
+
+app.post('/admin/problems/save', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    var f = function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/problems?result=error');
+      }        
+      else res.redirect('/admin/problems?result=added');
+    };    
+    if ( req.body.categories[0] == "- нет" ) var categories = [];
+    else var categories = req.body.categories;
+    if ( req.body._id == undefined ) {
+      var new_problem = new Problem({
+        'name': req.body.name,
+        'description': req.body.description,
+        'categories': categories, 
+        'solutions': req.body.solutions
+      });
+      new_problem.save(f);
+    }
+    else {
+      Problem.findOne({ _id: req.body._id },  function (err, problem){
+        problem.name = req.body.name;
+        problem.description = req.body.description;
+        problem.categories = categories;
+        problem.solutions = req.body.solutions;
+        problem.save(f);
+      });
+    }
+  }
+});
+
+app.get('/admin/problems/:ProblemName/delete', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var problemName = req.param('ProblemName', null).replace(/_/g," ");
+    
+    Problem.findOne({ name: problemName },  function (err, problem){
+      Problem.remove({ _id: problem._id }, function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/problems?result=error');
+      }        
+      else res.redirect('/admin/problems?result=removed');
+    });
+    });
+  }
+});
+
+app.get('/admin/categories', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    
+    Category.find({}, [], { sort: {on_index: -1, index_order: 1} },
+                  function(err, categories) {          
+      res.render('admin/categories/show.jade', {
+        'title':    "Категории",
+        'user':     req.currentUser,
+        'menu':     res.menu,
+        'headerStats': res.headerStats,
+        'scripts':  ['/javascripts/admin.js'],
+        'styles':   [],
+        'categories': categories,
+        'result': req.query.result
+      })
+    });
+  }
+});
+
+app.get('/admin/categories/:CategoryName/edit', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var categoryName = req.param('CategoryName', null).replace(/_/g," ");
+    
+    Category.findOne({ name: categoryName },  function (err, category){
+      res.render('admin/categories/edit.jade', {
+        'title':    "Проблемы",
+        'user':     req.currentUser,
+        'menu':     res.menu,
+        'headerStats': res.headerStats,
+        'scripts':  ['/javascripts/admin.js'],
+        'styles':   [],
+        'category': category
+      })
+    });
+  }
+});
+
+app.post('/admin/categories/save', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {   
+    var f = function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/categories?result=error');
+      }        
+      else res.redirect('/admin/categories?result=added');
+    };
+    var on_index = false;
+    if (req.body.on_index == "1") on_index = true;
+    if ( req.body._id == undefined ) {
+      var new_category = new Category({
+        'name': req.body.name,
+        'icon': req.body.icon,
+        'on_index': on_index,
+        'index_order': req.body.index_order
+      });
+      new_category.save(f);
+    }
+    else {
+      Category.findOne({ _id: req.body._id },  function (err, category){
+        category.name = req.body.name;
+        category.icon = req.body.icon;
+        category.on_index = on_index;
+        category.index_order = req.body.index_order;
+        category.save(f);
+      });
+    }
+  }
+});
+
+app.get('/admin/categories/:CategoryName/delete', loadUser, function(req, res) {
+  if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {    
+    var categoryName = req.param('CategoryName', null).replace(/_/g," ");
+    
+    Category.findOne({ name: categoryName },  function (err, category){
+      Category.remove({ _id: category._id }, function(err) {
+      if (err != null) {
+        console.log(err);
+        res.redirect('/admin/categories?result=error');
+      }        
+      else res.redirect('/admin/categories?result=removed');
+    });
+    });
+  }
+});
+
+updateSolutionsCollection();
 
 ///
 /// Compiling documents templates to client-side javascript

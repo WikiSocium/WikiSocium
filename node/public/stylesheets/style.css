@@ -3,56 +3,58 @@
 #steps
 {}
 
+.documentOrganizationsRecordDescription
+{
+    background-color: #fff;
+    position:relative;    
+    display: none;
+}
+
+.documentOrganizationsRecorTitle
+{
+    text-decoration: underline;
+}
+
+.documentOrganizationsRecorTitle:hover
+{
+    text-decoration: underline;
+    
+    cursor: pointer;    
+}
+
+.documentOrganizationsRecord
+{
+    position:relative;
+    margin-top:10px;
+}
+
+.document_view
+{
+    bgcolor: #fff;
+}
+
+.document_container
+{
+    display: inline-block;
+}
+
 .document_organizations
 {
     background-color: #f5f5ea;
-    
-    display: inline-block;
-    position: absolute;
-    
-    width: 25%;
-    margin-left: 60%;
-    margin-top: -300px;    
-}
 
-.generatePDFFromDocumentButton
-{
-    display: inline-block;
-    position: relative;
-    border: 1px solid #3f3f3f;
-    width: auto;
-    height: 25px;
-
-    background-color: #f5f5ea;
+    display: block;
     
-    font: 12px Helvetica, sans-serif;
-    color: #333;
-    
-    text-align: center;
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    
-    cursor: pointer;
-}
-
-.generatePDFFromDocumentButton:hover
-{
-    background-color: #e4e4d9;
-}
-
-.generatePDFFromDocumentButton:active
-{
-    background-color: #f0f0f0;
+    margin-left: 65%;
 }
 
 .document_textarea
 {
-    width: 80%;
-    margin-left: 10%;
-    margin-rght: 10%;
+    float: left;
+    display: block;    
+    width: 65%;
+    height: auto;
     
-    height: 300px;
+    margin-bottom: 10px;
 }
 
 .step
@@ -231,9 +233,14 @@
 
 .DescriptionText
 {
-    font-size: 12px;
-    text-decoration: underline;
+    font-size: 10px;
+}
+
+iref
+{
+    font-size: 10px;
     cursor: pointer;
+    text-decoration: underline;
 }
 
 /* Radio Field */

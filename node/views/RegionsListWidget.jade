@@ -13,6 +13,10 @@ block content
     {
     step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg]});
     }
+    step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
+    {
+    OnWidgetChanged();
+    });
     });
     }
     , error: function(jqXHR, textStatus, errorThrown) {

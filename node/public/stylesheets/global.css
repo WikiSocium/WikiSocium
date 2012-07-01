@@ -1,12 +1,23 @@
 html {
-  min-width: 403px;
+	height:100%;
 }
 
-body, p {
+body {
+	margin: 0;
+	min-height:100%;
+  padding-bottom: 1px;
+	position:relative;
+}
+
+body, p, div {
   color: #6e6e6e;
   font-family: Trebuchet MS;
   font-size: 12pt;
   line-height: 16pt;
+}
+
+#heading, #menu, #content-block, #footer {
+  margin: 0 5%;
 }
 
 a:link, a:visited {
@@ -18,53 +29,58 @@ a:hover, a:active {
   text-decoration: none;
 }
 
+a.btn {
+  text-decoration: none;
+}
+
+a.btn {
+  color: #333;
+}
+
+a.btn-primary, a.btn-warning, a.btn-danger, a.btn-success, a.btn-info, a.btn-inverse {
+  color: white;
+}
+
+h1 { font-size: 14pt; }
+h2 { font-size: 13pt; }
+h3 { font-size: 12pt; }
+
 #heading-block {
-  background: #e6e5e5 url(../images/bgheader.png) top repeat-x;
+  background: #e6e5e5 url(../images/bgheader.png);
   border-bottom: 1px #d2d2d2 solid;
   min-height: 91px;
-  padding: 25px 0 0 0;
+  padding-top: 25px;
 }
 
 #menu-block {
-  background: #fcfcfc url(../images/bgmenu.png) top repeat-x;
+  background-color: #fcfcfc;
+  background:
+    url(../images/bgmenu-top.png) top repeat-x,
+    url(../images/bgmenu-bottom.png) bottom repeat-x,
+    url(../images/bgmenu-middle.png);
   border-bottom: 1px solid #d2d2d2;
   min-height: 58px;
   margin: 0 0 30px 0;
 }
 
 #content-block {
-  /*margin: 0 70px;*/
+  margin-bottom: 100px;
 }
 
 #footer-block {
   background: #f9f9f8 url(../images/bgfooter.png) top repeat-x;
   border-top: 1px solid #d2d2d2;
-  min-height: 39px;
+  bottom: 0;
+	left: 0;
+	overflow:hidden;
+	position: absolute;
   margin: 100px 0 0 0;
-}
-
-#heading, #menu {
-  /*margin: 0px 0 0px 70px;*/
+  min-height: 39px;
+	width: 100%;
 }
 
 #footer {
-  /*margin: 0px 0 0px 70px;*/
   padding-top: 10px;
-}
-
-@media (max-width: 767px) {
-
-  #content-block {
-    margin: 0 30px;
-  }
-
-  #footer-block {
-    margin: 0 30px;
-  }
-  
-  #heading, #menu {
-    margin: 0px 0 0px 30px;
-  }
 }
 
 
@@ -75,7 +91,6 @@ a:hover, a:active {
 #grid div {
   background-color: #eee;
 }
-
 
 #logo {
   background-image: url(../images/logo.png);
@@ -90,8 +105,7 @@ a:hover, a:active {
 }
 
 #heading-stat {
-  padding-top: 14px;
-  text-align: center;
+  margin-top: 14px;
 }
 
 #menu .navbar {
@@ -129,6 +143,32 @@ a:hover, a:active {
   text-decoration: none;
 }
 
+.gray-rounded-corners-tabs {
+  margin-top: 50px;
+}
+
+.gray-rounded-corners-tabs .nav-tabs {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.nav-tabs a {
+  text-decoration: none;
+}
+
+.gray-rounded-corners-tabs .nav-tabs > li > a:hover {
+  background: none;
+  border-color: #fff #fff #d2d2d2;
+  text-decoration: underline;
+}
+
+.gray-rounded-corners-tabs .nav-tabs > .active > a,
+.gray-rounded-corners-tabs .nav-tabs > .active > a:hover {
+  background: rgb(248,248,248);
+  border-color: #d2d2d2 #d2d2d2 rgb(248,248,248);
+  text-decoration: none;
+}
+
 #heading-login-form * {
   font-family: Trebuchet MS;
   font-size: 10pt;
@@ -144,6 +184,11 @@ a:hover, a:active {
   border-radius: 6px;
   -webkit-border-radius: 6px;
   padding: 19px;
+}
+
+.gray-rounded-corners-tabs .gray-rounded-corners {
+  border-top-left-radius: 0px;  
+  -webkit-border-radius: 0px 6px 6px 6px;
 }
 
 hr {
@@ -163,6 +208,7 @@ hr {
     url('../images/gray-rounded-block-1-bg-bottom.png') repeat-x center bottom,
     url('../images/gray-rounded-block-1-bg-left.png') repeat-y left,
     url('../images/gray-rounded-block-1-bg-right.png') repeat-y right;
+  min-height: 48px;
 }
 
 .gray-rounded-block-2 {
@@ -177,31 +223,38 @@ hr {
   color: #f7941e;
 }
 
-.mainProblemBlock {
+#indexMainBlock {
+  margin-top: 34px;
+}
+
+#indexMainBlock .mainCategoryBlock {
   padding-bottom: 15px;
   padding-top: 15px;
 }
 
-.mainProblemBlock  .mainProblemIcon, .mainProblemBlock  .mainProblemName, .mainProblemBlock  .mainProblemStat {
+#indexMainBlock .mainCategoryBlock  .mainCategoryIcon,
+#indexMainBlock .mainCategoryBlock  .mainCategoryName,
+#indexMainBlock .mainCategoryBlock  .mainCategoryStat {
   float: left;
 }
 
-.mainProblemBlock hr {
+#indexMainBlock .mainCategoryBlock hr {
   clear: both;
 }
 
-.mainProblemBlock .mainProblemIcon {
+#indexMainBlock .mainCategoryBlock .mainCategoryIcon {
   margin-left: 8%;
   width: 12%;
   max-width: 70px;
 }
 
-.mainProblemBlock  .mainProblemName {
+#indexMainBlock .mainCategoryBlock  .mainCategoryName {
   margin-left: 4%;
   width: 31%;
 }
 
-.mainProblemBlock  a.problemLink:link, .mainProblemBlock  a.problemLink:visited {
+#indexMainBlock .mainCategoryBlock  a.problemLink:link,
+#indexMainBlock .mainCategoryBlock  a.problemLink:visited {
   border-bottom: 1px solid #6e6e6e;
   color: #6e6e6e;
   font-size: 13pt;
@@ -209,7 +262,7 @@ hr {
   text-decoration: none;
 }
 
-.mainProblemBlock  a.problemLink:hover {
+#indexMainBlock .mainCategoryBlock  a.problemLink:hover {
   border-bottom: 0;
   text-decoration: none;
 }
@@ -218,7 +271,7 @@ hr {
   margin-top: 20px;
 }
 
-.mainProblemBlock  .mainProblemStat {
+#indexMainBlock .mainCategoryBlock  .mainCategoryStat {
   margin-left: 4%;
   width: 41%;
 }
@@ -232,6 +285,10 @@ hr {
   color: #6e6e6e;
   font-size: 12pt;
   margin-right: 15px;
+}
+
+#indexBottom {
+  margin-top: 50px;
 }
 
 .to-var {
@@ -272,4 +329,10 @@ hr {
 
 .user-case-list-item .todo img {
   margin-right: 20px;
+}
+
+.modal-header {
+  background: #e6e5e3;  
+  -webkit-border-radius: 6px 6px 0px 0px;
+  border-top-left-radius: 6px 6px 0px 0px;
 }
