@@ -11,9 +11,13 @@ block content
   <button class="btn btn-primary" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</button>
   
   script
-    // [TODO] Use region from region widget
-    RegionalizedData.GetDataFromDBWithRegion('Дагестан', 'organizations', ['Главы регионов',
-                                                                           'Государственные Жилищные Инспекции'], function(data) {
+    (function(){
+    var initDocumentWidgetFunction = function()
+    {
+    GenerateDocument_#{widget.doc_name}();
+    RegionalizedData.GetDataFromDBWithRegion(GetUserRegion(), 'organizations', ['Главы регионов',
+                                                                                'Государственные Жилищные Инспекции'], function(data) {
+        $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
         for(var i = 0; i < data.length; i++)
         {
             for(var j = 0; j < data[i].length; j++)
@@ -49,14 +53,13 @@ block content
             $(this).children(".documentOrganizationsRecordDescription").show();
         });
     });
+    };
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){
-           GenerateDocument_#{widget.doc_name}();
-           //new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
+           initDocumentWidgetFunction();           
        }, 100, "");
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
        setTimeout(function(){
-           GenerateDocument_#{widget.doc_name}();    
-           //new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}', {hasPanel : true});
+           initDocumentWidgetFunction();
        }, 1000); // [TODO] #(document).ready() doesn't workk properly
-       
+    })();
     

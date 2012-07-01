@@ -25,6 +25,13 @@
                         "widgets":
                         [
                               {
+                                  "widget_type" : "RegionsListWidget",
+                                  "id" : "UserRegion",
+                                  "InfoText" : {"name" : "Регион",
+                                                "comment" : "Выберите ваш регион",
+                                                "description" : "Выберите <b>ВАШ</b> регион!"}
+                              },                        
+                              {
                                     "widget_type" : "TextFieldWidget",
                                     "id" : "date",
                                     "label" : "Дата нарушения",
@@ -153,7 +160,9 @@
                             [
                                 {
                                     "widget_type" : "DocumentViewWidget",
-                                    "label" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге.",
+                                    "InfoText" : {"name" : "Заявление",
+                                                  "comment" : "Отправка заявления",
+                                                  "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
                                     "doc_name" : "ViolationStatement",
                                     "organizations" : []
                                 }
