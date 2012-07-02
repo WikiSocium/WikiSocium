@@ -25,13 +25,19 @@
                         "widgets":
                         [
                               {
-                                    "widget_type" : "TextFieldWidget",
+                                    "widget_type" : "DateTextFieldWidget",
                                     "id" : "date",
                                     "label" : "Дата нарушения",
                                     "type" : "string"
                               },
                               {
-                                    "widget_type" : "TextFieldWidget",
+                                    "widget_type" : "FullNameTextFieldWidget",
+                                    "id" : "fullname",
+                                    "label" : "ФИО",
+                                    "type" : "string"
+                              },
+                              {
+                                    "widget_type" : "TimeTextFieldWidget",
                                     "id" : "time",
                                     "label" : "Время нарушения",
                                     "type" : "string"

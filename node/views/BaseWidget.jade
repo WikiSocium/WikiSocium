@@ -1,4 +1,4 @@
-div(class="baseWidget", id="step_#{step_id}_widget_#{widget.id}")
+div(class="baseWidget", id="step_#{step_id}_widget_#{widget.id}_wrapper")
     - if (widget.InfoText!=undefined)
         !=partial("InfoText", {InfoText:widget.InfoText})
     - if (widget.label==undefined)

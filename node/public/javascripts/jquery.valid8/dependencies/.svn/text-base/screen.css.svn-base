@@ -1,0 +1,19 @@
+body,html { margin: 0; padding: 0; background: #E0F4F8; }
+
+.label { background: #FFCC33; padding: 5px; font: bold 10px Arial, sans-serif; position: absolute; top: 0;left: 0; }
+
+.form { padding: 20px 20px 10px; background: #E0F4F8; width: 580px; overflow: hidden; }
+.form p { margin: 0 0 10px 0; float:left; clear:both; display: block; }
+.form label { font: bold 0.9em Helvetica, Arial, sans-serif; color: #0077AA; padding: 0 0 0 5px;}
+.form .w { float: left; clear: both; padding: 5px 5px 0; background: #D7EBEF; font: bold 0.8em Helvetica, Arial, sans-serif; color: #333; overflow: hidden; }
+.form .w span { padding: 0 0 5px; float:left; }
+.form .input { border: 1px solid #A5C2C8; line-height: 1.2em; padding: 5px 26px 5px 5px; margin: 0 0 5px 0; width: 537px; font: bold 1.2em Helvetiva, Arial, sans-serif; }
+.form .w label { padding:0; }
+
+/* Validation */
+.w.error { background-color: #EFD8D7; }
+.w.error .input { border-color: #C8A5A5; background: #fff url('gfx/icon_error.png') no-repeat right center; }
+
+.w.valid { background-color: #A4EFAE; }
+.w.valid .input { border-color: #A5C8A6; background: #fff url('gfx/icon_valid.png') no-repeat right center; }
+.w.valid span { display: none; }
