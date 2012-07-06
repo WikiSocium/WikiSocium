@@ -128,7 +128,7 @@ function authenticateFromLoginToken(req, res, next) {
   }));
 }
 
-function loadUser(req, res, next) {
+function loadUser(req, res, next) {  
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
@@ -155,7 +155,44 @@ function generateMenu(req, res, next) {
     {
       'id': 'About',
       'name': 'О проекте',
-      'guest': true
+      'guest': true,
+      'submenu': [
+        {
+          'id': 'Mission',
+          'name': 'Предпосылки и миссия проекта',
+          'guest': true
+        },
+        {
+          'id': 'Goals',
+          'name': 'Цели и задачи',
+          'guest': true
+        },
+        {
+          'id': 'Perspective',
+          'name': 'Перспектива',
+          'guest': true
+        },
+        {
+          'id': 'Team',
+          'name': 'Команда',
+          'guest': true
+        },
+        {
+          'id': 'Help',
+          'name': 'Как помочь?',
+          'guest': true
+        },
+        {
+          'id': 'Partnership',
+          'name': 'Сотрудничество',
+          'guest': true
+        },
+        {
+          'id': 'Questions',
+          'name': 'Вопросы и сомнения',
+          'guest': true
+        }
+      ]
     },
     {
       'id': 'Problems',
@@ -173,9 +210,20 @@ function generateMenu(req, res, next) {
     if (menu[i].guest || !menu[i].guest && !req.currentUser.guest) {
       var is_active = false;
       if (req.url.indexOf(menu[i].id) == 1) is_active = true;
+      var submenu = [];
+      for (var j in menu[i].submenu) {
+        var is_active_sub = false;
+        if (is_active && req.url.indexOf(menu[i].submenu[j].id) == menu[i].id.length+2) is_active_sub = true;
+        submenu.push({
+          'id': menu[i].submenu[j].id,
+          'name': menu[i].submenu[j].name,
+          'active': is_active_sub
+        });
+      }
       res.menu.push({
         'id': menu[i].id,
         'name': menu[i].name,
+        'submenu': submenu,
         'active': is_active
       });
     }
@@ -366,7 +414,7 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
   Category.find({on_index: true}, ['name', 'icon'],
     { sort: { index_order: 1 } }, function(err, categories)
     {    
-    async.forEach( categories, function(aCategory, callback) {       
+    async.forEach( categories, function(aCategory, callback) {
       Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
         getTopProblem ( problems, function(err,topProblem) {
           aCategory.problemsNumber = problems.length;
@@ -386,13 +434,20 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
           'scripts':[],
           'styles':[]
         });
-      else console.log(err);
+      else {
+        console.log(err);
+        RenderError(req,res, err);
+      }
     });
   });
 });
 
 app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  res.render('about', {
+  res.redirect('/About/Mission'); 
+});
+
+app.get('/About/:PageName', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  res.render('about/'+req.param('PageName', null), {
     'title':"О проекте",
     'user':req.currentUser,
     'menu':res.menu,
