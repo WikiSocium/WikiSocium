@@ -447,8 +447,13 @@ app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
 });
 
 app.get('/About/:PageName', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  for (i in res.menu) {
+    if ( res.menu[i].active )
+      for ( j in res.menu[i].submenu )
+        if (res.menu[i].submenu[j].active) var subtitle = res.menu[i].submenu[j].name;
+  }
   res.render('about/'+req.param('PageName', null), {
-    'title':"О проекте",
+    'title': "О проекте: "+subtitle,
     'user':req.currentUser,
     'menu':res.menu,
     'headerStats': res.headerStats,
