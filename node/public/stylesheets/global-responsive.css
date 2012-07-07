@@ -176,3 +176,30 @@
     width: 1200px;
   }
 }
+
+
+/* Team Faces */
+@media (max-width: 767px) {
+  .team-faces {
+    margin-top: 0;
+  }
+  #content-block .team-faces [class*="span"] {
+    clear: both;
+    margin: 0 auto;
+    padding: 0 auto;
+  }
+  .team-faces .photo {
+    float: left;
+  }
+  .team-faces .name {
+    margin-top: 30px;
+  }
+}
+@media (min-width: 1050px) {
+  .team-faces .photo {
+    float: left;
+  }
+  .team-faces .name {
+    margin-top: 30px;
+  }
+}

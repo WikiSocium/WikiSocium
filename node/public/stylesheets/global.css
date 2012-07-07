@@ -399,6 +399,30 @@ hr {
   margin-right: 20px;
 }
 
+.team-faces,
+.team-faces:first-child {
+  margin-top: 30px;
+}
+
+.team-faces [class*="span"] {
+  min-height: 127px;
+  padding: 4px auto;
+}
+
+.team-faces .photo {
+  background-color: #eef3f5;
+  border: 1px solid #d0cdd2;
+  margin-right: 20px;
+  padding: 10px;
+  text-align: center;
+  width: 125px;
+}
+.team-faces .name {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+
 .modal-header {
   background: #e6e5e3;  
   -webkit-border-radius: 6px 6px 0px 0px;
