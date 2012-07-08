@@ -1,5 +1,16 @@
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
+var userRegion = "";
+function GetUserRegion()
+{
+    console.log("userRegion : " +  userRegion);
+
+    if(userRegion == "")
+        return "Москва";
+    else
+        return userRegion;
+}
+
 var previousStepId = null;
 var currentStepId = null;
 
