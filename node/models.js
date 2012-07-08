@@ -17,10 +17,10 @@ function defineModels(mongoose, fn) {
   }
 
   User = new Schema({
-    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
+    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], unique: true },
     'hashed_password': String,
     'salt': String,
-    'vk_uid': { type: String, index: { unique: true } },
+    'vk_uid': String,
     'name': String,
     'surname': String
   });
