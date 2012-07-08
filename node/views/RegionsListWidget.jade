@@ -8,18 +8,27 @@ block content
     , success: function(res) {
     YUI().use('inputex', 'inputex-select', function(Y) 
     {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({label: '!{widget.label}', name: 'step#{step_id}_#{widget.id}', choices: [], value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
-    for (reg in res)
-    {
-    step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg]});
-    }
-    step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
-    {
-    OnWidgetChanged();
-    });
+        step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({label: '!{widget.label}', name: 'step#{step_id}_#{widget.id}', choices: [], value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
+        for (reg in res)
+        {
+        console.log(reg);
+            if(res[reg] == "#{value}")
+            {
+                userRegion = "#{value}";
+                step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg], selected: true});
+            }
+            else
+                step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg]});            
+        }
+        step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
+        {
+            userRegion = step#{step_id}FieldsList['#{widget.id}'].getValue();
+            OnWidgetChanged();
+        });
     });
     }
     , error: function(jqXHR, textStatus, errorThrown) {
     // [TODO]
+    console.log("regions list widget failed");
     }
     });
