@@ -487,7 +487,6 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
   					var answer = JSON.parse(body);
   					//У переменной answer есть три поля: uid, first_name и last_name.
   					console.log(answer);
-  					res.redirect('/');
 	   			}	
   			})
   						
