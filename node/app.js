@@ -421,14 +421,8 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
   				if (!error && response.statusCode == 200) {
   					console.log(body);
   					var answer = JSON.parse(body);
-  					  res.render('about', {
-    'title':"О проекте",
-    'user':req.currentUser,
-    'menu':res.menu,
-    'headerStats': res.headerStats,
-    'scripts':[],
-    'styles':[]
-  }); 
+  					//У переменной answer есть три поля: uid, first_name и last_name.
+  					console.log(answer);
 	   			}	
   			})
   						
