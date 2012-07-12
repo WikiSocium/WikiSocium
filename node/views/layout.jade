@@ -1,61 +1,149 @@
 !!!
 html
   head
-    meta (http-equiv='Content-Type', content='text/html; charset=UTF-8')
     title= title
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
-    link(rel='stylesheet', href='/stylesheets/main.css')
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.css')
+    link(rel='stylesheet', href='/stylesheets/global.css')
+    link(rel='stylesheet', href='/stylesheets/global-responsive.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/Aristo-jquery-ui/Aristo.css')
+        
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js')
-    script(type='text/javascript', src='/javascripts/bootstrap.js')
-
+    script(type='text/javascript', src='/javascripts/global.js')
+    script(type='text/javascript', src='/bootstrap/js/bootstrap.js')
 
     -each style in styles
       link(rel='stylesheet', href=style)
-
     -each script in scripts 
       script(type='text/javascript', src=script)
-    script(type='text/javascript')
-      var user = {};
-      user.guest = #{user.guest};  
-
+       
   body
-    div.container-fluid
-    #heading.row
-      a(href="/")
-        #logo.span4.offset1
-      #heading-stat.span3 3 проблемы, 3 решения, 152 дела, 114 пользователей
-      #heading-login-form.span4
-        div.formline
-          -if (user.guest)
-            form.form-inline(method='post', action='/sessions')
-              input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
-              input#user-password.input-small(name='user[password]', value=user.password || '', type='password')
-              button.btn.btn-success(type='submit')Войти
-            a(href='/users/new') Регистрация
-          -else
-            #{user.email}
-            a(href='/Logout').btn(type='submit')Выйти
-    #menu.row
-      div.span11.offset1
-        a.menu-element О проекте 
-        a.menu-element(href='/Problems') Проблемы  и решения
-        //-a.menu-element Карта
-        - if (!user.guest)
-          a.menu-element(href='/UserData/#{user.email}') Мои дела
-    div.row
-      #content
-        !{flashMessages}
-        != body
+    #heading-block
+      #heading.container-fluid
+        .row-fluid
+          .span5
+            h1#logo
+              a(href="/") ВикиСоциум
+          #heading-stat.span4
+            mixin getProblemWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |а
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |ы
+            mixin getSolutionWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number <= 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |е
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |я
+                - else
+                  |ий
+              - else
+                |ий
+            mixin getCaseWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |о
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |а
+            mixin getUserWordEnding ( number )
+              - var mod10 = number % 10;
+              - if ( number < 10 || number > 20 )
+                - if ( mod10 == 1 )
+                  |ь
+                - if ( mod10 >= 2 && mod10 <= 4 )
+                  |я
+                - else
+                  |ей
+              - else
+                |ей
+            b #{headerStats.problems_number}
+            |&nbsp;проблем
+            mixin getProblemWordEnding ( headerStats.problems_number )
+            |, 
+            b #{headerStats.solutions_number}
+            |&nbsp;решени
+            mixin getSolutionWordEnding ( headerStats.solutions_number )
+            |,<br />
+            b #{headerStats.cases_number}
+            |&nbsp;дел
+            mixin getCaseWordEnding ( headerStats.cases_number )
+            |, 
+            b #{headerStats.users_number}
+            |&nbsp;пользовател
+            mixin getUserWordEnding ( headerStats.users_number )
+          #heading-login-form.span3
+            div.formline
+              - if (user.guest)
+                form.form-inline(method='post', action='/sessions')
+                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
+                  input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
+                  button.btn.btn-success(type='submit')Войти
+                a(href='/users/new') Регистрация
+              - else
+                |#{user.email} &nbsp;
+                a(href='/Logout').btn(type='submit') Выйти
+                
+    - var submenu; var submenu_parent;
+    #menu-block
+      #menu.container-fluid
+        .row-fluid
+          .span12.navbar
+            ul.nav
+              - each item in menu
+                - if (item.active)
+                  li.active: a(href="/#{item.id}") #{item.name}
+                    - submenu = item.submenu; submenu_parent = item.id;
+                    - if (submenu != undefined && submenu.length > 0)
+                      #submenu.visible-phone
+                        ul.nav              
+                          - each subitem in submenu
+                            - if (subitem.active)
+                              li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                            - else
+                              li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                - else
+                  li: a(href="/#{item.id}") #{item.name}
+                  
+    - if (submenu != undefined && submenu.length > 0)
+      #submenu-block.hidden-phone
+        #submenu.container-fluid
+          .row-fluid
+            .span12.navbar
+              ul.nav              
+                - each subitem in submenu
+                  - if (subitem.active)
+                    li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                  - else
+                    li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+    
+    
+    #content-block.container-fluid      
+      != body    
+    
+    //
+      !{flashMessages}
       script(type='text/javascript', src='/javascripts/flash.js')
     
-    #footer.row
-      div.span3.offset1
-        &copy; ВикиСоциум 2011&ndash;2012
-      div.span3
-        a(href='mailto:feedback@wikisocium.ru') feedback@wikisocium.ru
-      div.span3.offset2
-        a(href="#about") О проекте 
-        a(href="#help") Помочь
+    #footer-block
+      #footer.container-fluid
+        .row-fluid
+          .span3 © ВикиСоциум 2011&ndash;2012
+          .span5
+            a(href="mailto:feedback@wikisocium.ru") feedback@wikisocium.ru
+          .span3
+            a(href="#about") О проекте
+            &nbsp;
+            a(href="#help") Помочь
+            
+    //
+      script(type='text/javascript', src='/javascripts/reformal.js')
+           

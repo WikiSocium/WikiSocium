@@ -25,13 +25,26 @@
                         "widgets":
                         [
                               {
-                                    "widget_type" : "TextFieldWidget",
+                                  "widget_type" : "RegionsListWidget",
+                                  "id" : "UserRegion",
+                                  "InfoText" : {"name" : "Регион",
+                                                "comment" : "Выберите ваш регион",
+                                                "description" : "Выберите <b>ВАШ</b> регион!"}
+                              },                        
+                              {
+                                    "widget_type" : "DateTextFieldWidget",
                                     "id" : "date",
                                     "label" : "Дата нарушения",
                                     "type" : "string"
                               },
                               {
-                                    "widget_type" : "TextFieldWidget",
+                                    "widget_type" : "FullNameTextFieldWidget",
+                                    "id" : "fullname",
+                                    "label" : "ФИО",
+                                    "type" : "string"
+                              },
+                              {
+                                    "widget_type" : "TimeTextFieldWidget",
                                     "id" : "time",
                                     "label" : "Время нарушения",
                                     "type" : "string"
@@ -144,7 +157,7 @@
         },
         {   
             "id"         : "3",     
-            "title"      : "Текст заявления",
+            "title"      : "Отправка заявления",
             "type"       : "statement",    
             "widget_groups": 
             [
@@ -153,8 +166,11 @@
                             [
                                 {
                                     "widget_type" : "DocumentViewWidget",
-                                                                    "label" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге.",
-                                                                    "doc_name" : "ViolationStatement"
+                                    "InfoText" : {"name" : "Заявление",
+                                                  "comment" : "Отправка заявления",
+                                                  "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
+                                    "doc_name" : "ViolationStatement",
+                                    "organizations" : []
                                 }
                             ]
                   }

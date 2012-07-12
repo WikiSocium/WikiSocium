@@ -1,0 +1,44 @@
+form.form-horizontal(method="POST", action="/admin/categories/save")
+  - if (category._id != undefined)
+    input(type="hidden", name="_id", value=category._id)
+  .control-group
+    label.control-label Название категории
+    .controls
+      - if (category.name != undefined)
+        input(name="name", value="#{category.name}")
+      -else
+        input(name="name")
+  .control-group
+    label.control-label Название файла с&nbsp;иконкой
+    .controls
+      - if (category.icon != undefined)
+        input(name="icon", value="#{category.icon}")
+      -else
+        input(name="icon")
+  .control-group
+    label.control-label Показывать на&nbsp;главной?
+    .controls
+      - if (category.on_index != undefined)
+        select.input-small(name="on_index")
+          - if (category.on_index)
+            option(value="0") нет
+            option(value="1", selected) да
+          - else
+            option(value="0", selected) нет
+            option(value="1") да
+      -else
+        select.input-small(name="on_index")
+          option(value="0") нет
+          option(value="1") да
+  .control-group
+    label.control-label Порядок на&nbsp;главной (номер)
+    .controls
+      - if (category.index_order != undefined)
+        input.input-small(name="index_order", value="#{category.index_order}")
+      -else
+        input.input-small(name="index_order")
+  .control-group
+    .controls
+      button.btn.btn-success(type="submit") Сохранить категорию
+      | 
+      button.btn(type="reset") Отменить изменения

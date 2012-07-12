@@ -1,62 +1,80 @@
-div(class="offset1")
-  div(class="row")
-    
+.row
+  .span10.offset1
+
     h1 Добавление организации в БД
         
     - if (adding_result == 'success')
       p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Организация успешно добавлена
     - if (adding_result == 'error')
       p(style="color: darkred; background: #ffbfbf; padding: 10px;") При добавлении организации возникла ошибка
-    
-    script
-      $(function() {
-        var organization_names = !{JSON.stringify(existing_organization_names)};
-        $( "#organization_name" ).autocomplete({
-          source: organization_names
-        });
-      });
-    
-    form(method="POST")
-      p
-        label
-          Название категории организаций
-          input(name="organization_name", id="organization_name")
-      p
-        label
-          Регион: 
+
+    form.form-horizontal(method="POST")
+      .control-group
+        label.control-label Название категорий
+        .controls
+          div#organization_name_fields
+            div(style="margin-bottom: 4px;")
+              input.input-xlarge.organization_name(type="text", name="organization_name[0]", data-provide="typeahead", data-source=JSON.stringify(existing_organization_names))
+              button.btn.btn-danger.remove_organization_name(type="button", style="margin-left: 3px;") ×
+          button.btn.btn-success.add_organization_name(type="button") +
+      .control-group
+        label.control-label Регион
+        .controls
           select(name="region_name")
             - each region in regions_list
               option #{region}
-      p
-        label
-          Название:
+      .control-group
+        label.control-label Название
+        .controls
           input(name="title")
-      p
-        label
-          Короткое описание
-          textarea(name="short_descr", rows="6", style="width: 300px")
-      p
-        fieldset
-          legend Описание организации
-          label
-            Текстовое описание
+      .control-group
+        label.control-label Короткое описание
+        .controls
+          textarea(name="short_description", rows="6", style="width: 300px")
+      
+      fieldset
+        legend Описание организации
+        .control-group
+          label.control-label Текстовое описание
+          .controls
             textarea(name="text", rows="8", style="width: 400px")
-          label
-            Веб-сайт:
+        .control-group
+          label.control-label Веб-сайт
+          .controls
             input(name="web",placeholder="http://example.com")
-          label
-            Телефон:
-            input(name="phone")
-          label
-            Почтовый адрес:
-            input(name="postal_address")
-        fieldset
-          legend Электронные адреса:
-          label
-            Эл. почта:
-            input(name="email", placeholder="name@example.com")
-          label
-            Форма на сайте:
+        .control-group
+          label.control-label Телефон
+          .controls
+            div#phone_fields
+              div(style="margin-bottom: 4px;")
+                input.input-small.phone_who(name="phone_who[0]", placeholder="Охрана")                
+                input.input-medium.phone(name="phone[0]")
+                button.btn.btn-danger.remove_phone(type="button", style="margin-left: 3px;") ×
+            button.btn.btn-success.add_phone(type="button") +
+        .control-group
+          label.control-label Почтовый адрес
+          .controls
+            input.input-xlarge(name="postal_address")
+      fieldset
+        legend Электронные адреса:
+        .control-group
+          label.control-label Эл. почта
+          .controls
+            div#email_fields
+              div(style="margin-bottom: 4px;")
+                input.input-small.email_who(name="email_who[0]", placeholder="Секретарь")
+                input.input-medium.email(name="email[0]", placeholder="name@example.com")
+                button.btn.btn-danger.remove_email(type="button", style="margin-left: 3px;") ×
+            button.btn.btn-success.add_email(type="button") +
+        .control-group
+          label.control-label Интернет-приемная
+          .controls
             input(name="webform", placeholder="http://example.com/some-page.html")
-      p
-        input(type="submit")
+      .control-group
+        .controls
+          button.btn.btn-success(type="submit") Сохранить организацию
+          
+script
+  AddRemoveTextFields ('organization_name');
+  AddRemoveTextFields ('phone', 'phone_who');
+  AddRemoveTextFields ('email', 'email_who');

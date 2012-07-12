@@ -1,12 +1,19 @@
-div(class="offset1")
-  div(class="row")
+.row
+  .offsethalf  
+    h1 Администрирование
+    
+    a(href="/admin/problems")
+      h2 Управление проблемами
+    
+    a(href="/admin/categories")
+      h2 Управление категориями
 
-    h1 Управление организациями
+    h2 Управление организациями
     ul
       li
         a(href='/admin/organizations/add') Добавить организацию
         
-    h1 Управление текстами
+    h2 Управление текстами
     ul
       li
         a(href='/admin/texts/add') Добавить текст

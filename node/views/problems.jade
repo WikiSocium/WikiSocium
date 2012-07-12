@@ -1,5 +1,6 @@
-div(class="offset1")
-  div(class="row")
-    #problems
-    - each aProblem in problemsList
-      !=partial('aProblem', {aProblem:aProblem.Name})
+- if (typeof(CategoryName) != 'undefined')
+  h1 Категория #{CategoryName}
+
+#problems
+  - each aProblem in problemsList
+    !=partial('aProblem', {aProblem:aProblem.name})

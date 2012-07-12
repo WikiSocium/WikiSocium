@@ -1,19 +1,34 @@
-table
-  tr
-    th(rowspan='2') Решение
-    th(rowspan='2') Начато
-    th(colspan='2') Завершено    
-    th(colspan='2') Оценка
-  tr
-    th Успешно
-    th Безуспешно
-    th Решение хорошее
-    th Решение плохое
-  - each solution in solutions
+h1 Статистики по решениям
+
+mixin StatOrZero (number)
+  - if (number == undefined)
+    |0
+  - else
+    |#{number}
+
+table.table.table-striped
+  thead
     tr
-      td #{solution.name}
-      td(align='right') #{solution.statistics.started}
-      td(align='right') #{solution.statistics.finished_successful}
-      td(align='right') #{solution.statistics.finished_failed}
-      td(align='right') #{solution.statistics.finished_good_solution}
-      td(align='right') #{solution.statistics.finished_bad_solution}
+      th(rowspan='2') Решение
+      th(rowspan='2') Начато
+      th(colspan='2') Завершено    
+      th(colspan='2') Оценка
+    tr
+      th Успешно
+      th Безуспешно
+      th Решение хорошее
+      th Решение плохое
+  tbody
+    - each solution in solutions
+      tr
+        td #{solution.name}
+        td(align='right')
+          mixin StatOrZero (solution.statistics.started)
+        td(align='right')
+          mixin StatOrZero (solution.statistics.finished_successful)
+        td(align='right')
+          mixin StatOrZero (solution.statistics.finished_failed)
+        td(align='right')
+          mixin StatOrZero (solution.statistics.finished_good_solution)
+        td(align='right')
+          mixin StatOrZero (solution.statistics.finished_bad_solution)

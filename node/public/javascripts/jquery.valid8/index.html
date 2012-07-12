@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>		
+		<title>Demo - Valid8 Jquery Plugin</title>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+		<meta name="keywords" content="xhtml, css, javascript, template" />
+		<meta name="description" content="xhtml, css and javascript template" />
+		<meta name="author" content="Jan Jarfalk" />
+		<meta name="contact" content="jan.jarfalk@unwrongest.com" />
+		<meta name="copyright" content="Jan Jarfalk" />
+
+		<link href="dependencies/screen.css" type="text/css" rel="stylesheet" />
+		
+	</head>
+	<body>
+		<span class="label">DEMO IFRAME</span>
+
+		<div class="form">
+			<p>
+				<label>Username</label>
+
+				<span class="w">
+					<input tabindex="1" class="input" id="inputUsername" type="test" />
+				</span>
+			</p>
+			<p>
+				<label>Password</label>
+				<span class="w">
+					<input tabindex="2" class="input" id="inputPassword" type="password" />
+
+				</span>
+			</p>
+			<p>
+				<label>Confirm password</label>
+				<span class="w">
+					<input tabindex="3" class="input" id="inputConfirmPassword" type="password" />
+				</span>
+			</p>
+
+			<p>
+				<label>Email</label>
+				<span class="w">
+					<input tabindex="4" class="input" id="inputEmail" type="text" />
+				</span>
+			</p>
+			<p>
+				<button type="button" tabindex="5" id="buttonSignup">Sign up</button>
+			</p>
+		</div>
+		
+		<script src="dependencies/jquery-1.3.2.js" type="text/javascript" charset="utf-8"></script>
+		<script src="jquery.valid8.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			// <![CDATA[	
+			$(document).ready(function(){				
+				
+				// Set focus to first input
+				$('#inputUsername').focus();
+				
+				// Custom validator (checks if password == confirm password)
+				function confirmPassword(args){
+					if(args.password == args.check)
+						return {valid:true}
+					else
+						return {valid:false, message:'Passwords does not match'}
+				}
+				
+				// Username is required
+				$('#inputPassword, #inputUsername').valid8();
+				
+				// Confirm password must match Password
+				$('#inputConfirmPassword').valid8({
+					regularExpressions: [
+						{expression: /^.+$/, errormessage: 'Required'}
+					],
+					jsFunctions:[
+						{ 'function': confirmPassword, 'values': function(){
+							return {password: $('#inputPassword').val(), check: $('#inputConfirmPassword').val()}
+						}}
+					]
+				});
+				
+				$('#inputUsername').valid8({
+					regularExpressions: [
+						{expression: /^.+$/, errormessage: 'Required'}
+					],
+					ajaxRequests: [
+						{ url: 'dependencies/isUsernameUnique.js', loadingmessage: 'Checking availability...', errormessage:'Username is unavailable'}
+					]
+				});
+				
+				$('#inputPolicy').valid8();
+				
+				$('#inputEmail').valid8({
+					regularExpressions: [
+						{expression: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel.ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|er|es|et|eu|fi|fj|fk|fm|.fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|.il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)\b$/, errormessage: 'You sure it is valid? The next step in this registration will be sent to the email you enter here.'}
+					]
+				});
+				
+				// Check if all input fields are valid
+				$('#buttonSignup').click(function(){
+					alert('Are input fields valid? ' + $('input').isValid());
+			});
+
+
+
+				
+			});	
+			// ]]>
+		</script>
+		
+	</body>
+</html>

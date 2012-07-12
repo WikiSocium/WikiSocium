@@ -1,3 +1,2 @@
 div(class="aProblem")
-  a(href="/Problems/#{aProblem}")
-    #{aProblem}
+  a(href="/Problems/" + aProblem.replace(/ /g,"_")) #{aProblem}

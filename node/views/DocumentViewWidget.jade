@@ -1,21 +1,65 @@
 extends BaseWidget
 
-block content
-  input(type="button", class="generatePDFFromDocumentButton", value="PDF", onClick="GeneratePDFFrom(#documentView_#{widget.doc_name})");
-  <textarea id="documentView_#{widget.doc_name}" class="document_textarea"></textarea>
-  <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations"></div>
+block content  
+  <div class="document_container">
+  <div class="document_textarea">
+  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
+  </div>
+  <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
+  </div>
+  <button class="btn btn-primary" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</button>
+  <button class="btn btn-primary" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</button>
+  
   script
-    RegionalizedData.GetDataFromDBWithRegion('Адыгея', 'organizations', 'ГИБДД', function(data) {
-        $("#documentOrganizationsView_#{widget.doc_name}").html(JSON.stringify(data)); // [TODO] implement markup
+    (function(){
+    var initDocumentWidgetFunction = function()
+    {
+    GenerateDocument_#{widget.doc_name}();
+    RegionalizedData.GetDataFromDBWithRegion(GetUserRegion(), 'organizations', ['Главы регионов',
+                                                                                'Государственные Жилищные Инспекции'], function(data) {
+        $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
+        for(var i = 0; i < data.length; i++)
+        {
+            for(var j = 0; j < data[i].length; j++)
+            {
+                var rec = $("<div class='documentOrganizationsRecord'></div>").append($("<div class='documentOrganizationsRecorTitle'></div>").html(data[i][j]["title"]));
+                var cont = $("<div class='documentOrganizationsRecordDescription'></div>");
+                for(var key in data[i][j]["description"])
+                {
+                    if(typeof(data[i][j]["description"][key]) == "object")
+                    {
+                        for(var key2 in data[i][j]["description"][key])
+                        {
+                            cont.append($("<div style='position:relative;'></div>").html(key2 + " = " + data[i][j]["description"][key][key2]));
+                        }
+                    }
+                    else
+                    {
+                        if(data[i][j]["description"][key] != "")
+                        {
+                            if(key == "web")
+                                cont.append($("<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>"));
+                            else
+                                cont.append($("<div style='position:relative;'></div>").html(key + " = " + data[i][j]["description"][key]));
+                        }
+                    }
+                    rec.append(cont);
+                    $("#documentOrganizationsView_#{widget.doc_name}").append(rec);
+                }
+            }
+        }
+        $(".documentOrganizationsRecord").click(function(){
+            $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
+            $(this).children(".documentOrganizationsRecordDescription").show();
+        });
     });
+    };
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){
-           GenerateDocument_#{widget.doc_name}();
-           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
+           initDocumentWidgetFunction();           
        }, 100, "");
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
        setTimeout(function(){
-           GenerateDocument_#{widget.doc_name}();    
-           new nicEditor({fullPanel : true}).panelInstance('documentView_#{widget.doc_name}');
-       }, 1000); // [ATENTION] correct behavior of this timeout depends on page loading
-       
+           initDocumentWidgetFunction();
+       }, 1000); // [TODO] #(document).ready() doesn't workk properly
+    })();
     

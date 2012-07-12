@@ -1,0 +1,843 @@
+{
+	"id"		:	"BadItem",
+	"name"		:	"Составление претензии по некачественному товару dev",
+	"description"	:	"",	
+	"data"		:
+	{
+		"documents"	: ["BadItemComplaint"]		
+	},			
+	"initialStep"	:	"0",
+	"sections"	:
+	[
+		{
+			"name": "Описываем ситуацию",
+			"steps": ["0", "0.5", "1", "2"]
+		},
+		{
+			"name": "Готовим претензию",
+			"steps": ["3", "4", "5", "6"]
+		}
+	],
+	"steps"		:
+	[
+		{
+			"id"		:	"0",
+			"title"		:	"О покупке",
+			"type"		:	"general_data",
+			"widgets":
+			[
+			            {
+			                "widget_type": "RegionsListWidget",
+			                "id": "Region",
+			                "label": "Укажите регион"
+			            },
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemName",
+							"IsRequired"    : false,
+							"InfoText"  :
+							{
+							    "name": "Что купили?",
+							    "comment": "Например: мобильный телефон.",
+							    "description" : "А это описание виджета, в котором я не знаю, что написать, но для примера сделаю ссылочку, ну, например, на <a href=http://wikisocium.ru onclick=\"this.target='target'\">основную страницу ВикиСоциума</a> и еще какую-нибудь <iref dataId=\"Адресат претензии\" baseId=\"texts\">внутреннюю ссылочку</iref> и даже <iref dataId=\"Ссылка1\" baseId=\"texts\">две</iref>"
+							}
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsTechComplicated",
+							"label"		:	"Это технически сложный товар?(TODO: компьютер, холодильник, мобильный телефон - см. Перечень технически сложных товаров)", 
+							"isVisible" :
+							{
+							    "predicates" :
+							    [
+							        {
+							            "step_id" : "0",
+							            "widget_id": "Region",
+							            "cond" : "==",
+							            "value" : "Москва"
+							        }
+							    ]
+						    }
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemPrice",
+							"label"		:	"Полная стоимость покупки",
+							"type"		:	"number" 
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsItemDelivered",
+							"label"		:	"Производилась ли доставка товара? (TODO: например, покупали в интернет-магазине)"
+						},
+						{
+							"widget_type"	:	"CheckBoxWidget",
+							"id"		:	"IsItemPrePaid",
+							"label"		:	"Была ли предоплата?",
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemDelivered",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									}								
+								]
+							}	
+	
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"ItemPrePaidPrice",
+							"label"		:	"Размер предоплаты",
+							"type"		:	"number",
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemDelivered",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									},
+									{
+										"step_id"	:	"0",
+										"widget_id"	:	"IsItemPrePaid",
+										"cond"		:	"==",
+										"value"		:	"1"	
+									}
+								]
+							} 
+						},
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"BuyDate",
+							"label"		:	"Дата покупки",
+							"type"		:	"date"		 
+						}
+		
+				
+			],
+			"next"		:	[{ "id": "0.5"} ] 					
+		},
+		{
+			"id"		: 	"0.5",
+			"title"		: 	"О продавце/производителе",
+			"type"		:	"general_data",	
+			"widget_groups"	:
+			[
+				{
+					"title": "О продавце/производителе (TODO: информацию можно найти на упаковке товара или в договоре купли/продажи. Кому писать выбирайте с помощью Рекомендации по выбору адресата претензии)",
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		:	"SellerName",
+							"label"		:	"Наименование TODO: (например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов)"		
+						},
+						{
+							"widget_type" : "MapsWidget",
+                                              		"id" : "SellerAddress",
+                                              		"label" : "Адрес",
+							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
+                                              		"type" : "WSMaps"
+						}
+					
+					]
+						
+				}
+			],
+			"next"		:
+			[
+				{ 
+					"id" 		:	"1",
+					"predicates" 	:	
+					[
+						{
+						"step_id"	: "0",
+						"widget_id"	:	"IsItemDelivered",
+						"cond"		:	"==",
+						"value"		:	"1" 						
+						}
+					]
+				},
+				{ 
+					"id" 		:	"2",
+					"predicates" 	:
+					[	
+						{
+							"step_id"	: "0",
+							"widget_id"	:	"IsItemDelivered",
+							"cond"		:	"==",
+							"value"		:	"0" 						
+						}
+					]
+				}		
+			]					
+		},
+		{
+			"id"		:	"1",
+			"title"		:	"Проблемы при доставке",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"IsDeliveryProblems",
+					"label"		:	"Были ли проблемы при доставке?",
+					"value_list"	:
+					[
+						{
+							"label"	:	"Товар не привезли",
+							"value"	:	"0"
+						},
+						{			
+							"label"	:	"Товар привезли с опозданием",
+							"value"	:	"1"
+						},
+						{
+							"label"	:	"Проблем при доставке не было",
+							"value"	:	"2"
+						}
+					]
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"DeliveryDate",
+					"label"		:	"Дата доставки по договору",
+					"type"		:	"date",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"2"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"DeliveryDelayDays",
+					"label"		:	"На сколько дней опоздали с доставкой?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				}
+				
+				
+			],
+			"next"		:						
+			[ 
+				{ 
+					"id" 		:	"2",
+					"predicates" 	:
+					[	
+						{
+							"widget_id"	:	"IsDeliveryProblems",
+							"cond"		:	"==",
+							"value"		:	"1" 						
+						}
+					]
+				},
+				{ 
+					"id" 		:	"3",
+					"predicates" 	:	
+					[
+						{
+							"widget_id"	:	"IsDeliveryProblems",
+							"cond"		:	"==",
+							"value"		:	"0" 						
+						}
+					]
+				},
+				{
+				    "id"    :   "2",
+				    "predicates":
+				    [
+				        {
+				            "widget_id" : "IsDeliveryProblems",
+				            "cond"      : "==",
+				            "value"     : "2"
+				        }
+				    ]
+				}
+			]
+		},
+		{
+			"id"		:	"2",
+			"title"		:	"Недостатки товара и другие неприятности",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"IsItemProblems",
+					"label"		:	"Есть ли у товара недостатки?",
+					"value_list"	:
+					[
+						{
+							"label"	:	"Недостатков нет",
+							"value"	:	"0"
+						},
+						{
+												
+							"label"	:	"Найдены недостатки",
+							"value"	:	"1"
+						}
+					]	
+				},
+				{
+				 "widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsDate",
+					"label"		:	"Дата обнаружения недостатков",
+					"type"    : "date",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblems",
+					"label"		:	"Опишите, что не так TODO: Сделать TextArea; TODO2: (например: в йогурте был шуруп, телефон перезагружается каждые 5 минут. Постарайтесь заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"IsProblemsHealth",
+					"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)?",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsHealth",
+					"label"		:	"Напишите, в чём выразился вред здоровью TODO: Сделать TextArea; TODO3:  (например, Вы отравились. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsHealth",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"IsProblemsMoney",
+					"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара?",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"ItemProblemsMoney",
+					"label"		:	"Напишите, в чём выразился ущерб TODO: Сделать TextArea; TODO2:  (например, у Вас сломался двигатель из-за некачественного масла. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsMoney",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}						
+						]
+					}
+				}
+			],
+			"next"		:	[ { "id" : "3" } ] 					
+		},
+		{
+			"id"		:	"3",
+			"title"		:	"Требования",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsNotDelivered",
+					"label"		:	"Требую: ",
+					"value_list"	:
+					[
+						{
+							"value"	: 	"0",
+							"label"	:	"Передать товар в новый срок"
+						},
+
+						{
+							"value"	:	"1",
+							"label"	:	"Расторгнуть договор купли продажи и вернуть предоплату"
+						}
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestsNewDeliveryDate",
+					"label"		:	"Новый срок доставки товара",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNotDelivered",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							}						
+						]
+					}
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"RequestsDeliveryDelayMoney",
+					"label"		:	"Требуем уплаты неустойки в размере 3% за каждый день опоздания (если товар не привезли - за каждый день от даты доставки по договору до текущего дня)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"2"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"CheckBoxWidget",
+					"id"		:	"Prerequisite4TechComplicated",
+					"label"		:	"С момента покупки прошло не больше 15 дней или недостатки являются существенными TODO: ссылка: Что такое существенный недостаток?)",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsTechComplicated",
+					"label"		:	"Требую",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Расторгнуть договор купли-продажи и вернуть уплаченную за товар сумму"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Заменить товар с недостатками на товар этой же марки (модели)"
+						},
+						{
+							"value"	:	"2",
+							"label"	:	"Заменить товар с недостатками на товар другой марки (модели) с соответствующим перерасчётом покупной цены"
+						}
+	
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},							
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"Prerequisite4TechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}		
+				},
+				{
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"RequestsNonComplicated",
+					"label"		:	"Требую: ",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Расторгнуть договор купли-продажи и вернуть уплаченную за товар сумму"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Заменить товар с недостатком на товар этой же марки (модели)"
+						},
+						{
+							"value"	:	"2",
+							"label"	:	"Заменить на такой же товар другой марки (модели) с соответствующим перерасчётом покупной цены"
+						},
+						{
+							"value"	:	"3",
+							"label"	:	"Уменьшить покупную цену и вернуть мне разницу"
+						},
+						{
+							"value"	:	"4",
+							"label"	:	"Незамедлительно безвозмездно устранить недостатки товара"
+						},
+						{
+							"value"	:	"5",
+							"label"	:	"Возместить ущерб из-за устранения недостатков своими силами"
+						}
+
+					],
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"! =",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsItemProblems",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}		
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"PriceDiscountMoney",
+					"label"		:	"На сколько, Вы считаете, нужно снизить цену товара (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNonComplicated",
+								"cond"		:	"==",								
+								"value"		:	"3"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"SelfRepairMoney",
+					"label"		:	"Размер ущерба из-за возмещения недостатков своими силами",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNonComplicated",
+								"cond"		:	"==",								
+								"value"		:	"5"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestHealthProblems",						
+					"label"		:	"Во сколько Вы оцениваете вред, нанесённый Вашему здоровью (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsHealth",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"RequestDamage",
+					"label"		:	"Во сколько Вы оцениваете ущерб из-за недостатков товара (руб.)?",
+					"type"		:	"number",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"2",
+								"widget_id"	:	"IsProblemsMoney",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							}
+						]
+					}
+				}
+
+			],
+			"next"		:	[ { "id" : "4" } ] 					
+		},
+		{
+			"id"		:	"4",
+			"title"		:	"Текст претензии",
+			"type"		:	"document_text",
+			"widgets"	:
+			[
+				{
+					"widget_type"	: 	"DocumentViewWidget",
+					"id"		:	"BadItemComplaintView",
+					"label"		: 	"Перед Вами текст претензии. Вы можете скопировать его в буффер, сохранить или распечатать. Далее его нужно будет отправить адресату - как это сделать, описано на следующем шаге.",
+					"doc_name"	:	"BadItemComplaint" 
+				}
+			],
+			"next"		:	[ { "id" : "5" } ] 					
+		},
+		{
+			"id"		:	"5",
+			"title"		:	"Отправка претензии",
+			"type"		:	"timer",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"StaticTextWidget",
+					"id"		:	"SendCompaintInfo",
+					"label"		: "<div>   <li> Распечатайте текст претензии (не забудьте заполнить персональные данные!)   <li> Сделайте ксерокопию чека или договора купли-продажи и приложите их к претензии.<li> Отправьте претензию с приложениями, если они есть, по почте, заказным письмом с уведомлением о вручении - см. <a>TODO: Отправка заказного письма с уведомлением</a>. Тогда можно будет отследить, что письмо пришло адресату. А если дело дойдёт до суда, уведомление является доказательством получения адресатом претензии. <li> Укажите здесь, когда Вам придёт уведомление о доставке письма. После указания этого момента мы запустим отсчёт времени, в течение которого Вам должны будут ответить </div>"	
+				},
+				{
+          "widget_type" : "TimerFromDateWidget",
+          "id" : "SendCompaintTimer",
+          "pickDateMessage": "Когда вы получили уведомление о доставке претензии?",
+          "iDidItMessage": "Я отправил претензию и получил уведомление о доставке",
+          "initial":
+          {
+            "startDate": "0",
+            "pauseDate": "0",
+            "workingPeriod": {"days": "27", "hours": "0", "leftover": "0"},
+            "state": "stopped"
+          }
+}
+        
+				
+			],
+			"next"		:	[ { "id" : "6" } ] 					
+		},	
+		{
+		  "id"  : "6",
+		  "title" : "Все хорошо?",
+		  "widgets" : 
+		  [
+		    {
+					"widget_type"	:	"RadioGroupWidget",
+					"id"		:	"EndOfCaseQuestion",
+					"label"		:	"Получили ли Вы положительный ответ?",
+					"value_list"	:
+					[
+						{
+							"value"	:	"0",
+							"label"	:	"Да, моя претензия не удовлетворена!"
+						},
+						{
+							"value"	:	"1",
+							"label"	:	"Нет, ответ меня не удовлетворил"
+						}
+
+					]
+				}
+		  
+		  ],  
+		  "next"		:	
+			[
+			  { 
+					"id" 		:	"7",
+					"predicates" 	:	
+					[
+						{
+							"widget_id"	:	"EndOfCaseQuestion",
+							"cond"		:	"==",
+							"value"		:	"1" 						
+						}
+					]
+				},
+				{
+				    "id"    :   "endOfCase",
+				    "predicates":
+				    [
+				        {
+				            "widget_id" : "EndOfCaseQuestion",
+				            "cond"      : "==",
+				            "value"     : "0"
+				        }
+				    ]
+				} 
+			
+			]
+		},
+		{
+			"id"		:	"7",
+			"title"		:	"Отстаиваем свои права в суде",
+			"type"		:	"general_data",
+			"widgets"	:
+			[
+				{
+					"widget_type"	:	"StaticTextWidget",
+					"id"		:	"CourtInfo",
+					"label"		: "TODO: Рекомендации по подаче заявления в суд"	
+				}
+
+			]
+			 					
+		}	
+
+	]
+}
+
+
+
+
+
+
+

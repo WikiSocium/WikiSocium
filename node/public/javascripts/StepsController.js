@@ -1,5 +1,16 @@
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
+var userRegion = "";
+function GetUserRegion()
+{
+    console.log("userRegion : " +  userRegion);
+
+    if(userRegion == "")
+        return "Москва";
+    else
+        return userRegion;
+}
+
 var previousStepId = null;
 var currentStepId = null;
 
@@ -54,8 +65,7 @@ function ShowProperStep()
      });*/
 }
 
-function SaveFormData( curStep, nextStep, callback ) 
-{
+function SaveFormData( curStep, nextStep, callback ) {
   for (key in stepsHistory) 
   {
     if ( stepsHistory[key].id == nextStep ) 
@@ -77,15 +87,14 @@ function SaveFormData( curStep, nextStep, callback )
     
     $.ajax(
     {
-        url: window.location.pathname + '/submitForm'
-        , type:'POST'
-        , data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data))
-        , success: function(res) 
-        {
+        url: window.location.pathname + '/submitForm',
+        type: 'POST',
+        data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data)),
+        success: function(res) {
             callback();
             lastSaved = new Date();
-		}
-	, error: function(jqXHR, textStatus, errorThrown) {
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
 	        // [TODO]
         }
     });    
@@ -231,18 +240,18 @@ function FindNextStep(step_index)
     var nextStepId;
     if ( nextStepId = getNextStepId (currentStepId, nextInfo) ) 
     {      
-        previousStepId = currentStepId;      
-        currentStepId = nextStepId;
-      
+  
         //Сохраняем на сервере введенные данные
-        SaveFormData( previousStepId, currentStepId, function()
+        SaveFormData( currentStepId, nextStepId, function()
         {
-            if (currentStepId=="endOfCase")
+            if (nextStepId=="endOfCase")
             {
                 ShowEndCasePopup();
             }
             else
             {
+                previousStepId = currentStepId;      
+                currentStepId = nextStepId;
                 ShowProperStep();
                 CheckWidgetsVisibilityAndNextText( currentCaseData.GetStepIndexById(currentStepId) );
             }
@@ -332,9 +341,9 @@ function ShowEndCasePopup()
 {
   var modal_title = "Завершение дела";
   var buttons = [];
-  buttons.push(new modalButton ( "Отменить", function() { $( this ).dialog( "close" ); } ) );
+  buttons.push(new modalButton ( "Отменить", 'cancel' ) );
   buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
-  showModalWindow ( modal_title, "", buttons, 550, 320, "endCasePopup" );
+  showModalWindow ( modal_title, "", buttons, "endCasePopup" );
 }
 
 function HideEndCasePopup()
@@ -571,7 +580,7 @@ function HideInvisible(stepnum)
     	{
     		for (var j in solutionData.steps[tcs].widget_groups[i].widgets)
 		    {
-			    if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget")
+			    if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget" && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="TimerFromDateWidget" && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget" )
 			    {
 				    YUI().use('inputex', function(Y) 
     				{
@@ -588,7 +597,7 @@ function HideInvisible(stepnum)
     		{
     			if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible==false)
 			    {
-			        if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget")
+			        if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget"&& solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="TimerFromDateWidget" && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget")
 			    	{
 			    		YUI().use('inputex', function(Y) 
 		       			{
@@ -600,7 +609,7 @@ function HideInvisible(stepnum)
 			    }
 	    		else
 			    {
-			        if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget")
+			        if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined) && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget"&& solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="TimerFromDateWidget" && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget")
 				    {
 				    	YUI().use('inputex', function(Y) 
     					{
@@ -617,7 +626,7 @@ function HideInvisible(stepnum)
     {
     	if (solutionData.steps[tcs].widgets[i].visible==false)
     	{
-		    if ((solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)&&solutionData.steps[tcs].widgets[i].widget_type!="MapsWidget")
+		    if ((solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)&&solutionData.steps[tcs].widgets[i].widget_type!="MapsWidget"&& solutionData.steps[tcs].widgets[i].widget_type!="TimerFromDateWidget"&& solutionData.steps[tcs].widgets[i].widget_type!="StaticTextWidget")
 		    {
 			    YUI().use('inputex', function(Y) 
     			{
@@ -628,7 +637,7 @@ function HideInvisible(stepnum)
     	}
    		else
    		{
-            if ((solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)&&solutionData.steps[tcs].widgets[i].widget_type!="MapsWidget")
+            if ((solutionData.steps[tcs].widgets[i].IsRequired==true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)&&solutionData.steps[tcs].widgets[i].widget_type!="MapsWidget"&& solutionData.steps[tcs].widgets[i].widget_type!="TimerFromDateWidget"&& solutionData.steps[tcs].widgets[i].widget_type!="StaticTextWidget")
 			{
 				YUI().use('inputex', function(Y) 
 	    		{
