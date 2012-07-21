@@ -19,31 +19,39 @@ div(class="step", id="step_" + step_index + "")
       var step#{step_index}FieldsList = [];
       var notEmptyStep = false;
     //- If groups are defined, render widgets in them
+    //- console.log("init")
+    //- console.log("---------TYPEOF----------")
+    //- console.log(typeof(step.widget_groups))
     - if(typeof(step.widget_groups) != 'undefined')
       - each widget_group in step.widget_groups
         - var groupDivClass = "widgetGroup";
         - if(widget_group.no_group == "true") //-if widgets are meant to be shown outside group (only CSS magic)
           - groupDivClass = "";
-        div(class="#{groupDivClass}")
-          #{widget_group.title}
-          - each widget in widget_group.widgets
+        //-div(class="#{groupDivClass}")
+        form(class="form-vertical")
+          fieldset
+            #{widget_group.title}
+            - each widget in widget_group.widgets
+              - if (stepData == null)
+                //- console.log("init")
+                //- console.log(widget.initial)
+                !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
+              - else
+                //- console.log("Widget " + widget.id + " initialization with data loading");
+                !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
+    - else //- Else render all widgets in one implicit group
+      form(class="form-vertical")
+        fieldset
+          //- console.log("---------TYPEOF STEP WIDGETS----------")
+          //- console.log(typeof(step.widgets))
+          - each widget in step.widgets
             - if (stepData == null)
-              - console.log("init")
-              - console.log(widget.initial)
+              //- console.log("init")
+              //- console.log(widget.initial)
               !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
             - else
-              - console.log("Widget " + widget.id + " initialization with data loading");
+              //- console.log("Widget " + widget.id + " initialization with data loading");
               !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
-    - else //- Else render all widgets in one implicit group
-      - each widget in step.widgets
-        - if (stepData == null)
-          - console.log("init")
-          - console.log(widget.initial)
-          !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
-        - else
-          - console.log("Widget " + widget.id + " initialization with data loading");
-          !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
-
     script(type = 'text/javascript')
       groups[#{step_index}] = step#{step_index}FieldsList;
     !="<script type = 'text/javascript'>"
