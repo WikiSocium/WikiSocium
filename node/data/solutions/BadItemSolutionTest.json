@@ -31,6 +31,24 @@
 			                "id": "Region",
 			                "label": "Укажите регион"
 			            },
+                        {
+                            "widget_type" : "FullNameTextFieldWidget",
+                            "id" : "fullname",
+                            "label" : "ФИО",
+                            "type" : "string"
+                        },
+                        {
+                            "widget_type" : "TimeTextFieldWidget",
+                            "id" : "time",
+                            "label" : "Время нарушения",
+                            "type" : "string"
+                        },
+                        {
+                            "widget_type" : "TextAreaWidget",
+                            "id" : "textarea",
+                            "label" : "Примечания",
+                            "type" : "string"
+                        },
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",

@@ -1,0 +1,10 @@
+extends BaseWidget
+
+block content
+  label
+    #{widget.label}
+  textarea(id='step#{step_id}_#{widget.id}', class='input-xlarge')
+  script(type='text/javascript', src='/javascripts/customWidgets/text_area.js')
+  script(type='text/javascript')
+    step#{step_id}FieldsList['!{widget.id}'] = new TextArea(document.getElementById("step#{step_id}_#{widget.id}"), 
+        document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"));
