@@ -1,12 +1,10 @@
 extends BaseWidget
 
 block content
-  div(class='control-group')
-    label(class='control-label')
-      #{widget.label}
-    div(class='controls')
-      input(type='text', id='step#{step_id}_#{widget.id}')
+  label
+    #{widget.label}
+  input(type='text', id='step#{step_id}_#{widget.id}')
   script(type='text/javascript', src='/javascripts/customWidgets/text_field.js')
   script(type='text/javascript')
-    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
+    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/^[ \t]*[A-Za-zА-Яа-я]{0,3}\d{3,4}[A-Za-zА-Яа-я]{0,2}\d{0,4}[ \t]*\d{0,3}[ \t]*$/, 
       document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"));
