@@ -5,16 +5,15 @@ try {
 var buf = [];
 with (locals || {}) {
 var interp;
-var __indent = [];
 __jade.unshift({ lineno: 1, filename: __jade[0].filename });
 __jade.unshift({ lineno: 2, filename: __jade[0].filename });
 buf.push('\n<div>');
 __jade.unshift({ lineno: undefined, filename: __jade[0].filename });
 __jade.unshift({ lineno: 2, filename: __jade[0].filename });
-buf.push('' + escape((interp = data[0].fio) == null ? '' : interp) + ', this is a test document with a param.');
+buf.push('' + escape((interp = data[0].fio) == null ? '' : interp) + ', this is a test document with a param.\n');
 __jade.shift();
 __jade.shift();
-buf.push('</div>');
+buf.push('\n</div>');
 __jade.shift();
 __jade.shift();
 }
