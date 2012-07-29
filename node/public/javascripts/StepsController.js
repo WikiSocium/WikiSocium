@@ -588,7 +588,7 @@ function HideInvisible(stepnum)
 				    });
 			    }
 
-    		    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+    		    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
 		    }
     	}
     	else
@@ -605,7 +605,7 @@ function HideInvisible(stepnum)
 			    		});
 			    	}
 
-	    	        $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+	    	        $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
 			    }
 	    		else
 			    {
@@ -617,7 +617,7 @@ function HideInvisible(stepnum)
 				    	});
 				    }
 
-	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).show();
+	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
 			    }
 	   		}
 	   	}
@@ -633,7 +633,7 @@ function HideInvisible(stepnum)
     				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
 			    });
 		    }
-    		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
+    		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").hide();
     	}
    		else
    		{
@@ -641,10 +641,10 @@ function HideInvisible(stepnum)
 			{
 				YUI().use('inputex', function(Y) 
 	    		{
-	    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
+    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
 				});
 			}
-			$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+			$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").show();
 
 		}
     }
