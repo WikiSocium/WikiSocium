@@ -3,6 +3,13 @@ function TextField(regexp, element, parentEl)
   this.element = element;
   this.parentEl = parentEl;
   this.regexp = regexp;
+  this.options = {};
+  this.IsRequired = true;
+  this.setOptions = function(param)
+  {
+      this.options = param;
+      this.IsRequired = param.required;
+  };  
   $(this.element).valid8({
         'regularExpressions': [
         { expression: regexp, errormessage: 'Поле заполнено неверно!'}
