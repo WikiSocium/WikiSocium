@@ -139,7 +139,32 @@
 		
 				
 			],
-			"next"		:	[{ "id": "0.5"} ] 					
+			"next"		:	[
+			                    { 
+			                        "id": "0.5",
+			                        "predicates":
+			                        [
+			                            {
+			                                "step_id": "0",
+			                                "widget_id": "Region",
+			                                "cond": "!=",
+			                                "value": "Адыгея"
+			                            }
+			                        ]
+			                    },
+			                    {
+			                        "id": "disableNext",
+			                        "predicates":
+			                        [
+			                            {
+			                                "step_id": "0",
+			                                "widget_id": "Region",
+			                                "cond": "==",
+			                                "value": "Адыгея"
+			                            }
+			                        ]
+			                    }
+			                ] 					
 		},
 		{
 			"id"		: 	"0.5",
