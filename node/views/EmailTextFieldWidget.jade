@@ -7,4 +7,4 @@ block content
   script(type='text/javascript', src='/javascripts/customWidgets/text_field.js')
   script(type='text/javascript')
     step#{step_id}FieldsList['!{widget.id}'] = new TextField(/^[_\-\.0-9a-z]+"([0-9a-z][_0-9a-z\.]+)\.([a-z]{2,5}$)/, 
-      document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"));
+      document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "#{value}");

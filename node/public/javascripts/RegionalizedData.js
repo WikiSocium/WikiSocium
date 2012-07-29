@@ -21,7 +21,7 @@ RegionalizedData =
     GetDataFromDBWithRegion: function(region, db, dataId, callback)
     {
         // [TODO] treat dataId, if it is only string (not array) as string
-        // [TODO] also, if dataId is only a string, eturn only a string
+        // [TODO] also, if dataId is only a string, return only a string
         RegionalizedData.downloadedData = [];
         asyncLoop({
             length: dataId.length,

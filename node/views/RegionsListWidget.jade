@@ -11,7 +11,6 @@ block content
         step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({label: '!{widget.label}', name: 'step#{step_id}_#{widget.id}', choices: [], value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
         for (reg in res)
         {
-        console.log(reg);
             if(res[reg] == "#{value}")
             {
                 userRegion = "#{value}";

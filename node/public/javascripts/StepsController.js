@@ -756,8 +756,7 @@ function Save() {
 
 function AutoSave() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
-  
+  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );  
 }
 
 /*
