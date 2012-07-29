@@ -33,7 +33,6 @@
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
-							"IsRequired"    : false,
 							"label"  :
 							{
 							    "name": "Что купили?",
@@ -68,27 +67,37 @@
 							}
 						},
 						{
-							"widget_type"	:	"CheckBoxWidget",
-							"id"		:	"IsItemPrePaid",
-							"label"		:	"Была ли предоплата?",
-							"isVisible"	:
-							{
-								"predicates"	:
-								[
-									{
-										"step_id"	:	"0",
-										"widget_id"	:	"IsItemDelivered",
-										"cond"		:	"==",
-										"value"		:	"1"	
-									}								
-								]
-							}	
-	
-						},
+					      "widget_type"	:	"RadioGroupWidget",
+					      "id"		:	"IsDeliveryCost",
+					      "label"		:	"Известна ли стоимость доставки?",
+					      "value_list"	:
+					      [
+						      {
+							        "label"	:	"Да, я знаю стоимость доставки",
+							        "value"	:	"0"
+						      },
+						      {			
+							        "label"	:	"Нет, доставка бесплатная/включена в стоимость товара",
+							        "value"	:	"1"
+						      }
+					      ],
+					      "isVisible"	:
+							  {
+								  "predicates"	:
+								  [
+								  	{
+								  		"step_id"	:	"0",
+								  		"widget_id"	:	"IsItemDelivered",
+								  		"cond"		:	"==",
+								  		"value"		:	"1"	
+								  	}								
+								  ]
+							  }
+				    },
 						{
 							"widget_type"	:	"TextFieldWidget",
-							"id"		:	"ItemPrePaidPrice",
-							"label"		:	"Размер предоплаты",
+							"id"		:	"ItemDeliveryCost",
+							"label"		:	"Укажите стоимость доставки, руб",
 							"type"		:	"number",
 							"isVisible"	:
 							{
@@ -102,9 +111,9 @@
 									},
 									{
 										"step_id"	:	"0",
-										"widget_id"	:	"IsItemPrePaid",
+										"widget_id"	:	"IsDeliveryCost",
 										"cond"		:	"==",
-										"value"		:	"1"	
+										"value"		:	"0"	
 									}
 								]
 							} 
@@ -122,7 +131,7 @@
 		},
 		{
 			"id"		: 	"0.5",
-			"title"		: 	"О продавце/производителе",
+			"title"		: 	"О продавце/производителе и о себе",
 			"type"		:	"general_data",	
 			"widget_groups"	:
 			[
@@ -132,8 +141,13 @@
 					[
 						{
 							"widget_type"	:	"TextFieldWidget",
-							"id"		:	"SellerName",
-							"label"		:	"Наименование TODO: (например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов)"		
+							"id"		      :	"SellerName",
+							"label"       :  
+							{	
+							    "name"        : "Название продавца/производителя",
+							    "comment"     : "например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов",
+							    "description" : ""
+							}		
 						},
 						{
 							"widget_type" : "MapsWidget",
@@ -141,6 +155,35 @@
                                               		"label" : "Адрес",
 							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
                                               		"type" : "WSMaps"
+						}
+					]
+				},
+				{
+					"title": "О себе",
+					"widgets":
+					[
+						{
+							"widget_type"	:	"TextFieldWidget",
+							"id"		      :	"UserName",
+							"label"       :  
+							{	
+							    "name"        : "Ваши Фамилия, Имя и Отчество",
+							    "comment"     : "Пишите, как в паспорте",
+							    "description" : ""
+							}		
+						},
+						{
+							"widget_type" : "MapsWidget",
+              "id"          : "UserAddress",
+              "IsRequired"  : false,
+							"label"       :  
+							{	
+							    "name"        : "Ваш домашний адрес",
+							    "comment"     : "Мы сохраняем Вашу конфиденциальную информацию втайне, но Вы можете не заполнять это поле - тогда позже надо будет внести эти данные в документы вручную",
+							    "description" : ""
+							},
+							"initial"     : {"lat": "55.690725", "lng": "37.413179", "address": ""},
+              "type"        : "WSMaps"
 						}
 					
 					]
@@ -319,9 +362,14 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"TextAreaWidget",
 					"id"		:	"ItemProblems",
-					"label"		:	"Опишите, что не так TODO: Сделать TextArea; TODO2: (например: в йогурте был шуруп, телефон перезагружается каждые 5 минут. Постарайтесь заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"label"		:	
+					{
+					    "name"        : "Опишите, что не так",
+					    "comment"     : "Например: в йогурте был шуруп, телефон перезагружается каждые 5 минут",
+					    "description" : "Постарайтесь заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
+					},
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -353,9 +401,14 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"TextAreaWidget",
 					"id"		:	"ItemProblemsHealth",
-					"label"		:	"Напишите, в чём выразился вред здоровью TODO: Сделать TextArea; TODO3:  (например, Вы отравились. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"label"		:	
+					{
+					    "name"        : "Напишите, в чём выразился вред здоровью",
+					    "comment"     : "Например: Вы отравились",
+					    "description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
+					},
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -393,9 +446,14 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"TextAreaWidget",
 					"id"		:	"ItemProblemsMoney",
-					"label"		:	"Напишите, в чём выразился ущерб TODO: Сделать TextArea; TODO2:  (например, у Вас сломался двигатель из-за некачественного масла. Необходимо заручиться доказательствами - см. Рекомендации по фиксации недостатков и другого ущерба)",
+					"label"		:	
+					{
+					    "name"        : "Напишите, в чём выразился ущерб",
+					    "comment"     : "Например: у Вас сломался двигатель из-за некачественного масла",
+					    "description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
+					},
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -496,7 +554,12 @@
 				{
 					"widget_type"	:	"CheckBoxWidget",
 					"id"		:	"Prerequisite4TechComplicated",
-					"label"		:	"С момента покупки прошло не больше 15 дней или недостатки являются существенными TODO: ссылка: Что такое существенный недостаток?)",
+					"label"		:	
+					{
+					  "name": "С момента покупки прошло не больше 15 дней или недостатки являются существенными",
+					  "comment": "",
+					  "description": "<iref dataId=\"Существенный недостаток\" baseId=\"texts\">Что такое существенный недостаток?</iref>"
+					},
 					"isVisible"	:
 					{
 						"predicates"	:
