@@ -531,7 +531,7 @@ function CountVisibility(stepnum)
 						w.visible=false;
 					else
 					{
-						w.visible=true;tcp.widgets[i]
+						w.visible=true;
 						for (k in w.isVisible.predicates)
 						{
 					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
