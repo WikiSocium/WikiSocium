@@ -1,15 +1,15 @@
 div(class="widgetData", id="widgetId")
   -if(aWidget.type == 'string')
     script(type='text/javascript')
-      step#{stepId}FieldsList.push({ type: 'string', label: '#{aWidget.label}', name: '#{aWidget.name}', value: '#{wValue}', required:true });
+      step#{stepId}FieldsList.push({ type: 'string', name: '#{aWidget.name}', value: '#{wValue}', required:true });
       notEmptyStep = true;
   -else if(aWidget.type == 'timeInterval')
     script(type='text/javascript')
-      step#{stepId}FieldsList.push({ type: 'timeinterval', label: '#{aWidget.label}', name: '#{aWidget.name}', value: '#{wValue}', required:true });
+      step#{stepId}FieldsList.push({ type: 'timeinterval', name: '#{aWidget.name}', value: '#{wValue}', required:true });
       notEmptyStep = true;
   -else if(aWidget.type == 'date')
     script(type='text/javascript')
-      step#{stepId}FieldsList.push({ type: 'datepicker', label: '#{aWidget.label}', name: '#{aWidget.name}', value: new Date('#{wValue}'), dateFormat: 'd/m/Y'});
+      step#{stepId}FieldsList.push({ type: 'datepicker', name: '#{aWidget.name}', value: new Date('#{wValue}'), dateFormat: 'd/m/Y'});
       notEmptyStep = true;
   -else
     p Unsupportable widget detected!

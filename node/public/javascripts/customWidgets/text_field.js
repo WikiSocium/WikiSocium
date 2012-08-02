@@ -1,4 +1,4 @@
-function TextField(regexp, element, parentEl)
+function TextField(regexp, element, parentEl, value)
 { 
   this.element = element;
   this.parentEl = parentEl;
@@ -15,6 +15,7 @@ function TextField(regexp, element, parentEl)
         { expression: regexp, errormessage: 'Поле заполнено неверно!'}
         ]
   });
+  $(this.element).val(value);
 };
 
 TextField.prototype.getValue = function()

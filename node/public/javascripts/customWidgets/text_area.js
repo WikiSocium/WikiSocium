@@ -1,4 +1,4 @@
-function TextArea(element, parentEl)
+function TextArea(element, parentEl, value)
 { 
   this.element = element;
   this.parentEl = parentEl;
@@ -8,6 +8,7 @@ function TextArea(element, parentEl)
       this.options = param;
       this.IsRequired = param.required;
   };  
+  $(this.element).val(value);
 };
 
 TextArea.prototype.getValue = function()
