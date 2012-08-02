@@ -7,8 +7,8 @@ block content
   </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
-  <button class="btn btn-primary" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</button>
-  <button class="btn btn-primary" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</button>
+  <button class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</button>
+  <button class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</button>
   
   script
     (function(){
@@ -22,7 +22,7 @@ block content
         {
             for(var j = 0; j < data[i].length; j++)
             {
-                var rec = $("<div class='documentOrganizationsRecord'></div>").append($("<div class='documentOrganizationsRecorTitle'></div>").html(data[i][j]["title"] + " (" + times[i] + ")"));
+                var rec = $("<div class='documentOrganizationsRecord'></div>").append($("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[i] + " дней)")));
                 var cont = $("<div class='documentOrganizationsRecordDescription'></div>");
                 for(var key in data[i][j]["description"])
                 {
@@ -48,6 +48,9 @@ block content
                 }
             }
         }
+        // If there is only one organization, keep it shown
+        if($(".documentOrganizationsRecordDescription").length == 1)
+            $(".documentOrganizationsRecordDescription").show();
         $(".documentOrganizationsRecord").click(function(){
             $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
             $(this).children(".documentOrganizationsRecordDescription").show();
