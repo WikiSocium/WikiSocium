@@ -2,8 +2,6 @@ extends BaseWidget
 
 block content
   div(class='control-group')
-    label(class='control-label')
-      #{widget.label}
     div(class='controls')
       input(type='text', id='step#{step_id}_#{widget.id}')
   script(type='text/javascript', src='/javascripts/customWidgets/text_field.js')
