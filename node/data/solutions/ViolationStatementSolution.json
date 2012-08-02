@@ -56,33 +56,7 @@
                                     "id" : "time",
                                     "label" : "Время нарушения",
                                     "type" : "string"
-                              },
-                              {
-                                    "widget_type" : "TimerFromDateWidget",
-                                    "id" : "timer1",
-                                    "pickDateMessage": "Когда вы отправили заявление?",
-                                    "iDidItMessage": "Йа отправил заявление!!!11",
-                                    "initial": 
-                                    {
-                                      "startDate": "0",
-                                      "pauseDate": "0",
-                                      "workingPeriod": {"days": "5", "hours": "0", "leftover": "0"},
-                                      "state": "stopped"
-                                    } 
-                              },
-                              {
-                                    "widget_type" : "TimerTillDateWidget",
-                                    "id" : "timer11",
-                                    "pickDateMessage": "Когда к вам приедет ОМОН",
-                                    "iDidItMessage": "Йа был на митинге!!!",
-                                    "initial": 
-                                    {
-                                      "startDate": "0",
-                                      "pauseDate": "0",
-                                      "endDate": "0",
-                                      "state": "stopped"
-                                    } 
-                              }
+                              }                              
                         ]
                   },
                   {
@@ -139,7 +113,25 @@
                                         { "value": "witness", "label": "я являюсь непосредственным свидетелем" },
                                         { "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
                                     ]
-                            }
+                            },
+                            {
+                                "widget_type" : "TextAreaWidget",
+                                "id": "source",
+                                "label": "Опишите из каких источников вы узнали о проавонарушении, укажите ссылки на интернет-ресурсы.",
+                                "type" : "string",
+                                "isVisible" :
+    							{
+    							    "predicates" :
+    							    [
+    							        {
+    							            "step_id" : "1",
+    							            "widget_id": "radio",
+    							            "cond" : "==",
+    							            "value" : "notwitness"
+    							        }
+    							    ]
+    						    }
+                            }                            
                         ]
                   }
             ],
@@ -155,8 +147,8 @@
                         "widgets": 
                         [
                             {
-                                                                "widget_type": "URLOpenerWidget",
-                                                              "id": "url"
+                                  "widget_type": "URLOpenerWidget",
+                                  "id": "url"
                             }                
                         ]
                   }
@@ -206,7 +198,7 @@
             },
         {           
             "id"         : "5",
-            "title"      : "Ждем-с",     
+            "title"      : "Тут нужно сделать виджет WaitList",     
             "type"       : "time",    
             "widget_groups": 
             [

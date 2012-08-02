@@ -458,7 +458,7 @@ function CheckWidgetsVisibilityAndNextText (stepnum)
                 {    
                     for (var k in tcp.widget_groups[i].widgets)
                     {
-                        var iv=tcp.widget_groups[i].widgets[k].IsVisible;
+                        var iv=tcp.widget_groups[i].widgets[k].isVisible;
                         if (iv!=undefined)
                         {
                             if (iv.predicates!=undefined)
@@ -531,7 +531,7 @@ function CountVisibility(stepnum)
 						w.visible=false;
 					else
 					{
-						w.visible=true;tcp.widgets[i]
+						w.visible=true;
 						for (k in w.isVisible.predicates)
 						{
 					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
