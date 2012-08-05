@@ -165,6 +165,7 @@
                         "widgets": 
                             [
                                 {
+                                    "id" : "violation_doc",
                                     "widget_type" : "DocumentViewWidget",
                                     "InfoText" : {"name" : "Заявление",
                                                   "comment" : "Отправка заявления",

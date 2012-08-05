@@ -8,6 +8,17 @@
     margin-right: 5px;
 }
 
+.documentOrganizationTimer
+{
+    display: inline-block;
+    
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    
+    background-color: red;
+}
+    
 .documentOrganizationsRecordDescription
 {
     position:relative;    

@@ -606,7 +606,11 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   if(requiredDocuments)
                   {
                     for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                    if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
+                    if(requiredDocuments.length != 0)
+                    {
+                        scriptsToInject.push("/documents/DocumentsController.js");
+                        scriptsToInject.push("/javascripts/customWidgets/DocumentViewWidget.js");
+                    }
                     scriptsToInject.push("/javascripts/nicEdit.js");
                     scriptsToInject.push("/markitup/sets/default/set.js");            
                     stylesToInject.push("/markitup/sets/default/style.css");
@@ -666,6 +670,11 @@ app.post('/GetRegionalizedData', function(req, res) {
   
   if(db == "organizations") {
     Organizations.findOne ({ organization_name: dataId }, function(e, organization_item) {
+      if(e)
+        {
+            console.log("There was an error while fetching data from organizations db: ");
+            console.log(e);
+        }
       if(organization_item)          
         for(var anotherRegion in organization_item.regions_list)
           if(organization_item.regions_list[anotherRegion].region_name == region)
