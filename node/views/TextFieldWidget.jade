@@ -1,9 +1,10 @@
 extends BaseWidget
 
 block content
+  div(class='control-group')
+    div(class='controls')
+      input(type='text', id='step#{step_id}_#{widget.id}')
+  script(type='text/javascript', src='/javascripts/customWidgets/text_field.js')
   script(type='text/javascript')
-    YUI().use('inputex', 'inputex-string'
-    , function(Y) 
-    {
-    step#{step_id}FieldsList['!{widget.id}'] = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
-    });
+    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
+      document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "#{value}");

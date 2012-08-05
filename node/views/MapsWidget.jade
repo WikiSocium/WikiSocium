@@ -18,7 +18,7 @@ block content
       YUI().use('inputex', 'inputex-string'
       , function(Y) 
       {
-        mapField = new Y.inputEx.StringField({label: '#{widget.label}', name: 'step#{step_id}_#{widget.id}', value: '#{val.address}', required:false, parentEl: 'step#{step_id}_#{widget.id}_AddressID'});
+        mapField = new Y.inputEx.StringField({name: 'step#{step_id}_#{widget.id}', value: '#{val.address}', required:false, parentEl: 'step#{step_id}_#{widget.id}_AddressID'});
         mapField.on('updated', function(value)
         {
           map.address = value;

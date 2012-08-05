@@ -487,14 +487,9 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
   				if (!error && response.statusCode == 200) {
   					console.log(body);
   					var answer = JSON.parse(body);
-  					  res.render('about', {
-    'title':"О проекте",
-    'user':req.currentUser,
-    'menu':res.menu,
-    'headerStats': res.headerStats,
-    'scripts':[],
-    'styles':[]
-  }); 
+  					//У переменной answer есть три поля: uid, first_name и last_name.
+  					console.log(answer);
+  					res.redirect('/');
 	   			}	
   			})
   						
@@ -801,16 +796,86 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
-      if(!err) {
-        res.render('mycases', {
-          'title':  'Мои дела',
-          'user':   req.currentUser,
-          'menu':   res.menu, 
-          'headerStats': res.headerStats,
-          'userData': JSON.parse(data),
-          'scripts': [],
-          'styles': []
-        });
+      if(!err) 
+      {
+        var userData=JSON.parse(data);
+        async.forEach (userData.cases, function (curCase, callback)
+        {
+          console.log(curCase.caseId);
+          fs.readFile('data/UserData/'+req.currentUser.email+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
+          {
+            if (!err1)
+            {
+              var caseData=JSON.parse(data1);
+              console.log(caseData.currentStep);
+              Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
+              {
+                if (document) 
+                {
+                  console.log(document.filename);
+                  fs.readFile('data/solutions/'+document.filename, "utf-8", function(err2, data2) 
+                  {
+                    if (!err2)
+                    {
+                      var solutionData=JSON.parse(data2);
+                      var currentStepNum=0;
+                      for (var cs in solutionData.steps)
+                      {
+                        if (solutionData.steps[cs].id==caseData.currentStep)
+                        {
+                          currentStepNum=cs;
+                          break;
+                        }
+                      }
+                      console.log(solutionData.steps[currentStepNum].title);
+                      var sectionNum=-1;
+                      var stepInSection=-1;
+                      for (var s in solutionData.sections)
+                      {
+                        for (var s0 in solutionData.sections[s].steps)
+                        {
+                          if (solutionData.sections[s].steps[s0]==caseData.currentStep)
+                          {
+                            sectionNum=s;
+                            stepInSection=s0;
+                            stepInSection++;
+                            break;
+                          }
+                        }
+                      }
+                      curCase.sectionName=solutionData.sections[sectionNum].name;
+                      curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
+                      curCase.stepInSection=stepInSection;
+                      curCase.stepName=solutionData.steps[currentStepNum].title;
+                      callback(err2);
+                    }
+                    else 
+                      callback(err2);
+                  });
+                }
+                else
+                  callback(err3);
+              });
+            }
+            else
+              callback(err1);
+          });
+        },
+        function(err0)
+        {
+          if(err0==null)
+          {
+            res.render('mycases', {
+                'title':  'Мои дела',
+                'user':   req.currentUser,
+                'menu':   res.menu, 
+                'headerStats': res.headerStats,
+                'userData': userData,
+                'scripts': [],
+                'styles': []
+            });
+          }
+        });        
       }
       else RenderError(req,res, err);
     });

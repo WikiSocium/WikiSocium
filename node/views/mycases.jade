@@ -20,7 +20,7 @@ mixin formatDate(date)
     .row.user-case-list-item
       .span8.offsethalf
         p.status
-          a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")): span.to-var Здесь будет текст статуса дела. Чтобы войти в дело &mdash; кликать по нему
+          a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")): #{aCase.sectionName} > #{aCase.stepName} (#{aCase.stepInSection}/#{aCase.sectionLength})
         p(style="margin-top: 15px;")
           - if ( aCase.problemName != undefined)
             a(href="/Problems/" + aCase.problemName.replace(/ /g,"_")) #{aCase.problemName}

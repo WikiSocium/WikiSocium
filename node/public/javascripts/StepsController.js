@@ -129,28 +129,31 @@ function CheckPredicate(predicate)
 
 function NextStep() 
 {
-  $("#validationFailedMessage").hide("fast"); 
-  
-  //Производим валидацию шага
-  
-  YUI().use('inputex', function(Y) 
+  if ($("#next_btn").attr("disabled")!="disabled")
   {
-      step_index = currentCaseData.GetStepIndexById(currentStepId);
-      var isValid = true;
+      $("#validationFailedMessage").hide("fast"); 
+    
+      //Производим валидацию шага
       
-    for(var widg in groups[step_index])
-    {
-        if(!groups[step_index][widg].validate()) 
+      YUI().use('inputex', function(Y) 
+      {
+          step_index = currentCaseData.GetStepIndexById(currentStepId);
+          var isValid = true;
+          
+        for(var widg in groups[step_index])
         {
-            isValid = false; break;
+            if(!groups[step_index][widg].validate()) 
+            {
+                isValid = false; break;
+            }
         }
-    }
-    if (isValid) FindNextStep(step_index);
-    else //Радуем пользователя сообщением о неправильном заполнении формы
-    {
-        $("#validationFailedMessage").show("slow");
-    }
-  });
+        if (isValid) FindNextStep(step_index);
+        else //Радуем пользователя сообщением о неправильном заполнении формы
+        {
+            $("#validationFailedMessage").show("slow");
+        }
+      });
+  }
 } 
 
 function SetWidgetValue (sn, wid, data)
@@ -455,7 +458,7 @@ function CheckWidgetsVisibilityAndNextText (stepnum)
                 {    
                     for (var k in tcp.widget_groups[i].widgets)
                     {
-                        var iv=tcp.widget_groups[i].widgets[k].IsVisible;
+                        var iv=tcp.widget_groups[i].widgets[k].isVisible;
                         if (iv!=undefined)
                         {
                             if (iv.predicates!=undefined)
@@ -528,7 +531,7 @@ function CountVisibility(stepnum)
 						w.visible=false;
 					else
 					{
-						w.visible=true;tcp.widgets[i]
+						w.visible=true;
 						for (k in w.isVisible.predicates)
 						{
 					        sourceStep = currentCaseData.GetStepIndexById(w.isVisible.predicates[k].step_id);
@@ -588,7 +591,7 @@ function HideInvisible(stepnum)
 				    });
 			    }
 
-    		    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+    		    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
 		    }
     	}
     	else
@@ -605,7 +608,7 @@ function HideInvisible(stepnum)
 			    		});
 			    	}
 
-	    	        $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).hide();
+	    	        $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
 			    }
 	    		else
 			    {
@@ -617,7 +620,7 @@ function HideInvisible(stepnum)
 				    	});
 				    }
 
-	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id).show();
+	    		   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
 			    }
 	   		}
 	   	}
@@ -633,7 +636,7 @@ function HideInvisible(stepnum)
     				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
 			    });
 		    }
-    		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).hide();
+    		$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").hide();
     	}
    		else
    		{
@@ -641,10 +644,10 @@ function HideInvisible(stepnum)
 			{
 				YUI().use('inputex', function(Y) 
 	    		{
-	    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
+    				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
 				});
 			}
-			$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id).show();
+			$("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").show();
 
 		}
     }
@@ -670,14 +673,21 @@ function CheckNextText (stepnum)
 {
     var nextInfo = solutionData.steps[stepnum].next;
     var endExists=false;
+    var disableExists=false;
     for (var i in nextInfo)
     {
         if (nextInfo[i].id=="endOfCase")
             endExists=true;
+        if (nextInfo[i].id=="disableNext")
+            disableExists=true;
     }
     if (endExists==false)
     {
         $("#next_btn").text("Следующий шаг");
+    }
+    if (disableExists==false)
+    {
+        $("#next_btn").removeAttr("disabled");
     }
     else
     {
@@ -685,9 +695,10 @@ function CheckNextText (stepnum)
         {
             var nextInfo = solutionData.steps[stepnum].next;
             var end=false;
+            var dis=false;
             for (var i in nextInfo)
             {
-                if (nextInfo[i].id=="endOfCase")
+                if (nextInfo[i].id=="endOfCase" || nextInfo[i].id=="disableNext")
                 {
                     var sid=nextInfo[i].step_id;
                     var wid=nextInfo[i].widget_id;
@@ -721,18 +732,33 @@ function CheckNextText (stepnum)
                     }
                     if (nextInfo[i].type == undefined) 
                     {
-                        var check = true;
-                        for (var j in nextInfo[i].predicates) 
+                        if (nextInfo[i].id=="endOfCase")
                         {
-                            check = this.CheckPredicate(nextInfo[i].predicates[j]);
-                            if (check == false) 
+                            var check = true;
+                            for (var j in nextInfo[i].predicates) 
                             {
-                                break;
+                                check = this.CheckPredicate(nextInfo[i].predicates[j]);
+                                if (check == false) 
+                                {
+                                    break;
+                                }
+                            }
+                            if (check==true)
+                            {
+                                end=true;
                             }
                         }
-                        if (check==true)
+                        if (nextInfo[i].id=="disableNext")
                         {
-                            end=true;
+                            var check=true;
+                            for (var j in nextInfo[i].predicates)
+                            {
+                                check=this.CheckPredicate(nextInfo[i].predicates[j]);
+                                if (check==false)
+                                    break;
+                            }
+                            if (check==true)
+                                dis=true;
                         }  
                     }
                 }
@@ -745,6 +771,14 @@ function CheckNextText (stepnum)
             {
                $("#next_btn").text("Следующий шаг");
             }
+            if (dis==true)
+            {
+                $("#next_btn").attr("disabled", "disabled");
+            }
+            else
+            {
+                $("#next_btn").removeAttr("disabled");
+            }
       } ); 
     }
 }
@@ -756,8 +790,7 @@ function Save() {
 
 function AutoSave() {
   previousStepId = getPreviousStepId ( currentStepId );
-  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );
-  
+  SaveFormData( previousStepId, currentStepId, function() { setTimeout(AutoSave, autoSaveTime); } );  
 }
 
 /*

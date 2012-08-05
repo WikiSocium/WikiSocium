@@ -2,23 +2,32 @@
 
 #steps
 {}
+    
+.documentButtons
+{
+    margin-right: 5px;
+}
 
 .documentOrganizationsRecordDescription
 {
-    background-color: #fff;
     position:relative;    
     display: none;
 }
 
-.documentOrganizationsRecorTitle
-{
-    text-decoration: underline;
-}
-
+.documentOrganizationsRecorTitle,
 .documentOrganizationsRecorTitle:hover
 {
-    text-decoration: underline;
-    
+    font-style: italic;
+}
+
+.documentOrganizationsRecorTitle span
+{
+    border-bottom: 1px dashed;
+}
+
+.documentOrganizationsRecorTitle:hover span
+{
+    border-bottom: 1px dashed;
     cursor: pointer;    
 }
 
@@ -51,17 +60,18 @@
 {
     float: left;
     display: block;    
-    width: 65%;
+    width: 64%;
     height: auto;
     
     margin-bottom: 10px;
+    margin-right: 10px;    
 }
 
 .step
 {
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #eee;
+    background-color: #fff;
     
     display: block;    
 }
@@ -113,6 +123,8 @@
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
+    
+    margin-rigth: 10px;
     
     cursor: pointer;
 }

@@ -27,15 +27,37 @@
 			"widgets":
 			[
 			            {
+			                "widget_type": "StaticTextWidget",
+			                "label": "Проверка работы статического текста"
+			            },
+			            {
 			                "widget_type": "RegionsListWidget",
 			                "id": "Region",
 			                "label": "Укажите регион"
 			            },
+                        {
+                            "widget_type" : "FullNameTextFieldWidget",
+                            "id" : "fullname",
+                            "label" : "ФИО",
+                            "type" : "string"
+                        },
+                        {
+                            "widget_type" : "TimeTextFieldWidget",
+                            "id" : "time",
+                            "label" : "Время нарушения",
+                            "type" : "string"
+                        },
+                        {
+                            "widget_type" : "TextAreaWidget",
+                            "id" : "textarea",
+                            "label" : "Примечания",
+                            "type" : "string"
+                        },
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ItemName",
 							"IsRequired"    : false,
-							"InfoText"  :
+							"label"  :
 							{
 							    "name": "Что купили?",
 							    "comment": "Например: мобильный телефон.",
@@ -121,7 +143,32 @@
 		
 				
 			],
-			"next"		:	[{ "id": "0.5"} ] 					
+			"next"		:	[
+			                    { 
+			                        "id": "0.5",
+			                        "predicates":
+			                        [
+			                            {
+			                                "step_id": "0",
+			                                "widget_id": "Region",
+			                                "cond": "!=",
+			                                "value": "Адыгея"
+			                            }
+			                        ]
+			                    },
+			                    {
+			                        "id": "disableNext",
+			                        "predicates":
+			                        [
+			                            {
+			                                "step_id": "0",
+			                                "widget_id": "Region",
+			                                "cond": "==",
+			                                "value": "Адыгея"
+			                            }
+			                        ]
+			                    }
+			                ] 					
 		},
 		{
 			"id"		: 	"0.5",
@@ -140,14 +187,12 @@
 						},
 						{
 							"widget_type" : "MapsWidget",
-                                              		"id" : "SellerAddress",
-                                              		"label" : "Адрес",
+                            "id" : "SellerAddress",
+                            "label" : "Адрес",
 							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
-                                              		"type" : "WSMaps"
+                            "type" : "WSMaps"
 						}
-					
 					]
-						
 				}
 			],
 			"next"		:

@@ -12,6 +12,14 @@
     
     "initialStep" :"0",
     
+    "sections"	:
+	[
+		{
+			"name": "Описываем ситуацию",
+			"steps": ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+		}
+	],
+    
     "steps"       :
     [
         {
@@ -48,33 +56,7 @@
                                     "id" : "time",
                                     "label" : "Время нарушения",
                                     "type" : "string"
-                              },
-                              {
-                                    "widget_type" : "TimerFromDateWidget",
-                                    "id" : "timer1",
-                                    "pickDateMessage": "Когда вы отправили заявление?",
-                                    "iDidItMessage": "Йа отправил заявление!!!11",
-                                    "initial": 
-                                    {
-                                      "startDate": "0",
-                                      "pauseDate": "0",
-                                      "workingPeriod": {"days": "5", "hours": "0", "leftover": "0"},
-                                      "state": "stopped"
-                                    } 
-                              },
-                              {
-                                    "widget_type" : "TimerTillDateWidget",
-                                    "id" : "timer11",
-                                    "pickDateMessage": "Когда к вам приедет ОМОН",
-                                    "iDidItMessage": "Йа был на митинге!!!",
-                                    "initial": 
-                                    {
-                                      "startDate": "0",
-                                      "pauseDate": "0",
-                                      "endDate": "0",
-                                      "state": "stopped"
-                                    } 
-                              }
+                              }                              
                         ]
                   },
                   {
@@ -82,7 +64,7 @@
                         "widgets":
                         [
                             {
-                                "widget_type" : "TextFieldWidget",
+                                "widget_type" : "CarNumberTextFieldWidget",
                                 "id" : "car_id",
                                 "label" : "ГРН автомобиля-нарушителя",
                                 "type" : "string"
@@ -131,7 +113,25 @@
                                         { "value": "witness", "label": "я являюсь непосредственным свидетелем" },
                                         { "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
                                     ]
-                            }
+                            },
+                            {
+                                "widget_type" : "TextAreaWidget",
+                                "id": "source",
+                                "label": "Опишите из каких источников вы узнали о проавонарушении, укажите ссылки на интернет-ресурсы.",
+                                "type" : "string",
+                                "isVisible" :
+    							{
+    							    "predicates" :
+    							    [
+    							        {
+    							            "step_id" : "1",
+    							            "widget_id": "radio",
+    							            "cond" : "==",
+    							            "value" : "notwitness"
+    							        }
+    							    ]
+    						    }
+                            }                            
                         ]
                   }
             ],
@@ -147,8 +147,8 @@
                         "widgets": 
                         [
                             {
-                                                                "widget_type": "URLOpenerWidget",
-                                                              "id": "url"
+                                  "widget_type": "URLOpenerWidget",
+                                  "id": "url"
                             }                
                         ]
                   }
@@ -170,7 +170,8 @@
                                                   "comment" : "Отправка заявления",
                                                   "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
                                     "doc_name" : "ViolationStatement",
-                                    "organizations" : []
+                                    "organizations" : ["ГИБДД"],
+                                    "organizations_times" : [30]
                                 }
                             ]
                   }
@@ -197,7 +198,7 @@
             },
         {           
             "id"         : "5",
-            "title"      : "Ждем-с",     
+            "title"      : "Тут нужно сделать виджет WaitList",     
             "type"       : "time",    
             "widget_groups": 
             [
