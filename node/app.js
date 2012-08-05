@@ -415,6 +415,8 @@ function getCurrentDateTime() {
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  console.log(req.headers.host
+  );
   Category.find({on_index: true}, ['name', 'icon'],
     { sort: { index_order: 1 } }, function(err, categories)
     {    
@@ -430,13 +432,13 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
     function(err) {
       if (!err)
         res.render('index', {
-          'title':"ВикиСоциум development",
-          'user':req.currentUser,
-          'menu':res.menu,
+          'title': "ВикиСоциум development",
+          'user': req.currentUser,
+          'menu': res.menu,
           'headerStats': res.headerStats,
-          'categoryList' : categories,
-          'scripts':[],
-          'styles':[]
+          'categoryList': categories,
+          'scripts': [],
+          'styles': []
         });
       else {
         console.log(err);
