@@ -7,10 +7,11 @@ block content
   </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
-  <button class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</button>
-  <button class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</button>
+  <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</div>
+  <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</div>
   
   script
+    step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget("#{value}");
     (function(){
     var initDocumentWidgetFunction = function()
     {
@@ -22,7 +23,15 @@ block content
         {
             for(var j = 0; j < data[i].length; j++)
             {
-                var rec = $("<div class='documentOrganizationsRecord'></div>").append($("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[i] + " дней)")));
+                var title = data[i][j]["title"];
+                var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[i] + " дней)"));
+                var orgTimer = $("<div/>").addClass("documentOrganizationTimer").click(function(){
+                    step#{step_id}FieldsList['!{widget.id}'].timersValues[title] = new Date(0); // [TODO] use out timer
+                    
+                    $(this).click(function(){});
+                    $(this).html(step#{step_id}FieldsList['!{widget.id}'].timersValues[title]);
+                });
+                var rec = $("<div class='documentOrganizationsRecord'></div>").append(orgTitle).append(orgTimer);
                 var cont = $("<div class='documentOrganizationsRecordDescription'></div>");
                 for(var key in data[i][j]["description"])
                 {

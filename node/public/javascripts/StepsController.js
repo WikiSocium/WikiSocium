@@ -82,7 +82,10 @@ function SaveFormData( curStep, nextStep, callback ) {
     {
         data[solutionData.steps[i].id] = {};
         for(var widg in groups[i])
+        {
+            // console.log(widg + " == " + groups[i][widg].getValue());
             data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+        }
     }
     
     $.ajax(
