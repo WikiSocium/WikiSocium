@@ -38,10 +38,11 @@ mixin typograf ( str )
               span.mainStatValue #{aCategory.topProblem.stats.inprocess}
               img(src="/images/notsolved.png")
               span.mainStatValue #{aCategory.topProblem.stats.notsolved}
-            p.problemLinkAllProblems
-              a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
-                Ещё #{aCategory.problemsNumber} проблем
-                mixin getProblemWordEnding (aCategory.problemsNumber)
+            - if (aCategory.problemsNumber-1 > 0)
+              p.problemLinkAllProblems
+                a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+                  Ещё #{aCategory.problemsNumber-1} проблем
+                  mixin getProblemWordEnding (aCategory.problemsNumber-1)
   #right-block.span3
     .gray-rounded-corners.gray-rounded-block-2
       p

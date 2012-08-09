@@ -422,15 +422,18 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
     {    
     async.forEach( categories, function(aCategory, callback) {
       Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        aCategory.problemsNumber = problems.length;
         getTopProblem ( problems, function(err,topProblem) {
-          aCategory.problemsNumber = problems.length;
           aCategory.topProblem = topProblem;
           callback();
         });
       });
     },
     function(err) {
-      if (!err)
+      if (!err) {        
+        for (var key in categories) {
+          if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
+        }
         res.render('index', {
           'title': "ВикиСоциум development",
           'user': req.currentUser,
@@ -440,6 +443,7 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
           'scripts': [],
           'styles': []
         });
+      }
       else {
         console.log(err);
         RenderError(req,res, err);
@@ -501,24 +505,46 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
-  Problem.find(['name'], {}, function(err, problems) {            
-		res.render('problems', {
-		  'title' : "Проблемы и решения",
-      'user':req.currentUser,
-      'menu':res.menu,
-      'headerStats': res.headerStats,
-			'problemsList' : problems,
-			'scripts' : [],
-      'styles': []
-	  });
-	});
+  
+  Category.find({}, ['name', 'icon'], { sort: { index_order: 1 } }, 
+    function(err, categories) {    
+    async.forEach( categories, function(aCategory, callback) {
+      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        aCategory.problemsNumber = problems.length;
+        getTopProblem ( problems, function(err,topProblem) {
+          aCategory.topProblem = topProblem;
+          callback();
+        });
+      });
+    },
+    function(err) {
+      if (!err) {
+        for (var key in categories) {
+          if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
+        }
+        res.render('problems', {
+          'title': "ВикиСоциум development",
+          'user': req.currentUser,
+          'menu': res.menu,
+          'headerStats': res.headerStats,
+          'categories': categories,
+          'scripts': [],
+          'styles': []
+        });
+      }
+      else {
+        console.log(err);
+        RenderError(req,res, err);
+      }
+    });
+  });
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
-	var problemName = req.param('ProblemName', null).replace(/_/g," ");
+  var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
-	Problem.findOne({ name: problemName }, function(err, problem) {            
+  Problem.findOne({ name: problemName }, function(err, problem) {            
     getProblemStatistics ( problemName, function(err, stat) {
       if (err) console.log(err);
       else {
@@ -542,20 +568,28 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
-	
-  Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
   
-    res.render('problems', {
-      'title' : categoryName,
-      'user':req.currentUser,
-      'menu':res.menu,
-      'headerStats': res.headerStats,
-      'problemsList' : problems,
-      'CategoryName': categoryName,
-      'scripts' : [],
-      'styles':[]
+	Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
+    Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
+      async.forEach ( problems, function(aProblem, callback) {
+        getProblemStatistics ( aProblem.name, function(err, stat) {
+          aProblem.stats = stat;
+          callback(err);
+        });
+      },
+      function (err) {
+        res.render('category', {
+          'title' : categoryName,
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'problems' : problems,
+          'category': category,
+          'scripts' : [],
+          'styles':[]
+        });
+      });   
     });
-  
   });
   
 });
@@ -1453,7 +1487,8 @@ app.post('/admin/problems/save', loadUser, function(req, res) {
         'name': req.body.name,
         'description': req.body.description,
         'categories': categories, 
-        'solutions': req.body.solutions
+        'solutions': req.body.solutions,
+        'in_development': req.body.in_development
       });
       new_problem.save(f);
     }
@@ -1463,6 +1498,7 @@ app.post('/admin/problems/save', loadUser, function(req, res) {
         problem.description = req.body.description;
         problem.categories = categories;
         problem.solutions = req.body.solutions;
+        problem.in_development = req.body.in_development;
         problem.save(f);
       });
     }

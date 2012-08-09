@@ -422,6 +422,65 @@ hr {
   margin-top: 10px;
 }
 
+#categories-searchform,
+.category-header {
+  margin-top: 20px;
+}
+
+.problems-page .row-fluid,
+.category-page .row-fluid {
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
+
+.problems-page .category-icon,
+.category .category-icon {
+  float: left;
+  width: 100px;
+}
+
+.problems-page .category-body,
+.category .category-body {
+  margin-left: 100px;
+}
+
+.problems-page .category-body h2 {
+  margin-bottom: 16px;
+}
+
+.problems-page .category-body a,
+.problems-page .category-body .stat-figures span.mainStatValue {
+  font-size: 10.5pt;
+}
+
+.problems-page .category-body .stat-figures span.mainStatValue,
+.category-page .stat-figures span.mainStatValue {
+  margin-right: 30px;
+}
+
+.problems-page .category-body h2 a {
+  border-bottom: 1px solid #6e6e6e;
+  color: #6e6e6e;
+  font-size: 13pt;
+  line-height: 150%;
+  text-decoration: none;
+}
+.problems-page .category-body h2 a:hover {
+  border-bottom: 0px;
+}
+
+.problems-page .category-body a.problemLink,
+.category-page a.problemLink {
+  border-bottom: 1px solid #6e6e6e;
+  color: #6e6e6e;
+  font-size: 12pt;
+  line-height: 150%;
+  text-decoration: none;
+}
+.problems-page .category-body a.problemLink:hover,
+.category-page a.problemLink:hover {
+ border-bottom: 0px;
+}
 
 .modal-header {
   background: #e6e5e3;  

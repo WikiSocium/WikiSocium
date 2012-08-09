@@ -111,7 +111,8 @@ function defineModels(mongoose, fn) {
     'name': { type: String, unique: true },
     'description': String,
     'categories': [ String ], 
-    'solutions': [ String ]
+    'solutions': [ String ],
+    'in_development': Boolean
   });
   
     
