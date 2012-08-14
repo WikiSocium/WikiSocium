@@ -1,0 +1,35 @@
+.row-fluid.category-header
+  .span6.category
+    div.category-icon: img(src='/images/'+category.icon)
+    div.category-body 
+      h2 #{category.name}
+      a(href='/Problems') Вернуться к списку категорий 
+  .span6
+    form.form-search
+      input.search-query(type="text", style="width: 70%")
+      &nbsp;
+      button.btn(type="submit") Search
+
+mixin problem (aProblem)
+  p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_")) #{aProblem.name}
+  p.stat-figures
+    img(src="/images/solved.png")
+    span.mainStatValue #{aProblem.stats.solved}
+    img(src="/images/inprocess.png")
+    span.mainStatValue #{aProblem.stats.inprocess}
+    img(src="/images/notsolved.png")
+    span.mainStatValue #{aProblem.stats.notsolved}
+
+#problems.category-page
+  - each aProblem, key in problems
+    - if (problems.length%2 == 1 && (key+1)==problems.length)
+      .row-fluid
+        .span6
+          mixin problem (problems[key])
+    - else 
+      - if (key%2 == 0)
+        .row-fluid
+          .span6
+            mixin problem (problems[key])
+          .span6
+            mixin problem (problems[key+1])

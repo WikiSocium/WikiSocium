@@ -92,6 +92,7 @@ html
                 |#{user.email} &nbsp;
                 a(href='/Logout').btn(type='submit') Выйти
                 
+    - var submenu; var submenu_parent;
     #menu-block
       #menu.container-fluid
         .row-fluid
@@ -100,8 +101,30 @@ html
               - each item in menu
                 - if (item.active)
                   li.active: a(href="/#{item.id}") #{item.name}
+                    - submenu = item.submenu; submenu_parent = item.id;
+                    - if (submenu != undefined && submenu.length > 0)
+                      #submenu.visible-phone
+                        ul.nav              
+                          - each subitem in submenu
+                            - if (subitem.active)
+                              li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                            - else
+                              li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
                 - else
                   li: a(href="/#{item.id}") #{item.name}
+                  
+    - if (submenu != undefined && submenu.length > 0)
+      #submenu-block.hidden-phone
+        #submenu.container-fluid
+          .row-fluid
+            .span12.navbar
+              ul.nav              
+                - each subitem in submenu
+                  - if (subitem.active)
+                    li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                  - else
+                    li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+    
     
     #content-block.container-fluid      
       != body    

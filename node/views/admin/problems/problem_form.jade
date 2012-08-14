@@ -59,6 +59,21 @@ form.form-horizontal(method="POST", action="/admin/problems/save")
             button.btn.btn-danger.remove_solutions(type="button", style="margin-left: 3px;") ×
       button.btn.btn-success.add_solutions(type="button") +
   .control-group
+    label.control-label В&nbsp;разработке?
+    .controls
+      - if (problem.in_development != undefined)
+        select.input-small(name="in_development")
+          - if (problem.in_development)
+            option(value="0") нет
+            option(value="1", selected) да
+          - else
+            option(value="0", selected) нет
+            option(value="1") да
+      -else
+        select.input-small(name="in_development")
+          option(value="0") нет
+          option(value="1") да
+  .control-group
     .controls
       button.btn.btn-success(type="submit") Сохранить проблему
       | 

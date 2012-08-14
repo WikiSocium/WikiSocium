@@ -17,9 +17,12 @@ function defineModels(mongoose, fn) {
   }
 
   User = new Schema({
-    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
+    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], unique: true },
     'hashed_password': String,
-    'salt': String
+    'salt': String,
+    'vk_uid': String,
+    'name': String,
+    'surname': String
   });
 
   User.virtual('id')
@@ -108,7 +111,8 @@ function defineModels(mongoose, fn) {
     'name': { type: String, unique: true },
     'description': String,
     'categories': [ String ], 
-    'solutions': [ String ]
+    'solutions': [ String ],
+    'in_development': Boolean
   });
   
     

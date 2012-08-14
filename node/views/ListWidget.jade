@@ -5,5 +5,5 @@ block content
     YUI().use('inputex', 'inputex-select'
     , function(Y) 
     {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({label: '!{widget.label}', name: 'step#{step_id}_#{widget.id}', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}'});
+    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({name: 'step#{step_id}_#{widget.id}', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
     });

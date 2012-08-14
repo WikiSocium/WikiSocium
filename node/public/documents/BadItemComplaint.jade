@@ -1,22 +1,28 @@
 div align=right
-  #{data["0.5"].SellerName}
-  #{data["0.5"].SellerAddress}
+  Кому:  #{data["0.5"].SellerName}, <br> #{data["0.5"].SellerAddress}
+  От:    #{data["0.5"].UserName}, <br> #{data["0.5"].UserAddress}
+       
 div align=center
   ПРЕТЕНЗИЯ
 div
-  #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice}. 
-  if data["0"].IsItemPrePaid
-    Предоплата составила #{data["0"].ItemPrePaidPrice} рублей. 
+  #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice}
+  if data["0"].IsItemDelivered && data["0"].IsDeliveryCost == 1
+    , в том числе стоимость доставки составила #{data["0"].ItemDeliveryCost} руб.
+  else
+    . 
   if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 1
-    Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
+    Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но фактически доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
   else if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 0
     До настоящего времени товар доставлен не был.   
+
 div
   if data["2"].IsItemProblems
     В товаре были найдены следующие недостатки: #{data["2"].ItemProblems}. 
-    TODO: вред здоровью, вред имуществу
+    if data["2"].IsProblemsHealth
+      Кроме того, мне был нанесён вред здоровью: #{data["2"].ItemProblemsHealth}.
+    if data["2"].IsProblemsMoney
+      Дополнительно, мне был нанесён имущественный ущерб: #{data["2"].ItemProblemsMoney}.  
 div
-  Руководствуясь нормами Закона Российской Федерации о Защите прав Потребителей, ТРЕБУЮ: 
-  li TODO: куча требований
+  Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ: 
   li TODO: куча требований 
 

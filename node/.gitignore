@@ -3,3 +3,4 @@ node_modules
 *.DS_Store
 data/UserData
 public/documents/*.js
+!public/documents/DocumentsController.js

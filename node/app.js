@@ -128,7 +128,7 @@ function authenticateFromLoginToken(req, res, next) {
   }));
 }
 
-function loadUser(req, res, next) {
+function loadUser(req, res, next) {  
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
@@ -155,7 +155,44 @@ function generateMenu(req, res, next) {
     {
       'id': 'About',
       'name': 'О проекте',
-      'guest': true
+      'guest': true,
+      'submenu': [
+        {
+          'id': 'Mission',
+          'name': 'Предпосылки и миссия проекта',
+          'guest': true
+        },
+        {
+          'id': 'Goals',
+          'name': 'Цели и задачи',
+          'guest': true
+        },
+        {
+          'id': 'Perspective',
+          'name': 'Перспектива',
+          'guest': true
+        },
+        {
+          'id': 'Team',
+          'name': 'Команда',
+          'guest': true
+        },
+        {
+          'id': 'Help',
+          'name': 'Как помочь?',
+          'guest': true
+        },
+        {
+          'id': 'Partnership',
+          'name': 'Сотрудничество',
+          'guest': true
+        },
+        {
+          'id': 'Questions',
+          'name': 'Вопросы и сомнения',
+          'guest': true
+        }
+      ]
     },
     {
       'id': 'Problems',
@@ -173,9 +210,20 @@ function generateMenu(req, res, next) {
     if (menu[i].guest || !menu[i].guest && !req.currentUser.guest) {
       var is_active = false;
       if (req.url.indexOf(menu[i].id) == 1) is_active = true;
+      var submenu = [];
+      for (var j in menu[i].submenu) {
+        var is_active_sub = false;
+        if (is_active && req.url.indexOf(menu[i].submenu[j].id) == menu[i].id.length+2) is_active_sub = true;
+        submenu.push({
+          'id': menu[i].submenu[j].id,
+          'name': menu[i].submenu[j].name,
+          'active': is_active_sub
+        });
+      }
       res.menu.push({
         'id': menu[i].id,
         'name': menu[i].name,
+        'submenu': submenu,
         'active': is_active
       });
     }
@@ -227,8 +275,12 @@ function updateSolutionsCollection () {
     
     var solutions = new Array();
     for (var key in files) {
-      solutions[key] = new Object();
-      solutions[key].filename = files[key];
+        var filenameParts = files[key].split(".");
+        if(filenameParts[filenameParts.length - 1] == "json")
+        {
+            solutions[key] = new Object();
+            solutions[key].filename = files[key];          
+        }
     }
 
     async.forEach(solutions, function(solution, callback) {
@@ -363,37 +415,55 @@ function getCurrentDateTime() {
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  console.log(req.headers.host
+  );
   Category.find({on_index: true}, ['name', 'icon'],
     { sort: { index_order: 1 } }, function(err, categories)
     {    
-    async.forEach( categories, function(aCategory, callback) {       
+    async.forEach( categories, function(aCategory, callback) {
       Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        aCategory.problemsNumber = problems.length;
         getTopProblem ( problems, function(err,topProblem) {
-          aCategory.problemsNumber = problems.length;
           aCategory.topProblem = topProblem;
           callback();
         });
       });
     },
     function(err) {
-      if (!err)
+      if (!err) {        
+        for (var key in categories) {
+          if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
+        }
         res.render('index', {
-          'title':"ВикиСоциум development",
-          'user':req.currentUser,
-          'menu':res.menu,
+          'title': "ВикиСоциум development",
+          'user': req.currentUser,
+          'menu': res.menu,
           'headerStats': res.headerStats,
-          'categoryList' : categories,
-          'scripts':[],
-          'styles':[]
+          'categoryList': categories,
+          'scripts': [],
+          'styles': []
         });
-      else console.log(err);
+      }
+      else {
+        console.log(err);
+        RenderError(req,res, err);
+      }
     });
   });
 });
 
 app.get('/About', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  res.render('about', {
-    'title':"О проекте",
+  res.redirect('/About/Mission'); 
+});
+
+app.get('/About/:PageName', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  for (i in res.menu) {
+    if ( res.menu[i].active )
+      for ( j in res.menu[i].submenu )
+        if (res.menu[i].submenu[j].active) var subtitle = res.menu[i].submenu[j].name;
+  }
+  res.render('about/'+req.param('PageName', null), {
+    'title': "О проекте: "+subtitle,
     'user':req.currentUser,
     'menu':res.menu,
     'headerStats': res.headerStats,
@@ -421,35 +491,60 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
   				if (!error && response.statusCode == 200) {
   					console.log(body);
   					var answer = JSON.parse(body);
+  					//У переменной answer есть три поля: uid, first_name и last_name.
+  					console.log(answer);
+  					res.redirect('/');
 	   			}	
   			})
   						
    		}	
   	})
 	
-  res.redirect('/');
+  //res.redirect('/');
 });
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
-  Problem.find(['name'], {}, function(err, problems) {            
-		res.render('problems', {
-		  'title' : "Проблемы и решения",
-      'user':req.currentUser,
-      'menu':res.menu,
-      'headerStats': res.headerStats,
-			'problemsList' : problems,
-			'scripts' : [],
-      'styles': []
-	  });
-	});
+  
+  Category.find({}, ['name', 'icon'], { sort: { index_order: 1 } }, 
+    function(err, categories) {    
+    async.forEach( categories, function(aCategory, callback) {
+      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+        aCategory.problemsNumber = problems.length;
+        getTopProblem ( problems, function(err,topProblem) {
+          aCategory.topProblem = topProblem;
+          callback();
+        });
+      });
+    },
+    function(err) {
+      if (!err) {
+        for (var key in categories) {
+          if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
+        }
+        res.render('problems', {
+          'title': "ВикиСоциум development",
+          'user': req.currentUser,
+          'menu': res.menu,
+          'headerStats': res.headerStats,
+          'categories': categories,
+          'scripts': [],
+          'styles': []
+        });
+      }
+      else {
+        console.log(err);
+        RenderError(req,res, err);
+      }
+    });
+  });
 });
 
 // Обработка запроса на показ проблемы и списка ее решений
 app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
-	var problemName = req.param('ProblemName', null).replace(/_/g," ");
+  var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
-	Problem.findOne({ name: problemName }, function(err, problem) {            
+  Problem.findOne({ name: problemName }, function(err, problem) {            
     getProblemStatistics ( problemName, function(err, stat) {
       if (err) console.log(err);
       else {
@@ -473,20 +568,28 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
-	
-  Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
   
-    res.render('problems', {
-      'title' : categoryName,
-      'user':req.currentUser,
-      'menu':res.menu,
-      'headerStats': res.headerStats,
-      'problemsList' : problems,
-      'CategoryName': categoryName,
-      'scripts' : [],
-      'styles':[]
+	Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
+    Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
+      async.forEach ( problems, function(aProblem, callback) {
+        getProblemStatistics ( aProblem.name, function(err, stat) {
+          aProblem.stats = stat;
+          callback(err);
+        });
+      },
+      function (err) {
+        res.render('category', {
+          'title' : categoryName,
+          'user':req.currentUser,
+          'menu':res.menu,
+          'headerStats': res.headerStats,
+          'problems' : problems,
+          'category': category,
+          'scripts' : [],
+          'styles':[]
+        });
+      });   
     });
-  
   });
   
 });
@@ -539,7 +642,11 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   if(requiredDocuments)
                   {
                     for(var i = 0; i < requiredDocuments.length; i++) scriptsToInject.push("/documents/" + requiredDocuments[i] + ".js");
-                    if(requiredDocuments.length != 0) scriptsToInject.push("/documents/DocumentsController.js");
+                    if(requiredDocuments.length != 0)
+                    {
+                        scriptsToInject.push("/documents/DocumentsController.js");
+                        scriptsToInject.push("/javascripts/customWidgets/DocumentViewWidget.js");
+                    }
                     scriptsToInject.push("/javascripts/nicEdit.js");
                     scriptsToInject.push("/markitup/sets/default/set.js");            
                     stylesToInject.push("/markitup/sets/default/style.css");
@@ -599,6 +706,11 @@ app.post('/GetRegionalizedData', function(req, res) {
   
   if(db == "organizations") {
     Organizations.findOne ({ organization_name: dataId }, function(e, organization_item) {
+      if(e)
+        {
+            console.log("There was an error while fetching data from organizations db: ");
+            console.log(e);
+        }
       if(organization_item)          
         for(var anotherRegion in organization_item.regions_list)
           if(organization_item.regions_list[anotherRegion].region_name == region)
@@ -727,16 +839,86 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
-      if(!err) {
-        res.render('mycases', {
-          'title':  'Мои дела',
-          'user':   req.currentUser,
-          'menu':   res.menu, 
-          'headerStats': res.headerStats,
-          'userData': JSON.parse(data),
-          'scripts': [],
-          'styles': []
-        });
+      if(!err) 
+      {
+        var userData=JSON.parse(data);
+        async.forEach (userData.cases, function (curCase, callback)
+        {
+          console.log(curCase.caseId);
+          fs.readFile('data/UserData/'+req.currentUser.email+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
+          {
+            if (!err1)
+            {
+              var caseData=JSON.parse(data1);
+              console.log(caseData.currentStep);
+              Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
+              {
+                if (document) 
+                {
+                  console.log(document.filename);
+                  fs.readFile('data/solutions/'+document.filename, "utf-8", function(err2, data2) 
+                  {
+                    if (!err2)
+                    {
+                      var solutionData=JSON.parse(data2);
+                      var currentStepNum=0;
+                      for (var cs in solutionData.steps)
+                      {
+                        if (solutionData.steps[cs].id==caseData.currentStep)
+                        {
+                          currentStepNum=cs;
+                          break;
+                        }
+                      }
+                      console.log(solutionData.steps[currentStepNum].title);
+                      var sectionNum=-1;
+                      var stepInSection=-1;
+                      for (var s in solutionData.sections)
+                      {
+                        for (var s0 in solutionData.sections[s].steps)
+                        {
+                          if (solutionData.sections[s].steps[s0]==caseData.currentStep)
+                          {
+                            sectionNum=s;
+                            stepInSection=s0;
+                            stepInSection++;
+                            break;
+                          }
+                        }
+                      }
+                      curCase.sectionName=solutionData.sections[sectionNum].name;
+                      curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
+                      curCase.stepInSection=stepInSection;
+                      curCase.stepName=solutionData.steps[currentStepNum].title;
+                      callback(err2);
+                    }
+                    else 
+                      callback(err2);
+                  });
+                }
+                else
+                  callback(err3);
+              });
+            }
+            else
+              callback(err1);
+          });
+        },
+        function(err0)
+        {
+          if(err0==null)
+          {
+            res.render('mycases', {
+                'title':  'Мои дела',
+                'user':   req.currentUser,
+                'menu':   res.menu, 
+                'headerStats': res.headerStats,
+                'userData': userData,
+                'scripts': [],
+                'styles': []
+            });
+          }
+        });        
       }
       else RenderError(req,res, err);
     });
@@ -1314,7 +1496,8 @@ app.post('/admin/problems/save', loadUser, function(req, res) {
         'name': req.body.name,
         'description': req.body.description,
         'categories': categories, 
-        'solutions': req.body.solutions
+        'solutions': req.body.solutions,
+        'in_development': req.body.in_development
       });
       new_problem.save(f);
     }
@@ -1324,6 +1507,7 @@ app.post('/admin/problems/save', loadUser, function(req, res) {
         problem.description = req.body.description;
         problem.categories = categories;
         problem.solutions = req.body.solutions;
+        problem.in_development = req.body.in_development;
         problem.save(f);
       });
     }
