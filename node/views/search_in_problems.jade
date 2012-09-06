@@ -1,0 +1,42 @@
+mixin hightlighted_problem_name (name)
+  != name.replace(new RegExp(query, "i"), '<span class="orange">$&</span>')
+
+mixin problem (aProblem)
+  p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
+    mixin hightlighted_problem_name (aProblem.name)
+  p.stat-figures
+    img(src="/images/solved.png")
+    span.mainStatValue #{aProblem.stats.solved}
+    img(src="/images/inprocess.png")
+    span.mainStatValue #{aProblem.stats.inprocess}
+    img(src="/images/notsolved.png")
+    span.mainStatValue #{aProblem.stats.notsolved}
+  p.categories
+    - each aCategory, key in aProblem.categories
+      - if ( key > 0 )
+        |, 
+      a(href="/Categories/"+aCategory.replace(/ /g,"_")) #{aCategory}
+
+#categories-searchform
+  .row-fluid
+    .span12
+      form.form-search(method="POST")
+        input.search-query(type="text", name="search_in_problems", style="width: 70%", value=query)
+        &nbsp;
+        button.btn(type="submit") Search
+        br
+        a(href="") Вернуться к списку категорий
+
+#problems.problems-page.problems-search-page
+  - each aProblem, key in problems
+    - if (problems.length%2 == 1 && (key+1)==problems.length)
+      .row-fluid
+        .span6
+          mixin problem (problems[key])
+    - else 
+      - if (key%2 == 0)
+        .row-fluid
+          .span6
+            mixin problem (problems[key])
+          .span6
+            mixin problem (problems[key+1])

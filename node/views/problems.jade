@@ -1,6 +1,3 @@
-- if (typeof(CategoryName) != 'undefined')
-  h1 Категория #{CategoryName}
-
 mixin getProblemWordEnding ( number )
   - var mod10 = number % 10;
   - if ( number < 10 || number > 20 )
@@ -31,8 +28,8 @@ mixin category (aCategory)
 #categories-searchform
   .row-fluid
     .span12
-      form.form-search
-        input.search-query(type="text", style="width: 70%")
+      form.form-search(method="POST")
+        input.search-query(type="text", name="search_in_problems", style="width: 70%")
         &nbsp;
         button.btn(type="submit") Search
 

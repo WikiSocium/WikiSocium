@@ -523,7 +523,7 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
           if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
         }
         res.render('problems', {
-          'title': "ВикиСоциум development",
+          'title': "Проблемы и решения",
           'user': req.currentUser,
           'menu': res.menu,
           'headerStats': res.headerStats,
@@ -537,6 +537,32 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
         RenderError(req,res, err);
       }
     });
+  });
+});
+
+app.post('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
+  var query = req.body.search_in_problems;
+  Problem.find({ name: new RegExp(query, "i") }, ['name','categories'], {}, function(err, problems) {    
+    async.forEach ( problems, function(aProblem, callback) {
+      getProblemStatistics ( aProblem.name, function(err, stat) {
+        aProblem.stats = stat;
+        callback(err);
+      });
+    },
+    function (err) {
+      res.render('search_in_problems', {
+        'title': "Поиск «"+query+"» в проблемах и решениях",
+        'user': req.currentUser,
+        'menu': res.menu,
+        'headerStats': res.headerStats,
+        'query': query,
+        'problems': problems,
+        'scripts': [],
+        'styles': []
+      });
+    });
+    
+    
   });
 });
 
@@ -579,7 +605,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fun
       },
       function (err) {
         res.render('category', {
-          'title' : categoryName,
+          'title' : categoryName+" в проблемах и решениях",
           'user':req.currentUser,
           'menu':res.menu,
           'headerStats': res.headerStats,
