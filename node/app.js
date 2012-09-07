@@ -62,8 +62,8 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
-  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
+  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
+  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
