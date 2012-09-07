@@ -1,3 +1,11 @@
+- if (query == undefined) var query = ''
+
+mixin hightlighted_problem_name (name)
+  if (query == '')
+    = name
+  else
+    != name.replace(new RegExp(query, "i"), '<span class="orange">$&</span>')
+
 .row-fluid.category-header
   .span6.category
     div.category-icon: img(src='/images/'+category.icon)
@@ -5,13 +13,17 @@
       h2 #{category.name}
       a(href='/Problems') Вернуться к списку категорий 
   .span6
-    form.form-search
-      input.search-query(type="text", style="width: 70%")
+    form.form-search(method="POST")
+      input.search-query(type="text", name="search_query", style="width: 70%", value=query)
       &nbsp;
       button.btn(type="submit") Search
+      - if (query!='')
+        br
+        a(href="#search_in_problems", onclick="this.parentNode.action='/Problems'; this.parentNode.submit();") Искать во всех категориях
 
 mixin problem (aProblem)
-  p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_")) #{aProblem.name}
+  p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
+    mixin hightlighted_problem_name (aProblem.name)
   p.stat-figures
     img(src="/images/solved.png")
     span.mainStatValue #{aProblem.stats.solved}

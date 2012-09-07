@@ -62,8 +62,8 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
-  //app.set('db-uri', 'mongodb://test:test@localhost/wikisocium-development');
+  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
+  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -541,7 +541,7 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
 });
 
 app.post('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
-  var query = req.body.search_in_problems;
+  var query = req.body.search_query;
   Problem.find({ name: new RegExp(query, "i") }, ['name','categories'], {}, function(err, problems) {    
     async.forEach ( problems, function(aProblem, callback) {
       getProblemStatistics ( aProblem.name, function(err, stat) {
@@ -589,7 +589,6 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
   });
 });
 
-//
 
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
@@ -616,9 +615,40 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fun
         });
       });   
     });
-  });
-  
+  });  
 });
+
+// Обработка запроса на показ списка проблем из категории
+app.post('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
+	var categoryName = req.param('CategoryName', null).replace(/_/g," ");  
+  var query = req.body.search_query;
+  
+  Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
+    Problem.find({ name: new RegExp(query, "i"), categories: categoryName }, ['name','categories'], {}, function(err, problems) {    
+      async.forEach ( problems, function(aProblem, callback) {
+        getProblemStatistics ( aProblem.name, function(err, stat) {
+          aProblem.stats = stat;
+          callback(err);
+        });
+      },
+      function (err) {
+        res.render('category', {
+          'title': "Поиск «"+query+"» в категории "+categoryName,
+          'user': req.currentUser,
+          'menu': res.menu,
+          'headerStats': res.headerStats,
+          'query': query,
+          'problems': problems,
+          'category': category,
+          'scripts': [],
+          'styles': []
+        });
+      });
+    });
+  }); 
+});
+
+
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req, res) {
