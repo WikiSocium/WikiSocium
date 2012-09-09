@@ -8,9 +8,9 @@ block content
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
   <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</div>
-  <input type="button" value="Распечатать" id="print_btn"/>
+  <input type="button" id="print_btn" value="Распечатать" id="print_btn"/>
   script(type="text/javascript")
-    $('input').click(function()
+    $("#print_btn").click(function()
     {
     var modal_title = "Документ!";
     var html=$("#documentView_#{widget.doc_name}").html();
