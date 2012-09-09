@@ -778,7 +778,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
   });
 });
 
-//
+//save to file
 //Завершение кейса
 app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var userName = req.currentUser.email;
@@ -1021,6 +1021,17 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
 });
 
 
+app.post('/AddDocument', loadUser, generateMenu, getHeaderStats, function(req, res){
+    var userName=req.currentUser.email;
+    var docName = req.body.doc_id;
+    console.log(docName);
+    var text=req.body.text;
+    var html='<html><head><title>Документ</title><meta charset="utf-8"/></head><body><p>'+text+'</body></html>';
+    fs.writeFile('public/Doc.html', html, function (err) {
+        if (err) console.log(err);
+    });
+    res.send('public/Doc.html');
+});
 
 app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var user = new User(req.body.user);

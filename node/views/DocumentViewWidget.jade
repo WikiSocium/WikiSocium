@@ -3,12 +3,36 @@ extends BaseWidget
 block content  
   <div class="document_container">
   <div class="document_textarea">
-  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
+  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view">проверка текстового документа</div>
   </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
   <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</div>
-  <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">Распечатать</div>
+  <div class="btn btn-primary documentButtons" id="print_btn">Распечатать</div>
+  script(type="text/javascript")
+    $("#print_btn").click(function()
+    {
+    var modal_title = "Документ!";
+    var html=$("#documentView_#{widget.doc_name}").text();
+    var buttons = [];
+    var dname="#{widget.doc_name}";
+    alert(dname);
+    showModalWindow ( modal_title, html, buttons, "descriptionPopup", 550, 320);
+    $.ajax({
+        url: '/AddDocument'
+        , type:'POST'
+        , data: 'doc_id=' + dname + '&text=' + html
+        , success: function(res) {
+            //callback(res);
+            window.open('../../'+res);
+        }
+        , error: function(jqXHR, textStatus, errorThrown) {
+        console.log("There was an error while saving document: " + textStatus);
+        console.log(errorThrown);
+        }
+    });
+    });
+
   
   script
     step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget("#{value}");
