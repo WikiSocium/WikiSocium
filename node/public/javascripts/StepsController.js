@@ -77,6 +77,7 @@ function SaveFormData( curStep, nextStep, callback ) {
 
   YUI().use('inputex', function(Y) 
   {
+      // [TODO] keep DRY
     var data = {};
     for(var i = 0 ; i < groups.length ; i++)
     {
@@ -659,15 +660,16 @@ function HideInvisible(stepnum)
 // We need this method for current document mechanism
 function CollectFormData()
 {
-  var data = new Array();
+          // [TODO] keep DRY
+  var data = {};
   YUI().use('inputex', function(Y) 
   {
     for(var i = 0 ; i < groups.length ; i++)
     {
-      data[i] = new Object();
-      for(var widg in groups[i])
-        data[i][widg] = groups[i][widg].getValue();
-    }
+        data[solutionData.steps[i].id] = {};
+        for(var widg in groups[i])
+            data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+    }    
   });
   return data;
 }

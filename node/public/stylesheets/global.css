@@ -428,7 +428,8 @@ hr {
 }
 
 .problems-page .row-fluid,
-.category-page .row-fluid {
+.category-page .row-fluid,
+.problems-search-page .row-fluid {
   margin-top: 40px;
   margin-bottom: 80px;
 }
@@ -470,16 +471,29 @@ hr {
 }
 
 .problems-page .category-body a.problemLink,
-.category-page a.problemLink {
+.category-page a.problemLink,
+.problems-search-page a.problemLink {
   border-bottom: 1px solid #6e6e6e;
   color: #6e6e6e;
-  font-size: 12pt;
+  font-size: 11.5pt;
   line-height: 150%;
   text-decoration: none;
 }
 .problems-page .category-body a.problemLink:hover,
-.category-page a.problemLink:hover {
- border-bottom: 0px;
+.category-page a.problemLink:hover,
+.problems-search-page a.problemLink:hover {
+  border-bottom: 0px;
+}
+
+.problems-search-page .stat-figures {
+  float: left;
+  max-width: 160px;
+}
+.problems-search-page .categories {
+  margin-left: 160px;
+}
+.problems-search-page .row-fluid {
+  clear: both;
 }
 
 .modal-header {
