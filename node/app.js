@@ -1077,16 +1077,13 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
 });
 
 
-app.post('/AddDocument', loadUser, generateMenu, getHeaderStats, function(req, res){
-    var userName=req.currentUser.email;
-    var docName = req.body.doc_id;
-    console.log(docName);
+app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, res){
     var text=req.body.text;
     var html='<html><head><title>Документ</title><meta charset="utf-8"/></head><body><p>'+text+'</body></html>';
     fs.writeFile('public/Doc.html', html, function (err) {
         if (err) console.log(err);
     });
-    res.send('public/Doc.html');
+    res.send('Doc.html');
 });
 
 app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {

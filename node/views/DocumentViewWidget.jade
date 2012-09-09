@@ -16,12 +16,10 @@ block content
     var html=$("#documentView_#{widget.doc_name}").text();
     var buttons = [];
     var dname="#{widget.doc_name}";
-    alert(dname);
-    showModalWindow ( modal_title, html, buttons, "descriptionPopup", 550, 320);
     $.ajax({
-        url: '/AddDocument'
+        url: '/OpenDocument'
         , type:'POST'
-        , data: 'doc_id=' + dname + '&text=' + html
+        , data: '&text=' + html
         , success: function(res) {
             //callback(res);
             window.open('../../'+res);
