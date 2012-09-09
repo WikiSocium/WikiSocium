@@ -3,32 +3,35 @@ extends BaseWidget
 block content  
   <div class="document_container">
   <div class="document_textarea">
-  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view">проверка текстового документа</div>
+  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
   </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
   <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</div>
-  <div class="btn btn-primary documentButtons" id="print_btn">Распечатать</div>
+  <input type="button" value="Распечатать" id="print_btn"/>
   script(type="text/javascript")
-    $("#print_btn").click(function()
+    $('input').click(function()
     {
     var modal_title = "Документ!";
-    var html=$("#documentView_#{widget.doc_name}").text();
-    var buttons = [];
-    var dname="#{widget.doc_name}";
-    $.ajax({
-        url: '/OpenDocument'
-        , type:'POST'
-        , data: '&text=' + html
-        , success: function(res) {
-            //callback(res);
-            window.open('../../'+res);
-        }
-        , error: function(jqXHR, textStatus, errorThrown) {
-        console.log("There was an error while saving document: " + textStatus);
-        console.log(errorThrown);
-        }
-    });
+    var html=$("#documentView_#{widget.doc_name}").html();
+    var printWin = window.open("","Документ");
+    printWin.document.open();
+    printWin.document.write(html);
+    printWin.document.close();
+    //printWin.print();
+    //var dname="#{widget.doc_name}";
+    //$.ajax({
+    //    url: '/OpenDocument'
+    //    , type:'POST'
+    //    , data: '&text=' + html
+    //    , success: function(res) {
+    //        window.open('../../'+res);
+    //    }
+    //    , error: function(jqXHR, textStatus, errorThrown) {
+    //    console.log("There was an error while saving document: " + textStatus);
+    //    console.log(errorThrown);
+    //    }
+    //});
     });
 
   
