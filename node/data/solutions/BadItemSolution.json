@@ -789,7 +789,9 @@
 					"widget_type"	: 	"DocumentViewWidget",
 					"id"		:	"BadItemComplaintView",
 					"label"		: 	"Перед Вами текст претензии. Вы можете скопировать его в буффер, сохранить или распечатать. Далее его нужно будет отправить адресату - как это сделать, описано на следующем шаге.",
-					"doc_name"	:	"BadItemComplaint" 
+					"doc_name"	:	"BadItemComplaint",
+					"organizations" : ["Главы регионов"],
+					"organizations_times" :  [10]  
 				}
 			],
 			"next"		:	[ { "id" : "5" } ] 					

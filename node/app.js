@@ -63,7 +63,7 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
   app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
-  //app.set('db-uri', 'mongodb://test:test@localhost/wikisocium-development');
+  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -523,7 +523,7 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
           if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
         }
         res.render('problems', {
-          'title': "ВикиСоциум development",
+          'title': "Проблемы и решения",
           'user': req.currentUser,
           'menu': res.menu,
           'headerStats': res.headerStats,
@@ -537,6 +537,32 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
         RenderError(req,res, err);
       }
     });
+  });
+});
+
+app.post('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
+  var query = req.body.search_query;
+  Problem.find({ name: new RegExp(query, "i") }, ['name','categories'], {}, function(err, problems) {    
+    async.forEach ( problems, function(aProblem, callback) {
+      getProblemStatistics ( aProblem.name, function(err, stat) {
+        aProblem.stats = stat;
+        callback(err);
+      });
+    },
+    function (err) {
+      res.render('search_in_problems', {
+        'title': "Поиск «"+query+"» в проблемах и решениях",
+        'user': req.currentUser,
+        'menu': res.menu,
+        'headerStats': res.headerStats,
+        'query': query,
+        'problems': problems,
+        'scripts': [],
+        'styles': []
+      });
+    });
+    
+    
   });
 });
 
@@ -563,7 +589,6 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
   });
 });
 
-//
 
 // Обработка запроса на показ списка проблем из категории
 app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
@@ -579,7 +604,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fun
       },
       function (err) {
         res.render('category', {
-          'title' : categoryName,
+          'title' : categoryName+" в проблемах и решениях",
           'user':req.currentUser,
           'menu':res.menu,
           'headerStats': res.headerStats,
@@ -590,9 +615,40 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fun
         });
       });   
     });
-  });
-  
+  });  
 });
+
+// Обработка запроса на показ списка проблем из категории
+app.post('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, function(req, res){
+	var categoryName = req.param('CategoryName', null).replace(/_/g," ");  
+  var query = req.body.search_query;
+  
+  Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
+    Problem.find({ name: new RegExp(query, "i"), categories: categoryName }, ['name','categories'], {}, function(err, problems) {    
+      async.forEach ( problems, function(aProblem, callback) {
+        getProblemStatistics ( aProblem.name, function(err, stat) {
+          aProblem.stats = stat;
+          callback(err);
+        });
+      },
+      function (err) {
+        res.render('category', {
+          'title': "Поиск «"+query+"» в категории "+categoryName,
+          'user': req.currentUser,
+          'menu': res.menu,
+          'headerStats': res.headerStats,
+          'query': query,
+          'problems': problems,
+          'category': category,
+          'scripts': [],
+          'styles': []
+        });
+      });
+    });
+  }); 
+});
+
+
 
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req, res) {
@@ -778,7 +834,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
   });
 });
 
-//
+//save to file
 //Завершение кейса
 app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var userName = req.currentUser.email;
@@ -1021,6 +1077,14 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
 });
 
 
+app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, res){
+    var text=req.body.text;
+    var html='<html><head><title>Документ</title><meta charset="utf-8"/></head><body><p>'+text+'</body></html>';
+    fs.writeFile('public/Doc.html', html, function (err) {
+        if (err) console.log(err);
+    });
+    res.send('Doc.html');
+});
 
 app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var user = new User(req.body.user);
