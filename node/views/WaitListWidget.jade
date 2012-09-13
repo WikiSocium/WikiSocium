@@ -1,0 +1,13 @@
+extends BaseWidget
+
+block content  
+  div(class="WaitListTimers", id="TODOWaitListSpecificObject")
+  script
+    var allWidgetsDataArgument = !{JSON.stringify(all_values)};
+    var widgetArgument = !{JSON.stringify(widget)};
+    for(var v in allWidgetsDataArgument)
+        if(typeof(allWidgetsDataArgument[v][widgetArgument.doc_id]) != "undefined")
+            for(var i in allWidgetsDataArgument[v][widgetArgument.doc_id])
+            {
+                $("#TODOWaitListSpecificObject").append($("<div/>").text(i + " : " + allWidgetsDataArgument[v][widgetArgument.doc_id][i]));
+            }
