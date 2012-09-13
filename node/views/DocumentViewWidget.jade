@@ -36,7 +36,7 @@ block content
 
   
   script
-    step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget("#{value}");
+    step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget(!{JSON.stringify(value)});
     (function(){
     var initDocumentWidgetFunction = function()
     {
@@ -51,7 +51,7 @@ block content
                 var title = data[i][j]["title"];
                 var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[i] + " дней)"));
                 var orgTimer = $("<div/>").addClass("documentOrganizationTimer").click(function(){
-                    step#{step_id}FieldsList['!{widget.id}'].timersValues[title] = new Date(0); // [TODO] use out timer
+                    step#{step_id}FieldsList['!{widget.id}'].timersValues[title] = new Date(0); // [TODO] use our timer
                     
                     $(this).click(function(){});
                     $(this).html(step#{step_id}FieldsList['!{widget.id}'].timersValues[title]);

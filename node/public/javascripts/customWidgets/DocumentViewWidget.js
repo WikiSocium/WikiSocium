@@ -10,7 +10,6 @@ function DocumentViewWidget(value)
       this.options = param;
       this.IsRequired = param.required;
   };  
-  
   if(typeof(value) != "undefined" && typeof(value) != "string")
       this.timersValues = value;
   else
@@ -19,7 +18,7 @@ function DocumentViewWidget(value)
 
 DocumentViewWidget.prototype.getValue = function()
 {
-  return this.timersValues;
+    return this.timersValues;
 };
 
 DocumentViewWidget.prototype.validate = function()

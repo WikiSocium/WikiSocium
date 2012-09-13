@@ -181,17 +181,18 @@
         },
         {           
             "id"         : "4",
-            "title"      : "Подача заявления",     
+            "title"      : "Таймер ожидания ответом из инстанций",     
             "type"       : "offline_action",
             "widget_groups": 
             [
                   {
                         "widgets": 
                         [
-                                {
-                                    "widget_type" : "StaticTextWidget",
-                                    "text" : "Теперь, пожалуйста, идите-ка на http://gibdd.ru/letter и подавайте там заявление. Ответ должен прийти в течении 30 дней."
-                                }
+                            {
+                                "id" : "violation_doc_waitlist",
+                                "widget_type" : "WaitListWidget",
+                                "doc_id" : "violation_doc"
+                            }
                         ]
                   }
             ],
