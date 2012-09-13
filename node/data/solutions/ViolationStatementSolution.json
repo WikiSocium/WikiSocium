@@ -171,8 +171,8 @@
                                                   "comment" : "Отправка заявления",
                                                   "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
                                     "doc_name" : "ViolationStatement",
-                                    "organizations" : ["ГИБДД"],
-                                    "organizations_times" : [30]
+                                    "organizations" : ["ГИБДД", "Главы регионов"],
+                                    "organizations_times" : [30, 10]
                                 }
                             ]
                   }
@@ -196,7 +196,23 @@
                         ]
                   }
             ],
-            "next" : [{ "id" : "5" }]
+            "next" : [
+                { 
+                    "id" : "5"
+                },
+                {
+                    "id": "disableNext",
+                    "predicates":
+                    [
+                        {
+                            "step_id": "4",
+                            "widget_id": "violation_doc_waitlist",
+                            "cond": "==",
+                            "value": "passable"
+                        }
+                    ]
+                }
+            ]
             },
         {           
             "id"         : "5",

@@ -1,13 +1,33 @@
 extends BaseWidget
 
 block content  
-  div(class="WaitListTimers", id="TODOWaitListSpecificObject")
+  div(class="WaitListTimers", id="WaitList_#{widget.id}")
   script
-    var allWidgetsDataArgument = !{JSON.stringify(all_values)};
-    var widgetArgument = !{JSON.stringify(widget)};
-    for(var v in allWidgetsDataArgument)
-        if(typeof(allWidgetsDataArgument[v][widgetArgument.doc_id]) != "undefined")
-            for(var i in allWidgetsDataArgument[v][widgetArgument.doc_id])
-            {
-                $("#TODOWaitListSpecificObject").append($("<div/>").text(i + " : " + allWidgetsDataArgument[v][widgetArgument.doc_id][i]));
-            }
+    step#{step_id}FieldsList['!{widget.id}'] = new WaitListWidget(!{JSON.stringify(value)});
+    var one_day=1000*60*60*24
+    var contentFunction = function()
+    {
+        $("#WaitList_#{widget.id}").children().remove();
+        var allWidgetsDataArgument = CollectFormData();//!{JSON.stringify(all_values)};
+        var widgetArgument = !{JSON.stringify(widget)};
+        for(var v in allWidgetsDataArgument)
+            if(typeof(allWidgetsDataArgument[v][widgetArgument.doc_id]) != "undefined")
+                for(var i in allWidgetsDataArgument[v][widgetArgument.doc_id])
+                {
+                    var orgData = allWidgetsDataArgument[v][widgetArgument.doc_id][i];
+                    var bDate = new Date(orgData.beginDate);
+                    var cDate = new Date();
+                    var left = Math.ceil((cDate.getTime() - bDate.getTime()) / one_day - 1);
+                    var interval = orgData.interval;
+                    $("#WaitList_#{widget.id}").append($("<div/>").text(i + " : осталось ждать " + (parseInt(interval)-parseInt(left)) + " дней"));
+                }
+    };
+    
+    $("#WaitList_#{widget.id}").closest(".step").watch("display", function(){
+           contentFunction();
+    }, 100, "");
+    if($("#WaitList_#{widget.id}").closest(".step").is(":visible"))
+       setTimeout(function(){
+           contentFunction();
+       }, 1000); // [TODO] #(document).ready() doesn't work properly
+    
