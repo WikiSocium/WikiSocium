@@ -509,7 +509,7 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
   Category.find({}, ['name', 'icon'], { sort: { index_order: 1 } }, 
     function(err, categories) {    
     async.forEach( categories, function(aCategory, callback) {
-      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+      Problem.find({ categories: aCategory.name }, ['name', 'in_development'], {}, function(err, problems) {
         aCategory.problemsNumber = problems.length;
         getTopProblem ( problems, function(err,topProblem) {
           aCategory.topProblem = topProblem;
@@ -542,7 +542,7 @@ app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
 
 app.post('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
   var query = req.body.search_query;
-  Problem.find({ name: new RegExp(query, "i") }, ['name','categories'], {}, function(err, problems) {    
+  Problem.find({ name: new RegExp(query, "i") }, ['name','categories', 'in_development'], {}, function(err, problems) {    
     async.forEach ( problems, function(aProblem, callback) {
       getProblemStatistics ( aProblem.name, function(err, stat) {
         aProblem.stats = stat;
@@ -595,7 +595,7 @@ app.get('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fun
 	var categoryName = req.param('CategoryName', null).replace(/_/g," ");
   
 	Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
-    Problem.find({ categories: categoryName }, ['name'], {}, function(err, problems) {
+    Problem.find({ categories: categoryName }, ['name', 'in_development'], {}, function(err, problems) {
       async.forEach ( problems, function(aProblem, callback) {
         getProblemStatistics ( aProblem.name, function(err, stat) {
           aProblem.stats = stat;
@@ -624,7 +624,7 @@ app.post('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fu
   var query = req.body.search_query;
   
   Category.findOne({ name: categoryName }, ['name', 'icon'], function(err, category) {
-    Problem.find({ name: new RegExp(query, "i"), categories: categoryName }, ['name','categories'], {}, function(err, problems) {    
+    Problem.find({ name: new RegExp(query, "i"), categories: categoryName }, ['name','categories', 'in_development'], {}, function(err, problems) {    
       async.forEach ( problems, function(aProblem, callback) {
         getProblemStatistics ( aProblem.name, function(err, stat) {
           aProblem.stats = stat;

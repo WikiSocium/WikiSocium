@@ -10,15 +10,20 @@ mixin category (aCategory)
   div.category-icon: img(src='/images/'+aCategory.icon)
   div.category-body 
     h2: a(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
-    p
-      a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
-    p.stat-figures
-      img(src="/images/solved.png")
-      span.mainStatValue #{aCategory.topProblem.stats.solved}
-      img(src="/images/inprocess.png")
-      span.mainStatValue #{aCategory.topProblem.stats.inprocess}
-      img(src="/images/notsolved.png")
-      span.mainStatValue #{aCategory.topProblem.stats.notsolved}
+    - if (!aCategory.topProblem.in_development)
+      p
+        a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
+      p.stat-figures
+        img(src="/images/solved.png")
+        span.mainStatValue #{aCategory.topProblem.stats.solved}
+        img(src="/images/inprocess.png")
+        span.mainStatValue #{aCategory.topProblem.stats.inprocess}
+        img(src="/images/notsolved.png")
+        span.mainStatValue #{aCategory.topProblem.stats.notsolved}
+    -else
+      p.problemLinkInActive #{aCategory.topProblem.name}
+      p.inDevelopmentString
+        В разработке
     - if (aCategory.problemsNumber-1 > 0)
       p.problemLinkAllProblems
         a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))

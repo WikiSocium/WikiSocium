@@ -484,8 +484,17 @@ hr {
 .problems-search-page a.problemLink:hover {
   border-bottom: 0px;
 }
+p.problemLinkInActive {  
+  color: #9b9b9b;
+  font-size: 11.5pt;
+  line-height: 150%;
+}
+p.inDevelopmentString {
+  color: #bfbfbf;  
+}
 
-.problems-search-page .stat-figures {
+.problems-search-page .stat-figures,
+.problems-search-page .inDevelopmentString {
   float: left;
   max-width: 160px;
 }
