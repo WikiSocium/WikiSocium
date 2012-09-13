@@ -33,7 +33,7 @@ mixin problem (aProblem)
       img(src="/images/notsolved.png")
       span.mainStatValue #{aProblem.stats.notsolved}
   - else
-    p.problemLinkInActive
+    p: a.problemLink.problemLinkInActive(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
       mixin hightlighted_problem_name (aProblem.name)
     p.inDevelopmentString
       В разработке

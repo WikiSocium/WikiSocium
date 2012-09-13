@@ -421,7 +421,7 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
     { sort: { index_order: 1 } }, function(err, categories)
     {    
     async.forEach( categories, function(aCategory, callback) {
-      Problem.find({ categories: aCategory.name }, ['name'], {}, function(err, problems) {
+      Problem.find({ categories: aCategory.name }, ['name', 'in_development'], {}, function(err, problems) {
         aCategory.problemsNumber = problems.length;
         getTopProblem ( problems, function(err,topProblem) {
           aCategory.topProblem = topProblem;

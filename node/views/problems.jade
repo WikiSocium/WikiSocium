@@ -21,7 +21,7 @@ mixin category (aCategory)
         img(src="/images/notsolved.png")
         span.mainStatValue #{aCategory.topProblem.stats.notsolved}
     -else
-      p.problemLinkInActive #{aCategory.topProblem.name}
+      p: a.problemLink.problemLinkInActive(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
       p.inDevelopmentString
         В разработке
     - if (aCategory.problemsNumber-1 > 0)
