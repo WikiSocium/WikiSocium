@@ -208,7 +208,7 @@
                             "step_id": "4",
                             "widget_id": "violation_doc_waitlist",
                             "cond": "==",
-                            "value": "passable"
+                            "value": "not passable"
                         }
                     ]
                 }
