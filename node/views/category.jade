@@ -22,15 +22,21 @@ mixin hightlighted_problem_name (name)
         a(href="#search_in_problems", onclick="this.parentNode.action='/Problems'; this.parentNode.submit();") Искать во всех категориях
 
 mixin problem (aProblem)
-  p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
-    mixin hightlighted_problem_name (aProblem.name)
-  p.stat-figures
-    img(src="/images/solved.png")
-    span.mainStatValue #{aProblem.stats.solved}
-    img(src="/images/inprocess.png")
-    span.mainStatValue #{aProblem.stats.inprocess}
-    img(src="/images/notsolved.png")
-    span.mainStatValue #{aProblem.stats.notsolved}
+  - if (!aProblem.in_development) 
+    p: a.problemLink(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
+      mixin hightlighted_problem_name (aProblem.name)
+    p.stat-figures
+      img(src="/images/solved.png")
+      span.mainStatValue #{aProblem.stats.solved}
+      img(src="/images/inprocess.png")
+      span.mainStatValue #{aProblem.stats.inprocess}
+      img(src="/images/notsolved.png")
+      span.mainStatValue #{aProblem.stats.notsolved}
+  - else
+    p: a.problemLink.problemLinkInActive(href="/Problems/"+aProblem.name.replace(/ /g,"_"))
+      mixin hightlighted_problem_name (aProblem.name)
+    p.inDevelopmentString
+      В разработке
 
 #problems.category-page
   - each aProblem, key in problems
