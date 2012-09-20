@@ -12,8 +12,11 @@ block content
         var widgetArgument = !{JSON.stringify(widget)};
         for(var v in allWidgetsDataArgument)
             if(typeof(allWidgetsDataArgument[v][widgetArgument.doc_id]) != "undefined")
+            {
+                var anyTimers = 0;
                 for(var i in allWidgetsDataArgument[v][widgetArgument.doc_id])
                 {
+                    anyTimers = 1;
                     var orgData = allWidgetsDataArgument[v][widgetArgument.doc_id][i];
                     var bDate = new Date(orgData.beginDate);
                     var cDate = new Date();
@@ -21,6 +24,9 @@ block content
                     var interval = orgData.interval;
                     $("#WaitList_#{widget.id}").append($("<div/>").text(i + " : осталось ждать " + (parseInt(interval)-parseInt(left)) + " дней"));
                 }
+                if(anyTimers == 0)
+                    $("#WaitList_#{widget.id}").append($("<div/>").addClass("waitListNoTimersError").text("Чтобы идти дальше, нужно отправить документ хоть куда-нибудь!"));
+            }
     };
     
     $("#WaitList_#{widget.id}").closest(".step").watch("display", function(){
