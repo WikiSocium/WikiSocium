@@ -8,6 +8,7 @@
     margin-right: 5px;
 }
 
+.documentOrganizationTimerActivated,
 .documentOrganizationTimer
 {
     display: inline-block;
@@ -15,8 +16,16 @@
     width: 20px;
     height: 20px;
     cursor: pointer;
-    
+}
+
+.documentOrganizationTimer
+{
     background-color: red;
+}
+
+.documentOrganizationTimerActivated
+{
+    background-color: green;
 }
     
 .documentOrganizationsRecordDescription

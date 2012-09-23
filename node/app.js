@@ -702,6 +702,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     {
                         scriptsToInject.push("/documents/DocumentsController.js");
                         scriptsToInject.push("/javascripts/customWidgets/DocumentViewWidget.js");
+                        scriptsToInject.push("/javascripts/customWidgets/WaitListWidget.js");                        
                     }
                     scriptsToInject.push("/javascripts/nicEdit.js");
                     scriptsToInject.push("/markitup/sets/default/set.js");            

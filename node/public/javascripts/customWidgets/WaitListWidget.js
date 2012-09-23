@@ -4,8 +4,6 @@ function WaitListWidget(value)
   // this.element = element;
   // this.parentEl = parentEl;
   
-  alert("WaitListWidget created");
-  
   this.IsRequired = true;
   this.setOptions = function(param)
   {
@@ -22,7 +20,7 @@ function WaitListWidget(value)
 WaitListWidget.prototype.getValue = function()
 {
   // return this.timersValues;
-  return "";
+  return "not passable";
 };
 
 WaitListWidget.prototype.validate = function()
