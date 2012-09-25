@@ -22,7 +22,7 @@ div(class="problemDescription")
 #SolutionTabs.tabs.gray-rounded-corners-tabs
   ul.nav.nav-tabs
     li.active <a href="#solution" data-toggle="tab">Решение</a></li>
-    li <a href="#documents" data-toggle="tab">Нормативные документы</a></li>
+    li: a(style="color: lightgray; text-decoration: none;")Нормативные документы
    
   .tab-content.gray-rounded-corners.gray-rounded-block-1
     .tab-pane.fade.in.active#solution
@@ -31,8 +31,6 @@ div(class="problemDescription")
       div
         != solution.description
     .tab-pane.fade#documents
-      p.to-var.
-        456<br />123<br />123
 
 #modal_window
 
