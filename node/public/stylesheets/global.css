@@ -508,3 +508,7 @@ hr {
   -webkit-border-radius: 6px 6px 0px 0px;
   border-top-left-radius: 6px 6px 0px 0px;
 }
+
+.form-search .submit {
+  padding: 3px;
+}
