@@ -27,7 +27,10 @@ div(class="problemDescription")
   .tab-content.gray-rounded-corners.gray-rounded-block-1
     .tab-pane.fade.in.active#solution
       div(style="float: right; width: 130px; height: 40px; margin-left: 30px; margin-right: 3%;")
-        button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;") Воспользоваться
+        - if (!problem.in_development)
+          button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;") Воспользоваться
+        -else
+          button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;", disabled="disabled") Воспользоваться          
       div
         != solution.description
     .tab-pane.fade#documents
