@@ -275,12 +275,11 @@ function updateSolutionsCollection () {
     
     var solutions = new Array();
     for (var key in files) {
-        var filenameParts = files[key].split(".");
-        if(filenameParts[filenameParts.length - 1] == "json")
-        {
-            solutions[key] = new Object();
-            solutions[key].filename = files[key];          
-        }
+      var filenameParts = files[key].split(".");
+      if(filenameParts[filenameParts.length - 1] == "json") {
+          solutions[key] = new Object();
+          solutions[key].filename = files[key];          
+      }
     }
 
     async.forEach(solutions, function(solution, callback) {
@@ -288,13 +287,16 @@ function updateSolutionsCollection () {
         if(!err) {
           var solutionData = JSON.parse(data);
           solution.name = solutionData.name;
+          solution.description = solutionData.description;
           Solution.findOne ({ name: solution.name }, function(err, document) {
             if (document) {
               if ( document.filename != solution.filename) document.filename = solution.filename;
+              if ( document.description != solution.description) document.description = solution.description;
             }
             else {
               document = new Solution({
                 'name': solution.name,
+                'description': solution.description,
                 'filename': solution.filename
               });
             }
@@ -308,8 +310,7 @@ function updateSolutionsCollection () {
         else callback(err);
       }); 
     },
-    function(err) {
-      
+    function(err) {      
       Solution.find({}, function(err,documents) {
         async.forEach(documents, function(document,callback) {
           fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
@@ -571,21 +572,24 @@ app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, functi
   var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
   Problem.findOne({ name: problemName }, function(err, problem) {            
-    getProblemStatistics ( problemName, function(err, stat) {
-      if (err) console.log(err);
-      else {
-        problem.stats = stat;
-        res.render('problem', {
-          'title' : problem.name,
-          'user':req.currentUser,
-          'menu':res.menu,
-          'headerStats': res.headerStats,
-          'problem' : problem,
-          'scripts' : ['/javascripts/modal_window.js'],
-          'styles'  : []
-        });
-      }
-    });        
+    Solution.findOne({ name: problem.solutions[0] }, function(err, solution) {
+      getProblemStatistics ( problemName, function(err, stat) {
+        if (err) console.log(err);
+        else {
+          problem.stats = stat;
+          res.render('problem', {
+            'title' : problem.name,
+            'user':req.currentUser,
+            'menu':res.menu,
+            'headerStats': res.headerStats,
+            'problem' : problem,
+            'solution': solution,
+            'scripts' : ['/javascripts/modal_window.js'],
+            'styles'  : []
+          });
+        }
+      });
+    });
   });
 });
 
