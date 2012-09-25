@@ -29,7 +29,7 @@ mixin problem (aProblem)
       form.form-search(method="POST")
         input.search-query(type="text", name="search_query", style="width: 70%", value=query)
         &nbsp;
-        button.btn(type="submit") Search
+        button.btn.submit(type="submit"): img(src="/images/search.png", width="18px", height="18px")
         br
         a(href="") Вернуться к списку категорий
 
