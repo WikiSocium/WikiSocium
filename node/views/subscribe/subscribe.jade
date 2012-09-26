@@ -1,0 +1,7 @@
+.row
+  .span10.offset1
+  
+    - if (result == 'Added')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Ваш адрес электронной почты успешно добавлен в наш список рассылки
+    - if (result == 'Exists')
+      p(style="color: darkgreen; background: #bfffbf; padding: 10px;") Вы уже добавили свой адрес электронной почты ранее.

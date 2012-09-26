@@ -80,17 +80,14 @@ html
             b #{headerStats.users_number}
             |&nbsp;пользовател
             mixin getUserWordEnding ( headerStats.users_number )
-          #heading-login-form.span3
-            div.formline
-              - if (user.guest)
-                form.form-inline(method='post', action='/sessions')
-                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
-                  input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
-                  button.btn.btn-success(type='submit')Войти
-                a(href='/users/new') Регистрация
-              - else
-                |#{user.email} &nbsp;
-                a(href='/Logout').btn(type='submit') Выйти
+          #heading-subscribe-form.span3
+            div(style="position: absolute; padding-right: 5px;")
+              div.formline
+                p Хочешь узнавать о&nbsp;новостях проекта?<br />Подпишись на&nbsp;нашу новостную рассылку!
+                form.form-inline(method='post', action='/subscribe')
+                  p
+                    input#user-email.input-small(name='email', type='text', placeholder='Ваш e-mail')
+                    button.btn.btn-success(type='submit') Оставить адрес
                 
     - var submenu; var submenu_parent;
     #menu-block

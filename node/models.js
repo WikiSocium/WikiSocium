@@ -201,14 +201,25 @@ function defineModels(mongoose, fn) {
     'text': String
   });
   
+/**
+ * Model: Subscribe
+ */
+
+  var Subscribe = new Schema({
+    'email': { type: String, unique: true },
+    'timestamp' : { type : String }
+  });
+  
 
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
   mongoose.model('Category', Category);
   mongoose.model('Problem', Problem);
   mongoose.model('Solution', Solution);
-  mongoose.model('Organizations', Organizations);  
+  mongoose.model('Organizations', Organizations);
   mongoose.model('Texts', Texts);
+  mongoose.model('Subscribe', Subscribe);
+  
 
   fn();
 }

@@ -35,6 +35,7 @@ var models = require('./models')
     ,Solution
     ,Organizations
     ,Texts
+    ,Subscribe
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
     ;
@@ -62,8 +63,8 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-production');
-  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
+  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-production');
+  app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -82,6 +83,7 @@ models.defineModels(mongoose, function() {
   app.Solution = Solution = mongoose.model('Solution');
   app.Organizations = Organizations = mongoose.model('Organizations');  
   app.Texts = Texts = mongoose.model('Texts');
+  app.Subscribe = Subscribe = mongoose.model('Subscribe');
   db = mongoose.connect(app.set('db-uri'));
 })
 
@@ -1687,6 +1689,29 @@ app.get('/admin/categories/:CategoryName/delete', loadUser, function(req, res) {
     });
     });
   }
+});
+
+app.post('/subscribe', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  Subscribe.findOne({ email : req.body.email }, function (err, email) {
+    if (email == null) {
+      var new_email = new Subscribe({
+        'email' : req.body.email,
+        'timestamp' : getCurrentDateTime()
+      });
+      new_email.save();
+      var result = 'Added';
+    }
+    else var result = 'Exists';
+    res.render('subscribe/subscribe.jade', {
+      'title':    "Проблемы",
+      'user':     req.currentUser,
+      'menu':     res.menu,
+      'headerStats': res.headerStats,
+      'scripts':  [],
+      'styles':   [],
+      'result':   result
+    });
+  });
 });
 
 updateSolutionsCollection();

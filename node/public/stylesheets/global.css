@@ -243,6 +243,19 @@ ul.orangedot {
 #heading-login-form input {
   margin-right: 2px;
   width: 70px;
+}
+
+#heading-subscribe-form {
+  height: 90px;
+}
+
+#heading-subscribe-form * {
+  font-family: Trebuchet MS;
+  font-size: 10pt;
+}
+#heading-subscribe-form input {
+  margin-right: 2px;
+  width: 150px;
 } 
 
 .gray-rounded-corners {
