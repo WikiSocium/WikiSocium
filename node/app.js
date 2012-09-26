@@ -438,7 +438,7 @@ app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
           if ( categories[key].problemsNumber == 0 ) categories.splice(key, 1);
         }
         res.render('index', {
-          'title': "ВикиСоциум development",
+          'title': "ВикиСоциум: Простые решения для важных проблем",
           'user': req.currentUser,
           'menu': res.menu,
           'headerStats': res.headerStats,
