@@ -995,6 +995,8 @@ function parseReturnTo ( req_query_return_to ) {
 
 // Users
 app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  res.redirect('/');
+  return;
   res.render('users/new.jade', {
     locals: { return_to: parseReturnTo(req.query.return_to) },
     'user':req.currentUser,
