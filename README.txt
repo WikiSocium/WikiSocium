@@ -29,15 +29,15 @@ http://пиши-код-блять.рф/
 
 *** На установленной Ubuntu ***
 1. Открыть terminal и выполнить:
-sudo apt-get git python build-essential libssl-dev checkinstall
+sudo apt-get install git python build-essential libssl-dev checkinstall
 2. Установить последнюю версию node.js:
-wget http://nodejs.org/dist/v0.6.19/node-v0.6.19.tar.gz
-tar -zxf node-v0.6.19.tar.gz
-cd node-v0.6.19
+wget http://nodejs.org/dist/v0.8.10/node-v0.8.10.tar.gz
+tar -zxf node-v0.8.10.tar.gz
+cd node-v0.8.10
 ./configure
 make
 sudo checkinstall
-3. Закрыть терминал и открыть снова. Выполнить команду "node -v". Ответ должен быть v0.6.19. Node установлен.
+3. Закрыть терминал и открыть снова. Выполнить команду "node -v". Ответ должен быть v0.8.10. Node установлен.
 
 5. Клонируем репозиторий git и ставим нужные пакеты:
 git clone https://github.com/WikiSocium/WikiSocium.git
