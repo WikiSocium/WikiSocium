@@ -119,7 +119,7 @@ function CheckPredicate(predicate)
         return false;
     }
 
-    if(typeof(value) != "string")
+    if(value instanceof Object)
       value = value.value;
   
     switch(predicate.cond) 
