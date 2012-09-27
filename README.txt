@@ -49,8 +49,18 @@ npm install
 Должна быть видна надпись "Express server listening on port 3000 in development mode"
 
 !!!Под Windows!!!
-NodeJS и npm под Win таки есть, и даже правильно работают. Но при выполнении npm install мы узнаем, что модуль mongodb под Win не существует.
-Поэтому пока считаем, что под Win не работаем.
+1. Идем на http://nodejs.org и скачиваем node. На главной большая кнопка install
+2. Устанавливаем nodejs
+3. Скачиваем git для windows: http://msysgit.github.com/. 
+Я там выбираю Git for Windows и иду в downloads on google code 
+(http://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git)
+Там выбираю самую свежую версию
+4. Устанавливаем Git
+5. Нажимаем правой кнопкой по папке, в которую положим рабочую папку с кодом. Выбираем Git Bash Here
+6. Клонируем репозиторий git и ставим нужные пакеты:
+git clone https://github.com/WikiSocium/WikiSocium.git
+cd WikiSocium/node
+npm install
 
 #########################
 # Что можно посмотреть? #
