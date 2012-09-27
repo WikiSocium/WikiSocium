@@ -1,13 +1,40 @@
 extends BaseWidget
 
 block content
+  <div id="RadioGroupWidget_#{widget.id}">
+  </div>
   script(type="text/javascript")
-    YUI().use('inputex', 'inputex-radio'
-    , function(Y) 
-    {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.RadioField({name: 'step#{step_id}_#{widget.id}', display: 'vertically', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
-    step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
-    {
-     OnWidgetChanged();
-    });
-    });
+      var RadioGroupWidgetBody_#{widget.id} = function()
+      {
+          if("#{JSON.stringify(value)}" == "undefined")
+            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new RadioGroupWidget(!{JSON.stringify(widget.initial)});    
+          else
+            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new RadioGroupWidget(!{JSON.stringify(value)});    
+          var value_list = !{JSON.stringify(widget.value_list)};                          
+          var initial = wdgt.selection_value;
+          
+          var selectionChangedHandler = function(){
+              $("#RadioGroupWidget_#{widget.id}").find(".RadioGroupWidgetItem").attr("checked", false);
+              step#{step_id}FieldsList['!{widget.id}'].selection_value = $(this).find(".RadioGroupWidgetItem").attr("value");
+              step#{step_id}FieldsList['!{widget.id}'].selection_label = $(this).find(".RadioGroupWidgetItemLabel").text();
+              $(this).find(".RadioGroupWidgetItem").attr("checked", true);
+              OnWidgetChanged();
+          };              
+          for(var i in value_list)
+          {
+              var inpt = $("<input type='radio' class='RadioGroupWidgetItem' selected/>").attr("value", value_list[i].value);
+              var label = $("<div class='RadioGroupWidgetItemLabel'/>").text(value_list[i].label);
+              if(value_list[i].value == initial)
+                inpt.attr("checked", true);
+              var container = $("<div/>").addClass("RadioGroupWidgetItemContainer").append(inpt).append(label).click(selectionChangedHandler);
+              $("#RadioGroupWidget_#{widget.id}").append(container);
+          }
+      };
+      $("#RadioGroupWidget_#{widget.id}").closest(".step").watch("display", function(){     
+              RadioGroupWidgetBody_#{widget.id}();
+      }, 100, "");
+      if($("#RadioGroupWidget_#{widget.id}").closest(".step").is(":visible"))
+         setTimeout(function(){
+             RadioGroupWidgetBody_#{widget.id}();
+             OnWidgetChanged();
+      }, 1000);

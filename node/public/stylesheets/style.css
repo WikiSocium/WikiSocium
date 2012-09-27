@@ -152,7 +152,8 @@
 .mediaWidgetButton
 {
     margin-bottom: 20px;
-    margin-top: 0px;    
+    margin-top: 0px;   
+    margin-right: 30px; 
 }
 
 .openURLRemoveButton:hover,

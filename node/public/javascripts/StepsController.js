@@ -115,9 +115,12 @@ function CheckPredicate(predicate)
         value=GetWidgetValue(currentCaseData.GetStepIndexById(currentStepId), predicate.widget_id);
         
     if (typeof value == "undefined") 
-    {
+    { 
         return false;
     }
+
+    if(typeof(value) != "string")
+      value = value.value;
   
     switch(predicate.cond) 
     {
