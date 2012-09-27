@@ -9,12 +9,11 @@ div
   #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice} руб.
   if data["0"].IsItemDelivered && data["0"].IsDeliveryCost == 1
     , в том числе стоимость доставки составила #{data["0"].ItemDeliveryCost} руб.
-  else
-    . 
+  Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но 
   if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 1
-    Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но фактически доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
+    фактически доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
   else if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 0
-    До настоящего времени товар доставлен не был.   
+    до настоящего времени доставлен не был.   
 
 div
   if data["2"].IsItemProblems
@@ -24,6 +23,46 @@ div
     if data["2"].IsProblemsMoney
       Дополнительно, мне был нанесён имущественный ущерб: #{data["2"].ItemProblemsMoney}.  
 div
-  Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ: 
+  Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
+  if data["0"].IsItemDelivered && data["3"].RequestsDeliveryDelayMoney == 1
+    li(id="Delivery") Уплаты неустойки в размере 3% 
+    script(type='text/javascript')
+      var DeliveryBaseStr;
+      var DeliveryBase;
+      
+      if(#{data["0"].IsDeliveryCost} == 1)
+      { 
+        DeliveryBase = #{data["0"].ItemDeliveryCost};
+        DeliveryBaseStr = ' от стоимости доставки за каждый день просрочки в размере ';
+      }
+      else
+      {
+        DeliveryBase = #{data["0"].ItemPrice};
+        DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
+      }
+      
+      console.log(DeliveryBase);
+      
+      if(#{data["1"].IsDeliveryProblems} == 1)
+      {
+        DeliveryBase *= #{data["1"].DeliveryDelayDays};
+      }
+      else
+      {
+        var Current = new Date();
+        console.log('#{data["1"].DeliveryDate}');
+        var ToBe = new Date('#{data["1"].DeliveryDate}','dd.mm.yyyy');
+        console.log(Current.toString());
+        console.log(ToBe.toString());
+        
+        var one_day=1000*60*60*24;
+        DeliveryBase *= Math.floor((Current.getTime() - ToBe.getTime())/one_day);
+      }  
+      console.log(DeliveryBase);
+
+      DeliveryBaseStr = DeliveryBaseStr + Math.round(DeliveryBase*0.03) + ' руб.';  
+      $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
+      
+          
   li TODO: куча требований 
 

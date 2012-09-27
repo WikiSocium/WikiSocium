@@ -36,7 +36,7 @@ mixin category (aCategory)
       form.form-search(method="POST")
         input.search-query(type="text", name="search_query", style="width: 70%")
         &nbsp;
-        button.btn(type="submit") Search
+        button.btn.submit(type="submit"): img(src="/images/search.png", width="18px", height="18px")
 
 #categories.problems-page
   - each aCategory, key in categories 

@@ -651,6 +651,10 @@ function HideInvisible(stepnum)
 			{
 				YUI().use('inputex', function(Y) 
 	    		{
+	    		  //console.log(window["step"+tcs+"FieldsList"]);
+	    		  //console.log("step"+tcs+"FieldsList");
+	    		  //console.log(solutionData.steps[tcs].widgets[i].id);
+	    		  
     				window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
 				});
 			}

@@ -121,6 +121,7 @@ function defineModels(mongoose, fn) {
   */
   var Solution = new Schema({
     'name': { type: String, unique: true },
+    'description': String,
     'filename': String,
     'statistics': {
       'started': Number,
