@@ -30,9 +30,6 @@ block content
               $("#RadioGroupWidget_#{widget.id}").append(container);
           }
       };
-      $("#RadioGroupWidget_#{widget.id}").closest(".step").watch("display", function(){     
-              RadioGroupWidgetBody_#{widget.id}();
-      }, 100, "");
       if($("#RadioGroupWidget_#{widget.id}").closest(".step").is(":visible"))
          setTimeout(function(){
              RadioGroupWidgetBody_#{widget.id}();
