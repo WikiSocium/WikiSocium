@@ -416,8 +416,7 @@ function getCurrentDateTime() {
 //
 // Обработка корня
 app.get('/', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  console.log(req.headers.host
-  );
+
   Category.find({on_index: true}, ['name', 'icon'],
     { sort: { index_order: 1 } }, function(err, categories)
     {    
@@ -571,25 +570,28 @@ app.post('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res)
 app.get('/Problems/:ProblemName', loadUser, generateMenu, getHeaderStats, function(req, res){
   var problemName = req.param('ProblemName', null).replace(/_/g," ");
   
-  Problem.findOne({ name: problemName }, function(err, problem) {            
-    Solution.findOne({ name: problem.solutions[0] }, function(err, solution) {
-      getProblemStatistics ( problemName, function(err, stat) {
-        if (err) console.log(err);
-        else {
-          problem.stats = stat;
-          res.render('problem', {
-            'title' : problem.name,
-            'user':req.currentUser,
-            'menu':res.menu,
-            'headerStats': res.headerStats,
-            'problem' : problem,
-            'solution': solution,
-            'scripts' : ['/javascripts/modal_window.js'],
-            'styles'  : []
-          });
-        }
+  Problem.findOne({ name: problemName }, function(err, problem) {
+    if (problem != null) {
+      Solution.findOne({ name: problem.solutions[0] }, function(err, solution) {
+        getProblemStatistics ( problemName, function(err, stat) {
+          if (err) console.log(err);
+          else {
+            problem.stats = stat;
+            res.render('problem', {
+              'title' : problem.name,
+              'user':req.currentUser,
+              'menu':res.menu,
+              'headerStats': res.headerStats,
+              'problem' : problem,
+              'solution': solution,
+              'scripts' : ['/javascripts/modal_window.js'],
+              'styles'  : []
+            });
+          }
+        });
       });
-    });
+    }
+    else RenderError(req,res, problemName+": Проблема не найдена");
   });
 });
 
