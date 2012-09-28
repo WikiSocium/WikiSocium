@@ -47,10 +47,11 @@ div(class="step", id="step_" + step_index + "")
           - each widget in step.widgets
             - if (stepData == null)
               //- console.log("init")
-              //- console.log(widget.initial)
+              // - console.log(widget.initial)
+              // - console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
               !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
             - else
-              //- console.log("Widget " + widget.id + " initialization with data loading");
+              // - console.log("Widget " + widget.id + " initialization with data loading");
               !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
     script(type = 'text/javascript')
       groups[#{step_index}] = step#{step_index}FieldsList;

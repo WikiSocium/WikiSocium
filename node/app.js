@@ -712,6 +712,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     }
                     scriptsToInject.push("/javascripts/nicEdit.js");
                     scriptsToInject.push("/markitup/sets/default/set.js");            
+                    scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");                                
                     stylesToInject.push("/markitup/sets/default/style.css");
                     stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
                     stylesToInject.push("/markitup/skins/simple/style.css");            
