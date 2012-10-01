@@ -318,7 +318,6 @@ function updateSolutionsCollection () {
           fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
             if(!err) var solutionData = JSON.parse(data);
             if (err || solutionData.name != document.name) {
-              console.log(solutionData.name+' '+document.name+' '+err);
               document.remove();
             }
             callback();
