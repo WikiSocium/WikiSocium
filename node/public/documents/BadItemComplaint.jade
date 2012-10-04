@@ -7,16 +7,17 @@ div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
   #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice} руб.
-  if data["0"].IsItemDelivered && data["0"].IsDeliveryCost == 1
+  if data["0"].IsItemDelivered && data["0"].IsDeliveryCost.value == 1
     , в том числе стоимость доставки составила #{data["0"].ItemDeliveryCost} руб.
   Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но 
-  if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 1
+  if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems.value == 1
     фактически доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
-  else if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems == 0
-    до настоящего времени доставлен не был.   
+  else if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems.value == 0
+    до настоящего времени доставлен не был.  
+         
 
 div
-  if data["2"].IsItemProblems
+  if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsItemProblems.value != 0
     #{data["2"].ItemProblemsDate} в товаре были найдены следующие недостатки: #{data["2"].ItemProblems}. 
     if data["2"].IsProblemsHealth
       Кроме того, мне был нанесён вред здоровью: #{data["2"].ItemProblemsHealth}.
@@ -24,13 +25,13 @@ div
       Дополнительно, мне был нанесён имущественный ущерб: #{data["2"].ItemProblemsMoney}.  
 div
   Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
-  if data["0"].IsItemDelivered && data["3"].RequestsDeliveryDelayMoney == 1
+  if data["0"].IsItemDelivered && data["3"].RequestsDeliveryDelayMoney
     li(id="Delivery") Уплаты неустойки в размере 3% 
     script(type='text/javascript')
       var DeliveryBaseStr;
       var DeliveryBase;
       
-      if(#{data["0"].IsDeliveryCost} == 1)
+      if(#{data["0"].IsDeliveryCost.value} == 0)
       { 
         DeliveryBase = #{data["0"].ItemDeliveryCost};
         DeliveryBaseStr = ' от стоимости доставки за каждый день просрочки в размере ';
@@ -41,28 +42,45 @@ div
         DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
       }
       
-      console.log(DeliveryBase);
+      //console.log(DeliveryBaseStr);
       
-      if(#{data["1"].IsDeliveryProblems} == 1)
+      if(#{data["1"].IsDeliveryProblems.value} == 1)
       {
         DeliveryBase *= #{data["1"].DeliveryDelayDays};
       }
       else
       {
         var Current = new Date();
-        console.log('#{data["1"].DeliveryDate}');
+        //console.log('#{data["1"].DeliveryDate}');
         var ToBe = new Date('#{data["1"].DeliveryDate}','dd.mm.yyyy');
-        console.log(Current.toString());
-        console.log(ToBe.toString());
+        //console.log(Current.toString());
+        //console.log(ToBe.toString());
         
         var one_day=1000*60*60*24;
         DeliveryBase *= Math.floor((Current.getTime() - ToBe.getTime())/one_day);
       }  
-      console.log(DeliveryBase);
+      //console.log(DeliveryBase);
 
       DeliveryBaseStr = DeliveryBaseStr + Math.round(DeliveryBase*0.03) + ' руб.';  
       $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
       
-          
-  li TODO: куча требований 
+if data["1"].IsDeliveryProblems.value == 0
+  if data["3"].RequestsNotDelivered.value == 0
+    li #{data["3"].RequestsNotDelivered.label} &#58; #{data["3"].RequestsNewDeliveryDate}
+  else
+    li #{data["3"].RequestsNotDelivered.label}
+
+if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsItemProblems.value == 1
+  if data["0"].IsTechComplicated            
+    li #{data["3"].RequestsTechComplicated.label}
+  else
+    if data["3"].RequestsNonComplicated.value == 3
+      li #{data["3"].RequestsNonComplicated.label} &#58; #{data["3"].PriceDiscountMoney} руб. 
+    else if data["3"].RequestsNonComplicated.value == 5
+      li #{data["3"].RequestsNonComplicated.label} &#58; #{data["3"].SelfRepairMoney} руб.
+    else
+      li #{data["3"].RequestsNonComplicated.label}
+      
+    
+   
 

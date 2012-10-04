@@ -377,7 +377,13 @@
 								"widget_id"	:	"IsItemProblems",
 								"cond"		:	"==",								
 								"value"		:	"1"
-							}						
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	">=",								
+								"value"		:	"1"
+							}								
 						]
 					}
 				},
@@ -679,7 +685,7 @@
 							{
 								"step_id"	:	"1",
 								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"! =",								
+								"cond"		:	"!=",								
 								"value"		:	"0"
 							},
 							{
@@ -753,6 +759,12 @@
 								"widget_id"	:	"IsProblemsHealth",
 								"cond"		:	"==",								
 								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	">=",								
+								"value"		:	"1"
 							}
 						]
 					}
@@ -770,6 +782,12 @@
 								"step_id"	:	"2",
 								"widget_id"	:	"IsProblemsMoney",
 								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	">=",								
 								"value"		:	"1"
 							}
 						]
