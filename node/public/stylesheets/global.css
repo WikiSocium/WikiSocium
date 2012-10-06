@@ -73,8 +73,7 @@ ul.orangedot {
 #heading-block {
   background: #e6e5e5 url(../images/bgheader.png);
   border-bottom: 1px #d2d2d2 solid;
-  min-height: 91px;
-  padding-top: 25px;
+  min-height: 116px;
 }
 
 #menu-block {
@@ -128,7 +127,7 @@ ul.orangedot {
   background-image: url(../images/logo.png);
   background-repeat: no-repeat;
   background-position: left center;
-  margin: 0 20px 0 0;
+  margin: 25px 20px 0 0;
   height: 76px;
   width: 303px;
 }
@@ -138,7 +137,7 @@ ul.orangedot {
 
 #heading-stat {
   font-size: 12pt;
-  margin-top: 14px;
+  margin-top: 39px;
 }
 
 
@@ -236,14 +235,62 @@ ul.orangedot {
   text-decoration: none;
 }
 
+#heading-login-form {
+  margin-top: 32px;
+}
+
 #heading-login-form * {
   font-family: Trebuchet MS;
-  font-size: 10pt;
+  font-size: 9pt;
+}
+#heading-login-form form {
+  margin-bottom: 5px;
+}
+#heading-login-form .formline {
+  padding-right: 5px;
+  position: absolute;
 }
 #heading-login-form input {
   margin-right: 2px;
-  width: 70px;
-} 
+  padding: 3px;
+  width: 34%;
+}
+#heading-login-form button {
+  margin-left: 2px;
+  padding: 3px;
+}
+
+#heading-login-form .social-network-buttons {
+  float: left;
+  margin-left: 5px;
+}
+
+#heading-login-form .social-network-buttons .social-link {
+  cursor: pointer;
+  margin-right: 5px;
+}
+#heading-login-form .social-network-buttons .social-icon {
+  background: url('/images/social_sprite_20.png');
+  display: inline-block;
+  height: 20px;
+  width:  20px;
+}
+#heading-login-form .social-network-buttons .social-icon-vk {
+  background-position: 0 -26px;
+}
+#heading-login-form .social-network-buttons .social-icon-tw {
+  background-position: 0 -52px;
+}
+#heading-login-form .social-network-buttons .social-icon-fb {
+  background-position: 0 0;
+}
+
+#heading-login-form .register-link {
+  margin-left: 34%;
+  margin-top: 4px;
+  padding-left: 15px;
+}
+
 
 .gray-rounded-corners {
   background: #f8f8f8;
