@@ -5,7 +5,7 @@ function YandexMapsWidget(value)
 
 YandexMapsWidget.prototype.getValue = function()
 {
-    return {};
+    return {address : ""};
 };
 
 YandexMapsWidget.prototype.validate = function()
