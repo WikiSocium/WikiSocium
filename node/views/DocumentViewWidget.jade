@@ -117,7 +117,10 @@ block content
     };
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){     
             // Only regenerate document, organizations should be leaved unchanged
-            GenerateDocument_#{widget.doc_name}();
+            // GenerateDocument_#{widget.doc_name}();
+            
+            // No, organizations list may change too
+            initDocumentWidgetFunction();
        }, 100, "");
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
        setTimeout(function(){
