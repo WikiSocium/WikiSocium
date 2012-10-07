@@ -994,19 +994,6 @@ function parseReturnTo ( req_query_return_to ) {
   else return req_query_return_to;
 }
 
-// Users
-app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  res.render('users/new.jade', {
-    locals: { return_to: parseReturnTo(req.query.return_to) },
-    'user':req.currentUser,
-    'menu':res.menu, 
-    'headerStats': res.headerStats,
-    title: '',
-    scripts: [],
-    styles:[]
-  });
-});
-
 function createCaseFile ( userName, caseId, solutionName ) {
 
   Solution.findOne ({ name: solutionName }, function(err, document) {
@@ -1094,43 +1081,66 @@ app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, 
     res.send('Doc.html');
 });
 
-app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
+
+// Users
+app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  res.render('users/new.jade', {
+    locals: { return_to: parseReturnTo(req.query.return_to) },
+    'user':req.currentUser,
+    'menu':res.menu, 
+    'headerStats': res.headerStats,
+    title: '',
+    scripts: [],
+    styles:[]
+  });
+});
+
+app.post('/users.:format?', function(req, res) {
   var user = new User(req.body.user);
 
-  function userSaveFailed() {
-    req.flash('error', 'Не удалось создать аккаунт');
-    res.render('users/new.jade', {
-      locals: { return_to: parseReturnTo(req.query.return_to) },
-      'user':req.currentUser,
-      'menu':res.menu, 
-      'headerStats': res.headerStats,
-      title: '',
-      scripts: [],
-      styles:[]
+  function SaveNewUser(user) {
+    user.save(function(err) {
+      var return_to = parseReturnTo(req.query.return_to);
+
+      if (err) res.redirect('/users/new?error&return_to=' + return_to);//return userSaveFailed();
+      else {
+        // creating user environment
+        userCreateEnv( user.user_id );    
+        
+        //emails.sendWelcome(user);     
+
+        switch (req.params.format) {
+          case 'json':
+            res.send(user.toObject());
+          break;
+
+          default:
+            req.session.user_id = user.id;
+            res.redirect(return_to);
+        }
+      }
     });
   }
 
-  user.save(function(err) {
-    if (err) return userSaveFailed();
-    
-    // creating user environment
-    userCreateEnv( user.email );    
-    
-    req.flash('info', 'Ваш аккаунт был успешно создан');
-    //emails.sendWelcome(user);
-    
-    var return_to = parseReturnTo(req.query.return_to);
+  User.findOne().sort('user_id', -1).exec( function(err, user_max) {
+    var user_max_id;
+    if (user_max.user_id != undefined) user_max_id = user_max.user_id;
+    else user_max_id = -1;
+    user.user_id = user_max_id + 1;
 
-    switch (req.params.format) {
-      case 'json':
-        res.send(user.toObject());
-      break;
-
-      default:
-        req.session.user_id = user.id;
-        res.redirect(return_to);
+    if ( req.body.social_name != undefined && user.email != undefined ) {
+      User.findOne({ email: user.email }, function(err, found_user) {
+        if (found_user) {
+          var response = { 'error' : 'email_exists' };
+          res.send(response);
+        }
+        else SaveNewUser(user);
+      });
     }
-  });
+    else SaveNewUser(user);
+
+       
+  });  
 });
 
 
@@ -1174,37 +1184,55 @@ app.post('/sessions', function(req, res) {
 
   var return_to = parseReturnTo(req.query.return_to);
 
-  User.findOne({ email: req.body.user.email }, function(err, user) {
-    if (user && user.authenticate(req.body.user.password)) {
-      req.session.user_id = user.id;
-      
-      try {
-        checkUserEnv ( user.email );
-      }
-      catch (e) {
-        console.log (user.email + ": " + e);
-        userCreateEnv ( user.email );
-      }
-      
-      req.flash('info', 'Вы вошли в систему. Здравствуйте!');
-      // Remember me
-      if (req.body.remember_me) {
-        var loginToken = new LoginToken({ email: user.email });
-        loginToken.save(function() {
-          res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-          res.redirect(return_to);
-        });
-      }
-      else {
+  function CreateSession(user) {
+    req.session.user_id = user.id;
+    
+    try {
+      checkUserEnv ( user.user_id );
+    }
+    catch (e) {
+      console.log (user.email + ": " + e);
+      userCreateEnv ( user.user_id );
+    }
+    
+    // Remember me
+    if (req.body.remember_me) {
+      var loginToken = new LoginToken({ email: user.email });
+      loginToken.save(function() {
+        res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
         res.redirect(return_to);
-      }           
+      });
     }
     else {
-      req.flash('error', 'E-mail и пароль не подходят');
-      res.redirect('/sessions/new?return_to='+return_to);
-    }   
-  });
-   
+      res.redirect(return_to);
+    }
+  }
+
+  if (req.body.user.email != undefined) {
+    User.findOne({ email: req.body.user.email }, function(err, user) {
+      if (user && user.authenticate(req.body.user.password)) {
+        CreateSession(user);
+      }
+      else {
+        res.redirect('/sessions/new?error=login_password_not_match&return_to='+return_to);
+      }   
+    });
+  }
+  else {
+    if ( req.body.social_name != undefined && req.body.user[req.body.social_name+'_uid'] != undefined ) {
+      var field = req.body.social_name+'_uid';
+
+      var search = new Object;
+      search[field] = req.body.user[field];
+      User.findOne(search, function(err, user) {
+        if (user) {
+          CreateSession(user);
+        }
+        else res.redirect(return_to);
+      });
+    }
+    else res.redirect(return_to);
+  }   
 });
 
 app.get('/login', loadUser, generateMenu, getHeaderStats, function(req, res) {
@@ -1283,9 +1311,33 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 
 
 app.get('/social/facebook', function(req, res) {
-
+  res.render('social/facebook.jade', {
+    title: "ВикиСоциум: Авторизация"
+  });
 });
 
+app.post('/social/login', function(req, res) {
+  var field = req.body.social_name+'_uid';
+
+  var response_data = {
+    'social_name' : req.body.social_name,
+    'uid'         : req.body.uid
+  };
+
+  var search = new Object;
+  search[field] = req.body.uid;
+
+  User.findOne(search, function(err, user) {
+    if (user) {
+      response_data.status = 'success';
+      res.send(response_data);
+    }
+    else {
+      response_data.status = 'user_not_found';
+      res.send(response_data);
+    }
+  });
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // Admin pages

@@ -17,10 +17,13 @@ function defineModels(mongoose, fn) {
   }
 
   User = new Schema({
-    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], unique: true },
+    'user_id': { type: Number, unique: true },
+    'email': String,
     'hashed_password': String,
     'salt': String,
     'vk_uid': String,
+    'fb_uid': String,
+    'tw_uid': String,
     'name': String,
     'surname': String
   });
@@ -51,8 +54,11 @@ function defineModels(mongoose, fn) {
   });
 
   User.pre('save', function(next) {
-    if (!validatePresenceOf(this.password)) {
-      next(new Error('Invalid password'));
+    if (
+      !validatePresenceOf(this.password) &&
+      (this.vk_uid==undefined && this.fb_uid==undefined && this.tw_uid==undefined)
+      ) {
+      next(new Error('Empty_Password'));
     } else {
       next();
     }
