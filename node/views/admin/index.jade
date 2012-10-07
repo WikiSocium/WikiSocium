@@ -1,19 +1,23 @@
-.row
-  .offsethalf  
-    h1 Администрирование
-    
-    a(href="/admin/problems")
-      h2 Управление проблемами
-    
-    a(href="/admin/categories")
-      h2 Управление категориями
+extends ../layout
 
-    h2 Управление организациями
-    ul
-      li
-        a(href='/admin/organizations/add') Добавить организацию
-        
-    h2 Управление текстами
-    ul
-      li
-        a(href='/admin/texts/add') Добавить текст
+block content
+
+  .row
+    .offsethalf  
+      h1 Администрирование
+      
+      a(href="/admin/problems")
+        h2 Управление проблемами
+      
+      a(href="/admin/categories")
+        h2 Управление категориями
+
+      h2 Управление организациями
+      ul
+        li
+          a(href='/admin/organizations/add') Добавить организацию
+          
+      h2 Управление текстами
+      ul
+        li
+          a(href='/admin/texts/add') Добавить текст

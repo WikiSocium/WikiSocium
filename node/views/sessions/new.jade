@@ -1,12 +1,16 @@
-.page
-  h2 Вход в систему
-  p
-    a.button(href='/users/new?return_to=#{return_to}') Создать новый аккаунт &rarr;
-  form.well#login(method='post', action='/sessions?return_to=#{return_to}')
-  
-    !=partial('../users/fields', { locals: { user: user } })
-    label.checkbox
-      input(type='checkbox', name='remember_me')
-      Запомнить меня
-    div
-      input.btn(type='submit', value='Войти')
+extends ../layout
+
+block content
+
+  .page
+    h2 Вход в систему
+    p
+      a.button(href='/users/new?return_to=#{return_to}') Создать новый аккаунт &rarr;
+    form.well#login(method='post', action='/sessions?return_to=#{return_to}')
+    
+      !=partial('../users/fields', { locals: { user: user } })
+      label.checkbox
+        input(type='checkbox', name='remember_me')
+        Запомнить меня
+      div
+        input.btn(type='submit', value='Войти')

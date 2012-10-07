@@ -37,7 +37,7 @@ var models = require('./models')
     ,Texts
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
-    ;
+;
 
 var app = module.exports = express.createServer();
 
@@ -52,6 +52,7 @@ app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('view options', { 'layout': false });
   app.use(express.bodyParser());
   app.use(express.cookieParser()); 
   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
@@ -1281,8 +1282,15 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 });
 
 
+app.get('/social/facebook', function(req, res) {
 
+});
+
+
+///////////////////////////////////////////////////////////////////////////////
 // Admin pages
+///////////////////////////////////////////////////////////////////////////////
+
 app.get('/admin', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   
