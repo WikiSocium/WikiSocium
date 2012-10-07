@@ -1,9 +1,10 @@
 extends BaseWidget
 
 block content
-  <div id="RadioGroupWidget_#{widget.id}">
+  <div id="YandexMapsWidget_#{widget.id}">      hello, maps world!
   </div>
   script(type="text/javascript")
+      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget(!{JSON.stringify(value)});  
       var RadioGroupWidgetBody_#{widget.id} = function()
       {
          

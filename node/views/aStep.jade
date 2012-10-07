@@ -35,10 +35,10 @@ div(class="step", id="step_" + step_index + "")
               - if (stepData == null)
                 //- console.log("init")
                 //- console.log(widget.initial)
-                !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial, all_values:stepsData})
+                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial, all_values:stepsData})
               - else
                 //- console.log("Widget " + widget.id + " initialization with data loading");
-                !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id], all_values:stepsData})
+                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id], all_values:stepsData})
     - else //- Else render all widgets in one implicit group
       form(class="form-vertical")
         fieldset
@@ -49,10 +49,10 @@ div(class="step", id="step_" + step_index + "")
               //- console.log("init")
               // - console.log(widget.initial)
               // - console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
-              !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:widget.initial})
+              !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial})
             - else
               // - console.log("Widget " + widget.id + " initialization with data loading");
-              !=partial(widget.widget_type, {widget:widget, step_id:step_index, value:stepData[widget.id]})
+              !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id]})
     script(type = 'text/javascript')
       groups[#{step_index}] = step#{step_index}FieldsList;
     !="<script type = 'text/javascript'>"
