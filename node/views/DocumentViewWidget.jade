@@ -51,7 +51,15 @@ block content
                 var title = data[i][j]["title"];
                 var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[i] + " дней)"));
                 
-                var savedValue = !{JSON.stringify(value)};
+                // if('!{JSON.stringify(value)}' == '')
+                //   var savedValue = {};
+                // else
+                //   var savedValue = !{JSON.stringify(value)}; // [TODO] this value may be absolutely empty, not event {} or ""!
+
+                var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
+                
+                console.log(savedValue);
+                
                 if(typeof(savedValue[title]) != "undefined")
                     var orgTimer = $('<div/>').attr("org_title", title).attr("org_time", times[i]).addClass("documentOrganizationTimerActivated");
                 else
@@ -109,7 +117,10 @@ block content
     };
     $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){     
             // Only regenerate document, organizations should be leaved unchanged
-            GenerateDocument_#{widget.doc_name}();
+            // GenerateDocument_#{widget.doc_name}();
+            
+            // No, organizations list may change too
+            initDocumentWidgetFunction();
        }, 100, "");
     if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
        setTimeout(function(){
