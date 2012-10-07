@@ -1,8 +1,6 @@
 extends BaseWidget
 
 block content
-  <select data-placeholder="Адрес события" id='YandexMapsWidgetInput_#{widget.id}'>
-  </select>
   div()
     div(style="margin-bottom: 4px;")
       input.input-xlarge.organization_name(type="text", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
@@ -24,20 +22,9 @@ block content
                        var myGeocoder = ymaps.geocode($(this).val());
                        myGeocoder.then(
                            function (res) {
-                               // $("#YandexMapsWidgetInput_#{widget.id}").children().remove();
                                var dataSource = [];
                                for(var i = 0; i < res.geoObjects.getLength(); i++)
-                               {
-                                   var name = res.geoObjects.get(i).properties.get('name');
-
-                                   dataSource.push(name);
-
-                                   // var yaoption = $("<option/>").attr("value", name).text(name);
-                                   // $("#YandexMapsWidgetInput_#{widget.id}").append(yaoption);                                 
-                                   // var tmp = $("#YandexMapsWidgetInput_#{widget.id}_chzn").find("input").val();
-                                   // $("#YandexMapsWidgetInput_#{widget.id}").trigger("liszt:updated");
-                                   // $("#YandexMapsWidgetInput_#{widget.id}_chzn").find("input").val(tmp);
-                               }
+                                   dataSource.push(res.geoObjects.get(i).properties.get('name'));
 
                               $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));
 
@@ -54,9 +41,6 @@ block content
                    }
                };
                
-          $("#YandexMapsWidgetInput_#{widget.id}").chosen();               
-          $("#YandexMapsWidgetInput_#{widget.id}_chzn").find("input").on("keyup", updateGeodata);
-          
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
           $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
       };
