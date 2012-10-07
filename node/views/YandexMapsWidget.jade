@@ -1,0 +1,15 @@
+extends BaseWidget
+
+block content
+  <div id="RadioGroupWidget_#{widget.id}">
+  </div>
+  script(type="text/javascript")
+      var RadioGroupWidgetBody_#{widget.id} = function()
+      {
+         
+      };
+      if($("#RadioGroupWidget_#{widget.id}").closest(".step").is(":visible"))
+         setTimeout(function(){
+             RadioGroupWidgetBody_#{widget.id}();
+             OnWidgetChanged();
+      }, 1000);

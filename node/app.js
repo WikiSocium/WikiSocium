@@ -683,8 +683,8 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
                     'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
-                    'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',
-                    'http://api-maps.yandex.ru/1.1/index.xml?key=AEj3nE4BAAAAlWMwGwMAbLopO3UdRU2ufqldes10xobv1BIAAAAAAAAAAADoRl8HuzKNLQlyCNYX1_AY_DTomw==',
+                    'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',                    
+                    'http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU',
                     '/inputex/src/loader.js',
                     '/javascripts/jquery.json-2.3.min.js',
                     '/javascripts/jquery.valid8/jquery.valid8.source.js',
@@ -712,6 +712,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     scriptsToInject.push("/javascripts/nicEdit.js");
                     scriptsToInject.push("/markitup/sets/default/set.js");            
                     scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");                                
+                    scriptsToInject.push("/javascripts/customWidgets/YandexMapsWidget.js");                                                    
                     stylesToInject.push("/markitup/sets/default/style.css");
                     stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
                     stylesToInject.push("/markitup/skins/simple/style.css");            
