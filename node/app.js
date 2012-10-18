@@ -35,6 +35,7 @@ var models = require('./models')
     ,Solution
     ,Organizations
     ,Texts
+var request = require('request');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
 ;
@@ -478,7 +479,7 @@ app.get('/auth/vkontakte', loadUser, function(req, res) {
 	console.log('ololololo');
 	var code = req.query.code;
 	console.log(code);
-	var request = require('request');
+	
   	request({uri:'https://oauth.vk.com/access_token?client_id='+'2981571'+'&client_secret='+'mJloUt73SYT6K9vFmxfi'+'&code='+code}, function (error, response, body) {
   		if (!error && response.statusCode == 200) {
   			console.log(body);
@@ -1102,7 +1103,18 @@ app.post('/users.:format?', function(req, res) {
     user.save(function(err) {
       var return_to = parseReturnTo(req.query.return_to);
 
-      if (err) res.redirect('/users/new?error&return_to=' + return_to);//return userSaveFailed();
+      if (err) {
+        switch (req.params.format) {
+          case 'json':
+            var response = user.toObject();
+            response['error'] = err;
+            res.send(response);
+          break;
+
+          default:
+            res.redirect('/users/new?error&return_to=' + return_to);//return userSaveFailed();
+        }
+      }
       else {
         // creating user environment
         userCreateEnv( user.user_id );    
@@ -1310,10 +1322,32 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 });
 
 
-app.get('/social/facebook', function(req, res) {
-  res.render('social/facebook.jade', {
-    title: "ВикиСоциум: Авторизация"
-  });
+app.get('/social/:social_name', function(req, res) {
+  var social_name = req.param('social_name', null);
+  var render = function(){
+    res.render('social/'+social_name, {
+      title: "ВикиСоциум: Авторизация"
+    });
+  }
+
+  if (social_name == 'vkontakte' && req.query.code != undefined) {
+    var client_id = '3181678';
+    var client_secret = 'OW3ZXxxaIz9lIpdSsAIS';
+    var redirect_uri = 'http://'+req.headers.host+'/social/'+social_name;
+    request(
+      { uri:'https://oauth.vk.com/access_token?client_id=' + client_id +
+      '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+redirect_uri } ,
+      function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          render();
+        } 
+        else console.log(error);
+      }
+    );
+  }
+  else {
+    render();
+  }
 });
 
 app.post('/social/login', function(req, res) {
