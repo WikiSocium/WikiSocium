@@ -4,47 +4,10 @@ p#status
 
 script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
 script(src="http://connect.facebook.net/en_US/all.js")
+script(type="text/javascript", src="/javascripts/social_login.js")
 script
   
   var social_name = 'fb';
-
-  function ReturnOnSuccessLogin( uid ) {
-    var form = document.createElement("form");
-    form.setAttribute("method", "post");
-    form.setAttribute("action", "/sessions/");      
-    form.setAttribute("id", "facebook_auth_form");
-
-    var params = new Array();
-    params['user[fb_uid]'] = uid;
-    params['social_name'] = social_name;
-
-    for (var key in params) {
-      var hiddenField = document.createElement("input");
-      hiddenField.setAttribute("type", "hidden");
-      hiddenField.setAttribute("name", key);
-      hiddenField.setAttribute("value", params[key]);
-      form.appendChild(hiddenField);
-    }
-
-    window.opener.document.body.appendChild(form);
-    window.opener.document.getElementById("facebook_auth_form").submit();
-    self.close();
-  }
-
-  function LoginInternally(social_name, uid, callback) {
-    $.ajax(
-    {
-      url: '/social/login',
-      type: 'POST',
-      data: 'social_name=' + social_name + '&uid=' + uid,
-      success: function(res) {
-        callback(res);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        // To do
-      }
-    });
-  }
 
   FB.init({
      appId: '463407673699614', cookie: true,
@@ -52,15 +15,18 @@ script
   });
   FB.getLoginStatus(function(response) {
 
-    var uid = response.authResponse.userID;
-
     if (response.status === 'connected') {
+
+      var uid = response.authResponse.userID;
+
       LoginInternally(social_name, uid, function(res) {
         if (res.uid != uid) { 
           // uid is wrong
         }
         else {
-          if (res.uid == uid && res.status == 'success') ReturnOnSuccessLogin( uid );
+          if (res.uid == uid && res.status == 'success') {
+            ReturnOnSuccessLogin( uid, social_name );
+          }
           else if (res.uid == uid && res.status == 'user_not_found') {
             $('#status').html("User not found. Creating new");
             FB.api('/me', function(response) {
@@ -73,7 +39,7 @@ script
                   if (res.error == undefined) LoginInternally(social_name, uid, function(res) {
                     if (res.uid == uid && res.status == 'success') {
                       $('#status').html("User created. Going back to WikiSocium")
-                      ReturnOnSuccessLogin( uid );
+                      ReturnOnSuccessLogin( uid, social_name );
                     }
                   });
                   else if (res.error == 'email_exists') $('#status').html("E-mail already exists. Stopping creating user");
