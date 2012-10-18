@@ -19,20 +19,18 @@ block content
                    // YandexMapsWidgetObject_#{widget.id}.geoObjects.removeAll();
                    if($(this).val() != "")
                    {
-                       var myGeocoder = ymaps.geocode($(this).val());
+                       var myGeocoder = ymaps.geocode($(this).val(), {kind: 'street'});
                        myGeocoder.then(
                            function (res) {
                                var dataSource = [];
                                for(var i = 0; i < res.geoObjects.getLength(); i++)
                                    dataSource.push(res.geoObjects.get(i).properties.get('name'));
 
-                              $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));
-
-                               // $("#YandexMapsWidgetInput_#{widget.id}").val(name); :D
-
-                               // nearest.properties.set('iconContent', name);
-                               // nearest.options.set('preset', 'twirl#redStretchyIcon');
-                               // YandexMapsWidgetObject_#{widget.id}.geoObjects.add(res.geoObjects);
+                              $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
+                              $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
+                              if(dataSource.length > 0)
+                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show()
+                              
                            },
                            function (err) {
                                alert('Ошибка');
