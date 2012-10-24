@@ -5,6 +5,7 @@ p#status
 script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
 script(src="http://connect.facebook.net/en_US/all.js")
 script(type="text/javascript", src="/javascripts/social_login.js")
+
 script
   
   var social_name = 'fb';
@@ -16,7 +17,6 @@ script
   FB.getLoginStatus(function(response) {
 
     if (response.status === 'connected') {
-
       var uid = response.authResponse.userID;
 
       LoginInternally(social_name, uid, function(res) {
@@ -34,7 +34,7 @@ script
               {
                 url: '/users.json',
                 type: 'POST',
-                data: 'social_name=' + social_name + '&user[fb_uid]=' + response.id + '&user[name]=' + response.first_name + '&user[surname]=' + response.last_name + '&user[email]=' + response.email,
+                data: 'social_name=' + social_name + '&user[fb_uid]=' + response.id + '&user[name]=' + response.first_name + ' ' + response.last_name + '&user[email]=' + response.email,
                 success: function(res) {
                   if (res.error == undefined) LoginInternally(social_name, uid, function(res) {
                     if (res.uid == uid && res.status == 'success') {

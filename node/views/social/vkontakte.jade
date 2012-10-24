@@ -3,14 +3,14 @@ p Here's can be button to start authentification. Yet we start automatically
 p#status
 
 script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
-script(type="text/javascript", src="//vk.com/js/api/openapi.js?58")
+script(src="//vk.com/js/api/openapi.js?58")
 script(type="text/javascript", src="/javascripts/social_login.js")
+
 script
+
   var social_name = 'vk';
 
   VK.init({apiId: '3181678'});
-
-  //FB.getLoginStatus(function(response) {
   
   VK.Auth.getLoginStatus(function(response) {
 
@@ -22,7 +22,9 @@ script
           // uid is wrong
         }
         else {
-          if (res.uid == uid && res.status == 'success') ReturnOnSuccessLogin( uid );
+          if (res.uid == uid && res.status == 'success') {
+            ReturnOnSuccessLogin( uid, social_name );
+          }
           else if (res.uid == uid && res.status == 'user_not_found') {
             $('#status').html("User not found. Creating new");
             VK.Api.call('users.get', {uids: uid}, function(r) {
@@ -31,12 +33,12 @@ script
               {
                 url: '/users.json',
                 type: 'POST',
-                data: 'social_name=' + social_name + '&user[' + social_name + '_uid]=' + response.uid + '&user[name]=' + response.first_name + '&user[surname]=' + response.last_name,
+                data: 'social_name=' + social_name + '&user[' + social_name + '_uid]=' + response.uid + '&user[name]=' + response.first_name + ' ' + response.last_name,
                 success: function(res) {
                   if (res.error == undefined) LoginInternally(social_name, uid, function(res) {
                     if (res.uid == uid && res.status == 'success') {
                       $('#status').html("User created. Going back to WikiSocium")
-                      ReturnOnSuccessLogin( uid );
+                      ReturnOnSuccessLogin( uid, social_name );
                     }
                   });
                   else {
