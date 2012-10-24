@@ -1,0 +1,50 @@
+extends BaseWidget
+
+block content
+  div()
+    div(style="margin-bottom: 4px;")
+      input.input-xlarge.organization_name(type="text", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
+  <div id="YandexMapsWidget_#{widget.id}" style="width: 300px; height: 200px;"></div>
+  script(type="text/javascript")
+      var YandexMapsWidgetObject_#{widget.id} = {};
+      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget(!{JSON.stringify(value)});  
+      var YandexMapsWidgetBody_#{widget.id} = function()
+      {
+          YandexMapsWidgetObject_#{widget.id} = new ymaps.Map ("YandexMapsWidget_#{widget.id}", {
+              center: [55.76, 37.64],
+              zoom: 7
+          }); 
+          
+          var updateGeodata = function(){
+                   // YandexMapsWidgetObject_#{widget.id}.geoObjects.removeAll();
+                   if($(this).val() != "")
+                   {
+                       var myGeocoder = ymaps.geocode($(this).val(), {kind: 'street'});
+                       myGeocoder.then(
+                           function (res) {
+                               var dataSource = [];
+                               for(var i = 0; i < res.geoObjects.getLength(); i++)
+                                   dataSource.push(res.geoObjects.get(i).properties.get('name'));
+
+                              $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
+                              $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
+                              if(dataSource.length > 0)
+                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show()
+                              
+                           },
+                           function (err) {
+                               alert('Ошибка');
+                           }
+                       );
+                   }
+               };
+               
+          $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
+          $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
+      };
+      if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
+         setTimeout(function(){
+             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                         
+             // YandexMapsWidgetBody_#{widget.id}();
+             // OnWidgetChanged();
+      }, 1000);
