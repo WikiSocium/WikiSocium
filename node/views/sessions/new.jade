@@ -8,7 +8,12 @@ block content
       a.button(href='/users/new?return_to=#{return_to}') Создать новый аккаунт &rarr;
     form.well#login(method='post', action='/sessions?return_to=#{return_to}')
     
-      !=partial('../users/fields', { locals: { user: user } })
+      div.formline
+        label(for='user-email') E-mail:
+        input#user-email(name='user[email]', value=user.email || '', type='text')
+      div.formline
+        label(for='user-password') Пароль:
+        input#user-password(name='user[password]', value=user.password || '', type='password')
       label.checkbox
         input(type='checkbox', name='remember_me')
         Запомнить меня
