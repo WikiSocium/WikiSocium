@@ -36,6 +36,7 @@ var models = require('./models')
     ,Organizations
     ,Texts
 var request = require('request');
+var crypto = require('crypto');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
 ;
@@ -1219,7 +1220,7 @@ app.post('/sessions', function(req, res) {
       res.redirect(return_to);
     }
   }
-
+  
   if (req.body.user.email != undefined) {
     User.findOne({ email: req.body.user.email }, function(err, user) {
       if (user && user.authenticate(req.body.user.password)) {
@@ -1324,29 +1325,92 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 
 app.get('/social/:social_name', function(req, res) {
   var social_name = req.param('social_name', null);
-  var render = function(){
-    res.render('social/'+social_name, {
+  var render = function( user ){
+    render_params = {
       title: "ВикиСоциум: Авторизация"
-    });
+    }
+    if (user != undefined) render_params.user = user;
+    res.render('social/'+social_name, render_params);
   }
+ 
+  var return_uri = 'http://'+req.headers.host+'/social/'+social_name;
 
-  if (social_name == 'vkontakte' && req.query.code != undefined) {
-    var client_id = '3181678';
-    var client_secret = 'OW3ZXxxaIz9lIpdSsAIS';
-    var redirect_uri = 'http://'+req.headers.host+'/social/'+social_name;
-    request(
-      { uri:'https://oauth.vk.com/access_token?client_id=' + client_id +
-      '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+redirect_uri } ,
-      function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          render();
-        } 
-        else console.log(error);
+  switch ( social_name ) {
+    case 'vkontakte' :
+      if (req.query.code != undefined) {
+        var client_id = '3181678';
+        var client_secret = 'OW3ZXxxaIz9lIpdSsAIS';
+        request(
+          { uri:'https://oauth.vk.com/access_token?client_id=' + client_id +
+          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri } ,
+          function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+              render();
+            } 
+            else console.log(error);
+          }
+        );
       }
-    );
-  }
-  else {
-    render();
+      else render();
+    break;
+    case 'facebook' :
+      render();
+    break;
+    case 'twitter' :
+      var consumer_key = 'TODOhK2htQ5lz9vQB7H3hQ';
+      var consumer_secret = 'zfG3isqYmLKXjL7ybGtvjt29gJaTdeHW1tk4AtcZy0';
+
+      var qs = require('querystring')
+        , oauth =
+          { callback: encodeURI(return_uri)
+          , consumer_key: consumer_key
+          , consumer_secret: consumer_secret
+          }
+        , url = 'https://api.twitter.com/oauth/request_token'
+        ;
+      request.post({url:url, oauth:oauth}, function (e, r, body) {
+        // Assume by some stretch of magic you aquired the verifier
+        //console.log(body);
+        //console.log(req.query);
+
+        if (req.query == undefined || req.query.oauth_verifier == undefined) {
+          var access_token = qs.parse(body);
+          res.redirect('https://api.twitter.com/oauth/authenticate?oauth_token='+access_token.oauth_token);
+        }
+        else {
+          var access_token = qs.parse(body)
+            , oauth = 
+              { consumer_key: consumer_key
+              , consumer_secret: consumer_secret
+              , token: req.query.oauth_token
+              , verifier: req.query.oauth_verifier
+              }
+            , url = 'https://api.twitter.com/oauth/access_token'
+            ;
+          
+          request.post({url:url, oauth:oauth}, function (e, r, body) {
+            var perm_token = qs.parse(body)
+              , oauth = 
+                { consumer_key: consumer_key
+                , consumer_secret: consumer_secret
+                , token: perm_token.oauth_token
+                , token_secret: perm_token.oauth_token_secret
+                }
+              , url = 'https://api.twitter.com/1/users/show.json?'
+              , params = 
+                { screen_name: perm_token.screen_name
+                , user_id: perm_token.user_id
+                }
+              ;
+            url += qs.stringify(params)
+            request.get({url:url, oauth:oauth, json:true}, function (e, r, user) {
+              //console.log(user);
+              render( user );
+            })
+          })
+        }
+      });
+    break;
   }
 });
 
