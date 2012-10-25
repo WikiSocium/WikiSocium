@@ -1,0 +1,25 @@
+p Let's authentificate with twitter
+p Here's can be button to start authentification. Yet we start automatically
+p#status
+
+script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+script(type="text/javascript", src="/javascripts/social_login.js")
+
+script
+  var social_name = 'tw';
+
+  var uid = #{user.uid};
+
+  LoginInternally(social_name, uid, function(res) {
+    if (res.uid != '#{user.uid}') {
+      // uid is wrong
+    }
+    else {
+      if (res.uid == uid && res.status == 'success') {
+        ReturnOnSuccessLogin( uid, social_name );
+      }
+      else if (res.uid == uid && res.status == 'user_not_found') {
+        $('#status').html("User not found. Try again");        
+      }
+    }
+  });
