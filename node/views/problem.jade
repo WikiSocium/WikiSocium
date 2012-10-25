@@ -1,59 +1,62 @@
-h1(class="problemId") #{problem.name}
-  
-.row(style="margin-bottom: 20px; margin-top: 20px;")
-  .span2
-    p.stat-figures
-     img(src="/images/solved.png")
-     span.mainStatValue #{problem.stats.solved}
-     img(src="/images/inprocess.png")
-     span.mainStatValue #{problem.stats.inprocess}
-     img(src="/images/notsolved.png")
-     span.mainStatValue #{problem.stats.notsolved}
-  .span8
-    - each aCategory, key in problem.categories
-      - if ( key > 0 )
-        |, 
-      a(href="/Categories/"+aCategory.replace(/ /g,"_")) #{aCategory}
+extends layout
 
-div(class="problemDescription")
-  p
-    !{problem.description}
+block content
+  h1(class="problemId") #{problem.name}
+    
+  .row(style="margin-bottom: 20px; margin-top: 20px;")
+    .span2
+      p.stat-figures
+       img(src="/images/solved.png")
+       span.mainStatValue #{problem.stats.solved}
+       img(src="/images/inprocess.png")
+       span.mainStatValue #{problem.stats.inprocess}
+       img(src="/images/notsolved.png")
+       span.mainStatValue #{problem.stats.notsolved}
+    .span8
+      - each aCategory, key in problem.categories
+        - if ( key > 0 )
+          |, 
+        a(href="/Categories/"+aCategory.replace(/ /g,"_")) #{aCategory}
 
-#SolutionTabs.tabs.gray-rounded-corners-tabs
-  ul.nav.nav-tabs
-    li.active <a href="#solution" data-toggle="tab">Решение</a></li>
-    li <a href="#documents" data-toggle="tab">Нормативные документы</a></li>
-   
-  .tab-content.gray-rounded-corners.gray-rounded-block-1
-    .tab-pane.fade.in.active#solution
-      div(style="float: right; width: 130px; height: 40px; margin-left: 30px; margin-right: 3%;")
-        - if (!problem.in_development)
-          button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;") Воспользоваться
-        -else
-          button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;", disabled="disabled") Воспользоваться          
-      div
-        != solution.description
-    .tab-pane.fade#documents
-      p.to-var.
-        456<br />123<br />123
+  div(class="problemDescription")
+    p
+      !{problem.description}
 
-#modal_window
+  #SolutionTabs.tabs.gray-rounded-corners-tabs
+    ul.nav.nav-tabs
+      li.active <a href="#solution" data-toggle="tab">Решение</a></li>
+      li <a href="#documents" data-toggle="tab">Нормативные документы</a></li>
+     
+    .tab-content.gray-rounded-corners.gray-rounded-block-1
+      .tab-pane.fade.in.active#solution
+        div(style="float: right; width: 130px; height: 40px; margin-left: 30px; margin-right: 3%;")
+          - if (!problem.in_development)
+            button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;") Воспользоваться
+          -else
+            button.btn.btn-success.useSolutionButton(id="#{problem.solutions[0]}", style="padding: 6px 5px;", disabled="disabled") Воспользоваться          
+        div
+          != solution.description
+      .tab-pane.fade#documents
+        p.to-var.
+          456<br />123<br />123
 
-script(type='text/javascript')
-  var is_guest = #{user.guest}
-  if (is_guest) {
-    $(".useSolutionButton").click( function() {
-      location.href = '/login?return_to='+document.URL;
-    } );
-  }
-  else {
-    var modal_title = "Введите название решения";
-    var modal_body;
-    var buttons = [];
-    buttons.push(new modalButton ( "Отменить", 'cancel' ) );
-    buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); }, 'btn-success' ) );
-    $(".useSolutionButton").click( function() {
-      modal_body = '<p><form id="addCaseForm" method="post", action="/MyCases/AddCase"><input type="text" name="case_id" /><input type="hidden" name="ProblemName" value="#{problem.name}" /><input type="hidden" name="SolutionName" value="'+$(this).attr("id")+'" /></form></p><p>Решение с этим названием будет добавлено<br />в список ваших дел</p>';
-      showModalWindow ( modal_title, modal_body, buttons );
-    } );
-  }
+  #modal_window
+
+  script(type='text/javascript')
+    var is_guest = #{user.guest}
+    if (is_guest) {
+      $(".useSolutionButton").click( function() {
+        location.href = '/login?return_to='+document.URL;
+      } );
+    }
+    else {
+      var modal_title = "Введите название решения";
+      var modal_body;
+      var buttons = [];
+      buttons.push(new modalButton ( "Отменить", 'cancel' ) );
+      buttons.push(new modalButton ( "Добавить", function() { $( "#addCaseForm" ).submit(); }, 'btn-success' ) );
+      $(".useSolutionButton").click( function() {
+        modal_body = '<p><form id="addCaseForm" method="post", action="/MyCases/AddCase"><input type="text" name="case_id" /><input type="hidden" name="ProblemName" value="#{problem.name}" /><input type="hidden" name="SolutionName" value="'+$(this).attr("id")+'" /></form></p><p>Решение с этим названием будет добавлено<br />в список ваших дел</p>';
+        showModalWindow ( modal_title, modal_body, buttons );
+      } );
+    }

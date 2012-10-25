@@ -1,64 +1,67 @@
-.row-fluid.indextext
-  .span12
-    h1(style="font-size: 20pt") Простые решения для важных проблем
-    Подробнее — в разделе «<a href="/About">О Проекте</a>»
+extends layout
 
-mixin getProblemWordEnding ( number )
-  - var mod10 = number % 10;
-  - if ( number < 10 || number > 20 )
-    - if ( mod10 == 1 )
-      |а
-    - if ( mod10 >= 2 && mod10 <= 4 )
-      |ы
-mixin typograf ( str )
-  - str = str.replace(/ (.|..) /g," $1&nbsp;")
-  |#{str}
-    
-.row-fluid#indexMainBlock.indextext
-  .span9
-    .gray-rounded-corners.gray-rounded-block-1
-      - each aCategory, key in categoryList      
-        - if ( key > 0 )
-          hr
-        .row-fluid.mainCategoryBlock
-          .mainCategoryIcon
-            img(src="/images/#{aCategory.icon}")
-          .mainCategoryName
-            a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
-              mixin typograf(aCategory.name)
-          .mainCategoryStat
-            - if (!aCategory.topProblem.in_development) 
-              p
-                a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_"))
-                  mixin typograf(aCategory.topProblem.name)
-              p.stat-figures
-                img(src="/images/solved.png")
-                span.mainStatValue #{aCategory.topProblem.stats.solved}
-                img(src="/images/inprocess.png")
-                span.mainStatValue #{aCategory.topProblem.stats.inprocess}
-                img(src="/images/notsolved.png")
-                span.mainStatValue #{aCategory.topProblem.stats.notsolved}
-            -else
-              p
-                a.problemLink.problemLinkInActive(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_"))
-                  mixin typograf(aCategory.topProblem.name)              
-              p.inDevelopmentString
-                В разработке
-            - if (aCategory.problemsNumber-1 > 0)
-              p.problemLinkAllProblems
-                a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
-                  Ещё #{aCategory.problemsNumber-1} проблем
-                  mixin getProblemWordEnding (aCategory.problemsNumber-1)
-  #right-block.span3
-    .gray-rounded-corners.gray-rounded-block-2
-      p
-        b Может быть вы&nbsp;думаете,&nbsp;что:
-      p
-        a(href="/About/Questions#nothingworks") Никакие механизмы у&nbsp;нас не&nbsp;работают: сначала нужно менять законы, суды и&nbsp;чиновников!
-      p
-        a(href="/About/Questions#notime") У&nbsp;меня нет времени заниматься этим!
-      p
-        a(href="/About/Questions#betterathome") Лучше не&nbsp;высовываться: сам же&nbsp;первый и&nbsp;получу!  
+block content
+  .row-fluid.indextext
+    .span12
+      h1(style="font-size: 20pt") Простые решения для важных проблем
+      Подробнее — в разделе «<a href="/About">О Проекте</a>»
+
+  mixin getProblemWordEnding ( number )
+    - var mod10 = number % 10;
+    - if ( number < 10 || number > 20 )
+      - if ( mod10 == 1 )
+        |а
+      - if ( mod10 >= 2 && mod10 <= 4 )
+        |ы
+  mixin typograf ( str )
+    - str = str.replace(/ (.|..) /g," $1&nbsp;")
+    |#{str}
       
-.row-fluid#indexBottom.indextext
-  .span9 Вы&nbsp;&mdash; юрист, общественный деятель, политик, журналист, чиновник? <a href="/About/Partnership">Вступайте</a> в&nbsp;наше экспертное сообщество&nbsp;&mdash; участвуйте в&nbsp;наполнении коллекции <span class="orange">ВикиСоциума</span>!
+  .row-fluid#indexMainBlock.indextext
+    .span9
+      .gray-rounded-corners.gray-rounded-block-1
+        - each aCategory, key in categoryList      
+          - if ( key > 0 )
+            hr
+          .row-fluid.mainCategoryBlock
+            .mainCategoryIcon
+              img(src="/images/#{aCategory.icon}")
+            .mainCategoryName
+              a.problemLink(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+                mixin typograf(aCategory.name)
+            .mainCategoryStat
+              - if (!aCategory.topProblem.in_development) 
+                p
+                  a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_"))
+                    mixin typograf(aCategory.topProblem.name)
+                p.stat-figures
+                  img(src="/images/solved.png")
+                  span.mainStatValue #{aCategory.topProblem.stats.solved}
+                  img(src="/images/inprocess.png")
+                  span.mainStatValue #{aCategory.topProblem.stats.inprocess}
+                  img(src="/images/notsolved.png")
+                  span.mainStatValue #{aCategory.topProblem.stats.notsolved}
+              -else
+                p
+                  a.problemLink.problemLinkInActive(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_"))
+                    mixin typograf(aCategory.topProblem.name)              
+                p.inDevelopmentString
+                  В разработке
+              - if (aCategory.problemsNumber-1 > 0)
+                p.problemLinkAllProblems
+                  a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+                    Ещё #{aCategory.problemsNumber-1} проблем
+                    mixin getProblemWordEnding (aCategory.problemsNumber-1)
+    #right-block.span3
+      .gray-rounded-corners.gray-rounded-block-2
+        p
+          b Может быть вы&nbsp;думаете,&nbsp;что:
+        p
+          a(href="/About/Questions#nothingworks") Никакие механизмы у&nbsp;нас не&nbsp;работают: сначала нужно менять законы, суды и&nbsp;чиновников!
+        p
+          a(href="/About/Questions#notime") У&nbsp;меня нет времени заниматься этим!
+        p
+          a(href="/About/Questions#betterathome") Лучше не&nbsp;высовываться: сам же&nbsp;первый и&nbsp;получу!  
+        
+  .row-fluid#indexBottom.indextext
+    .span9 Вы&nbsp;&mdash; юрист, общественный деятель, политик, журналист, чиновник? <a href="/About/Partnership">Вступайте</a> в&nbsp;наше экспертное сообщество&nbsp;&mdash; участвуйте в&nbsp;наполнении коллекции <span class="orange">ВикиСоциума</span>!

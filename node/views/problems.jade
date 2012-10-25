@@ -1,49 +1,52 @@
-mixin getProblemWordEnding ( number )
-  - var mod10 = number % 10;
-  - if ( number < 10 || number > 20 )
-    - if ( mod10 == 1 )
-      |а
-    - if ( mod10 >= 2 && mod10 <= 4 )
-      |ы
+extends layout
 
-mixin category (aCategory)
-  div.category-icon: img(src='/images/'+aCategory.icon)
-  div.category-body 
-    h2: a(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
-    - if (!aCategory.topProblem.in_development)
-      p
-        a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
-      p.stat-figures
-        img(src="/images/solved.png")
-        span.mainStatValue #{aCategory.topProblem.stats.solved}
-        img(src="/images/inprocess.png")
-        span.mainStatValue #{aCategory.topProblem.stats.inprocess}
-        img(src="/images/notsolved.png")
-        span.mainStatValue #{aCategory.topProblem.stats.notsolved}
-    -else
-      p: a.problemLink.problemLinkInActive(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
-      p.inDevelopmentString
-        В разработке
-    - if (aCategory.problemsNumber-1 > 0)
-      p.problemLinkAllProblems
-        a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
-          Ещё #{aCategory.problemsNumber-1} проблем
-          mixin getProblemWordEnding (aCategory.problemsNumber-1)
+block content
+  mixin getProblemWordEnding ( number )
+    - var mod10 = number % 10;
+    - if ( number < 10 || number > 20 )
+      - if ( mod10 == 1 )
+        |а
+      - if ( mod10 >= 2 && mod10 <= 4 )
+        |ы
 
-#categories-searchform
-  .row-fluid
-    .span12
-      form.form-search(method="POST")
-        input.search-query(type="text", name="search_query", style="width: 70%")
-        &nbsp;
-        button.btn.submit(type="submit"): img(src="/images/search.png", width="18px", height="18px")
+  mixin category (aCategory)
+    div.category-icon: img(src='/images/'+aCategory.icon)
+    div.category-body 
+      h2: a(href="/Categories/"+aCategory.name.replace(/ /g,"_")) #{aCategory.name}
+      - if (!aCategory.topProblem.in_development)
+        p
+          a.problemLink(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
+        p.stat-figures
+          img(src="/images/solved.png")
+          span.mainStatValue #{aCategory.topProblem.stats.solved}
+          img(src="/images/inprocess.png")
+          span.mainStatValue #{aCategory.topProblem.stats.inprocess}
+          img(src="/images/notsolved.png")
+          span.mainStatValue #{aCategory.topProblem.stats.notsolved}
+      -else
+        p: a.problemLink.problemLinkInActive(href="/Problems/"+aCategory.topProblem.name.replace(/ /g,"_")) #{aCategory.topProblem.name}
+        p.inDevelopmentString
+          В разработке
+      - if (aCategory.problemsNumber-1 > 0)
+        p.problemLinkAllProblems
+          a(href="/Categories/"+aCategory.name.replace(/ /g,"_"))
+            Ещё #{aCategory.problemsNumber-1} проблем
+            mixin getProblemWordEnding (aCategory.problemsNumber-1)
 
-#categories.problems-page
-  - each aCategory, key in categories 
-    - if (key%2 == 0)
-      .row-fluid
-        .span6
-          mixin category (categories[key])
-        - if ((key+1) != categories.length)
+  #categories-searchform
+    .row-fluid
+      .span12
+        form.form-search(method="POST")
+          input.search-query(type="text", name="search_query", style="width: 70%")
+          &nbsp;
+          button.btn.submit(type="submit"): img(src="/images/search.png", width="18px", height="18px")
+
+  #categories.problems-page
+    - each aCategory, key in categories 
+      - if (key%2 == 0)
+        .row-fluid
           .span6
-            mixin category (categories[key+1])
+            mixin category (categories[key])
+          - if ((key+1) != categories.length)
+            .span6
+              mixin category (categories[key+1])

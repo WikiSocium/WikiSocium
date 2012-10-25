@@ -1,10 +1,20 @@
-.page
-  h2 Регистрация
+extends ../layout
 
-  form.well(method='post', action='/users?return_to=#{return_to}')
-    !=partial('fields', { locals: { user: user } })
-    div
-      input.btn(type='submit', value='Создать аккаунт')
-      span  или 
-        a(href='/sessions/new?return_to=#{return_to}') войти в&nbsp;систему
+block content
+  .page
+    h2 Регистрация
 
+    form.well(method='post', action='/users?return_to=#{return_to}')
+      div.formline
+        label(for='user-name') Ваше имя:
+        input#user-email(name='user[name]', value=user.name || '', type='text')
+      div.formline
+        label(for='user-email') E-mail:
+        input#user-email(name='user[email]', value=user.email || '', type='text')
+      div.formline
+        label(for='user-password') Пароль:
+        input#user-password(name='user[password]', value=user.password || '', type='password')
+      div
+        input.btn(type='submit', value='Создать аккаунт')
+        span  или 
+          a(href='/sessions/new?return_to=#{return_to}') войти в&nbsp;систему

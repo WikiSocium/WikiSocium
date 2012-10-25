@@ -84,12 +84,17 @@ html
             div.formline
               - if (user.guest)
                 form.form-inline(method='post', action='/sessions')
-                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Email')
+                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Адрес e-mail')
                   input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
                   button.btn.btn-success(type='submit')Войти
-                a(href='/users/new') Регистрация
+                div.social-network-buttons
+                  a.social-link.social-icon.social-icon-vk(onclick="window.open('/social/vk','','width=600,height=500')")
+                  a.social-link.social-icon.social-icon-fb(onclick="window.open('/social/fb','','width=600,height=500')")
+                  a.social-link.social-icon.social-icon-tw(onclick="window.open('/social/tw','','width=600,height=500')")
+                div.register-link
+                  a(href='/users/new') Регистрация
               - else
-                |#{user.email} &nbsp;
+                |#{user.name} &nbsp;
                 a(href='/Logout').btn(type='submit') Выйти
                 
     - var submenu; var submenu_parent;
@@ -127,7 +132,7 @@ html
     
     
     #content-block.container-fluid      
-      != body    
+      block content
     
     //
       !{flashMessages}
