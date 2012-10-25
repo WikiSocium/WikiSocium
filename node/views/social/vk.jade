@@ -1,0 +1,31 @@
+p Let's authentificate with vkontakte
+p Here's can be button to start authentification. Yet we start automatically
+p#status
+
+script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+script(src="//vk.com/js/api/openapi.js?58")
+script(type="text/javascript", src="/javascripts/social_login.js")
+
+script
+  var social_name = 'vk';
+  var client_id = '#{client_id}';
+
+- if ( user == undefined || user.uid == undefined )
+  script
+    var uri = encodeURI(document.URL);
+    window.location = encodeURI("https://oauth.vk.com/authorize?response_type=code&redirect_uri="+uri+"&client_id="+client_id+"&scope=offline&display=popup");
+  
+- else
+  script
+    VK.init({apiId: client_id});
+    
+    VK.Auth.getLoginStatus(function(response) {
+
+      if (response.status === 'connected') {
+        var uid = response.session.mid;
+
+        if (uid == '#{user.uid}') {
+          ReturnOnSuccessLogin( uid, social_name );
+        }
+      }
+    });

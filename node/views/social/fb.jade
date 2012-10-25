@@ -1,0 +1,33 @@
+p Let's authentificate with facebook
+p Here's can be button to start authentification. Yet we start automatically
+p#status
+
+script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+script(src="http://connect.facebook.net/en_US/all.js")
+script(type="text/javascript", src="/javascripts/social_login.js")
+
+script  
+  var social_name = 'fb';
+  var client_id = '#{client_id}';
+
+- if ( user == undefined || user.uid == undefined )
+  script
+    var uri = encodeURI(document.URL);
+    window.location = "https://www.facebook.com/dialog/permissions.request?app_id=463407673699614&display=popup&next="+
+      uri+"&response_type=code&perms=user_birthday,email&fbconnect=1";
+- else
+  script
+    FB.init({
+       appId: client_id, cookie: true,
+       status: true, xfbml: true
+    });
+    FB.getLoginStatus(function(response) {
+
+      if (response.status === 'connected') {
+        var uid = response.authResponse.userID;
+
+        if (uid == '#{user.uid}') {
+          ReturnOnSuccessLogin( uid, social_name );
+        }
+      }
+    });

@@ -35,9 +35,11 @@ var models = require('./models')
     ,Solution
     ,Organizations
     ,Texts
+var request = require('request');
+var crypto = require('crypto');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
-    ;
+;
 
 var app = module.exports = express.createServer();
 
@@ -52,6 +54,7 @@ app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('view options', { 'layout': false });
   app.use(express.bodyParser());
   app.use(express.cookieParser()); 
   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
@@ -471,36 +474,6 @@ app.get('/About/:PageName', loadUser, generateMenu, getHeaderStats, function(req
   });    
 });
 
-//
-// Это обработка редиректа с вконтакта (тест)
-app.get('/auth/vkontakte', loadUser, function(req, res) {
-	console.log('ololololo');
-	var code = req.query.code;
-	console.log(code);
-	var request = require('request');
-  	request({uri:'https://oauth.vk.com/access_token?client_id='+'2981571'+'&client_secret='+'mJloUt73SYT6K9vFmxfi'+'&code='+code}, function (error, response, body) {
-  		if (!error && response.statusCode == 200) {
-  			console.log(body);
-  			var answer = JSON.parse(body);
-  			console.log(answer);
-  			console.log('...');
-  			console.log(answer.user_id); 
-  			
-  			request({uri:'https://api.vk.com/method/getProfiles?uid='+answer.user_id+'&access_token='+answer.access_token}, function (error, response, body) {
-  				if (!error && response.statusCode == 200) {
-  					console.log(body);
-  					var answer = JSON.parse(body);
-  					//У переменной answer есть три поля: uid, first_name и last_name.
-  					console.log(answer);
-  					res.redirect('/');
-	   			}	
-  			})
-  						
-   		}	
-  	})
-	
-  //res.redirect('/');
-});
 //
 // Обработка запроса на показ списка проблем
 app.get('/Problems', loadUser, generateMenu, getHeaderStats, function(req, res){
@@ -994,19 +967,6 @@ function parseReturnTo ( req_query_return_to ) {
   else return req_query_return_to;
 }
 
-// Users
-app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  res.render('users/new.jade', {
-    locals: { return_to: parseReturnTo(req.query.return_to) },
-    'user':req.currentUser,
-    'menu':res.menu, 
-    'headerStats': res.headerStats,
-    title: '',
-    scripts: [],
-    styles:[]
-  });
-});
-
 function createCaseFile ( userName, caseId, solutionName ) {
 
   Solution.findOne ({ name: solutionName }, function(err, document) {
@@ -1094,43 +1054,79 @@ app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, 
     res.send('Doc.html');
 });
 
-app.post('/users.:format?', loadUser, generateMenu, getHeaderStats, function(req, res) {
+
+// Users
+app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
+  res.render('users/new.jade', {
+    locals: { return_to: parseReturnTo(req.query.return_to) },
+    'user':req.currentUser,
+    'menu':res.menu, 
+    'headerStats': res.headerStats,
+    title: '',
+    scripts: [],
+    styles:[]
+  });
+});
+
+app.post('/users.:format?', function(req, res) {
+  console.log('Came to /users.:format ' + req.body.social_name + ' ' + req.body.user);
+
   var user = new User(req.body.user);
 
-  function userSaveFailed() {
-    req.flash('error', 'Не удалось создать аккаунт');
-    res.render('users/new.jade', {
-      locals: { return_to: parseReturnTo(req.query.return_to) },
-      'user':req.currentUser,
-      'menu':res.menu, 
-      'headerStats': res.headerStats,
-      title: '',
-      scripts: [],
-      styles:[]
+  function SaveNewUser(user) {
+    user.save(function(err) {
+      var return_to = parseReturnTo(req.query.return_to);
+
+      if (err) {
+        switch (req.params.format) {
+          case 'json':
+            var response = user.toObject();
+            response['error'] = err;
+            res.send(response);
+          break;
+
+          default:
+            res.redirect('/users/new?error&return_to=' + return_to);//return userSaveFailed();
+        }
+      }
+      else {
+        // creating user environment
+        userCreateEnv( user.user_id );    
+        
+        //emails.sendWelcome(user);     
+
+        switch (req.params.format) {
+          case 'json':
+            res.send(user.toObject());
+          break;
+
+          default:
+            req.session.user_id = user.id;
+            res.redirect(return_to);
+        }
+      }
     });
   }
 
-  user.save(function(err) {
-    if (err) return userSaveFailed();
-    
-    // creating user environment
-    userCreateEnv( user.email );    
-    
-    req.flash('info', 'Ваш аккаунт был успешно создан');
-    //emails.sendWelcome(user);
-    
-    var return_to = parseReturnTo(req.query.return_to);
+  User.findOne().sort('user_id', -1).exec( function(err, user_max) {
+    var user_max_id;
+    if (user_max.user_id != undefined) user_max_id = user_max.user_id;
+    else user_max_id = -1;
+    user.user_id = user_max_id + 1;
 
-    switch (req.params.format) {
-      case 'json':
-        res.send(user.toObject());
-      break;
-
-      default:
-        req.session.user_id = user.id;
-        res.redirect(return_to);
+    if ( req.body.social_name != undefined && user.email != undefined ) {
+      User.findOne({ email: user.email }, function(err, found_user) {
+        if (found_user) {
+          var response = { 'error' : 'email_exists' };
+          res.send(response);
+        }
+        else SaveNewUser(user);
+      });
     }
-  });
+    else SaveNewUser(user);
+
+       
+  });  
 });
 
 
@@ -1174,37 +1170,55 @@ app.post('/sessions', function(req, res) {
 
   var return_to = parseReturnTo(req.query.return_to);
 
-  User.findOne({ email: req.body.user.email }, function(err, user) {
-    if (user && user.authenticate(req.body.user.password)) {
-      req.session.user_id = user.id;
-      
-      try {
-        checkUserEnv ( user.email );
-      }
-      catch (e) {
-        console.log (user.email + ": " + e);
-        userCreateEnv ( user.email );
-      }
-      
-      req.flash('info', 'Вы вошли в систему. Здравствуйте!');
-      // Remember me
-      if (req.body.remember_me) {
-        var loginToken = new LoginToken({ email: user.email });
-        loginToken.save(function() {
-          res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-          res.redirect(return_to);
-        });
-      }
-      else {
+  function CreateSession(user) {
+    req.session.user_id = user.id;
+    
+    try {
+      checkUserEnv ( user.user_id );
+    }
+    catch (e) {
+      console.log (user.email + ": " + e);
+      userCreateEnv ( user.user_id );
+    }
+    
+    // Remember me
+    if (req.body.remember_me) {
+      var loginToken = new LoginToken({ email: user.email });
+      loginToken.save(function() {
+        res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
         res.redirect(return_to);
-      }           
+      });
     }
     else {
-      req.flash('error', 'E-mail и пароль не подходят');
-      res.redirect('/sessions/new?return_to='+return_to);
-    }   
-  });
-   
+      res.redirect(return_to);
+    }
+  }
+  
+  if (req.body.user.email != undefined) {
+    User.findOne({ email: req.body.user.email }, function(err, user) {
+      if (user && user.authenticate(req.body.user.password)) {
+        CreateSession(user);
+      }
+      else {
+        res.redirect('/sessions/new?error=login_password_not_match&return_to='+return_to);
+      }   
+    });
+  }
+  else {
+    if ( req.body.social_name != undefined && req.body.user[req.body.social_name+'_uid'] != undefined ) {
+      var field = req.body.social_name+'_uid';
+
+      var search = new Object;
+      search[field] = req.body.user[field];
+      User.findOne(search, function(err, user) {
+        if (user) {
+          CreateSession(user);
+        }
+        else res.redirect(return_to);
+      });
+    }
+    else res.redirect(return_to);
+  }   
 });
 
 app.get('/login', loadUser, generateMenu, getHeaderStats, function(req, res) {
@@ -1282,8 +1296,184 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 });
 
 
+app.get('/social/:social_name', function(req, res) {
+  var social_name = req.param('social_name', null);
 
+  var render = function ( render_params ) {    
+    res.render('social/'+social_name, render_params);
+  };
+
+  var loginUserSocially = function ( client_id, user ) {
+    console.log('logging in');
+    render_params = {
+      'title' : "ВикиСоциум: Авторизация",
+      'client_id' : client_id,
+      'user' : user
+    };
+
+    if (user != undefined && user.uid != undefined) {
+      console.log('user is defined '+JSON.stringify(user));
+
+      var search = new Object;
+      search[social_name+'_uid'] = user.uid;
+
+      User.findOne(search, function(err, user_doc) {
+        if (user_doc) {
+          render ( render_params );
+        }
+        else {
+          console.log('user '+JSON.stringify(user));
+
+          var request_string = 'social_name='+social_name;
+          for (var key in user) {
+            var param = key;
+            if (key == 'uid') param = social_name+'_uid';
+
+            request_string += '&user['+param+']='+user[key];
+          }
+          console.log(request_string);
+          request( {
+            url  : 'http://'+req.headers.host+'/users.json',
+            method : 'POST',
+            body : request_string,
+            headers: {'content-type': 'application/x-www-form-urlencoded'}
+          }, function (error, response, body) {
+            render ( render_params );
+          });
+        }
+      });
+    }
+    else render ( render_params );
+  };
+ 
+  var return_uri = 'http://'+req.headers.host+'/social/'+social_name;
+
+  switch ( social_name ) {
+    case 'vk' :
+      var client_id = '3181678';
+      if (req.query.code != undefined) {
+        var client_secret = 'OW3ZXxxaIz9lIpdSsAIS';
+        request('https://oauth.vk.com/access_token?client_id=' + client_id +
+          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri ,
+          function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+              console.log(body);
+              body = JSON.parse(body);
+              
+              request('https://api.vk.com/method/users.get?uids='+body.user_id+'&fields=uid,first_name,last_name&access_token='+body.access_token,
+              function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                  console.log(body);
+                  var answer = JSON.parse(body).response[0];
+                  var user = {
+                    'uid' : answer.uid,
+                    'name' : answer.first_name+' '+answer.last_name
+                  };
+                  console.log(user);
+                  loginUserSocially(client_id, user);
+                } 
+                else console.log(error);
+              });
+            }
+            else console.log(error);
+          }
+        );
+      }
+      else loginUserSocially(client_id, undefined);
+    break;
+    case 'fb' :
+      var client_id = '463407673699614';
+      if (req.query.code != undefined) {
+        var client_secret = 'be7c3bc32801dd7e40b0655a30d057ec';
+        request('https://graph.facebook.com/oauth/access_token?client_id=' + client_id +
+          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri ,
+          function (error, response, body) {
+            if (!error && response.statusCode == 200) {              
+              request('https://graph.facebook.com/me?'+body ,
+                function(error, response, body) {
+                  if (!error && response.statusCode == 200) {
+                    var answer = JSON.parse(body);
+                    var user = {
+                      'uid' : answer.id,
+                      'name' : answer.name
+                    };
+                    loginUserSocially(client_id, user);
+                  }
+                  else console.log(error);
+                }
+              );
+            } 
+            else console.log(error);
+          }
+        );
+      }
+      else loginUserSocially(client_id, undefined);
+    break;
+    case 'tw' :
+      var consumer_key = 'TODOhK2htQ5lz9vQB7H3hQ';
+      var consumer_secret = 'zfG3isqYmLKXjL7ybGtvjt29gJaTdeHW1tk4AtcZy0';
+      
+      var qs = require('querystring')
+        , oauth =
+          { callback: encodeURI(return_uri)
+          , consumer_key: consumer_key
+          , consumer_secret: consumer_secret
+          }
+        , url = 'https://api.twitter.com/oauth/request_token'
+        ;
+      request.post({url:url, oauth:oauth}, function (e, r, body) {
+        // Assume by some stretch of magic you aquired the verifier
+        // console.log(body);
+        // console.log(req.query);
+
+        if (req.query == undefined || req.query.oauth_verifier == undefined) {
+          var access_token = qs.parse(body);
+          res.redirect('https://api.twitter.com/oauth/authenticate?oauth_token='+access_token.oauth_token);
+        }
+        else {
+          var access_token = qs.parse(body)
+            , oauth = 
+              { consumer_key: consumer_key
+              , consumer_secret: consumer_secret
+              , token: req.query.oauth_token
+              , verifier: req.query.oauth_verifier
+              }
+            , url = 'https://api.twitter.com/oauth/access_token'
+            ;
+          
+          request.post({url:url, oauth:oauth}, function (e, r, body) {
+            var perm_token = qs.parse(body)
+              , oauth = 
+                { consumer_key: consumer_key
+                , consumer_secret: consumer_secret
+                , token: perm_token.oauth_token
+                , token_secret: perm_token.oauth_token_secret
+                }
+              , url = 'https://api.twitter.com/1/users/show.json?'
+              , params = 
+                { screen_name: perm_token.screen_name
+                , user_id: perm_token.user_id
+                }
+              ;
+            url += qs.stringify(params)
+            request.get({url:url, oauth:oauth, json:true}, function (e, r, tw_user) {
+              var user = {
+                'uid' : tw_user.id,
+                'name' : tw_user.name
+              };
+              loginUserSocially(client_id, user);
+            })
+          })
+        }
+      });
+    break;
+  }
+});
+
+///////////////////////////////////////////////////////////////////////////////
 // Admin pages
+///////////////////////////////////////////////////////////////////////////////
+
 app.get('/admin', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if ( req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {   

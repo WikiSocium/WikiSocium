@@ -1,0 +1,13 @@
+p Let's authentificate with twitter
+p Here's can be button to start authentification. Yet we start automatically
+p#status
+
+script(type="text/javascript", src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+script(type="text/javascript", src="/javascripts/social_login.js")
+
+script
+  var social_name = 'tw';
+
+  var uid = #{user.uid};
+
+  ReturnOnSuccessLogin( uid, social_name );
