@@ -1069,6 +1069,8 @@ app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res)
 });
 
 app.post('/users.:format?', function(req, res) {
+  console.log('Came to /users.:format ' + req.body.social_name + ' ' + req.body.user);
+
   var user = new User(req.body.user);
 
   function SaveNewUser(user) {
@@ -1296,41 +1298,121 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
 
 app.get('/social/:social_name', function(req, res) {
   var social_name = req.param('social_name', null);
-  var render = function( user ){
-    render_params = {
-      title: "ВикиСоциум: Авторизация"
-    }
-    if (user != undefined) render_params.user = user;
+
+  var render = function ( render_params ) {    
     res.render('social/'+social_name, render_params);
-  }
+  };
+
+  var loginUserSocially = function ( client_id, user ) {
+    console.log('logging in');
+    render_params = {
+      'title' : "ВикиСоциум: Авторизация",
+      'client_id' : client_id,
+      'user' : user
+    };
+
+    if (user != undefined && user.uid != undefined) {
+      console.log('user is defined '+JSON.stringify(user));
+
+      var search = new Object;
+      search[social_name+'_uid'] = user.uid;
+
+      User.findOne(search, function(err, user_doc) {
+        if (user_doc) {
+          render ( render_params );
+        }
+        else {
+          console.log('user '+JSON.stringify(user));
+
+          var request_string = 'social_name='+social_name;
+          for (var key in user) {
+            var param = key;
+            if (key == 'uid') param = social_name+'_uid';
+
+            request_string += '&user['+param+']='+user[key];
+          }
+          console.log(request_string);
+          request( {
+            url  : 'http://'+req.headers.host+'/users.json',
+            method : 'POST',
+            body : request_string,
+            headers: {'content-type': 'application/x-www-form-urlencoded'}
+          }, function (error, response, body) {
+            render ( render_params );
+          });
+        }
+      });
+    }
+    else render ( render_params );
+  };
  
   var return_uri = 'http://'+req.headers.host+'/social/'+social_name;
 
   switch ( social_name ) {
-    case 'vkontakte' :
+    case 'vk' :
+      var client_id = '3181678';
       if (req.query.code != undefined) {
-        var client_id = '3181678';
         var client_secret = 'OW3ZXxxaIz9lIpdSsAIS';
-        request(
-          { uri:'https://oauth.vk.com/access_token?client_id=' + client_id +
-          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri } ,
+        request('https://oauth.vk.com/access_token?client_id=' + client_id +
+          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri ,
           function (error, response, body) {
             if (!error && response.statusCode == 200) {
-              render();
+              console.log(body);
+              body = JSON.parse(body);
+              
+              request('https://api.vk.com/method/users.get?uids='+body.user_id+'&fields=uid,first_name,last_name&access_token='+body.access_token,
+              function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                  console.log(body);
+                  var answer = JSON.parse(body).response[0];
+                  var user = {
+                    'uid' : answer.uid,
+                    'name' : answer.first_name+' '+answer.last_name
+                  };
+                  console.log(user);
+                  loginUserSocially(client_id, user);
+                } 
+                else console.log(error);
+              });
+            }
+            else console.log(error);
+          }
+        );
+      }
+      else loginUserSocially(client_id, undefined);
+    break;
+    case 'fb' :
+      var client_id = '463407673699614';
+      if (req.query.code != undefined) {
+        var client_secret = 'be7c3bc32801dd7e40b0655a30d057ec';
+        request('https://graph.facebook.com/oauth/access_token?client_id=' + client_id +
+          '&client_secret=' + client_secret + '&code='+req.query.code + '&redirect_uri='+return_uri ,
+          function (error, response, body) {
+            if (!error && response.statusCode == 200) {              
+              request('https://graph.facebook.com/me?'+body ,
+                function(error, response, body) {
+                  if (!error && response.statusCode == 200) {
+                    var answer = JSON.parse(body);
+                    var user = {
+                      'uid' : answer.id,
+                      'name' : answer.name
+                    };
+                    loginUserSocially(client_id, user);
+                  }
+                  else console.log(error);
+                }
+              );
             } 
             else console.log(error);
           }
         );
       }
-      else render();
+      else loginUserSocially(client_id, undefined);
     break;
-    case 'facebook' :
-      render();
-    break;
-    case 'twitter' :
+    case 'tw' :
       var consumer_key = 'TODOhK2htQ5lz9vQB7H3hQ';
       var consumer_secret = 'zfG3isqYmLKXjL7ybGtvjt29gJaTdeHW1tk4AtcZy0';
-
+      
       var qs = require('querystring')
         , oauth =
           { callback: encodeURI(return_uri)
@@ -1341,8 +1423,8 @@ app.get('/social/:social_name', function(req, res) {
         ;
       request.post({url:url, oauth:oauth}, function (e, r, body) {
         // Assume by some stretch of magic you aquired the verifier
-        //console.log(body);
-        //console.log(req.query);
+        // console.log(body);
+        // console.log(req.query);
 
         if (req.query == undefined || req.query.oauth_verifier == undefined) {
           var access_token = qs.parse(body);
@@ -1374,9 +1456,12 @@ app.get('/social/:social_name', function(req, res) {
                 }
               ;
             url += qs.stringify(params)
-            request.get({url:url, oauth:oauth, json:true}, function (e, r, user) {
-              //console.log(user);
-              render( user );
+            request.get({url:url, oauth:oauth, json:true}, function (e, r, tw_user) {
+              var user = {
+                'uid' : tw_user.id,
+                'name' : tw_user.name
+              };
+              loginUserSocially(client_id, user);
             })
           })
         }
