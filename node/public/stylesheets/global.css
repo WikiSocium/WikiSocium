@@ -20,12 +20,13 @@ body, p, div {
   margin: 0 3%;
 }
 
-a:link, a:visited {
+a:link, a:visited, div.link {
+  cursor: pointer;  
   color: #34b0bf;
   text-decoration: underline;
 }
 
-a:hover, a:active {
+a:hover, a:active, div.link:hover, div.link:active {
   text-decoration: none;
 }
 
