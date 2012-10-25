@@ -26,18 +26,8 @@ script
       if (response.status === 'connected') {
         var uid = response.authResponse.userID;
 
-        LoginInternally(social_name, uid, function(res) {
-          if (res.uid != '#{user.uid}') {
-            // uid is wrong
-          }
-          else {
-            if (res.uid == uid && res.status == 'success') {
-              ReturnOnSuccessLogin( uid, social_name );
-            }
-            else if (res.uid == uid && res.status == 'user_not_found') {
-              $('#status').html("User not found. Try again");
-            }
-          }
-        });
+        if (uid == '#{user.uid}') {
+          ReturnOnSuccessLogin( uid, social_name );
+        }
       }
     });

@@ -1470,29 +1470,6 @@ app.get('/social/:social_name', function(req, res) {
   }
 });
 
-app.post('/social/login', function(req, res) {
-  var field = req.body.social_name+'_uid';
-
-  var response_data = {
-    'social_name' : req.body.social_name,
-    'uid'         : req.body.uid
-  };
-
-  var search = new Object;
-  search[field] = req.body.uid;
-
-  User.findOne(search, function(err, user) {
-    if (user) {
-      response_data.status = 'success';
-      res.send(response_data);
-    }
-    else {
-      response_data.status = 'user_not_found';
-      res.send(response_data);
-    }
-  });
-});
-
 ///////////////////////////////////////////////////////////////////////////////
 // Admin pages
 ///////////////////////////////////////////////////////////////////////////////
