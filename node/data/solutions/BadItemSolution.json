@@ -699,6 +699,30 @@
 				},
 				{
 					"widget_type"	:	"TextFieldWidget",
+					"id"		:	"SubstituteItemName",
+					"label"		:	"На какой товар Вы хотите заменить товар с недостатком?",
+					"type"		:	"text",
+					"isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsTechComplicated",
+								"cond"		:	"==",								
+								"value"		:	"0"
+							},
+							{
+								"step_id"	:	"3",
+								"widget_id"	:	"RequestsNonComplicated",
+								"cond"		:	"==",								
+								"value"		:	"2"
+							}
+						]
+					}
+				},
+				{
+					"widget_type"	:	"TextFieldWidget",
 					"id"		:	"PriceDiscountMoney",
 					"label"		:	"На сколько, Вы считаете, нужно снизить цену товара (руб.)?",
 					"type"		:	"number",
