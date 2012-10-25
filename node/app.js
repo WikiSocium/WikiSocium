@@ -102,7 +102,7 @@ app.dynamicHelpers({
 function authenticateFromLoginToken(req, res, next) {
   var cookie = JSON.parse(req.cookies.logintoken);
 
-  LoginToken.findOne({ email: cookie.email,
+  LoginToken.findOne({ user_id: cookie.user_id,
                        series: cookie.series,
                        token: cookie.token }, (function(err, token) {
     if (!token) {
@@ -112,7 +112,7 @@ function authenticateFromLoginToken(req, res, next) {
       return;
     }
 
-    User.findOne({ email: token.email }, function(err, user) {
+    User.findOne({ user_id: token.user_id }, function(err, user) {
       if (user) {
         req.session.user_id = user.id;
         req.currentUser = user;
@@ -631,11 +631,11 @@ app.post('/Categories/:CategoryName', loadUser, generateMenu, getHeaderStats, fu
 // Обработка запроса на показ конкретного кейса конкретного пользователя
 app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else 
-  {    
-    var userName = req.currentUser.email;
+  else {
+    var user_id = req.currentUser.user_id;
+    var userName = req.currentUser.name;
     var caseId = req.param('CaseId', null).replace(/_/g," ");
-    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+    fs.readFile('data/UserData/' + user_id + '/user.json', "utf-8", function(err, data){
       if (!err) {
         var userJSON = JSON.parse(data);
         var solutionName = false;
@@ -691,7 +691,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     stylesToInject.push("/markitup/skins/simple/style.css");            
                     stylesToInject.push("/stylesheets/prettyPhoto.css");
                   }
-                  fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
+                  fs.readFile('data/UserData/' + user_id + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
                     if (err) {
                       var caseContents = {};
                       err = false;
@@ -703,7 +703,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
 
                     res.render('userCase', 
                     {
-                      'title': userName + " : " + caseId,
+                      'title': userName + ": " + caseId,
                       'user':req.currentUser,
                       'menu':res.menu,
                       'headerStats': res.headerStats,
@@ -768,7 +768,7 @@ app.post('/GetRegionalizedData', function(req, res) {
 //        
 //Сохранение данных кейса        
 app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
-  var userName = req.currentUser.email;
+  var userName = req.currentUser.user_id;
   var caseId = req.param('CaseId', null).replace(/_/g," ");
 
   fs.readFile('data/UserData/' + userName + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
@@ -818,51 +818,49 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
 //save to file
 //Завершение кейса
 app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
-  var userName = req.currentUser.email;
+  var userName = req.currentUser.user_id;
   var caseId = req.param('CaseId', null).replace(/_/g," ");
     
   // [TODO]
   // 0. Проверить, что пользователь аутентифицирован
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {
-    if (req.currentUser.email != userName) res.redirect('/sessions/new?return_to='+req.url);
-    else {		
-  		var solution_name = "";
-	  	fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
-	  	  if (!err) {		        
-		      var userData = JSON.parse(data);
-		      for(var i = 0; i < userData.cases.length; i++)
-		      {
-		        if ( userData.cases[i].caseId == caseId ) {
-		          
-		          // Меняем статус кейса и записываем это
-		          userData.cases[i].state = "completed";
-		          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userData, null, "\t"), encoding='utf8',
-		            function (err) { if (err) throw err; } );
-		          
-		          solution_name = userData.cases[i].solutionId;
-		                
-              // Записываем статистику
+  else {	
+		var solution_name = "";
+  	fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
+  	  if (!err) {		        
+	      var userData = JSON.parse(data);
+	      for(var i = 0; i < userData.cases.length; i++)
+	      {
+	        if ( userData.cases[i].caseId == caseId ) {
+	          
+	          // Меняем статус кейса и записываем это
+	          userData.cases[i].state = "completed";
+	          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userData, null, "\t"), encoding='utf8',
+	            function (err) { if (err) throw err; } );
+	          
+	          solution_name = userData.cases[i].solutionId;
+	                
+            // Записываем статистику
 
-              if ( req.body.isSolved == 'yes' ) {
-                increaseSolutionStatistics ( solution_name, 'finished_successful' );
-                if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
-                else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' );
-              }
-              else {
-                increaseSolutionStatistics ( solution_name, 'finished_failed' );
-                if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
-                else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
-              }      
-		          break;
-	          }
+            if ( req.body.isSolved == 'yes' ) {
+              increaseSolutionStatistics ( solution_name, 'finished_successful' );
+              if ( req.body.isSolutionUsed == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+              else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' );
+            }
+            else {
+              increaseSolutionStatistics ( solution_name, 'finished_failed' );
+              if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
+              else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
+            }      
+	          break;
           }
-		    }
-		    else console.log("Error at case finish: " + err);
-		  });
-      // 3. Отправить на главную страницу
-      res.redirect('/MyCases');
-    }
+        }
+	    }
+	    else console.log("Error at case finish: " + err);
+	  });
+    // 3. Отправить на главную страницу
+    res.redirect('/MyCases');
+    
   }
 });
 
@@ -875,14 +873,14 @@ app.get('/MyCases/:CaseId/endCase', function(req, res) {
 app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
-    fs.readFile('data/UserData/'+req.currentUser.email+'/user.json', "utf-8", function(err, data){
+    fs.readFile('data/UserData/'+req.currentUser.user_id+'/user.json', "utf-8", function(err, data){
       if(!err) 
       {
         var userData=JSON.parse(data);
         async.forEach (userData.cases, function (curCase, callback)
         {
           console.log(curCase.caseId);
-          fs.readFile('data/UserData/'+req.currentUser.email+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
+          fs.readFile('data/UserData/'+req.currentUser.user_id+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
           {
             if (!err1)
             {
@@ -1006,7 +1004,7 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
   else {
     //Добавляем кейс в спиок кейсов юзера
-    var userName = req.currentUser.email;
+    var userName = req.currentUser.user_id;
     var caseName = req.body.case_id.replace(/_/g," ");
     var ProblemName = req.body.ProblemName;
     var solutionName = req.body.SolutionName;
@@ -1177,13 +1175,13 @@ app.post('/sessions', function(req, res) {
       checkUserEnv ( user.user_id );
     }
     catch (e) {
-      console.log (user.email + ": " + e);
+      console.log (user.user_id + ": " + e);
       userCreateEnv ( user.user_id );
     }
     
     // Remember me
     if (req.body.remember_me) {
-      var loginToken = new LoginToken({ email: user.email });
+      var loginToken = new LoginToken({ user_id: user.user_id });
       loginToken.save(function() {
         res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
         res.redirect(return_to);
@@ -1228,7 +1226,7 @@ app.get('/login', loadUser, generateMenu, getHeaderStats, function(req, res) {
 
 app.get('/logout', loadUser, generateMenu, getHeaderStats, function(req, res) {
   if (req.session) {
-    LoginToken.remove({ email: req.currentUser.email }, function() {});
+    LoginToken.remove({ user_id: req.currentUser.user_id }, function() {});
     res.clearCookie('logintoken');
     req.session.destroy(function() {});
   }
@@ -1360,20 +1358,22 @@ app.get('/social/:social_name', function(req, res) {
               console.log(body);
               body = JSON.parse(body);
               
-              request('https://api.vk.com/method/users.get?uids='+body.user_id+'&fields=uid,first_name,last_name&access_token='+body.access_token,
-              function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                  console.log(body);
-                  var answer = JSON.parse(body).response[0];
-                  var user = {
-                    'uid' : answer.uid,
-                    'name' : answer.first_name+' '+answer.last_name
-                  };
-                  console.log(user);
-                  loginUserSocially(client_id, user);
-                } 
-                else console.log(error);
-              });
+              request('https://api.vk.com/method/users.get?uids=' + body.user_id + 
+                '&fields=uid,first_name,last_name&access_token='+body.access_token,
+                function (error, response, body) {
+                  if (!error && response.statusCode == 200) {
+                    console.log(body);
+                    var answer = JSON.parse(body).response[0];
+                    var user = {
+                      'uid' : answer.uid,
+                      'name' : answer.first_name+' '+answer.last_name
+                    };
+                    console.log(user);
+                    loginUserSocially(client_id, user);
+                  } 
+                  else console.log(error);
+                }
+              );
             }
             else console.log(error);
           }
