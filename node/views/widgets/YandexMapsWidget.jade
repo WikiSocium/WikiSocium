@@ -4,9 +4,9 @@ block content
   div()
     div(style="margin-bottom: 4px;")
       input.input-xlarge.organization_name(type="text", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
+      div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
+        Показать карту      
   div
-    div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
-      Показать карту
     div(class="YandexMapsWidget_mapContainer")
       div(class="YandexMapsWidget_loadingIndicator")
     div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
@@ -55,6 +55,7 @@ block content
                                 $('ul.typeahead').find("li").on("click", function(){
                                   for(var i = 0; i < res.geoObjects.getLength(); i++)
                                     if(res.geoObjects.get(i).properties.get('name') == $('ul.typeahead li.active').data('value'))
+                                      // [TODO] make it draggable
                                       YandexMapsWidgetObjectsCollection_#{widget.id}.add(res.geoObjects.get(i));
                                 });                                
                               }
