@@ -7,19 +7,23 @@ block content
   div
     div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
       Показать карту
+    div(class="YandexMapsWidget_mapContainer")
+      div(class="YandexMapsWidget_loadingIndicator")
     div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
   script(type="text/javascript")
       $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
-        // [TODO] place mark on the map
-        //$("#YandexMapsWidget_#{widget.id}").html()
-        showModalWindow( "Yandex Map", "123123", [], "YandexMapsWidget_#{widget.id}" );
+        $(".YandexMapsWidget_mapContainer").toggle();
+        $(".YandexMapsWidget_map").toggle();        
         
-        // $(".YandexMapsWidget_container").toggle();
+        YandexMapsWidgetObject_#{widget.id}.setCenter([55.76, 37.64]);
       });
-      $(".YandexMapsWidget_container").on("click", function(){
+      $(".YandexMapsWidget_mapContainer").on("click", function(){
+        $(".YandexMapsWidget_map").hide();
         $(this).hide();
       });
+      
       var YandexMapsWidgetObject_#{widget.id} = {};
+      var YandexMapsWidgetObjectsCollection_#{widget.id} = {};
       step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget(!{JSON.stringify(value)});  
       var YandexMapsWidgetBody_#{widget.id} = function()
       {
@@ -27,11 +31,12 @@ block content
               center: [55.76, 37.64],
               zoom: 7
           }); 
+          $(".YandexMapsWidget_map").hide();
           YandexMapsWidgetObject_#{widget.id}.controls.add('zoomControl');
           YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());
           
-          var updateGeodata = function(){
-                   // YandexMapsWidgetObject_#{widget.id}.geoObjects.removeAll();
+          var updateGeodata = function(){            
+                   YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                   
                    if($(this).val() != "")
                    {
                        var myGeocoder = ymaps.geocode($(this).val(), {kind: 'street'});
@@ -43,9 +48,16 @@ block content
 
                               $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
                               $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
+                              $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').onselect = function(obj){alert(obj);};
                               if(dataSource.length > 0)
-                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show()
-                              
+                              {
+                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show();
+                                $('ul.typeahead').find("li").on("click", function(){
+                                  for(var i = 0; i < res.geoObjects.getLength(); i++)
+                                    if(res.geoObjects.get(i).properties.get('name') == $('ul.typeahead li.active').data('value'))
+                                      YandexMapsWidgetObjectsCollection_#{widget.id}.add(res.geoObjects.get(i));
+                                });                                
+                              }
                            },
                            function (err) {
                                alert('Ошибка');
@@ -53,13 +65,22 @@ block content
                        );
                    }
                };
-               
+
+          // $("ul.typeahead.dropdown-menu").find('li.active').data('value');
+          
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
           $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
       };
       if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
          setTimeout(function(){
-             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                         
+             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                 
+             YandexMapsWidgetObjectsCollection_#{widget.id} = new ymaps.GeoObjectCollection({}, {
+                                 preset: 'twirl#brownStretchyIcon',
+                                 geoObjectCursor: 'point',
+                                 geoObjectDraggable: true,
+                                 balloonCloseButton: true
+             });                     
+             YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});             
              // YandexMapsWidgetBody_#{widget.id}();
              // OnWidgetChanged();
       }, 1000);
