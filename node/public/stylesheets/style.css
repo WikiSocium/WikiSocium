@@ -10,7 +10,10 @@
   margin-left: 10px;
   display: inline-block;
 }
-
+.YandexMapsWidgetInputWS
+{
+    width: 300px;
+}
 .YandexMapsWidget_loadingIndicator
 {
     position: absolute;
@@ -24,6 +27,8 @@
     width: 32px;
     height: 32px;
     
+    z-index: 1003;
+        
     background-color: transparent;
     background-image: url(../images/spinner.gif);
 }
@@ -41,6 +46,8 @@
     
     background-color: black;
     opacity: 0.75;    
+    
+    z-index: 1002;
 }
 
 .YandexMapsWidget_map
@@ -57,7 +64,7 @@
   width: 60%;
   height: 60%;
   
-  z-index: 999;
+  z-index: 1004;
   
   opacity: 1.0 !important;
 }

@@ -3,65 +3,89 @@ extends BaseWidget
 block content
   div()
     div(style="margin-bottom: 4px;")
-      input.input-xlarge.organization_name(type="text", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
+      input.input-xlarge.organization_name(type="text", class="YandexMapsWidgetInputWS", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
       div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
         Показать карту      
   div
-    div(class="YandexMapsWidget_mapContainer")
+    div(id="YandexMapsWidget_mapContainer_#{widget.id}", class="YandexMapsWidget_mapContainer")
       div(class="YandexMapsWidget_loadingIndicator")
     div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
   script(type="text/javascript")
       $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
-        $(".YandexMapsWidget_mapContainer").toggle();
-        $(".YandexMapsWidget_map").toggle();        
+        $("#YandexMapsWidget_mapContainer_#{widget.id}").toggle();
+        $("#YandexMapsWidget_#{widget.id}").toggle();        
         
-        YandexMapsWidgetObject_#{widget.id}.setCenter([55.76, 37.64]);
+        // [TODO] set center and zoom to added object
+        // [TODO] find objects on map from here
+  
+        console.log("????");
+        console.log(window["#{widget.id}_map_coords"][0]);
+        
+        var myPlacemark = new ymaps.Placemark(
+                window["#{widget.id}_map_coords"][0],
+                {},
+                {
+                    draggable: true, // метку можно перемещать
+                    preset: 'twirl#whiteStretchyIcon'
+                }
+        );
+        YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
+        YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
+      
+        YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
       });
       $(".YandexMapsWidget_mapContainer").on("click", function(){
-        $(".YandexMapsWidget_map").hide();
-        $(this).hide();
+        $("#YandexMapsWidget_#{widget.id}").hide();
+        $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
       });
       
       var YandexMapsWidgetObject_#{widget.id} = {};
       var YandexMapsWidgetObjectsCollection_#{widget.id} = {};
-      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget(!{JSON.stringify(value)});  
+      // alert('!{JSON.stringify(value)}');
+      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget("#{widget.id}", '!{JSON.stringify(value)}');   
       var YandexMapsWidgetBody_#{widget.id} = function()
       {
           YandexMapsWidgetObject_#{widget.id} = new ymaps.Map ("YandexMapsWidget_#{widget.id}", {
               center: [55.76, 37.64],
               zoom: 7
           }); 
-          $(".YandexMapsWidget_map").hide();
+          YandexMapsWidgetObjectsCollection_#{widget.id} = new ymaps.GeoObjectCollection({}, {
+                              preset: 'twirl#brownStretchyIcon',
+                              geoObjectCursor: 'point',
+                              geoObjectDraggable: true,
+                              balloonCloseButton: true
+          });                     
+          YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});                       
+          $("#YandexMapsWidget_#{widget.id}").hide();
           YandexMapsWidgetObject_#{widget.id}.controls.add('zoomControl');
-          YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());
-          
+          YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());          
           var updateGeodata = function(){            
-                   YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                   
                    if($(this).val() != "")
                    {
-                       var myGeocoder = ymaps.geocode($(this).val(), {kind: 'street'});
+                       // , {kind: 'street'}
+                       var myGeocoder = ymaps.geocode($(this).val());
                        myGeocoder.then(
                            function (res) {
                                var dataSource = [];
                                for(var i = 0; i < res.geoObjects.getLength(); i++)
-                                   dataSource.push(res.geoObjects.get(i).properties.get('name'));
+                                   dataSource.push(res.geoObjects.get(i).properties.get('text'));
 
                               $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
                               $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
-                              $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').onselect = function(obj){alert(obj);};
+                              // $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').onselect = function(obj){alert(obj);};
                               if(dataSource.length > 0)
                               {
                                 $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show();
                                 $('ul.typeahead').find("li").on("click", function(){
                                   for(var i = 0; i < res.geoObjects.getLength(); i++)
-                                    if(res.geoObjects.get(i).properties.get('name') == $('ul.typeahead li.active').data('value'))
-                                      // [TODO] make it draggable
-                                      YandexMapsWidgetObjectsCollection_#{widget.id}.add(res.geoObjects.get(i));
+                                    if(res.geoObjects.get(i).properties.get('text') == $('ul.typeahead li.active').data('value'))
+                                      // [TODO] make it draggable                                      
+                                      window["#{widget.id}_map_coords"] = res.geoObjects.get(i).geometry.getBounds();                                      
                                 });                                
                               }
                            },
                            function (err) {
-                               alert('Ошибка');
+                               console.log('Ошибка при запросе данных у Яндекса');
                            }
                        );
                    }
@@ -75,13 +99,6 @@ block content
       if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
          setTimeout(function(){
              ymaps.ready(YandexMapsWidgetBody_#{widget.id});                 
-             YandexMapsWidgetObjectsCollection_#{widget.id} = new ymaps.GeoObjectCollection({}, {
-                                 preset: 'twirl#brownStretchyIcon',
-                                 geoObjectCursor: 'point',
-                                 geoObjectDraggable: true,
-                                 balloonCloseButton: true
-             });                     
-             YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});             
              // YandexMapsWidgetBody_#{widget.id}();
              // OnWidgetChanged();
       }, 1000);
