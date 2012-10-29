@@ -7,12 +7,53 @@
 .YandexMapsWidget_link:hover,
 .YandexMapsWidget_link:active
 {
+  margin-left: 10px;
   display: inline-block;
+}
+.YandexMapsWidgetInputWS
+{
+    width: 300px;
+}
+.YandexMapsWidget_loadingIndicator
+{
+    position: absolute;
+  
+    top:50%;
+    left:50%;
+    
+    margin-left: -16px;
+    margin-top: -16px;
+      
+    width: 32px;
+    height: 32px;
+    
+    z-index: 1003;
+        
+    background-color: transparent;
+    background-image: url(../images/spinner.gif);
+}
+
+.YandexMapsWidget_mapContainer
+{
+    display: none;
+    position: absolute;
+  
+    top: 0px;
+    left: 0px;
+    
+    width: 100%;
+    height: 100%;
+    
+    background-color: black;
+    opacity: 0.75;    
+    
+    z-index: 1002;
 }
 
 .YandexMapsWidget_map
 {
   position: absolute;
+  display: block;
   
   top:50%;
   left:50%;
@@ -23,9 +64,9 @@
   width: 60%;
   height: 60%;
   
-  z-index: 999;
+  z-index: 1004;
   
-  opacity: 1.0;
+  opacity: 1.0 !important;
 }
     
 .documentButtons
