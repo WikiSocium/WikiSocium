@@ -3,48 +3,102 @@ extends BaseWidget
 block content
   div()
     div(style="margin-bottom: 4px;")
-      input.input-xlarge.organization_name(type="text", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
-  <div id="YandexMapsWidget_#{widget.id}" style="width: 300px; height: 200px;"></div>
+      input.input-xlarge.organization_name(type="text", class="YandexMapsWidgetInputWS", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
+      div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
+        Показать карту      
+  div
+    div(id="YandexMapsWidget_mapContainer_#{widget.id}", class="YandexMapsWidget_mapContainer")
+      div(class="YandexMapsWidget_loadingIndicator")
+    div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
   script(type="text/javascript")
+      $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
+        $("#YandexMapsWidget_mapContainer_#{widget.id}").toggle();
+        $("#YandexMapsWidget_#{widget.id}").toggle();        
+        
+        // [TODO] set center and zoom to added object
+        // [TODO] find objects on map from here
+  
+        console.log("????");
+        console.log(window["#{widget.id}_map_coords"][0]);
+        
+        var myPlacemark = new ymaps.Placemark(
+                window["#{widget.id}_map_coords"][0],
+                {},
+                {
+                    draggable: true, // метку можно перемещать
+                    preset: 'twirl#whiteStretchyIcon'
+                }
+        );
+        YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
+        YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
+      
+        YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
+      });
+      $(".YandexMapsWidget_mapContainer").on("click", function(){
+        $("#YandexMapsWidget_#{widget.id}").hide();
+        $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
+      });
+      
       var YandexMapsWidgetObject_#{widget.id} = {};
-      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget(!{JSON.stringify(value)});  
+      var YandexMapsWidgetObjectsCollection_#{widget.id} = {};
+      // alert('!{JSON.stringify(value)}');
+      step#{step_id}FieldsList['!{widget.id}'] = new YandexMapsWidget("#{widget.id}", '!{JSON.stringify(value)}');   
       var YandexMapsWidgetBody_#{widget.id} = function()
       {
           YandexMapsWidgetObject_#{widget.id} = new ymaps.Map ("YandexMapsWidget_#{widget.id}", {
               center: [55.76, 37.64],
               zoom: 7
           }); 
-          
-          var updateGeodata = function(){
-                   // YandexMapsWidgetObject_#{widget.id}.geoObjects.removeAll();
+          YandexMapsWidgetObjectsCollection_#{widget.id} = new ymaps.GeoObjectCollection({}, {
+                              preset: 'twirl#brownStretchyIcon',
+                              geoObjectCursor: 'point',
+                              geoObjectDraggable: true,
+                              balloonCloseButton: true
+          });                     
+          YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});                       
+          $("#YandexMapsWidget_#{widget.id}").hide();
+          YandexMapsWidgetObject_#{widget.id}.controls.add('zoomControl');
+          YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());          
+          var updateGeodata = function(){            
                    if($(this).val() != "")
                    {
-                       var myGeocoder = ymaps.geocode($(this).val(), {kind: 'street'});
+                       // , {kind: 'street'}
+                       var myGeocoder = ymaps.geocode($(this).val());
                        myGeocoder.then(
                            function (res) {
                                var dataSource = [];
                                for(var i = 0; i < res.geoObjects.getLength(); i++)
-                                   dataSource.push(res.geoObjects.get(i).properties.get('name'));
+                                   dataSource.push(res.geoObjects.get(i).properties.get('text'));
 
                               $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
                               $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
+                              // $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').onselect = function(obj){alert(obj);};
                               if(dataSource.length > 0)
-                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show()
-                              
+                              {
+                                $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').render($("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source).show();
+                                $('ul.typeahead').find("li").on("click", function(){
+                                  for(var i = 0; i < res.geoObjects.getLength(); i++)
+                                    if(res.geoObjects.get(i).properties.get('text') == $('ul.typeahead li.active').data('value'))
+                                      // [TODO] make it draggable                                      
+                                      window["#{widget.id}_map_coords"] = res.geoObjects.get(i).geometry.getBounds();                                      
+                                });                                
+                              }
                            },
                            function (err) {
-                               alert('Ошибка');
+                               console.log('Ошибка при запросе данных у Яндекса');
                            }
                        );
                    }
                };
-               
+
+          // $("ul.typeahead.dropdown-menu").find('li.active').data('value');
+          
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
           $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
       };
       if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
          setTimeout(function(){
-             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                         
+             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                 
              // YandexMapsWidgetBody_#{widget.id}();
              // OnWidgetChanged();
       }, 1000);

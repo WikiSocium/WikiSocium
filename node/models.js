@@ -70,7 +70,7 @@ function defineModels(mongoose, fn) {
   * Used for session persistence.
   */
   LoginToken = new Schema({
-    email: { type: String, index: true },
+    user_id: { type: String, index: true },
     series: { type: String, index: true },
     token: { type: String, index: true }
   });
@@ -96,7 +96,7 @@ function defineModels(mongoose, fn) {
 
   LoginToken.virtual('cookieValue')
     .get(function() {
-      return JSON.stringify({ email: this.email, token: this.token, series: this.series });
+      return JSON.stringify({ user_id: this.user_id, token: this.token, series: this.series });
     });
 
   

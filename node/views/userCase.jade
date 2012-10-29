@@ -1,7 +1,6 @@
 extends layout
 
 block content
-
   script(type='text/javascript')
     var solutionData = !{JSON.stringify(solutionData)};
     if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
