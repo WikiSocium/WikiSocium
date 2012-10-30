@@ -45,13 +45,14 @@ div(class="step", id="step_" + step_index + "")
           //- console.log("---------TYPEOF STEP WIDGETS----------")
           //- console.log(typeof(step.widgets))
           - each widget in step.widgets
+            //- console.log("---------------Widget" + widget.id + "----------------")
             - if (stepData == null)
               //- console.log("init")
-              // - console.log(widget.initial)
-              // - console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
+              //- console.log(widget.initial)
+              //- console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
               !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial})
             - else
-              // - console.log("Widget " + widget.id + " initialization with data loading");
+              //- console.log("Widget " + widget.id + " initialization with data loading. StepData: " + JSON.stringify(stepData));
               !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id]})
     script(type = 'text/javascript')
       groups[#{step_index}] = step#{step_index}FieldsList;
