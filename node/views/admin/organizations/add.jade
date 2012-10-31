@@ -24,8 +24,10 @@ block content
           label.control-label Регион
           .controls
             select(name="region_name")
-              - each region in regions_list
-                option #{region}
+              option Вся Россия
+              optgroup(label="Субъекты РФ")
+                - each region in regions_list
+                  option #{region}
         .control-group
           label.control-label Название
           .controls
@@ -50,7 +52,7 @@ block content
             .controls
               div#phone_fields
                 div(style="margin-bottom: 4px;")
-                  input.input-small.phone_who(name="phone_who[0]", placeholder="Охрана")                
+                  input.input-small.phone_who(name="phone_who[0]", placeholder="Охрана")         
                   input.input-medium.phone(name="phone[0]")
                   button.btn.btn-danger.remove_phone(type="button", style="margin-left: 3px;") ×
               button.btn.btn-success.add_phone(type="button") +
