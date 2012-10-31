@@ -342,6 +342,11 @@ iref
     text-decoration: underline;
 }
 
+.floatleft
+{
+    float: left;
+}
+
 /* Radio Field */
 label.inputEx-RadioField-rightLabel
 {
