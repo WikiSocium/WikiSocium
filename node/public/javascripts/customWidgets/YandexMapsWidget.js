@@ -1,7 +1,14 @@
 function YandexMapsWidget(_widgetid, value)
 { 
   this.widgetid = _widgetid;
-  var val = JSON.parse(value);
+  try
+  {
+    var val = JSON.parse(value);
+  }
+  catch(e)
+  {
+    var val = {};
+  }
   
   console.log("creating " + _widgetid + " object with: ");
   console.log(val);
