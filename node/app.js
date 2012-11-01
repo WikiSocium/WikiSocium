@@ -749,13 +749,18 @@ app.post('/GetRegionalizedData', function(req, res) {
             console.log("There was an error while fetching data from organizations db: ");
             console.log(e);
         }
+      var foundOrganizations = [];
       if(organization_item)          
         for(var anotherRegion in organization_item.regions_list)
-          if(organization_item.regions_list[anotherRegion].region_name == region)
+          if((organization_item.regions_list[anotherRegion].region_name == region) ||
+             (organization_item.regions_list[anotherRegion].region_name == "Вся Россия"))
           {
-              res.send(organization_item.regions_list[anotherRegion].organizations_list);
-              break;
+              foundOrganizations.push(organization_item.regions_list[anotherRegion].organizations_list);
+              // res.send(organization_item.regions_list[anotherRegion].organizations_list);
+              // break;
           }
+          
+      res.send(foundOrganizations);
     });
   }
   if (db=="texts") {
