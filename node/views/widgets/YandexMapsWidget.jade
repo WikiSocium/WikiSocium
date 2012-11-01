@@ -15,12 +15,7 @@ block content
         $("#YandexMapsWidget_mapContainer_#{widget.id}").toggle();
         $("#YandexMapsWidget_#{widget.id}").toggle();        
         
-        // [TODO] set center and zoom to added object
-        // [TODO] find objects on map from here
-  
-        console.log("????");
-        console.log(window["#{widget.id}_map_coords"][0]);
-        
+        // [TODO] determine type of object and select proper zoom
         var myPlacemark = new ymaps.Placemark(
                 window["#{widget.id}_map_coords"][0],
                 {},
@@ -34,7 +29,14 @@ block content
       
         YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
       });
-      $(".YandexMapsWidget_mapContainer").on("click", function(){
+      $('html').keyup(function(e){
+          if(e.keyCode == 27)
+          {
+            $("#YandexMapsWidget_#{widget.id}").hide();
+            $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
+          }
+      });
+      $("#YandexMapsWidget_mapContainer_#{widget.id}").on("click", function(){
         $("#YandexMapsWidget_#{widget.id}").hide();
         $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
       });

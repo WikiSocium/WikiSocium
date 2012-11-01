@@ -52,7 +52,7 @@
 
 .YandexMapsWidget_map
 {
-  position: absolute;
+  position: fixed;
   display: block;
   
   top:50%;
