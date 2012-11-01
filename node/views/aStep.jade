@@ -29,8 +29,7 @@ div(class="step", id="step_" + step_index + "")
           - groupDivClass = "";
         //-div(class="#{groupDivClass}")
         form(class="form-vertical")
-          fieldset
-            #{widget_group.title}
+          fieldset #{widget_group.title}
             - each widget in widget_group.widgets
               - if (stepData == null)
                 //- console.log("init")
