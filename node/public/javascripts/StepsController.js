@@ -66,10 +66,9 @@ function ShowProperStep()
 }
 
 function SaveFormData( curStep, nextStep, callback ) {
-  for (key in stepsHistory) 
-  {
-    if ( stepsHistory[key].id == nextStep ) 
-    {
+  for (key in stepsHistory) {
+    if ( stepsHistory[key].id == nextStep ) {
+      if ( stepsHistory[key].id == curStep ) { alert('Error! Going to corrupt steps history'); break; }
       stepsHistory[key].prevStep = curStep;
       break;
     }

@@ -72,5 +72,6 @@ function showModalWindow ( in_title, in_body, in_buttons, in_modal_container_id,
     else $( "#"+modal_container_id+"_"+in_buttons[key].text ).click(in_buttons[key].action);
   }
     
-  $("#"+modal_container_id).modal();  
+  $("#"+modal_container_id).modal();
+  $("#"+modal_container_id).find('input:visible:first').focus();
 }

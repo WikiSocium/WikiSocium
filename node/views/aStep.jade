@@ -1,17 +1,17 @@
 div(class="step", id="step_" + step_index + "")
   h2.stepTitle
-    - if (name!=undefined)
-      #{name} :
-    - if (caseName!=undefined)
-      #{caseName}
-    >
-    - if (sectionData==undefined)
-      #{step.title}
+    - if (name != undefined)
+      span #{name}: 
+    - if (caseName != undefined)
+      span #{caseName}
+    &nbsp;> 
+    - if (sectionData == undefined)
+      span #{step.title}
     - else
       - each section, i in sectionData
         - each id, j in section.steps
           - if (id==step.id)
-            #{section.name} > #{step.title} (#{j+1}/#{section.steps.length})
+            span #{section.name} > #{step.title} (#{j+1}/#{section.steps.length})
   br
   
   #widgets
@@ -29,8 +29,7 @@ div(class="step", id="step_" + step_index + "")
           - groupDivClass = "";
         //-div(class="#{groupDivClass}")
         form(class="form-vertical")
-          fieldset
-            #{widget_group.title}
+          fieldset #{widget_group.title}
             - each widget in widget_group.widgets
               - if (stepData == null)
                 //- console.log("init")
