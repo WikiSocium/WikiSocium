@@ -55,7 +55,9 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.set('view options', { 'layout': false });
-  app.use(express.bodyParser());
+  app.use(express.bodyParser(
+    { uploadDir: './uploads' }
+  ));
   app.use(express.cookieParser()); 
   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
   app.use(express.methodOverride());
@@ -1433,6 +1435,34 @@ app.get('/social/:social_name', function(req, res) {
       });
     break;
   }
+});
+
+app.post('/fileUpload', function(req, res) {
+  console.log(req.body);
+  console.log(req.files);
+
+  var uploadedFile = req.files.uploadingFile;
+  var tmpPath = uploadedFile.path;
+  var targetPath = './uploads/' + uploadedFile.name;
+
+  fs.rename(tmpPath, targetPath, function(err) {
+  if (err) throw err;
+  fs.unlink(tmpPath, function() {
+    if (err) throw err;
+      res.send('File Uploaded to ' + targetPath + ' - ' + uploadedFile.size + ' bytes');
+    });
+  });
+});
+
+app.register('.html', {
+  compile: function(str, options){
+    return function(locals){
+      return str;
+    };
+  }
+});
+app.get('/fileUpload',function(req,res) {
+  res.render('file_upload.html');
 });
 
 ///////////////////////////////////////////////////////////////////////////////
