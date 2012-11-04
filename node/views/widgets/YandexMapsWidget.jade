@@ -33,8 +33,12 @@ block content
               res.geoObjects.each(function(obj){
                 names.push(obj.properties.get("name"));
               });
-              $("#YandexMapsWidgetInputWS_#{widget.id}").val(names.join(","));
-              window["#{widget.id}_map_coords"] = newBounds;
+              
+              var anotherGeocoder = ymaps.geocode(names.join(", "));
+              anotherGeocoder.then(function(res){                
+                $("#YandexMapsWidgetInputWS_#{widget.id}").val(res.geoObjects.get(0).properties.get('text'));
+                window["#{widget.id}_map_coords"] = newBounds;                
+              });              
             });            
         });
         YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
@@ -49,9 +53,10 @@ block content
             $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
           }
       });
-      $("#YandexMapsWidget_mapContainer_#{widget.id}").on("click", function(){
+      $("#YandexMapsWidget_mapContainer_#{widget.id}").on("click", function(event){
         $("#YandexMapsWidget_#{widget.id}").hide();
         $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
+        event.stopPropagation();
       });
       
       var YandexMapsWidgetObject_#{widget.id} = {};
