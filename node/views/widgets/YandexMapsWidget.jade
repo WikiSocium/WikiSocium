@@ -17,13 +17,26 @@ block content
         
         // [TODO] determine type of object and select proper zoom
         var myPlacemark = new ymaps.Placemark(
-                window["#{widget.id}_map_coords"][0],
-                {},
-                {
-                    draggable: false, // метку должно быть можно перемещать, но при этом должны сохраняться новые координаты (!!!)
-                    preset: 'twirl#whiteStretchyIcon'
-                }
+            window["#{widget.id}_map_coords"][0],
+            {},
+            {
+                draggable: true, // метку должно быть можно перемещать, но при этом должны сохраняться новые координаты (!!!)
+                preset: 'twirl#whiteStretchyIcon'
+            }
         );
+        myPlacemark.events.add("dragend", function(e){
+            var newBounds = e.originalEvent.target.geometry.getBounds();
+            
+            var myGeocoder = ymaps.geocode(newBounds[0]);
+            myGeocoder.then(function(res){
+              var names = [];
+              res.geoObjects.each(function(obj){
+                names.push(obj.properties.get("name"));
+              });
+              $("#YandexMapsWidgetInputWS_#{widget.id}").val(names.join(","));
+              window["#{widget.id}_map_coords"] = newBounds;
+            });            
+        });
         YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
         YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
       
