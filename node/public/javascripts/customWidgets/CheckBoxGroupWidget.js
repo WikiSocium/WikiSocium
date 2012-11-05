@@ -16,7 +16,7 @@ function CheckBoxGroupWidget(value)
 
   if(typeof(value) == "undefined")
   {
-    this.selection_list = "";
+    this.selection_list = [];
   }
   else
   {
@@ -49,11 +49,11 @@ CheckBoxGroupWidget.prototype.getValue = function()
 // Валидация ввода. Кол-во выбранных элементов лежит в отрезке [minSelection; maxSelection]
 CheckBoxGroupWidget.prototype.validate = function()
 {
-    if(this.selection_list.length >= this.minSelection || this.minSelection == undefined)
+    if(this.selection_list.length >= this.minSelection || typeof(this.minSelection) == "undefined")
         var minChecked = true;
     else var minChecked = false;
     
-    if(this.selection_list.length <= this.maxSelection || this.maxSelection == undefined)
+    if(this.selection_list.length <= this.maxSelection || typeof(this.maxSelection) == "undefined")
         var maxChecked = true;
     else var maxChecked = false;
     
