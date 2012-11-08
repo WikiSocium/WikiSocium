@@ -158,9 +158,12 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 900px) {
+@media (min-width: 768px) and (max-width: 900px) { 
   #heading, #menu, #submenu, #content-block, #footer {
     margin: 0 10px;
+  } 
+  #content-block {
+    margin-bottom: 100px;
   }
 }
 
