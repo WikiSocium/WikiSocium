@@ -55,7 +55,9 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.set('view options', { 'layout': false });
-  app.use(express.bodyParser());
+  app.use(express.bodyParser(
+    { uploadDir: './uploads' }
+  ));
   app.use(express.cookieParser()); 
   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
   app.use(express.methodOverride());
@@ -1255,47 +1257,6 @@ app.get('/Statistics/Solutions', loadUser, generateMenu, getHeaderStats, functio
         styles:[]
       });
     });
-    /*fs.readdir("data/solutions", function (err, files) {
-      if (err) throw err;
-      
-      var solutions = new Array();
-      var solution_name;
-      for (var key in files) {
-        solution_name = files[key].replace(/.json/g,"");
-        solutions[key] = new Object();
-        solutions[key].name = solution_name;
-        //solutions[key].statistics = {};
-      }
-
-      var f = function(arg, callback) {
-        Solution.findOne ({ solution_name: arg.name }, function(e, solution) {
-          var stats_obj = new Object();
-          if (solution) {
-            arg.statistics = solution;
-          }
-          else {
-            arg.statistics = {
-              started: 0,
-              finished_successful: 0,
-	            finished_failed: 0,
-	            finished_good_solution: 0,
-          	  finished_bad_solution: 0
-            }
-          }
-          callback();
-        }); 
-      }
-      async.forEach(solutions, f, function(err) {
-        res.render('statistics/solutions.jade', {
-          title: "Статистики по решениям",
-          'user':req.currentUser,
-          'menu':res.menu,
-          solutions: solutions, 
-          scripts:[],
-          styles:[]
-        })
-      });
-    });*/
   }
 });
 
@@ -1474,6 +1435,34 @@ app.get('/social/:social_name', function(req, res) {
       });
     break;
   }
+});
+
+app.post('/fileUpload', function(req, res) {
+  console.log(req.body);
+  console.log(req.files);
+
+  var uploadedFile = req.files.uploadingFile;
+  var tmpPath = uploadedFile.path;
+  var targetPath = './uploads/' + uploadedFile.name;
+
+  fs.rename(tmpPath, targetPath, function(err) {
+  if (err) throw err;
+  fs.unlink(tmpPath, function() {
+    if (err) throw err;
+      res.send('File Uploaded to ' + targetPath + ' - ' + uploadedFile.size + ' bytes');
+    });
+  });
+});
+
+app.register('.html', {
+  compile: function(str, options){
+    return function(locals){
+      return str;
+    };
+  }
+});
+app.get('/fileUpload',function(req,res) {
+  res.render('file_upload.html');
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1929,4 +1918,3 @@ console.log("All documents compiled");
 app.listen(3000);
 console.log('Express server listening on port %d, environment: %s', app.address().port, app.settings.env)
 console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);
-
