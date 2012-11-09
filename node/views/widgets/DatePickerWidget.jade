@@ -1,0 +1,22 @@
+//- На входе:
+//- widget - данные о виджете из SolutionData (widget_type, id, label, value_list ????????????????????????????????????????? или value ??????????????????????)
+//- step.id - идентификатор шага
+//- value - значение виджета
+
+extends BaseWidget
+
+block content
+  //- Создаём поле ввода
+  input(type='text', id='step#{step_id}_#{widget.id}');
+
+  //- Связываем поле ввода с jQuery-объектом
+  script(
+    $(function() {
+      $("#step#{step_id}_#{widget.id}").datepicker({ dateFormat: "dd.mm.yy" });
+    })
+  
+  //- TODO: проверить, что без добавления JS ничего не заработает
+  script(type='text/javascript', src='/javascripts/customWidgets/DatePickerWidget.js');
+  
+  script(type='text/javascript')
+    step#{step_id}FieldsList['!{widget.id}'] = new DatePickerWidget(document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "#{value}");

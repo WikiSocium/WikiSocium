@@ -40,7 +40,7 @@
                                                 "description" : "Выберите <b>ВАШ</b> регион!"}
                               },                        
                               {
-                                    "widget_type" : "DateTextFieldWidget",
+                                    "widget_type" : "DatePickerWidget",
                                     "id" : "date",
                                     "label" : "Дата нарушения",
                                     "type" : "string"

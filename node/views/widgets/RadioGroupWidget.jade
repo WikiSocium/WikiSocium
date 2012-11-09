@@ -30,8 +30,11 @@ block content
               $("#RadioGroupWidget_#{widget.id}").append(container);
           }
       };
-      if($("#RadioGroupWidget_#{widget.id}").closest(".step").is(":visible"))
-         setTimeout(function(){
-             RadioGroupWidgetBody_#{widget.id}();
-             OnWidgetChanged();
-      }, 1000);
+      
+      RadioGroupWidgetBody_#{widget.id}();
+      
+      //- if($("#RadioGroupWidget_#{widget.id}").closest(".step").is(":visible"))
+      //-   setTimeout(function(){
+      //-       RadioGroupWidgetBody_#{widget.id}();
+      //-       OnWidgetChanged();
+      //-}, 1000);

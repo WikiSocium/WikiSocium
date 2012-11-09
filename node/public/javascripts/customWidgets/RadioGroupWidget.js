@@ -1,6 +1,5 @@
 function RadioGroupWidget(value)
 { 
-  console.log(value);
   
   // this.element = element;
   // this.parentEl = parentEl;

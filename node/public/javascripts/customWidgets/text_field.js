@@ -10,11 +10,13 @@ function TextField(regexp, element, parentEl, value)
       this.options = param;
       this.IsRequired = param.required;
   };  
+  
   $(this.element).valid8({
         'regularExpressions': [
         { expression: regexp, errormessage: 'Поле заполнено неверно!'}
         ]
   });
+  
   $(this.element).val(value);
 };
 

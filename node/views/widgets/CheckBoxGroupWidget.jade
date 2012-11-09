@@ -65,12 +65,15 @@ block content
           }
       };
       
+      //- Создать виджет.
+      CheckBoxGroupWidgetBody_#{widget.id}();
+      
       //- Если шаг, которому принадлежит виджет, в данный момент отображён (активен), то...
-      if($("#CheckBoxGroupWidget_#{widget.id}").closest(".step").is(":visible"))
+      //-if($("#CheckBoxGroupWidget_#{widget.id}").closest(".step").is(":visible"))
          //- Подождать 1000 милисекунд и запустить функцию. ЗАЧЕМ ЗАДЕРЖКА ??
-         setTimeout(function(){
-                //- Создадим виджет (в т.ч. отрендерим его)
-                CheckBoxGroupWidgetBody_#{widget.id}();
-                //- Обработчик изменения состояния виджета - для предикатов и т.п.
-                OnWidgetChanged();
-            }, 1000);
+         //-setTimeout(function(){
+         //-       //- Создадим виджет (в т.ч. отрендерим его)
+         //-       CheckBoxGroupWidgetBody_#{widget.id}();
+         //-       //- Обработчик изменения состояния виджета - для предикатов и т.п.
+         //-       OnWidgetChanged();
+         //-   }, 1000);
