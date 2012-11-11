@@ -833,7 +833,11 @@
 					"label"		: 	"Перед Вами текст претензии.",
 					"doc_name"	:	"BadItemComplaint",
 					"organizations" : [],
-					"organizations_times" :  []  
+					"organizations_times" :  [],
+					"user_organizations" : [{"widget_id" : "SellerName",
+					                         "wait_time" : 7},
+					                         {"widget_id" : "ItemName",
+                         					                         "wait_time" : 17}]  
 				}
 			],
 			"next"		:	[ { "id" : "5" } ] 					
