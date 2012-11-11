@@ -24,12 +24,6 @@ function DatePickerWidget(element, parentEl, value)
   });
   */
   
-  // TODO: вернуться к этому коду, если в процессе эксплуатации полезут ошибки с форматом даты.
-  // Пока закомменчено в надежде, что даты будут всегда сохраняться в формате, заданном в DatePickerWidget.jade - "dd.mm.yy".
-  // Выявленные проблемы с переформатированием:
-  // 1) Date.parse не парсит формат "dd.mm.yy" в FireFox.
-  // 2) в дате 11.11.2011 не понятно где месяц, где число => всё равно универсальный парсер для дат не получится.
-  /*
   // Переформатируем дату в формат dd.mm.yy
   if(value != "")
   { 
@@ -40,17 +34,24 @@ function DatePickerWidget(element, parentEl, value)
         tempDate.setTime(dateParse);
         value = $.datepicker.formatDate('dd.mm.yy', tempDate);
     }
-    else console.log('Error parsing date ' + value + ', cannot change its format')
+    else
+    {
+        value = "";
+        console.log('Error parsing date ' + value + ', cannot change its format');
+    }
   }
-  */
+  
   
   $(this.element).val(value);
 };
 
 // Получение значения виджета.
 DatePickerWidget.prototype.getValue = function()
-{
-  return $(this.element).val();
+{ 
+  // Для совместимости храним дату в формате GMT.
+  var dateString = $(this.element).datepicker("getDate").toGMTString();
+  
+  return dateString;
 };
 
 // Валидация ввода.
