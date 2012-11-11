@@ -654,7 +654,9 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                 if(!err) 
                 {
                   var solutionData = JSON.parse(data);
-                  var stylesToInject = [];
+                  var stylesToInject = [
+                    '/stylesheets/widgets.css'
+                  ];
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
                     'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
@@ -1445,11 +1447,16 @@ app.post('/fileUpload', function(req, res) {
   var tmpPath = uploadedFile.path;
   var targetPath = './uploads/' + uploadedFile.name;
 
+  var response = {
+    'path' : targetPath,
+    'size' : uploadedFile.size
+  }
+
   fs.rename(tmpPath, targetPath, function(err) {
   if (err) throw err;
   fs.unlink(tmpPath, function() {
     if (err) throw err;
-      res.send('File Uploaded to ' + targetPath + ' - ' + uploadedFile.size + ' bytes');
+      res.send(response);
     });
   });
 });

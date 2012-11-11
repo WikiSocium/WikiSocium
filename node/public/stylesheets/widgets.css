@@ -1,0 +1,30 @@
+.MultimediaWidget #UploadForm {
+  background: #fafafa;
+  border: 2px #ccc dashed;
+  float: left;
+  padding: 3px 6px;
+  width: 50%;
+}
+.MultimediaWidget #UploadQueue {
+  background: #fafafa;
+  border: 1px #ccc solid;
+  display: none;
+  margin-left: 55%;
+  padding: 3px 6px;
+  width: 25%;
+}
+
+.MultimediaWidget #UploadQueue .fileName {
+  float: left;
+  width: 40%;
+}
+
+.MultimediaWidget #UploadQueue .progress {
+  margin-left: 45%;
+}
+
+.MultimediaWidget #UploadQueue .progress .bar {
+  padding-left: 3px;
+  text-align: left;
+  width: 0%;
+}
