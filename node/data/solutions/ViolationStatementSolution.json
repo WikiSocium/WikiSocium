@@ -85,7 +85,7 @@
                                     { "value": "red", "label": "проезд на красный" },
                                     { "value": "lines", "label": "выезд на полосу встречного движения" },
                                     { "value": "rules", "label": "неподчинение правилам разметки" },
-                                    { "value": "parking", "label": "нарушение правил парковки" }															
+                                    { "value": "parking", "label": "нарушение правил парковки" }                              
                                 ]
                             }
                         ]
@@ -146,8 +146,8 @@
                         "widgets": 
                         [
                             {
-                                  "widget_type": "URLOpenerWidget",
-                                  "id": "url"
+                                  "widget_type": "MultimediaWidget",
+                                  "id": "multimedia"
                             }                
                         ]
                   }
@@ -255,7 +255,7 @@
                                                                         "value_list":
                                                                                             [
                                                                                                 { "value": "yes", "label": "Да" },
-                                                                                                { "value": "no", "label": "Нет" }												
+                                                                                                { "value": "no", "label": "Нет" }                       
                                                                                             ]
                                                                 }                           
                         ]

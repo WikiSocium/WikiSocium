@@ -1,0 +1,88 @@
+extends BaseWidget
+
+block content
+
+  
+  mixin thumbnailElement(id, pathToImage)
+    p(id=id) #{pathToImage} 
+      a.inpage_link(href="#", onclick="removeValue('#{id}', '#{pathToImage}'); return false;") удалить
+
+  script(type='text/javascript', src='/javascripts/customWidgets/MultimediaWidget.js')
+  script(type="text/javascript")
+    var initialWidgetValue = !{JSON.stringify(value)};
+    step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
+
+    function constructThumbnailElement(id, pathToImage) {
+      var thumbnailBlock = $('<div>').append('<p id="'+id+'">');
+      thumbnailBlock.children('#'+id).text(pathToImage);
+      thumbnailBlock.children('#'+id).append('<a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+pathToImage+'\'); return false;">удалить</a>');
+      return thumbnailBlock;
+    }
+
+    function addNewValue(path) {
+      var thumb_i;
+      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(path);
+      var newThumbnailElem = $('<p>').attr('id', 'thumb-'+thumb_i).text(path);
+      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, path));
+    }
+    function removeValue(thumb_id, path) {
+      step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
+      $('#'+thumb_id).remove();
+    }
+
+  script(type="text/javascript", src="/javascripts/upload.js")
+  div#UploadForm
+    div
+      Пожалуйста, добавьте<br />
+      файл фотографии | 
+      a.inpage_link(href="#photo-link") ссылку на фотографию
+      |  | 
+      a.inpage_link(href="#video-link") ссылку на видео
+    div(style="margin: 5px 0;")
+      form#uploadForm(enctype="multipart/form-data")
+        input#inputFile(type='file', style="display:none")
+        div.input-append
+          input#bootstrapFileForm.input-large(type="text")
+          a.btn(onclick="$('input[id=inputFile]').click();") Browse
+        input#inputSubmit.btn.btn-success(type='button', value='Добавить фотографию')
+    div#multimediaWidgetThumbnails
+      - each pic, i in value
+        mixin thumbnailElement("thumb-"+i, pic)
+  div#UploadQueue
+
+  script(type="text/javascript")
+    function uploadProgress(evt, progressBarId) {
+      if(evt.lengthComputable) {
+        var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+        $('#'+progressBarId).children('.bar').css("width", percentComplete.toString()+'%');
+        $('#'+progressBarId).children('.bar').text(percentComplete.toString()+' %');
+      } else {
+        $('#'+progressBarId).removeClass("progress-info");
+        $('#'+progressBarId).addClass("progress-danger");
+      }
+    }
+    function uploadComplete(evt, progressBarId) {
+      uploadProgress(evt, progressBarId);
+      var response = JSON.parse(evt.target.responseText);
+      $('#'+progressBarId).removeClass("progress-info");
+      $('#'+progressBarId).addClass("progress-success");
+      addNewValue(response.path);
+    }
+    var progressBarCounter = 0;
+    var progressInitFunc = function(fileName) {
+      var progressBarId = "progress-bar-"+progressBarCounter;
+      progressBarCounter+=1;
+      var queueElemDiv = $('<div>').attr('class','queueElem');
+      var fileNameDiv = $('<div>').attr('class','fileName').text(fileName);
+      var progressBarDiv = $('<div>').attr('id',progressBarId).attr('class','progress');
+      progressBarDiv.append($('<div>').attr('class','bar'));
+      $('#UploadQueue').append(queueElemDiv.append(fileNameDiv).append(progressBarDiv));
+      $('#UploadQueue').css('display', 'block');
+      return progressBarId;
+    };
+    JS_upload_handler("inputFile", "inputSubmit", progressInitFunc);
+  
+  script(type="text/javascript")
+    $('input[id=inputFile]').change(function() {
+      $('input[id=bootstrapFileForm]').val($(this).val().replace("C:\\fakepath\\",""));
+    });
