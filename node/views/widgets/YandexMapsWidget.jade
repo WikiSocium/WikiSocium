@@ -129,9 +129,9 @@ block content
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
           $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
       };
-      if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
-         setTimeout(function(){
+      // if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
+      //    setTimeout(function(){
              ymaps.ready(YandexMapsWidgetBody_#{widget.id});                 
              // YandexMapsWidgetBody_#{widget.id}();
              // OnWidgetChanged();
-      }, 1000);
+      // }, 1000);
