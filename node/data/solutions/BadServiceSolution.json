@@ -576,7 +576,7 @@
 					"label"		: 	"Перед Вами текст претензии.",
 					"doc_name"	:	"BadServiceComplaint",
 					"organizations" : [],
-					"organizations_times" :  []   
+					"organizations_times" :  []					
 				}
 			],
 			"next"		:	[ { "id" : "5" } ] 					

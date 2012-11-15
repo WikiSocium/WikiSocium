@@ -892,6 +892,7 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
           {
             if (!err1)
             {
+              console.log(data1);
               var caseData=JSON.parse(data1);
               console.log(caseData.currentStep);
               Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
