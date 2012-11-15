@@ -4,7 +4,8 @@ block content
 
   
   mixin thumbnailElement(id, pathToImage)
-    p(id=id) #{pathToImage} 
+    div(id=id) 
+      img(src=pathToImage, width="100px") 
       a.inpage_link(href="#", onclick="removeValue('#{id}', '#{pathToImage}'); return false;") удалить
 
   script(type='text/javascript', src='/javascripts/customWidgets/MultimediaWidget.js')
@@ -13,8 +14,8 @@ block content
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
 
     function constructThumbnailElement(id, pathToImage) {
-      var thumbnailBlock = $('<div>').append('<p id="'+id+'">');
-      thumbnailBlock.children('#'+id).text(pathToImage);
+      var thumbnailBlock = $('<div>').append('<div id="'+id+'">');
+      thumbnailBlock.children('#'+id).append('<img src="'+pathToImage+'" width="100px" />');
       thumbnailBlock.children('#'+id).append('<a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+pathToImage+'\'); return false;">удалить</a>');
       return thumbnailBlock;
     }
@@ -26,8 +27,10 @@ block content
       $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, path));
     }
     function removeValue(thumb_id, path) {
-      step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
-      $('#'+thumb_id).remove();
+      sendRemoveFileQuery (path, function() {
+        step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
+        $('#'+thumb_id).remove();
+      });
     }
 
   script(type="text/javascript", src="/javascripts/upload.js")
@@ -80,7 +83,7 @@ block content
       $('#UploadQueue').css('display', 'block');
       return progressBarId;
     };
-    JS_upload_handler("inputFile", "inputSubmit", progressInitFunc);
+    JS_upload_handler("inputFile", "inputSubmit", "MultimediaWidget", progressInitFunc);
   
   script(type="text/javascript")
     $('input[id=inputFile]').change(function() {

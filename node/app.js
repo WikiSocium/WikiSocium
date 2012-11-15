@@ -1439,26 +1439,73 @@ app.get('/social/:social_name', function(req, res) {
   }
 });
 
-app.post('/fileUpload', function(req, res) {
-  console.log(req.body);
-  console.log(req.files);
+function fileExistsSync (d) {
+  try { fs.statSync(d); return true }
+  catch (er) { return false }
+}
+function dirExistsSync (d) {
+  try { fs.statSync(d).isDirectory(); return true }
+  catch (er) { return false }
+}
 
-  var uploadedFile = req.files.uploadingFile;
-  var tmpPath = uploadedFile.path;
-  var targetPath = './uploads/' + uploadedFile.name;
+app.post('/fileUpload', loadUser, function(req, res) {
+  // console.log(req.currentUser);
+  // console.log(req.body);
+  // console.log(req.files);
 
-  var response = {
-    'path' : targetPath,
-    'size' : uploadedFile.size
+  var publicDir = './public';
+  var publicUploadsDir = publicDir + '/uploads/';
+  var userUploadsDir = publicUploadsDir + req.currentUser.user_id;
+
+  if ( fileExistsSync(userUploadsDir) ) {
+    if ( !dirExistsSync(userUploadsDir) ) {
+      fs.unlinkSync(userUploadsDir);
+      fs.mkdirSync(userUploadsDir);
+    }
+  }
+  else {
+    fs.mkdirSync(userUploadsDir);
   }
 
-  fs.rename(tmpPath, targetPath, function(err) {
-  if (err) throw err;
-  fs.unlink(tmpPath, function() {
-    if (err) throw err;
-      res.send(response);
-    });
-  });
+  switch (req.body.queryType) {
+    case 'upload':
+      var uploadedFile = req.files.uploadingFile;
+      var tmpPath = uploadedFile.path;
+
+      var targetDir = userUploadsDir;
+
+      var targetPath = targetDir + '/' + uploadedFile.name;
+      var publicPath = targetPath.replace(publicDir,'');
+
+      var response = {
+        'path' : publicPath,
+        'size' : uploadedFile.size
+      }
+
+      fs.rename(tmpPath, targetPath, function(err) {
+        if (err) console.log(err);        
+        fs.unlink(tmpPath, function() {
+          if (!err) res.send(response);
+        });
+      });
+    break;
+    case 'delete':
+      var fileToDelete = publicDir + req.body.path;
+      // Проверяем, что файл лежит в upload-директории текущего пользователя
+      if ( fileToDelete.search(userUploadsDir) != -1 ) {
+        if ( fileExistsSync(fileToDelete) && !fs.statSync(fileToDelete).isDirectory() ) {
+          fs.unlink(fileToDelete, function(err) {
+            if (err) console.log(err);
+            else res.send("Deleted successfully");
+          });
+        }
+        else res.send("File not found");
+      }
+      else res.send("You are trying to delete a file that is not yours. You are not right. Incident reported.")
+    break;
+  }
+
+  
 });
 
 app.register('.html', {
