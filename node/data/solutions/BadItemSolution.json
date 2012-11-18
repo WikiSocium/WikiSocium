@@ -835,9 +835,13 @@
 					"organizations" : [],
 					"organizations_times" :  [],
 					"user_organizations" : [{"widget_id" : "SellerName",
-					                         "wait_time" : 7},
+					                         "wait_time" : 7,
+					                         "description" : {
+					                            "address" : "SellerAddress"
+					                         }},
+					                         
 					                         {"widget_id" : "ItemName",
-                         					                         "wait_time" : 17}]  
+                         					  "wait_time" : 17}]  
 				}
 			],
 			"next"		:	[ { "id" : "5" } ] 					

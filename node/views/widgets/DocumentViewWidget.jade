@@ -53,15 +53,27 @@ block content
         
         for(var yauo in user_organizations)
         {
+          var yauo_obj = { short_description : "user organization",
+                           description       : {} };
+          
           var allWidgetsDataArgument = CollectFormData();
+          
+          if(typeof(user_organizations[yauo].description) != "undefined")
+            for(var v in allWidgetsDataArgument)
+              for(var d in user_organizations[yauo].description)
+                if(typeof(allWidgetsDataArgument[v][user_organizations[yauo].description[d]]) != "undefined")          
+                {
+                  console.log(allWidgetsDataArgument[v][user_organizations[yauo].description[d]]);
+                  yauo_obj.description[d] = allWidgetsDataArgument[v][user_organizations[yauo].description[d]];
+                  break;
+                }
+                
           for(var v in allWidgetsDataArgument)
-              if(typeof(allWidgetsDataArgument[v][user_organizations[yauo].widget_id]) != "undefined")          
-              {
-                var yauo_obj = {description:{},
-                                short_description:"user organizations",
-                                title:allWidgetsDataArgument[v][user_organizations[yauo].widget_id]};                
-                break;
-              }
+            if(typeof(allWidgetsDataArgument[v][user_organizations[yauo].widget_id]) != "undefined")          
+            {                
+              yauo_obj.title = allWidgetsDataArgument[v][user_organizations[yauo].widget_id];
+              break;
+            }
           
           fetchedData.push([[yauo_obj]]);     
           times.push(user_organizations[yauo].wait_time);
