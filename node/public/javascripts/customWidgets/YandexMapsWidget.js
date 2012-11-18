@@ -25,6 +25,11 @@ YandexMapsWidget.prototype.getValue = function()
             coords  : window[this.widgetid + "_map_coords"]};
 };
 
+YandexMapsWidget.prototype.getDocumentValue = function()
+{
+    return $("#YandexMapsWidgetInputWS_" + this.widgetid).val();           
+};
+
 YandexMapsWidget.prototype.validate = function()
 {
     return true;

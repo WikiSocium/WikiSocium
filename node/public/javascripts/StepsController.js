@@ -674,7 +674,12 @@ function CollectFormData()
     {
         data[solutionData.steps[i].id] = {};
         for(var widg in groups[i])
-            data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+        {
+            if(typeof(groups[i][widg].getDocumentValue) != "undefined")
+                data[solutionData.steps[i].id][widg] = groups[i][widg].getDocumentValue();
+            else
+                data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+        }
     }    
   });
   return data;
