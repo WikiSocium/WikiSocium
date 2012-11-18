@@ -59,20 +59,12 @@ block content
           var allWidgetsDataArgument = CollectFormData();
           
           if(typeof(user_organizations[yauo].description) != "undefined")
-            for(var v in allWidgetsDataArgument)
-              for(var d in user_organizations[yauo].description)
-                if(typeof(allWidgetsDataArgument[v][user_organizations[yauo].description[d]]) != "undefined")          
-                {
-                  yauo_obj.description[d] = allWidgetsDataArgument[v][user_organizations[yauo].description[d]];
-                  break;
-                }
+            for(var d in user_organizations[yauo].description)
+              if(typeof(allWidgetsDataArgument[user_organizations[yauo].description[d]]) != "undefined")          
+                yauo_obj.description[d] = allWidgetsDataArgument[user_organizations[yauo].description[d]];
                 
-          for(var v in allWidgetsDataArgument)
-            if(typeof(allWidgetsDataArgument[v][user_organizations[yauo].widget_id]) != "undefined")          
-            {                
-              yauo_obj.title = allWidgetsDataArgument[v][user_organizations[yauo].widget_id];
-              break;
-            }
+          if(typeof(allWidgetsDataArgument[user_organizations[yauo].widget_id]) != "undefined")          
+            yauo_obj.title = allWidgetsDataArgument[user_organizations[yauo].widget_id];
           
           fetchedData.push([[yauo_obj]]);     
           times.push(user_organizations[yauo].wait_time);

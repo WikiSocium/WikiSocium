@@ -10,14 +10,14 @@ block content
         $("#WaitList_#{widget.id}").children().remove();
         var allWidgetsDataArgument = CollectFormData();//!{JSON.stringify(all_values)};
         var widgetArgument = !{JSON.stringify(widget)};
-        for(var v in allWidgetsDataArgument)
-            if(typeof(allWidgetsDataArgument[v][widgetArgument.doc_id]) != "undefined")
+        // for(var v in allWidgetsDataArgument)
+            if(typeof(allWidgetsDataArgument[widgetArgument.doc_id]) != "undefined")
             {
                 var anyTimers = 0;
-                for(var i in allWidgetsDataArgument[v][widgetArgument.doc_id])
+                for(var i in allWidgetsDataArgument[widgetArgument.doc_id])
                 {
                     anyTimers = 1;
-                    var orgData = allWidgetsDataArgument[v][widgetArgument.doc_id][i];
+                    var orgData = allWidgetsDataArgument[widgetArgument.doc_id][i];
                     var bDate = new Date(orgData.beginDate);
                     var cDate = new Date();
                     var left = Math.ceil((cDate.getTime() - bDate.getTime()) / one_day - 1);

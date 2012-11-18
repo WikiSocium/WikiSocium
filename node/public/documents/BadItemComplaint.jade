@@ -1,58 +1,58 @@
 div(align="right")
-  В: #{data["0.5"].SellerName} <br> 
-  Адрес: #{data["0.5"].SellerAddress} <br>     
-  От: #{data["0.5"].UserName} <br>
-  Адрес: #{data["0.5"].UserAddress} <br>
+  В: #{data.SellerName} <br> 
+  Адрес: #{data.SellerAddress} <br>     
+  От: #{data.UserName} <br>
+  Адрес: #{data.UserAddress} <br>
 div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
-  #{data["0"].BuyDate} я приобрёл у Вас #{data["0"].ItemName} полной стоимостью #{data["0"].ItemPrice} руб.
-  if data["0"].IsItemDelivered && data["0"].IsDeliveryCost.value == 1
-    , в том числе стоимость доставки составила #{data["0"].ItemDeliveryCost} руб.
-  Товар должен был быть доставлен мне #{data["1"].DeliveryDate}, но 
-  if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems.value == 1
-    фактически доставка была выполнена c опозданием на #{data["1"].DeliveryDelayDays} дней.
-  else if data["0"].IsItemDelivered && data["1"].IsDeliveryProblems.value == 0
+  #{data.BuyDate} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
+  if data.IsItemDelivered && data.IsDeliveryCost.value == 1
+    , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
+  Товар должен был быть доставлен мне #{data.DeliveryDate}, но 
+  if data.IsItemDelivered && data.IsDeliveryProblems.value == 1
+    фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
+  else if data.IsItemDelivered && data.IsDeliveryProblems.value == 0
     до настоящего времени доставлен не был.  
          
 
 div
-  if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsItemProblems.value != 0
-    #{data["2"].ItemProblemsDate} в товаре были найдены следующие недостатки: #{data["2"].ItemProblems}. 
-    if data["2"].IsProblemsHealth
-      Кроме того, мне был нанесён вред здоровью: #{data["2"].ItemProblemsHealth}.
-    if data["2"].IsProblemsMoney
-      Дополнительно, мне был нанесён имущественный ущерб: #{data["2"].ItemProblemsMoney}.  
+  if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value != 0
+    #{data.ItemProblemsDate} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
+    if data.IsProblemsHealth
+      Кроме того, мне был нанесён вред здоровью: #{data.ItemProblemsHealth}.
+    if data.IsProblemsMoney
+      Дополнительно, мне был нанесён имущественный ущерб: #{data.ItemProblemsMoney}.  
 div
   Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
-  if data["0"].IsItemDelivered && data["3"].RequestsDeliveryDelayMoney
+  if data.IsItemDelivered && data.RequestsDeliveryDelayMoney
     li(id="Delivery") Уплаты неустойки в размере 3% 
     script(type='text/javascript')
       var DeliveryBaseStr;
       var DeliveryBase;
       
-      if(#{data["0"].IsDeliveryCost.value} == 0)
+      if(#{data.IsDeliveryCost.value} == 0)
       { 
-        DeliveryBase = #{data["0"].ItemDeliveryCost};
+        DeliveryBase = #{data.ItemDeliveryCost};
         DeliveryBaseStr = ' от стоимости доставки за каждый день просрочки в размере ';
       }
       else
       {
-        DeliveryBase = #{data["0"].ItemPrice};
+        DeliveryBase = #{data.ItemPrice};
         DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
       }
       
       //console.log(DeliveryBaseStr);
       
-      if(#{data["1"].IsDeliveryProblems.value} == 1)
+      if(#{data.IsDeliveryProblems.value} == 1)
       {
-        DeliveryBase *= #{data["1"].DeliveryDelayDays};
+        DeliveryBase *= #{data.DeliveryDelayDays};
       }
       else
       {
         var Current = new Date();
-        //console.log('#{data["1"].DeliveryDate}');
-        var ToBe = new Date('#{data["1"].DeliveryDate}','dd.mm.yyyy');
+        //console.log('#{data.DeliveryDate}');
+        var ToBe = new Date('#{data.DeliveryDate}','dd.mm.yyyy');
         //console.log(Current.toString());
         //console.log(ToBe.toString());
         
@@ -64,29 +64,29 @@ div
       DeliveryBaseStr = DeliveryBaseStr + Math.round(DeliveryBase*0.03) + ' руб.';  
       $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
       
-if data["1"].IsDeliveryProblems.value == 0
-  if data["3"].RequestsNotDelivered.value == 0
-    li #{data["3"].RequestsNotDelivered.label} &#58; #{data["3"].RequestsNewDeliveryDate}
+if data.IsDeliveryProblems.value == 0
+  if data.RequestsNotDelivered.value == 0
+    li #{data.RequestsNotDelivered.label} &#58; #{data.RequestsNewDeliveryDate}
   else
-    li #{data["3"].RequestsNotDelivered.label}
+    li #{data.RequestsNotDelivered.label}
 
-if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsItemProblems.value == 1
-  if data["0"].IsTechComplicated            
-    li #{data["3"].RequestsTechComplicated.label}
+if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value == 1
+  if data.IsTechComplicated            
+    li #{data.RequestsTechComplicated.label}
   else
-    li #{data["3"].RequestsNonComplicated.label}    
-      if data["3"].RequestsNonComplicated.value == 3
-        в размере #{data["3"].PriceDiscountMoney} руб. 
-      else if data["3"].RequestsNonComplicated.value == 5
-        в размере #{data["3"].SelfRepairMoney} руб.
-      else if data["3"].RequestsNonComplicated.value == 2
-        . Прошу заменить товар с недостатками на  #{data["3"].SubstituteItemName}.  
+    li #{data.RequestsNonComplicated.label}    
+      if data.RequestsNonComplicated.value == 3
+        в размере #{data.PriceDiscountMoney} руб. 
+      else if data.RequestsNonComplicated.value == 5
+        в размере #{data.SelfRepairMoney} руб.
+      else if data.RequestsNonComplicated.value == 2
+        . Прошу заменить товар с недостатками на  #{data.SubstituteItemName}.  
         
-if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsProblemsHealth == 1
-  li Возмещения нанесённого мне вреда здоровью в размере #{data["3"].RequestHealthProblems} руб.
+if data.IsDeliveryProblems.value != 0 && data.IsProblemsHealth == 1
+  li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
        
 
-if data["1"].IsDeliveryProblems.value != 0 && data["2"].IsProblemsMoney == 1
-  li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data["3"].RequestDamage} руб.
+if data.IsDeliveryProblems.value != 0 && data.IsProblemsMoney == 1
+  li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data.RequestDamage} руб.
    
 

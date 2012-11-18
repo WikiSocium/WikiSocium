@@ -666,7 +666,6 @@ function HideInvisible(stepnum)
 // We need this method for current document mechanism
 function CollectFormData()
 {
-          // [TODO] keep DRY
   var data = {};
   YUI().use('inputex', function(Y) 
   {
@@ -676,9 +675,11 @@ function CollectFormData()
         for(var widg in groups[i])
         {
             if(typeof(groups[i][widg].getDocumentValue) != "undefined")
-                data[solutionData.steps[i].id][widg] = groups[i][widg].getDocumentValue();
+                // data[solutionData.steps[i].id][widg] = groups[i][widg].getDocumentValue();
+                data[widg] = groups[i][widg].getDocumentValue();
             else
-                data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+                // data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
+                data[widg] = groups[i][widg].getValue();
         }
     }    
   });
