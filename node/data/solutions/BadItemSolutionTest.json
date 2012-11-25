@@ -201,12 +201,21 @@
 					"id" 		:	"1",
 					"predicates" 	:	
 					[
-						{
-						"step_id"	: "0",
-						"widget_id"	:	"IsItemDelivered",
-						"cond"		:	"==",
-						"value"		:	"1" 						
-						}
+                        [
+                            {
+                            "step_id"	: "0",
+                            "widget_id"	:	"IsItemDelivered",
+                            "cond"		:	"==",
+                            "value"		:	"1" 						
+                            }
+                        ],
+                        [
+                            {
+                                "widget_id"	:	"SellerName",
+                                "cond"		:	"==",
+                                "value"		:	"abc" 						
+                            }
+                        ]
 					]
 				},
 				{ 
@@ -294,11 +303,20 @@
 					"id" 		:	"2",
 					"predicates" 	:
 					[	
-						{
-							"widget_id"	:	"IsDeliveryProblems",
-							"cond"		:	"==",
-							"value"		:	"1" 						
-						}
+						[
+                            {
+                                "widget_id"	:	"IsDeliveryProblems",
+                                "cond"		:	"==",
+                                "value"		:	"1" 						
+                            }
+                        ],
+                        [
+                            {
+                                "widget_id"	:	"DeliveryDate",
+                                "cond"		:	"==",
+                                "value"		:	"11.11.2011" 						
+                            }
+                        ]
 					]
 				},
 				{ 

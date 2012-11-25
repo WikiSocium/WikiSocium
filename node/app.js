@@ -657,14 +657,15 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   var stylesToInject = [];
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
-                    'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                    //'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                    'http://jquery-ui.googlecode.com/svn/tags/1.8.20/ui/i18n/jquery.ui.datepicker-ru.js',
                     'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',                    
                     'http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU',
                     '/inputex/src/loader.js',
                     '/javascripts/jquery.json-2.3.min.js',
                     '/javascripts/jquery.valid8/jquery.valid8.source.js',
                     '/javascripts/CaseDataController.js',
-                    '/javascripts/StepsController.js',
+                    '/javascripts/stepsController/StepsController.js',
                     '/javascripts/customWidgets/timer.js',
                     '/javascripts/runtime.min.js',
                     '/javascripts/jquery.watch-2.0.min.js',
