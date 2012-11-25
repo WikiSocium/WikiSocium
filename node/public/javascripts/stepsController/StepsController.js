@@ -142,8 +142,8 @@ function NextStep()
     
       //Производим валидацию шага
       
-      //YUI().use('inputex', function(Y) 
-      //{
+      YUI().use('inputex', function(Y) 
+      {
           step_index = currentCaseData.GetStepIndexById(currentStepId);
           var isValid = true;
           
@@ -159,15 +159,15 @@ function NextStep()
         {
             $("#validationFailedMessage").show("slow");
         }
-      //});
+      });
   }
 } 
 
 function FindNextStep(step_index)
 {
   //Собираем информацию о виджетах, необходимых для проверки предикатов
-  //YUI().use('inputex', function(Y)
-  //{
+  YUI().use('inputex', function(Y)
+  {
         var nextInfo = solutionData.steps[step_index].next;
         for (var i in nextInfo)
         {
@@ -200,7 +200,7 @@ function FindNextStep(step_index)
                 }
             });
         }
-  //} ); 
+  } ); 
 }
 
 function getNextStepId (stepId, nextInfo) 
