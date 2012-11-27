@@ -42,6 +42,21 @@ function JS_upload_handler(fileInputId, submitButtonId, fileType, progressBarIni
   });
 }
 
+function requestFileDownload (url, downloadType, callback) {
+  var fd = new FormData();
+  fd.append('queryType', 'link');
+  fd.append('downloadType', downloadType);
+  fd.append('url', url);
+  fd.append('date', (new Date()).toString());
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/fileUpload");
+  
+  xhr.addEventListener("load", callback, false);
+
+  xhr.send(fd);
+}
+
 function sendRemoveFileQuery (path, callback) {
   var fd = new FormData();
   fd.append('queryType', 'delete');

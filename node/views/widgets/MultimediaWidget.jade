@@ -3,55 +3,99 @@ extends BaseWidget
 block content
 
   
-  mixin thumbnailElement(id, pathToImage)
+  mixin thumbnailElement(id, image, thumbnail)
     div(id=id) 
-      img(src=pathToImage, width="100px") 
-      a.inpage_link(href="#", onclick="removeValue('#{id}', '#{pathToImage}'); return false;") удалить
+      a(href=image, rel="prettyPhoto[pp_gal]")
+        img(src=thumbnail)
+      br
+      a.inpage_link(href="#", onclick="removeValue('#{id}', '#{thumbnail}'); return false;") удалить
 
   script(type='text/javascript', src='/javascripts/customWidgets/MultimediaWidget.js')
   script(type="text/javascript")
     var initialWidgetValue = !{JSON.stringify(value)};
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
 
-    function constructThumbnailElement(id, pathToImage) {
-      var thumbnailBlock = $('<div>').append('<div id="'+id+'">');
-      thumbnailBlock.children('#'+id).append('<img src="'+pathToImage+'" width="100px" />');
-      thumbnailBlock.children('#'+id).append('<a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+pathToImage+'\'); return false;">удалить</a>');
+    function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
+      var thumbnailBlock = $('<div>').attr('id', id);
+      
+      var thumbnail = $('<a>').attr({
+        href: ""+imageSrc,
+        rel: "prettyPhoto[pp_gal]"
+        });
+      thumbnail.append('<img src="'+thumbnailSrc+'" />');
+
+      thumbnailBlock.append(thumbnail);
+      thumbnailBlock.append('<br /><a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+thumbnailSrc+'\'); return false;">удалить</a>');
       return thumbnailBlock;
     }
 
-    function addNewValue(path) {
+    function addNewValue(value) {
       var thumb_i;
-      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(path);
-      var newThumbnailElem = $('<p>').attr('id', 'thumb-'+thumb_i).text(path);
-      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, path));
+      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(value);
+      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, value.path, value.thumbnail));
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
     }
     function removeValue(thumb_id, path) {
-      sendRemoveFileQuery (path, function() {
-        step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
-        $('#'+thumb_id).remove();
-      });
+      var removedValue = step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
+      if ( removedValue.storage == 'local' ) {
+        sendRemoveFileQuery (removedValue.path, function() {
+          sendRemoveFileQuery (removedValue.thumbnail, function() {          
+            $('#'+thumb_id).remove();
+          });
+        });
+      }
+      else {
+        sendRemoveFileQuery (removedValue.thumbnail, function() {          
+          $('#'+thumb_id).remove();
+        });
+      }
     }
-
+    $(document).ready(function(){
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+    });
   script(type="text/javascript", src="/javascripts/upload.js")
-  div#UploadForm
-    div
-      Пожалуйста, добавьте<br />
-      файл фотографии | 
-      a.inpage_link(href="#photo-link") ссылку на фотографию
-      |  | 
-      a.inpage_link(href="#video-link") ссылку на видео
-    div(style="margin: 5px 0;")
-      form#uploadForm(enctype="multipart/form-data")
-        input#inputFile(type='file', style="display:none")
+
+
+  div#addMultimediaForm
+
+    ul.nav.nav-tabs#myTab
+      li.active
+        a(href="#uploadFotoForm", data-toggle="tab") Загрузить фотографию
+      li
+        a(href="#photoLinkForm", data-toggle="tab") Добавить ссылку на фотографию
+      li
+        a(href="#videoLinkForm", data-toggle="tab") Добавить видео
+
+    div.tab-content
+
+      div.tab-pane.active#uploadFotoForm
+        div
+          input#inputFile(type='file', style="display:none")
         div.input-append
           input#bootstrapFileForm.input-large(type="text")
           a.btn(onclick="$('input[id=inputFile]').click();") Browse
-        input#inputSubmit.btn.btn-success(type='button', value='Добавить фотографию')
-    div#multimediaWidgetThumbnails
-      - each pic, i in value
-        mixin thumbnailElement("thumb-"+i, pic)
+        div
+          input#uploadFotoSubmit.btn.btn-success(type='button', value='Добавить фотографию')
+
+      div.tab-pane#photoLinkForm
+        div
+          input#photoLink(type='text', placeholder='http://example.com/photo.jpg')
+        div
+          input#photoLinkSubmit.btn.btn-success(type='button', value='Добавить фотографию')
+
+      div.tab-pane#videoLinkForm
+        div
+          input#videoLink(type='text', placeholder='http://youtube.com/watch?v=9SnvyULfgdk')
+        div
+          input#videoLinkSubmit.btn.btn-success(type='button', value='Добавить видео')
+
   div#UploadQueue
+
+  div#multimediaWidgetThumbnails
+    - each pic, i in value
+      mixin thumbnailElement("thumb-"+i, pic.path, pic.thumbnail)
+
+
 
   script(type="text/javascript")
     function uploadProgress(evt, progressBarId) {
@@ -69,7 +113,13 @@ block content
       var response = JSON.parse(evt.target.responseText);
       $('#'+progressBarId).removeClass("progress-info");
       $('#'+progressBarId).addClass("progress-success");
-      addNewValue(response.path);
+      var value = {
+        'type': 'image',
+        'storage': 'local',
+        'path': response.path,
+        'thumbnail': response.thumbnail
+      }
+      addNewValue(value);
     }
     var progressBarCounter = 0;
     var progressInitFunc = function(fileName) {
@@ -77,13 +127,72 @@ block content
       progressBarCounter+=1;
       var queueElemDiv = $('<div>').attr('class','queueElem');
       var fileNameDiv = $('<div>').attr('class','fileName').text(fileName);
-      var progressBarDiv = $('<div>').attr('id',progressBarId).attr('class','progress');
+      var progressBarDiv = $('<div>').attr({
+        id: ''+progressBarId,
+        class: "progress"
+      });
       progressBarDiv.append($('<div>').attr('class','bar'));
       $('#UploadQueue').append(queueElemDiv.append(fileNameDiv).append(progressBarDiv));
       $('#UploadQueue').css('display', 'block');
       return progressBarId;
     };
-    JS_upload_handler("inputFile", "inputSubmit", "MultimediaWidget", progressInitFunc);
+    JS_upload_handler("inputFile", "uploadFotoSubmit", "MultimediaWidget", progressInitFunc);
+    $('#photoLinkSubmit').on('click', function() {
+      requestFileDownload($('#photoLink').val(), 'picture', function(evt) {
+        var response = JSON.parse(evt.target.responseText);
+        var value = {
+          'type': 'image',
+          'storage': 'local',
+          'path': response.path,
+          'thumbnail': response.thumbnail
+        }
+        addNewValue(value);
+      });
+    });
+    $('#videoLinkSubmit').on('click', function() {
+      var videoURL = $('#videoLink').val();
+      function parseUrl( url ) {
+        var a = document.createElement('a');
+        a.href = url;
+        return a;
+      }
+      function addVideo( videoLink, pathToVideoThumb, storage_id ) {
+        requestFileDownload(pathToVideoThumb, 'thumbnail', function(evt) {
+          var response = JSON.parse(evt.target.responseText);
+          var value = {
+            'type': 'video',
+            'storage': storage_id,
+            'path': videoLink,
+            'thumbnail': response.thumbnail
+          }
+          addNewValue(value);
+          $('#videoLink').val('');
+        });
+      }
+      var hoster = parseUrl(videoURL).hostname;
+      var videoLink = $('#videoLink').val();
+      var pathToVideoThumb;
+      switch (hoster) {
+        case 'youtu.be':
+          var video_id = parseUrl(videoURL).pathname.replace('/','');
+          pathToVideoThumb = 'http://img.youtube.com/vi/' + video_id + '/2.jpg';
+          addVideo (videoLink, pathToVideoThumb, 'youtube');
+        break;
+        case 'www.youtube.com':
+          var regex = /v=([\w-]{11})/;
+          var video_id = parseUrl(videoURL).search.match(regex)[1];
+          pathToVideoThumb = 'http://img.youtube.com/vi/' + video_id + '/2.jpg';
+          addVideo (videoLink, pathToVideoThumb, 'youtube');
+        break;
+        case 'vimeo.com':
+          var video_id = parseUrl(videoURL).pathname.replace('/','');
+          $.getJSON('http://vimeo.com/api/v2/video/'+video_id+'.json?callback=?', {format: "json"}, function(data) {
+            pathToVideoThumb = data[0].thumbnail_medium;
+            addVideo (videoLink, pathToVideoThumb, 'vimeo');
+          });
+        break;
+      }
+    });
   
   script(type="text/javascript")
     $('input[id=inputFile]').change(function() {

@@ -21,10 +21,18 @@ MultimediaWidget.prototype.addValue = function(value) {
 };
 
 MultimediaWidget.prototype.removeValue = function(value) {
-  var index = this.multimediaPathList.indexOf(value);
+  index = -1;
+  for (key in this.multimediaPathList) {
+    if ( this.multimediaPathList[key].thumbnail == value ) {
+     index = key;
+     break;
+    }
+  }
+  var removedValue = this.multimediaPathList[index];
   if(index != -1) {
     this.multimediaPathList.splice(index,1);
   }
+  return removedValue;
 };
 
 // Получение значения виджета.

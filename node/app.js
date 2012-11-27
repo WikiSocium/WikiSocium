@@ -37,6 +37,8 @@ var models = require('./models')
     ,Texts
 var request = require('request');
 var crypto = require('crypto');
+var im = require('imagemagick');
+var url = require('url');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
 ;
@@ -1448,6 +1450,18 @@ function dirExistsSync (d) {
   catch (er) { return false }
 }
 
+function checkDirectoryExistsSync (d) {
+  if ( fileExistsSync(d) ) {
+    if ( !dirExistsSync(d) ) {
+      fs.unlinkSync(d);
+      fs.mkdirSync(d);
+    }
+  }
+  else {
+    fs.mkdirSync(d);
+  }
+}
+
 app.post('/fileUpload', loadUser, function(req, res) {
   // console.log(req.currentUser);
   // console.log(req.body);
@@ -1456,38 +1470,94 @@ app.post('/fileUpload', loadUser, function(req, res) {
   var publicDir = './public';
   var publicUploadsDir = publicDir + '/uploads/';
   var userUploadsDir = publicUploadsDir + req.currentUser.user_id;
+  var userThumbnailsDir = userUploadsDir + '/Thumbnails';
 
-  if ( fileExistsSync(userUploadsDir) ) {
-    if ( !dirExistsSync(userUploadsDir) ) {
-      fs.unlinkSync(userUploadsDir);
-      fs.mkdirSync(userUploadsDir);
-    }
-  }
-  else {
-    fs.mkdirSync(userUploadsDir);
-  }
+  checkDirectoryExistsSync (userUploadsDir);
+  checkDirectoryExistsSync (userThumbnailsDir);
 
   switch (req.body.queryType) {
     case 'upload':
       var uploadedFile = req.files.uploadingFile;
       var tmpPath = uploadedFile.path;
 
-      var targetDir = userUploadsDir;
+      var uploadPath = userUploadsDir + '/' + uploadedFile.name;
+      var publicUploadPath = uploadPath.replace(publicDir,'');
 
-      var targetPath = targetDir + '/' + uploadedFile.name;
-      var publicPath = targetPath.replace(publicDir,'');
+      var thumbnailPath = userThumbnailsDir + '/' + uploadedFile.name;
+      var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
 
       var response = {
-        'path' : publicPath,
-        'size' : uploadedFile.size
+        'path': publicUploadPath,
+        'thumbnail': publicThumbnailPath,
+        'size': uploadedFile.size
       }
 
-      fs.rename(tmpPath, targetPath, function(err) {
-        if (err) console.log(err);        
-        fs.unlink(tmpPath, function() {
-          if (!err) res.send(response);
-        });
+      fs.rename(tmpPath, uploadPath, function(err) {
+        if (err) console.log(err);
+        if (!err) {
+          fs.unlink(tmpPath, function() {
+            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+            function(err, stdout){
+              if (err) throw err;
+              res.send(response);
+            });
+          });
+        }
       });
+    break;
+    case 'link':
+
+      var file_url = req.body.url;
+      var file_name = url.parse(file_url).pathname.split('/').pop();
+
+      var uploadPath = userUploadsDir + '/' + file_name;
+      var publicUploadPath = uploadPath.replace(publicDir,'');
+
+      var thumbnailPath = userThumbnailsDir + '/' + file_name;
+      var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
+
+      var r = request(file_url);
+      r.pipe(fs.createWriteStream(uploadPath));
+
+      switch(req.body.downloadType) {
+        case 'file':
+          var response = {
+            'path': publicUploadPath
+          }
+          r.on('end', function() {
+            console.log(file_name + ' downloaded');
+            res.send(response);
+          });
+        break;
+        case 'picture':
+          var response = {
+            'path': publicUploadPath,
+            'thumbnail': publicThumbnailPath
+          }
+          r.on('end', function() {
+            console.log(file_name + ' downloaded');
+            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+            function(err, stdout){
+              if (err) throw err;
+              res.send(response);
+            });
+          });
+        break;
+        case 'thumbnail':
+          var response = {
+            'thumbnail': publicThumbnailPath
+          }
+          r.on('end', function() {
+            console.log(file_name + ' downloaded');
+            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+            function(err, stdout){
+              if (err) throw err;
+              fs.unlink(uploadPath);
+              res.send(response);
+            });
+          });
+        break;
+      }
     break;
     case 'delete':
       var fileToDelete = publicDir + req.body.path;
@@ -1503,9 +1573,7 @@ app.post('/fileUpload', loadUser, function(req, res) {
       }
       else res.send("You are trying to delete a file that is not yours. You are not right. Incident reported.")
     break;
-  }
-
-  
+  }  
 });
 
 app.register('.html', {
