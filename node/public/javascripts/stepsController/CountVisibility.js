@@ -128,8 +128,8 @@ function CheckPredicate(predicate)
         return false;
     }
 
-    //if(value instanceof Object)
-    //  value = value.value;
+    if(value instanceof Object && value.value != undefined)
+		value = value.value;
   
     switch(predicate.cond) 
     {
