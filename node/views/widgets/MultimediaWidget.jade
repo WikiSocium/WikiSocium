@@ -15,19 +15,20 @@ block content
     var initialWidgetValue = !{JSON.stringify(value)};
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
     function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
-      var thumbnailBlock = $('<div>').attr('id', id);
-      
+      var thumbnailBlock = $('<div>').attr('id', id);      
       var thumbnail = $('<a>').attr({
         href: ""+imageSrc,
         rel: "prettyPhoto[pp_gal]"
         });
       thumbnail.append('<img src="'+thumbnailSrc+'" />');
-
       thumbnailBlock.append(thumbnail);
-      thumbnailBlock.append('<br /><a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+thumbnailSrc+'\'); return false;">удалить</a>');
+      thumbnailBlock.append(
+        '<br /><a class="inpage_link" href="#" onclick="' + 
+        "removeValue('"+id+"','"+thumbnailSrc+"'); return false;" + 
+        '>удалить</a>'
+        );
       return thumbnailBlock;
     }
-
     function addNewValue(value) {
       var thumb_i;
       thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(value);
