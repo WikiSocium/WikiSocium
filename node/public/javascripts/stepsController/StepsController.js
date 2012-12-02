@@ -193,7 +193,7 @@ function FindNextStep(step_index)
                 }
                 else
                 {
-                    previousStepId = currentStepId;      
+                    previousStepId = currentStepId;
                     currentStepId = nextStepId;
                     ShowProperStep();
                     OnWidgetChanged();
