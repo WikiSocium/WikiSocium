@@ -35,10 +35,12 @@ var models = require('./models')
     ,Solution
     ,Organizations
     ,Texts
+var http = require('http');
 var request = require('request');
 var crypto = require('crypto');
 var im = require('imagemagick');
 var url = require('url');
+var mime = require('mime');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
 ;
@@ -70,7 +72,7 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
   app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
-  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
+  // app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -661,7 +663,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   ];
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
-                    'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
+                    // 'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
                     'http://yui.yahooapis.com/3.4.0/build/yui/yui.js',                    
                     'http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU',
                     '/inputex/src/loader.js',
@@ -689,13 +691,10 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                         scriptsToInject.push("/javascripts/customWidgets/WaitListWidget.js");                        
                     }
                     scriptsToInject.push("/javascripts/nicEdit.js");
-                    scriptsToInject.push("/markitup/sets/default/set.js");
                     scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/CheckBoxGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/YandexMapsWidget.js");
-                    stylesToInject.push("/markitup/sets/default/style.css");
                     stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
-                    stylesToInject.push("/markitup/skins/simple/style.css");
                     stylesToInject.push("/stylesheets/prettyPhoto.css");
                   }
                   fs.readFile('data/UserData/' + user_id + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
@@ -1463,9 +1462,25 @@ function checkDirectoryExistsSync (d) {
 }
 
 app.post('/fileUpload', loadUser, function(req, res) {
-  // console.log(req.currentUser);
-  // console.log(req.body);
-  // console.log(req.files);
+  function getUniqueFileName (uploadDir, srcFileName) {
+    var dstFileName = srcFileName;
+
+    if (srcFileName.split('.').length > 0) {
+      var filenameExtension = '.' + srcFileName.split('.').pop();
+    } else {
+      var filenameExtension = '';
+    }
+    var filenameName = srcFileName.replace(filenameExtension,'');
+
+    var uploadPath = uploadDir + '/' + dstFileName;
+    var k = 0;
+    while (fs.existsSync(uploadPath)) {    
+      dstFileName = filenameName+'-'+k+filenameExtension;
+      k+=1;
+      uploadPath = uploadDir + '/' + dstFileName;
+    }
+    return dstFileName;
+  }
 
   var publicDir = './public';
   var publicUploadsDir = publicDir + '/uploads/';
@@ -1480,10 +1495,13 @@ app.post('/fileUpload', loadUser, function(req, res) {
       var uploadedFile = req.files.uploadingFile;
       var tmpPath = uploadedFile.path;
 
-      var uploadPath = userUploadsDir + '/' + uploadedFile.name;
+      var fileName = uploadedFile.name;
+      fileName = getUniqueFileName(userUploadsDir, fileName);
+
+      var uploadPath = userUploadsDir + '/' + fileName;
       var publicUploadPath = uploadPath.replace(publicDir,'');
 
-      var thumbnailPath = userThumbnailsDir + '/' + uploadedFile.name;
+      var thumbnailPath = userThumbnailsDir + '/' + fileName;
       var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
 
       var response = {
@@ -1506,58 +1524,81 @@ app.post('/fileUpload', loadUser, function(req, res) {
       });
     break;
     case 'link':
+      var fileURL = req.body.url;
+      var fileName = url.parse(fileURL).pathname.split('/').pop();
+      if (fileName == '') {
+        fileName = 'file';
+      }
+      fileName = getUniqueFileName(userUploadsDir, fileName);
 
-      var file_url = req.body.url;
-      var file_name = url.parse(file_url).pathname.split('/').pop();
+      var uploadPath = userUploadsDir + '/' + fileName;
+      var thumbnailPath = userThumbnailsDir + '/' + fileName;
 
-      var uploadPath = userUploadsDir + '/' + file_name;
       var publicUploadPath = uploadPath.replace(publicDir,'');
-
-      var thumbnailPath = userThumbnailsDir + '/' + file_name;
       var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
 
-      var r = request(file_url);
-      r.pipe(fs.createWriteStream(uploadPath));
+      var fileWriteStream = fs.createWriteStream(uploadPath);
 
-      switch(req.body.downloadType) {
-        case 'file':
-          var response = {
-            'path': publicUploadPath
-          }
-          r.on('end', function() {
-            console.log(file_name + ' downloaded');
-            res.send(response);
-          });
-        break;
-        case 'picture':
-          var response = {
-            'path': publicUploadPath,
-            'thumbnail': publicThumbnailPath
-          }
-          r.on('end', function() {
-            console.log(file_name + ' downloaded');
-            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
-            function(err, stdout){
-              if (err) throw err;
-              res.send(response);
-            });
-          });
-        break;
-        case 'thumbnail':
-          var response = {
-            'thumbnail': publicThumbnailPath
-          }
-          r.on('end', function() {
-            console.log(file_name + ' downloaded');
-            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
-            function(err, stdout){
-              if (err) throw err;
-              fs.unlink(uploadPath);
-              res.send(response);
-            });
-          });
-        break;
-      }
+      http.get(fileURL, function(downloadResponse) {
+          downloadResponse.on('data', function(data) {
+              fileWriteStream.write(data);
+            }).on('error', function(e) {
+              fileWriteStream.end();
+              res.send({"error": e.message});
+            }).on('end', function() {
+              fileWriteStream.end();
+              console.log(fileName + ' downloaded to ' + userUploadsDir);
+
+              switch(req.body.downloadType) {
+                case 'file':
+                  var response = {
+                    'path': publicUploadPath,
+                    'error': ""
+                  }
+                  res.send(response);
+                break;
+                case 'picture':
+                  if ( mime.lookup(uploadPath).search("image") == -1 ) {
+                    fs.unlink(uploadPath);
+                    res.send({"error": "file_is_not_image"});
+                  }
+                  else {
+                    var response = {
+                      'path': publicUploadPath,
+                      'thumbnail': publicThumbnailPath,
+                      'error': ""
+                    }
+                    im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+                    function(err, stdout){
+                      if (err) throw err;
+                      res.send(response);
+                    });
+                  }
+                break;
+                case 'thumbnail':
+                  if ( mime.lookup(uploadPath).search("image") == -1 ) {
+                    fs.unlink(uploadPath);
+                    res.send({"error": "file_is_not_image"});
+                  }
+                  else {
+                    var response = {
+                      'thumbnail': publicUploadPath,
+                      'error': ""
+                    }
+                    im.convert([uploadPath, '-resize', '150x150', uploadPath], 
+                    function(err, stdout){
+                      if (err) throw err;
+                      res.send(response);
+                    });
+                  }
+                break;
+              }
+            }
+          );
+        }).on('error', function(e) {
+          fileWriteStream.end();
+          res.send({"error": e.message});
+      });
     break;
     case 'delete':
       var fileToDelete = publicDir + req.body.path;

@@ -1,12 +1,13 @@
 // Типа конструктор.
 function MultimediaWidget(value) {
+  alert(value);
   this.options = {};
   this.setOptions = function(param) {
       this.options = param;
       this.IsRequired = param.required;
   };
   if (typeof(value) == "undefined") {
-    this.multimediaPathList = "";
+    this.multimediaPathList = [];
   } else {
     this.multimediaPathList = value;
   }

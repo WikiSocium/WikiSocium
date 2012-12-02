@@ -1,7 +1,7 @@
 extends BaseWidget
 
 block content
-
+  - if (value == undefined) value = []
   
   mixin thumbnailElement(id, image, thumbnail)
     div(id=id) 
@@ -14,7 +14,7 @@ block content
   script(type="text/javascript")
     var initialWidgetValue = !{JSON.stringify(value)};
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
-
+    alert('test');
     function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
       var thumbnailBlock = $('<div>').attr('id', id);
       
@@ -41,6 +41,7 @@ block content
         sendRemoveFileQuery (removedValue.path, function() {
           sendRemoveFileQuery (removedValue.thumbnail, function() {          
             $('#'+thumb_id).remove();
+            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
           });
         });
       }
@@ -66,7 +67,7 @@ block content
       li
         a(href="#videoLinkForm", data-toggle="tab") Добавить видео
 
-    div.tab-content
+    div.tab-content#MultimediaForms
 
       div.tab-pane.active#uploadFotoForm
         div
@@ -85,15 +86,16 @@ block content
 
       div.tab-pane#videoLinkForm
         div
-          input#videoLink(type='text', placeholder='http://youtube.com/watch?v=9SnvyULfgdk')
+          input#videoLink(type='text', placeholder='http://www.youtube.com/watch?v=GF2FplBH3_0')
         div
           input#videoLinkSubmit.btn.btn-success(type='button', value='Добавить видео')
 
   div#UploadQueue
 
   div#multimediaWidgetThumbnails
-    - each pic, i in value
-      mixin thumbnailElement("thumb-"+i, pic.path, pic.thumbnail)
+    - if (value != undefined)
+      - each pic, i in value
+        mixin thumbnailElement("thumb-"+i, pic.path, pic.thumbnail)
 
 
 
@@ -140,13 +142,28 @@ block content
     $('#photoLinkSubmit').on('click', function() {
       requestFileDownload($('#photoLink').val(), 'picture', function(evt) {
         var response = JSON.parse(evt.target.responseText);
-        var value = {
-          'type': 'image',
-          'storage': 'local',
-          'path': response.path,
-          'thumbnail': response.thumbnail
+        if ( response.error == "" ) {
+          var value = {
+            'type': 'image',
+            'storage': 'local',
+            'path': response.path,
+            'thumbnail': response.thumbnail
+          }
+          addNewValue(value);
+          $('#photoLink').val('');
         }
-        addNewValue(value);
+        else {
+          var errorMessage = '';
+          switch(response.error) {
+            case 'file_is_not_image': errorMessage = 'Запрошенный файл не явлется изображением';
+            break;
+            case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
+            break;
+            default: errorMessage = response.error;
+          }
+          var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
+          $('#MultimediaForms').prepend(errorAlertBlock);
+        }
       });
     });
     $('#videoLinkSubmit').on('click', function() {
@@ -178,6 +195,7 @@ block content
           pathToVideoThumb = 'http://img.youtube.com/vi/' + video_id + '/2.jpg';
           addVideo (videoLink, pathToVideoThumb, 'youtube');
         break;
+        case 'youtube.com':
         case 'www.youtube.com':
           var regex = /v=([\w-]{11})/;
           var video_id = parseUrl(videoURL).search.match(regex)[1];

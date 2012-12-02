@@ -2,10 +2,9 @@
 
 .MultimediaWidget #addMultimediaForm {
   background: #fafafa;
-  float: left;
   margin-bottom: 20px;
   padding: 10px;
-  width: 50%;
+  width: 55%;
 }
 
 
@@ -13,8 +12,10 @@
   background: #fafafa;
   border: 1px #ccc solid;
   display: none;
-  margin-left: 55%;
+  float: right;
+  left: -15%;
   padding: 3px 6px;
+  position: relative;
   width: 25%;
 }
 
@@ -34,5 +35,4 @@
 }
 
 .MultimediaWidget #multimediaWidgetThumbnails {
-  clear: both;
 }
