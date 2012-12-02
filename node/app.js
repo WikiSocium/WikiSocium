@@ -686,7 +686,6 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                         scriptsToInject.push("/javascripts/customWidgets/WaitListWidget.js");                        
                     }
                     scriptsToInject.push("/javascripts/nicEdit.js");
-                    scriptsToInject.push("/markitup/sets/default/set.js");
                     scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/CheckBoxGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/YandexMapsWidget.js");
