@@ -35,8 +35,12 @@ var models = require('./models')
     ,Solution
     ,Organizations
     ,Texts
+var http = require('http');
 var request = require('request');
 var crypto = require('crypto');
+var im = require('imagemagick');
+var url = require('url');
+var mime = require('mime');
 //    ,Settings = { development: {}, test: {}, production: {} }
 //    ,emails
 ;
@@ -68,7 +72,7 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
   app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@cloud.wikisocium.ru/wikisocium-development');
-  //app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
+  // app.set('db-uri', 'mongodb://wikisocium-development-user:EiW5SW430d7576u@localhost/wikisocium-development');
 });
 
 app.configure('production', function(){
@@ -654,7 +658,9 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                 if(!err) 
                 {
                   var solutionData = JSON.parse(data);
-                  var stylesToInject = [];
+                  var stylesToInject = [
+                    '/stylesheets/widgets.css'
+                  ];
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
                     //'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
@@ -689,9 +695,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/CheckBoxGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/YandexMapsWidget.js");
-                    stylesToInject.push("/markitup/sets/default/style.css");
                     stylesToInject.push("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
-                    stylesToInject.push("/markitup/skins/simple/style.css");
                     stylesToInject.push("/stylesheets/prettyPhoto.css");
                   }
                   fs.readFile('data/UserData/' + user_id + '/cases/' + caseId + '.json', "utf-8", function(err, caseContentsJson) {
@@ -1438,21 +1442,181 @@ app.get('/social/:social_name', function(req, res) {
   }
 });
 
-app.post('/fileUpload', function(req, res) {
-  console.log(req.body);
-  console.log(req.files);
+function fileExistsSync (d) {
+  try { fs.statSync(d); return true }
+  catch (er) { return false }
+}
+function dirExistsSync (d) {
+  try { fs.statSync(d).isDirectory(); return true }
+  catch (er) { return false }
+}
 
-  var uploadedFile = req.files.uploadingFile;
-  var tmpPath = uploadedFile.path;
-  var targetPath = './uploads/' + uploadedFile.name;
+function checkDirectoryExistsSync (d) {
+  if ( fileExistsSync(d) ) {
+    if ( !dirExistsSync(d) ) {
+      fs.unlinkSync(d);
+      fs.mkdirSync(d);
+    }
+  }
+  else {
+    fs.mkdirSync(d);
+  }
+}
 
-  fs.rename(tmpPath, targetPath, function(err) {
-  if (err) throw err;
-  fs.unlink(tmpPath, function() {
-    if (err) throw err;
-      res.send('File Uploaded to ' + targetPath + ' - ' + uploadedFile.size + ' bytes');
-    });
-  });
+app.post('/fileUpload', loadUser, function(req, res) {
+  function getUniqueFileName (uploadDir, srcFileName) {
+    var dstFileName = srcFileName;
+
+    if (srcFileName.split('.').length > 0) {
+      var filenameExtension = '.' + srcFileName.split('.').pop();
+    } else {
+      var filenameExtension = '';
+    }
+    var filenameName = srcFileName.replace(filenameExtension,'');
+
+    var uploadPath = uploadDir + '/' + dstFileName;
+    var k = 0;
+    while (fs.existsSync(uploadPath)) {    
+      dstFileName = filenameName+'-'+k+filenameExtension;
+      k+=1;
+      uploadPath = uploadDir + '/' + dstFileName;
+    }
+    return dstFileName;
+  }
+
+  var publicDir = './public';
+  var publicUploadsDir = publicDir + '/uploads/';
+  var userUploadsDir = publicUploadsDir + req.currentUser.user_id;
+  var userThumbnailsDir = userUploadsDir + '/Thumbnails';
+
+  checkDirectoryExistsSync (userUploadsDir);
+  checkDirectoryExistsSync (userThumbnailsDir);
+
+  switch (req.body.queryType) {
+    case 'upload':
+      var uploadedFile = req.files.uploadingFile;
+      var tmpPath = uploadedFile.path;
+
+      var fileName = uploadedFile.name;
+      fileName = getUniqueFileName(userUploadsDir, fileName);
+
+      var uploadPath = userUploadsDir + '/' + fileName;
+      var publicUploadPath = uploadPath.replace(publicDir,'');
+
+      var thumbnailPath = userThumbnailsDir + '/' + fileName;
+      var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
+
+      var response = {
+        'path': publicUploadPath,
+        'thumbnail': publicThumbnailPath,
+        'size': uploadedFile.size
+      }
+
+      fs.rename(tmpPath, uploadPath, function(err) {
+        if (err) console.log(err);
+        if (!err) {
+          fs.unlink(tmpPath, function() {
+            im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+            function(err, stdout){
+              if (err) throw err;
+              res.send(response);
+            });
+          });
+        }
+      });
+    break;
+    case 'link':
+      var fileURL = req.body.url;
+      var fileName = url.parse(fileURL).pathname.split('/').pop();
+      if (fileName == '') {
+        fileName = 'file';
+      }
+      fileName = getUniqueFileName(userUploadsDir, fileName);
+
+      var uploadPath = userUploadsDir + '/' + fileName;
+      var thumbnailPath = userThumbnailsDir + '/' + fileName;
+
+      var publicUploadPath = uploadPath.replace(publicDir,'');
+      var publicThumbnailPath = thumbnailPath.replace(publicDir,'');
+
+      var fileWriteStream = fs.createWriteStream(uploadPath);
+
+      http.get(fileURL, function(downloadResponse) {
+          downloadResponse.on('data', function(data) {
+              fileWriteStream.write(data);
+            }).on('error', function(e) {
+              fileWriteStream.end();
+              res.send({"error": e.message});
+            }).on('end', function() {
+              fileWriteStream.end();
+              console.log(fileName + ' downloaded to ' + userUploadsDir);
+
+              switch(req.body.downloadType) {
+                case 'file':
+                  var response = {
+                    'path': publicUploadPath,
+                    'error': ""
+                  }
+                  res.send(response);
+                break;
+                case 'picture':
+                  if ( mime.lookup(uploadPath).search("image") == -1 ) {
+                    fs.unlink(uploadPath);
+                    res.send({"error": "file_is_not_image"});
+                  }
+                  else {
+                    var response = {
+                      'path': publicUploadPath,
+                      'thumbnail': publicThumbnailPath,
+                      'error': ""
+                    }
+                    im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
+                    function(err, stdout){
+                      if (err) throw err;
+                      res.send(response);
+                    });
+                  }
+                break;
+                case 'thumbnail':
+                  if ( mime.lookup(uploadPath).search("image") == -1 ) {
+                    fs.unlink(uploadPath);
+                    res.send({"error": "file_is_not_image"});
+                  }
+                  else {
+                    var response = {
+                      'thumbnail': publicUploadPath,
+                      'error': ""
+                    }
+                    im.convert([uploadPath, '-resize', '150x150', uploadPath], 
+                    function(err, stdout){
+                      if (err) throw err;
+                      res.send(response);
+                    });
+                  }
+                break;
+              }
+            }
+          );
+        }).on('error', function(e) {
+          fileWriteStream.end();
+          res.send({"error": e.message});
+      });
+    break;
+    case 'delete':
+      var fileToDelete = publicDir + req.body.path;
+      // Проверяем, что файл лежит в upload-директории текущего пользователя
+      if ( fileToDelete.search(userUploadsDir) != -1 ) {
+        if ( fileExistsSync(fileToDelete) && !fs.statSync(fileToDelete).isDirectory() ) {
+          fs.unlink(fileToDelete, function(err) {
+            if (err) console.log(err);
+            else res.send("Deleted successfully");
+          });
+        }
+        else res.send("File not found");
+      }
+      else res.send("You are trying to delete a file that is not yours. You are not right. Incident reported.")
+    break;
+  }  
 });
 
 app.register('.html', {

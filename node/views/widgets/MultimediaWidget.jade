@@ -1,0 +1,218 @@
+extends BaseWidget
+
+block content
+  - if (value == undefined) value = []
+  
+  mixin thumbnailElement(id, image, thumbnail)
+    div(id=id) 
+      a(href=image, rel="prettyPhoto[pp_gal]")
+        img(src=thumbnail)
+      br
+      a.inpage_link(href="#", onclick="removeValue('#{id}', '#{thumbnail}'); return false;") удалить
+
+  script(type='text/javascript', src='/javascripts/customWidgets/MultimediaWidget.js')
+  script(type="text/javascript")
+    var initialWidgetValue = !{JSON.stringify(value)};
+    step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
+    alert('test');
+    function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
+      var thumbnailBlock = $('<div>').attr('id', id);
+      
+      var thumbnail = $('<a>').attr({
+        href: ""+imageSrc,
+        rel: "prettyPhoto[pp_gal]"
+        });
+      thumbnail.append('<img src="'+thumbnailSrc+'" />');
+
+      thumbnailBlock.append(thumbnail);
+      thumbnailBlock.append('<br /><a class="inpage_link" href="#" onclick="removeValue(\''+id+'\',\''+thumbnailSrc+'\'); return false;">удалить</a>');
+      return thumbnailBlock;
+    }
+
+    function addNewValue(value) {
+      var thumb_i;
+      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(value);
+      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, value.path, value.thumbnail));
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+    }
+    function removeValue(thumb_id, path) {
+      var removedValue = step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
+      if ( removedValue.storage == 'local' ) {
+        sendRemoveFileQuery (removedValue.path, function() {
+          sendRemoveFileQuery (removedValue.thumbnail, function() {          
+            $('#'+thumb_id).remove();
+            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+          });
+        });
+      }
+      else {
+        sendRemoveFileQuery (removedValue.thumbnail, function() {          
+          $('#'+thumb_id).remove();
+        });
+      }
+    }
+    $(document).ready(function(){
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+    });
+  script(type="text/javascript", src="/javascripts/upload.js")
+
+
+  div#addMultimediaForm
+
+    ul.nav.nav-tabs#myTab
+      li.active
+        a(href="#uploadFotoForm", data-toggle="tab") Загрузить фотографию
+      li
+        a(href="#photoLinkForm", data-toggle="tab") Добавить ссылку на фотографию
+      li
+        a(href="#videoLinkForm", data-toggle="tab") Добавить видео
+
+    div.tab-content#MultimediaForms
+
+      div.tab-pane.active#uploadFotoForm
+        div
+          input#inputFile(type='file', style="display:none")
+        div.input-append
+          input#bootstrapFileForm.input-large(type="text")
+          a.btn(onclick="$('input[id=inputFile]').click();") Browse
+        div
+          input#uploadFotoSubmit.btn.btn-success(type='button', value='Добавить фотографию')
+
+      div.tab-pane#photoLinkForm
+        div
+          input#photoLink(type='text', placeholder='http://example.com/photo.jpg')
+        div
+          input#photoLinkSubmit.btn.btn-success(type='button', value='Добавить фотографию')
+
+      div.tab-pane#videoLinkForm
+        div
+          input#videoLink(type='text', placeholder='http://www.youtube.com/watch?v=GF2FplBH3_0')
+        div
+          input#videoLinkSubmit.btn.btn-success(type='button', value='Добавить видео')
+
+  div#UploadQueue
+
+  div#multimediaWidgetThumbnails
+    - if (value != undefined)
+      - each pic, i in value
+        mixin thumbnailElement("thumb-"+i, pic.path, pic.thumbnail)
+
+
+
+  script(type="text/javascript")
+    function uploadProgress(evt, progressBarId) {
+      if(evt.lengthComputable) {
+        var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+        $('#'+progressBarId).children('.bar').css("width", percentComplete.toString()+'%');
+        $('#'+progressBarId).children('.bar').text(percentComplete.toString()+' %');
+      } else {
+        $('#'+progressBarId).removeClass("progress-info");
+        $('#'+progressBarId).addClass("progress-danger");
+      }
+    }
+    function uploadComplete(evt, progressBarId) {
+      uploadProgress(evt, progressBarId);
+      var response = JSON.parse(evt.target.responseText);
+      $('#'+progressBarId).removeClass("progress-info");
+      $('#'+progressBarId).addClass("progress-success");
+      var value = {
+        'type': 'image',
+        'storage': 'local',
+        'path': response.path,
+        'thumbnail': response.thumbnail
+      }
+      addNewValue(value);
+    }
+    var progressBarCounter = 0;
+    var progressInitFunc = function(fileName) {
+      var progressBarId = "progress-bar-"+progressBarCounter;
+      progressBarCounter+=1;
+      var queueElemDiv = $('<div>').attr('class','queueElem');
+      var fileNameDiv = $('<div>').attr('class','fileName').text(fileName);
+      var progressBarDiv = $('<div>').attr({
+        id: ''+progressBarId,
+        class: "progress"
+      });
+      progressBarDiv.append($('<div>').attr('class','bar'));
+      $('#UploadQueue').append(queueElemDiv.append(fileNameDiv).append(progressBarDiv));
+      $('#UploadQueue').css('display', 'block');
+      return progressBarId;
+    };
+    JS_upload_handler("inputFile", "uploadFotoSubmit", "MultimediaWidget", progressInitFunc);
+    $('#photoLinkSubmit').on('click', function() {
+      requestFileDownload($('#photoLink').val(), 'picture', function(evt) {
+        var response = JSON.parse(evt.target.responseText);
+        if ( response.error == "" ) {
+          var value = {
+            'type': 'image',
+            'storage': 'local',
+            'path': response.path,
+            'thumbnail': response.thumbnail
+          }
+          addNewValue(value);
+          $('#photoLink').val('');
+        }
+        else {
+          var errorMessage = '';
+          switch(response.error) {
+            case 'file_is_not_image': errorMessage = 'Запрошенный файл не явлется изображением';
+            break;
+            case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
+            break;
+            default: errorMessage = response.error;
+          }
+          var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
+          $('#MultimediaForms').prepend(errorAlertBlock);
+        }
+      });
+    });
+    $('#videoLinkSubmit').on('click', function() {
+      var videoURL = $('#videoLink').val();
+      function parseUrl( url ) {
+        var a = document.createElement('a');
+        a.href = url;
+        return a;
+      }
+      function addVideo( videoLink, pathToVideoThumb, storage_id ) {
+        requestFileDownload(pathToVideoThumb, 'thumbnail', function(evt) {
+          var response = JSON.parse(evt.target.responseText);
+          var value = {
+            'type': 'video',
+            'storage': storage_id,
+            'path': videoLink,
+            'thumbnail': response.thumbnail
+          }
+          addNewValue(value);
+          $('#videoLink').val('');
+        });
+      }
+      var hoster = parseUrl(videoURL).hostname;
+      var videoLink = $('#videoLink').val();
+      var pathToVideoThumb;
+      switch (hoster) {
+        case 'youtu.be':
+          var video_id = parseUrl(videoURL).pathname.replace('/','');
+          pathToVideoThumb = 'http://img.youtube.com/vi/' + video_id + '/2.jpg';
+          addVideo (videoLink, pathToVideoThumb, 'youtube');
+        break;
+        case 'youtube.com':
+        case 'www.youtube.com':
+          var regex = /v=([\w-]{11})/;
+          var video_id = parseUrl(videoURL).search.match(regex)[1];
+          pathToVideoThumb = 'http://img.youtube.com/vi/' + video_id + '/2.jpg';
+          addVideo (videoLink, pathToVideoThumb, 'youtube');
+        break;
+        case 'vimeo.com':
+          var video_id = parseUrl(videoURL).pathname.replace('/','');
+          $.getJSON('http://vimeo.com/api/v2/video/'+video_id+'.json?callback=?', {format: "json"}, function(data) {
+            pathToVideoThumb = data[0].thumbnail_medium;
+            addVideo (videoLink, pathToVideoThumb, 'vimeo');
+          });
+        break;
+      }
+    });
+  
+  script(type="text/javascript")
+    $('input[id=inputFile]').change(function() {
+      $('input[id=bootstrapFileForm]').val($(this).val().replace("C:\\fakepath\\",""));
+    });
