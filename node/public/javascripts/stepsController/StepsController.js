@@ -1,7 +1,3 @@
-$.getScript('/javascripts/stepsController/CountVisibility.js');
-$.getScript('/javascripts/stepsController/SetWidgetValueForPredicatesOnStep.js');
-$.getScript('/javascripts/stepsController/WidgetHelpers.js');
-
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
 var userRegion = "";
