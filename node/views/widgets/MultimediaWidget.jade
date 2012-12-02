@@ -56,7 +56,6 @@ block content
     });
   script(type="text/javascript", src="/javascripts/upload.js")
 
-
   div#addMultimediaForm
 
     ul.nav.nav-tabs#myTab
@@ -71,7 +70,7 @@ block content
 
       div.tab-pane.active#uploadFotoForm
         div
-          input#inputFile(type='file', style="display:none")
+          input#inputFile(type='file', style="display:none", onchange="changeFileName(this)")
         div.input-append
           input#bootstrapFileForm.input-large(type="text")
           a.btn(onclick="$('input[id=inputFile]').click();") Browse
@@ -211,8 +210,15 @@ block content
         break;
       }
     });
-  
+
   script(type="text/javascript")
-    $('input[id=inputFile]').change(function() {
-      $('input[id=bootstrapFileForm]').val($(this).val().replace("C:\\fakepath\\",""));
-    });
+    // $('input[id=inputFile]').change(function() {
+    //   var val = $(this).val();
+    //   val = val.replace("C:\\fakepath\\","");
+    //   $('input[id=bootstrapFileForm]').val();
+    // });
+    function changeFileName(filename) {
+      var value = filename.value;//$(this).val();
+      value = val.replace("C:\\fakepath\\","");
+      $('input[id=bootstrapFileForm]').val(value);
+    }
