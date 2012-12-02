@@ -377,17 +377,20 @@ function HideInvisible(stepnum)
         {
             for (var j in solutionData.steps[tcs].widget_groups[i].widgets)
             {
+                /*
                 if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == undefined)
                     && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "MapsWidget"
                     && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "TimerFromDateWidget"
-                    && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "StaticTextWidget" )
+                    && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "StaticTextWidget"
+                    && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                 {
                     YUI().use('inputex', function(Y) 
                     {
                         window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
                     });
                 }
-
+                */
+                
                 $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
             }
         }
@@ -397,33 +400,39 @@ function HideInvisible(stepnum)
             {
                 if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible == false)
                 {
+                    /*
                     if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget"
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="TimerFromDateWidget"
-                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget")
+                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget"
+                    && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                     {
                         YUI().use('inputex', function(Y) 
                         {
                             window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: false});
                         });
                     }
-
+                    */
+                    
                     $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
                 }
                 else
                 {
+                    /*
                     if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="MapsWidget"
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="TimerFromDateWidget"
-                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="StaticTextWidget")
+                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="StaticTextWidget"
+                        && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                     {
                         YUI().use('inputex', function(Y) 
                         {
                             window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: true});
                         });
                     }
+                    */
 
-                   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
+                    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
                 }
             }
         }
@@ -432,24 +441,30 @@ function HideInvisible(stepnum)
     {
         if (solutionData.steps[tcs].widgets[i].visible == false)
         {
+            /*
             if ((solutionData.steps[tcs].widgets[i].IsRequired == true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
                 && solutionData.steps[tcs].widgets[i].widget_type != "MapsWidget"
                 && solutionData.steps[tcs].widgets[i].widget_type != "TimerFromDateWidget"
-                && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget")
+                && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget"
+                && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
             {
                 YUI().use('inputex', function(Y) 
                 {
                     window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
                 });
             }
+            */
+            
             $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").hide();
         }
         else
         {
+            /*
             if ((solutionData.steps[tcs].widgets[i].IsRequired == true || solutionData.steps[tcs].widgets[i].IsRequired == undefined)
             && solutionData.steps[tcs].widgets[i].widget_type != "MapsWidget"
             && solutionData.steps[tcs].widgets[i].widget_type != "TimerFromDateWidget"
-            && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget")
+            && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget"
+                && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
             {
                 YUI().use('inputex', function(Y) 
                 {
@@ -460,8 +475,9 @@ function HideInvisible(stepnum)
                     window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
                 });
             }
+            */
+            
             $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").show();
-
         }
     }
 }

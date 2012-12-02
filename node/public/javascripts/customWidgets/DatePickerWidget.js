@@ -15,7 +15,8 @@ function DatePickerWidget(element, parentEl, value)
       this.IsRequired = param.required;
   };  
   
-  // Валидация вроде не требуется, т.к. запрещено редактирование даты с клавиатуры.
+  // Валидация во время ввода.
+  // Валидация не требуется, т.к. запрещено редактирование даты с клавиатуры.
   /*
   $(this.element).valid8({
         'regularExpressions': [
@@ -41,23 +42,35 @@ function DatePickerWidget(element, parentEl, value)
     }
   }
   
-  
   $(this.element).val(value);
 };
 
 // Получение значения виджета.
+// Дата возвращается в формате UTC, то есть от московского времени отличается на 4 часа.
 DatePickerWidget.prototype.getValue = function()
 { 
   if($(this.element).val() == "")
     return "";
   
-  var dateString = $(this.element).datepicker("getDate").toGMTString();
+  var date = $(this.element).datepicker("getDate");
+  if(date == undefined)
+    return "";
+  
+  var dateString = date.toUTCString();
   
   return dateString;
+};
+
+// Значение виджета для вставки в документ.
+DatePickerWidget.prototype.getDocumentValue = function()
+{ 
+  var docValue = $(this.element).val();
+  return docValue;
 };
 
 // Валидация ввода.
 DatePickerWidget.prototype.validate = function()
 {
+  // Не требуется, т.к. запрещено редактирование даты с клавиатуры.
   return true;
 };
