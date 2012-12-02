@@ -70,7 +70,7 @@ block content
 
       div.tab-pane.active#uploadFotoForm
         div
-          input#inputFile(type='file', style="display:none", onchange="changeFileName(this)")
+          input#inputFile(type='file', style="display:none")
         div.input-append
           input#bootstrapFileForm.input-large(type="text")
           a.btn(onclick="$('input[id=inputFile]').click();") Browse
@@ -212,13 +212,8 @@ block content
     });
 
   script(type="text/javascript")
-    // $('input[id=inputFile]').change(function() {
-    //   var val = $(this).val();
-    //   val = val.replace("C:\\fakepath\\","");
-    //   $('input[id=bootstrapFileForm]').val();
-    // });
-    function changeFileName(filename) {
-      var value = filename.value;//$(this).val();
-      value = val.replace("C:\\fakepath\\","");
+    $('input[id=inputFile]').change(function() {
+      var value = $(this).val();
+      value = value.replace(unescape("C:%5Cfakepath%5C"),"");
       $('input[id=bootstrapFileForm]').val(value);
-    }
+    });
