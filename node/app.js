@@ -1546,6 +1546,7 @@ app.post('/fileUpload', loadUser, function(req, res) {
               fileWriteStream.write(data);
             }).on('error', function(e) {
               fileWriteStream.end();
+              fs.unlink(uploadPath);
               res.send({"error": e.message});
             }).on('end', function() {
               fileWriteStream.end();
@@ -1572,8 +1573,11 @@ app.post('/fileUpload', loadUser, function(req, res) {
                     }
                     im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
                     function(err, stdout){
-                      if (err) throw err;
-                      res.send(response);
+                      if (err) {
+                        fs.unlink(uploadPath);
+                        res.send({"error": "imagemagick_error"});
+                      }
+                      else res.send(response);
                     });
                   }
                 break;
@@ -1589,8 +1593,12 @@ app.post('/fileUpload', loadUser, function(req, res) {
                     }
                     im.convert([uploadPath, '-resize', '150x150', uploadPath], 
                     function(err, stdout){
-                      if (err) throw err;
-                      res.send(response);
+                      if (err) {
+                        fs.unlink(uploadPath);
+                        console.log(err);
+                        res.send({"error": "imagemagick_error"});
+                      }
+                      else res.send(response);
                     });
                   }
                 break;
@@ -1599,6 +1607,7 @@ app.post('/fileUpload', loadUser, function(req, res) {
           );
         }).on('error', function(e) {
           fileWriteStream.end();
+          fs.unlink(uploadPath);
           res.send({"error": e.message});
       });
     break;
