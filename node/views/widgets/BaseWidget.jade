@@ -1,4 +1,4 @@
-div(class="baseWidget", id="step_#{step_id}_widget_#{widget.id}_wrapper")
+div(class="baseWidget "+widget.widget_type, id="step_"+step_id+"_widget_"+widget.id+"_wrapper")
     - if (widget.label!=undefined)
         !=partial("InfoText", {InfoText:widget.label})
     block content
