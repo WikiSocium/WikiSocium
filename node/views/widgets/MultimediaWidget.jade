@@ -133,7 +133,6 @@ block content
       return progressBarId;
     };
     var photoLinkHandler = function() {
-      alert('test');
       requestFileDownload($('#photoLink').val(), 'picture', function(evt) {
         var response = JSON.parse(evt.target.responseText);
         if ( response.error == "" ) {
@@ -153,10 +152,18 @@ block content
             break;
             case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
             break;
+            case 'imagemagick_error': errorMessage = 'Не найден ImageMagick или не удалось изменить размер картинки';
+            break;
             default: errorMessage = response.error;
           }
           var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
-          $('#MultimediaForms').prepend(errorAlertBlock);
+          if ($('#!{widget.id}_error').length == 0) {
+            $('#MultimediaForms').prepend($('<div>').attr('id', '!{widget.id}_error'));
+            $('#!{widget.id}_error').html(errorAlertBlock);
+          }
+          else {
+            $('#!{widget.id}_error').html(errorAlertBlock);
+          }
         }
       });
     };
@@ -170,14 +177,34 @@ block content
       function addVideo( videoLink, pathToVideoThumb, storage_id ) {
         requestFileDownload(pathToVideoThumb, 'thumbnail', function(evt) {
           var response = JSON.parse(evt.target.responseText);
-          var value = {
-            'type': 'video',
-            'storage': storage_id,
-            'path': videoLink,
-            'thumbnail': response.thumbnail
+          if ( response.error == "" ) {
+            var value = {
+              'type': 'video',
+              'storage': storage_id,
+              'path': videoLink,
+              'thumbnail': response.thumbnail
+            }
+            addNewValue(value);
+            $('#videoLink').val('');
           }
-          addNewValue(value);
-          $('#videoLink').val('');
+          else {
+            var errorMessage = '';
+            switch(response.error) {
+              case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
+              break;
+              case 'imagemagick_error': errorMessage = 'Не найден ImageMagick или не удалось изменить размер картинки';
+              break;
+              default: errorMessage = response.error;
+            }
+            var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
+            if ($('#!{widget.id}_error').length == 0) {
+              $('#MultimediaForms').prepend($('<div>').attr('id', '!{widget.id}_error'));
+              $('#!{widget.id}_error').html(errorAlertBlock);
+            }
+            else {
+              $('#!{widget.id}_error').html(errorAlertBlock);
+            }
+          }
         });
       }
       var hoster = parseUrl(videoURL).hostname;
