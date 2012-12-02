@@ -14,7 +14,6 @@ block content
   script(type="text/javascript")
     var initialWidgetValue = !{JSON.stringify(value)};
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
-    alert('test');
     function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
       var thumbnailBlock = $('<div>').attr('id', id);
       

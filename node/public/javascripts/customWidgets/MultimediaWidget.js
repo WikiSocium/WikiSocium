@@ -1,6 +1,5 @@
 // Типа конструктор.
 function MultimediaWidget(value) {
-  alert(value);
   this.options = {};
   this.setOptions = function(param) {
       this.options = param;
