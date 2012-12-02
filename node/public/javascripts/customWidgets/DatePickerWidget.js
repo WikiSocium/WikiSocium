@@ -48,7 +48,9 @@ function DatePickerWidget(element, parentEl, value)
 // Получение значения виджета.
 DatePickerWidget.prototype.getValue = function()
 { 
-  // Для совместимости храним дату в формате GMT.
+  if($(this.element).val() == "")
+    return "";
+  
   var dateString = $(this.element).datepicker("getDate").toGMTString();
   
   return dateString;

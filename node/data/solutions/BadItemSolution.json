@@ -36,7 +36,7 @@
 							"label"  :
 							{
 							    "name": "Что купили?",
-							    "comment": "Например: мобильный телефон",
+							    "comment": "Например: Apple IPhone 4S",
 							    "description": ""
 							}
 						},
@@ -119,7 +119,7 @@
 							} 
 						},
 						{
-							"widget_type"	:	"TextFieldWidget",
+							"widget_type"	:	"DatePickerWidget",
 							"id"		:	"BuyDate",
 							"label"		:	"Дата покупки",
 							"type"		:	"date"		 
@@ -136,7 +136,7 @@
 			"widget_groups"	:
 			[
 				{
-					"title": "О продавце/производителе (TODO: информацию можно найти на упаковке товара или в договоре купли/продажи. Кому писать выбирайте с помощью Рекомендации по выбору адресата претензии)",
+					"title": "О продавце/производителе",
 					"widgets":
 					[
 						{
@@ -146,7 +146,7 @@
 							{	
 							    "name"        : "Название продавца/производителя",
 							    "comment"     : "например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов",
-							    "description" : ""
+							    "description" : "Информацию можно найти на упаковке товара или в договоре купли/продажи. Кому писать -  см. <iref dataId=\"Адресат претензии\" baseId=\"texts\"> Рекомендации по выбору адресата претензии</iref>"
 							}		
 						},
 						{
@@ -154,7 +154,7 @@
                                               		"id" : "SellerAddress",
                                               		"label" : "Адрес",
 							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
-                                              		"type" : "WSMaps"
+              "type" : "WSMaps"
 						}
 					]
 				},
@@ -243,7 +243,7 @@
 					]
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"DatePickerWidget",
 					"id"		:	"DeliveryDate",
 					"label"		:	"Дата доставки по договору",
 					"type"		:	"date",
@@ -342,7 +342,7 @@
 					]	
 				},
 				{
-				 "widget_type"	:	"TextFieldWidget",
+				 "widget_type"	:	"DatePickerWidget",
 					"id"		:	"ItemProblemsDate",
 					"label"		:	"Дата обнаружения недостатков",
 					"type"    : "date",
@@ -835,9 +835,13 @@
 					"organizations" : [],
 					"organizations_times" :  [],
 					"user_organizations" : [{"widget_id" : "SellerName",
-					                         "wait_time" : 7},
+					                         "wait_time" : 7,
+					                         "description" : {
+					                            "address" : "SellerAddress"
+					                         }},
+					                         
 					                         {"widget_id" : "ItemName",
-                         					                         "wait_time" : 17}]  
+                         					  "wait_time" : 17}]  
 				}
 			],
 			"next"		:	[ { "id" : "5" } ] 					
