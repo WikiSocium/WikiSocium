@@ -7,7 +7,7 @@ div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
   #{data.BuyDate} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
-  if data.IsItemDelivered && data.IsDeliveryCost.value == 1
+  if data.IsItemDelivered && data.IsDeliveryCost.value == 0
     , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
   Товар должен был быть доставлен мне #{data.DeliveryDate}, но 
   if data.IsItemDelivered && data.IsDeliveryProblems.value == 1
@@ -42,7 +42,7 @@ div
         DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
       }
       
-      //console.log(DeliveryBaseStr);
+      console.log(DeliveryBaseStr);
       
       if(#{data.IsDeliveryProblems.value} == 1)
       {
@@ -51,10 +51,10 @@ div
       else
       {
         var Current = new Date();
-        //console.log('#{data.DeliveryDate}');
-        var ToBe = new Date('#{data.DeliveryDate}','dd.mm.yyyy');
+        console.log(#{data.DeliveryDate.value});
+        var ToBe = new Date(#{data.DeliveryDate.value});
         //console.log(Current.toString());
-        //console.log(ToBe.toString());
+        console.log(ToBe.toString());
         
         var one_day=1000*60*60*24;
         DeliveryBase *= Math.floor((Current.getTime() - ToBe.getTime())/one_day);

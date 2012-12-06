@@ -7,7 +7,7 @@ block content
   </div>
   <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
   </div>
-  <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom(#documentView_#{widget.doc_name})">PDF</div>
+  <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom($('#documentView_#{widget.doc_name}'))">PDF</div>
   <input type="button" id="print_btn" value="Распечатать" id="print_btn"/>
   script(type="text/javascript")
     $("#print_btn").click(function()

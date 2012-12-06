@@ -16,9 +16,9 @@ block content
       {
           //- Пробуем распарсить переданное значение и создаём переменную, отвечающую за работу с виджетом.
           //- Сохраняем эту переменную в списке FieldList этого шага.
-          var jsonValue = !{JSON.stringify(value)};
-          var jsonInitial = !{JSON.stringify(widget.initial)};
-          if(typeof(jsonValue) == "undefined" || jsonValue == "")
+          var jsonValue = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
+          var jsonInitial = !{JSON.stringify(widget.initial) == null ? "undefined" : JSON.stringify(widget.initial)};
+          if(jsonValue == undefined)
             var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonInitial);    
           else
             var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonValue);    
@@ -31,10 +31,22 @@ block content
           var selectionChangedHandler = function(){
               //- $(this) - в данном случае объект, связанный с галочкой, по которой щёлкнул пользователь.
               var checkBoxVal = $(this).find(".CheckBoxGroupWidgetItem").attr("value");
+              var checkBoxLabel = $(this).find(".CheckBoxGroupWidgetItemLabel").text();
               var checked = $(this).find(".CheckBoxGroupWidgetItem").is(":checked");
               if(checked == true)
-                step#{step_id}FieldsList['#{widget.id}'].addValue(checkBoxVal);
+                step#{step_id}FieldsList['#{widget.id}'].addValue(checkBoxVal, checkBoxLabel);
               else step#{step_id}FieldsList['#{widget.id}'].removeValue(checkBoxVal);
+              
+              // Скрытие/отображение пункта "другое"
+              var otherValue = "other";
+              if(checkBoxVal == otherValue)
+              {
+                var otherTextArea = $(this).closest(".CheckBoxGroupWidgetItemContainer").find(".CheckBoxGroupWidgetOtherTextBox");
+                if(checked)
+                  otherTextArea.show();
+                else
+                  otherTextArea.hide();
+              }
               
               //- Обработчик изменения состояния виджета - для предикатов и т.п.
               OnWidgetChanged();
@@ -50,12 +62,11 @@ block content
           {
               //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
               var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", value_list[i].value);
-              //- Переменная, описывающая блок с текстом, соответствующем текстбоксу.
+              //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
               var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(value_list[i].label);
               
               //- Если галочка в списке выделенных - выделить её.
-              var index = wdgt.selection_list.indexOf(value_list[i].value);
-              if(index != -1)
+              if(wdgt.checkValue(value_list[i].value))
                 inpt.attr("checked", true);
               
               //- Контейнер с галочкой, текстом и обработчиком нажатия на галочку.
@@ -63,17 +74,51 @@ block content
               //- Контейнер добавляется на страницу.
               $("#CheckBoxGroupWidget_#{widget.id}").append(container);
           }
+          
+          //- Обработка поля "Другое"
+          
+          var widgetData = !{JSON.stringify(widget)};
+          var otherValue = "other";
+          var defaultOtherLabel = "";
+          if(widgetData.enableOther == "true")
+          {
+              if(widgetData.otherLabel != undefined)
+                var otherLabel = widgetData.otherLabel;
+              else var otherLabel = defaultOtherLabel;
+              
+              if(wdgt.otherText != undefined)
+                var otherText = wdgt.otherText;
+              else var otherText = "";
+          
+              //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
+              var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", otherValue);
+              //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
+              var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(otherLabel);
+              
+              //- Текстовое поле
+              var otherTextElement =  $("<textarea class='CheckBoxGroupWidgetOtherTextBox input-xlarge'/>").attr("value", otherText);
+              
+              //- Если галочка в списке выделенных - выделить её.
+              if(wdgt.checkValue(otherValue))
+              {
+                inpt.attr("checked", true);
+                otherTextElement.show();
+              }
+              else otherTextElement.hide();
+              
+              //- Обновить объект при изменении текста
+              otherTextElement.change(
+                function()
+                {
+                    wdgt.setOtherText($(this)[0].value);
+                })
+              
+              //- Контейнер добавляется на страницу.
+              var container = $("<div/>").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).append("<br/>").click(selectionChangedHandler);
+              container = container.append(otherTextElement).append("<br/>")
+              $("#CheckBoxGroupWidget_#{widget.id}").append(container);
+          }
       };
       
       //- Создать виджет.
       CheckBoxGroupWidgetBody_#{widget.id}();
-      
-      //- Если шаг, которому принадлежит виджет, в данный момент отображён (активен), то...
-      //-if($("#CheckBoxGroupWidget_#{widget.id}").closest(".step").is(":visible"))
-         //- Подождать 1000 милисекунд и запустить функцию. ЗАЧЕМ ЗАДЕРЖКА ??
-         //-setTimeout(function(){
-         //-       //- Создадим виджет (в т.ч. отрендерим его)
-         //-       CheckBoxGroupWidgetBody_#{widget.id}();
-         //-       //- Обработчик изменения состояния виджета - для предикатов и т.п.
-         //-       OnWidgetChanged();
-         //-   }, 1000);

@@ -30,6 +30,16 @@ a:hover, a:active, div.link:hover, div.link:active {
   text-decoration: none;
 }
 
+a.inpage_link:link, a.inpage_link:visited {
+  border-bottom: 1px dashed #34b0bf;
+  text-decoration: none;
+}
+
+a.inpage_link:hover, a.inpage_link:active {
+  border-bottom: 0;
+  text-decoration: none;
+}
+
 a.btn {
   text-decoration: none;
 }

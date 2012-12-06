@@ -73,7 +73,7 @@ function CountObjectVisibility(obj)
                 var massVisible = true;
                 for(var k in obj.isVisible.predicates[j])
                 {
-                    massVisible = CheckPredicate(obj.isVisible.predicates[j][k], massVisible);
+                    massVisible = CheckPredicateAndUpdateVisibility(obj.isVisible.predicates[j][k], massVisible);
                 }
                 
                 resultVisible = resultVisible || massVisible;
@@ -86,7 +86,7 @@ function CountObjectVisibility(obj)
             // Пройдём по массиву предикатов
             for (var k in obj.isVisible.predicates)
             {
-                resultVisible = CheckPredicate(obj.isVisible.predicates[k], resultVisible);
+                resultVisible = CheckPredicateAndUpdateVisibility(obj.isVisible.predicates[k], resultVisible);
             }
         }
         
@@ -94,7 +94,7 @@ function CountObjectVisibility(obj)
     }
 }
 
-function CheckPredicate(predicate, currentVisibility)
+function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
 {
     // Вычислим Id шага на котором находится виджет, значение которого задействовано в предикате
     var sourceStep = currentCaseData.GetStepIndexById(predicate.step_id);
@@ -106,7 +106,7 @@ function CheckPredicate(predicate, currentVisibility)
     }
     else // Иначе проверяем предикат. Предикаты объединены логической операцией И.
     {
-        currentVisibility = currentVisibility && CheckPredicate(predicate, sourceStep);
+        currentVisibility = currentVisibility && CheckPredicate(predicate);
     }
     
     return currentVisibility;

@@ -33,19 +33,22 @@
 			[
                 {
                     "widget_type" : "YandexMapsWidget",
-                    "id" : "ProblemAddress",
-                    "label" : "Адрес",
-                    "initial": {}
+                                            "id" : "ProblemAddress",
+                                            "label" : "Адрес",
+                    "initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
+                                            "type" : "WSMaps"
                 },
                 
                 {
-                    "widget_type"	:	"CheckBoxGroupWidget",
-                    "id"			:	"TypeOfProblem",
-                    "label"			:	"Претензии",
-                    "min_selection"	:	"2",
-                    "max_selection"	:	"5",
-                    "initial"		:	["2", "4"],
-                    "value_list"	:
+                    "widget_type"   :   "CheckBoxGroupWidget",
+                    "id"            :   "TypeOfProblem",
+                    "label"         :   "Претензии",
+                    "min_selection" :   "2",
+                    "max_selection" :   "5",
+                    "enableOther"   :   "true",
+                    "otherLabel"    :   "Другой вариант",
+                    "otherText"     :   "Разное прочее",
+                    "value_list"    :
                     [
                         {
                             "label"	:	"на стенах нанесены надписи",
@@ -108,29 +111,6 @@
                            "value": "14"
                         }
                     ]
-                },
-                {
-                    "widget_type"   :   "TextFieldWidget",
-                    "id"            :   "ProblemDescriptionTest",
-                    "label"         :   "Описание вашей проблемcы",
-                    "isVisible"     :
-                    {
-                        "predicates"	:
-                        [
-                            {
-                                "step_id"	:	"0",
-                                "widget_id"	:	"TypeOfProblem",
-                                "cond"		:	"has",
-                                "value"		:	"13"	
-                            },
-                            {
-                                "step_id"	:	"0",
-                                "widget_id"	:	"TypeOfProblem",
-                                "cond"		:	"has",
-                                "value"		:	"14"	
-                            }
-                        ]
-                    }	
                 },
                 {
                     "widget_type"   :   "TextFieldWidget",
