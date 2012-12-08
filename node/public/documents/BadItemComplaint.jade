@@ -51,13 +51,13 @@ div
       else
       {
         var Current = new Date();
-        console.log(#{data.DeliveryDate.UTC});
-        var ToBe = new Date(#{data.DeliveryDate.UTC});
+        //console.log(#{data.DeliveryDate.UTC});
+        //var ToBe = new Date();
         //console.log(Current.toString());
-        console.log(ToBe.toString());
+        //console.log(ToBe.toString());
         
         var one_day=1000*60*60*24;
-        DeliveryBase *= Math.floor((Current.getTime() - ToBe.getTime())/one_day);
+        DeliveryBase *= Math.floor((Current.getTime() - #{data.DeliveryDate.UTC})/one_day);
       }  
       //console.log(DeliveryBase);
 
