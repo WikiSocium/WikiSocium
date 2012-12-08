@@ -64,7 +64,13 @@ DatePickerWidget.prototype.getValue = function()
 // Значение виджета для вставки в документ.
 DatePickerWidget.prototype.getDocumentValue = function()
 { 
-  var docValue = $(this.element).val();
+  //var docValue = $(this.element).val();
+	var date = $(this.element).datepicker("getDate");
+  var DateUTC = null;
+	if(date != undefined)
+    DateUTC = Date.parse(date);
+  var docValue = {value:    $(this.element).val(),
+									UTC: DateUTC};
   return docValue;
 };
 

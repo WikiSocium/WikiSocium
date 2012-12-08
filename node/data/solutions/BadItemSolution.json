@@ -706,18 +706,34 @@
 					{
 						"predicates"	:
 						[
-							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsTechComplicated",
-								"cond"		:	"==",								
-								"value"		:	"0"
-							},
-							{
-								"step_id"	:	"3",
-								"widget_id"	:	"RequestsNonComplicated",
-								"cond"		:	"==",								
-								"value"		:	"2"
-							}
+							[
+								{
+									"step_id"	:	"0",
+									"widget_id"	:	"IsTechComplicated",
+									"cond"		:	"==",								
+									"value"		:	"0"
+								},
+								{
+									"step_id"	:	"3",
+									"widget_id"	:	"RequestsNonComplicated",
+									"cond"		:	"==",								
+									"value"		:	"2"
+								}
+							],
+							[
+								{
+									"step_id"	:	"0",
+									"widget_id"	:	"IsTechComplicated",
+									"cond"		:	"==",								
+									"value"		:	"1"
+								},
+								{
+									"step_id"	:	"3",
+									"widget_id"	:	"RequestsTechComplicated",
+									"cond"		:	"==",								
+									"value"		:	"2"
+								}
+							]
 						]
 					}
 				},
