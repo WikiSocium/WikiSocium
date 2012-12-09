@@ -35,8 +35,8 @@ function generate(html)
     curStr = Process(curStr, "<b[^>]*?>", "<\\/b>", "\\b ", "\\b0 ");
     curStr = Process(curStr, "<i[^>]*?>", "<\\/i>", "\\i ", "\\i0 ");
     
-    // Удалить html-комментарии
-    curStr = curStr.replace(/<!--[^>]*?-->/gi, "");
+    // Удалить оставшиеся теги, включая html-комментарии
+    curStr = curStr.replace(/<[^>]*?>/gi, "");
     
     // Обработать спецсимволы html
     curStr = curStr.replace(/&lt;/gi, "<");
