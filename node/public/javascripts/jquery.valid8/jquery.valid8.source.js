@@ -35,8 +35,8 @@
 				if(this.type == 'checkbox'){
 					defaultOptions.regularExpressions = [{expression: /^true$/, errormessage: defaultOptions.defaultErrorMessage}];
 					defaultOptions.validationEvents = ['click'];
-				} else
-					defaultOptions.regularExpressions = [{expression: /^.+$/, errormessage: defaultOptions.defaultErrorMessage}];
+				} //else 		//lomakin(20.12.2012): уберём проверку на пустое поле по умолчанию
+					//defaultOptions.regularExpressions = [{expression: /^.+$/, errormessage: defaultOptions.defaultErrorMessage}];
 				
 				$(this).data('settings', $.extend(defaultOptions, options));
 				

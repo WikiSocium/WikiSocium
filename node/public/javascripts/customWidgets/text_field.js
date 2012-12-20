@@ -9,15 +9,41 @@ function TextField(regexp, element, parentEl, value)
   {
       this.options = param;
       this.IsRequired = param.required;
-  };  
-  
-  $(this.element).valid8({
-        'regularExpressions': [
-        { expression: regexp, errormessage: 'Поле заполнено неверно!'}
-        ]
-  });
-  
+  };
+
   $(this.element).val(value);
+
+  // Страшная по синтаксису валидация через valid8 с помощью javascript-функции
+  $(this.element).valid8(
+    {
+      'jsFunctions':
+      [
+        {
+          function: function(values)
+          {
+            var regexp = this.values[0]; // рег. выражение
+            var value = values; // значение
+            var res = true;
+            if(regexp != undefined)
+              res = regexp.test(value);
+
+            if(res || value == undefined || value == '') // пустые строки игнорируются
+              return {valid:true}
+            else 
+              return {valid:false, message:'Поле заполнено неверно!'} // текст, выводящийся при ошибке
+          },
+          values:
+          [ 
+            regexp,
+            function()
+            {
+              return $(this).val();
+            }
+          ]
+        }
+      ]
+    }
+  );
 };
 
 TextField.prototype.getValue = function()
@@ -27,7 +53,9 @@ TextField.prototype.getValue = function()
 
 TextField.prototype.validate = function()
 {
-  var res = this.regexp.test($(this.element).val());
-  if(!res) $(this.parentEl).attr('class', 'baseWidget error');
+  var val = $(this.element).val();
+  var res = this.regexp.test(val) || val == '';
+  if(!res)
+    $(this.parentEl).attr('class', 'baseWidget error');
   return res;
 };
