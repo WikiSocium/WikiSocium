@@ -31,6 +31,7 @@ block content
       - else
         //- console.log(step)   
         !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], stepsData:caseData, step_index:i, sectionData:solutionData.sections})
+  div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
   div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
   div
     div(class="btn", id="prev_btn", onClick="PrevStep()") Предыдущий шаг

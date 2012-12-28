@@ -1,5 +1,57 @@
 // Здесь вспомогательные методы для работы с виджетами.
 
+// Рекурсивный поиск полей "step_id" и "widget_id" в объекте obj.
+// Запись результатов в nextPredicateWidgets.
+function SearchNextPredicateWidgets(obj, nextPredicateWidgets)
+{
+    if(obj != undefined && obj.widget_id != undefined)
+    {
+        var widget_id = obj.widget_id;
+        if(nextPredicateWidgets.widget_id.indexOf(widget_id) == -1)
+        {
+            nextPredicateWidgets.widget_id.push(widget_id);
+            if(obj.step_id != undefined)
+                nextPredicateWidgets.step_id.push(obj.step_id);
+            else 
+                nextPredicateWidgets.step_id.push(undefined);
+        }
+    }
+    
+    for (i in obj)
+    {
+        if (typeof(obj[i]) == "object")
+        {
+            SearchNextPredicateWidgets(obj[i], nextPredicateWidgets);
+        }
+    }
+}
+
+// Возвращает описание виджета из солюшена по id шага и id виджета.
+function GetWidgetById(solutionData, step_index, widget_id)
+{
+    var tcp = solutionData.steps[step_index];
+    
+    // Обработка групп виджетов
+    for (var i in tcp.widget_groups)
+    {
+        var group = tcp.widget_groups[i];
+        
+        for(var j in group.widgets)
+        {
+            if(group.widgets[i].id == widget_id)
+                return group.widgets[i];
+        }
+    }
+    
+    for(var i in tcp.widgets)
+    {
+        if(tcp.widgets[i].id == widget_id)
+            return tcp.widgets[i];
+    }
+    
+    return undefined;
+}
+
 // Возвращает значение виджета wid на шаге sn из solutionData.
 function GetWidgetValue(sn, wid)
 {
