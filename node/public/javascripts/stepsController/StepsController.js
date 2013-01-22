@@ -1,7 +1,3 @@
-$.getScript('/javascripts/stepsController/CountVisibility.js');
-$.getScript('/javascripts/stepsController/SetWidgetValueForPredicatesOnStep.js');
-$.getScript('/javascripts/stepsController/WidgetHelpers.js');
-
 YUI_config.groups.inputex.base = '../../inputex/build/';
 
 var userRegion = "";
@@ -136,32 +132,100 @@ function CollectFormData()
 
 function NextStep() 
 {
-  if ($("#next_btn").attr("disabled")!="disabled")
-  {
-      $("#validationFailedMessage").hide("fast"); 
-    
-      //Производим валидацию шага
-      
-      YUI().use('inputex', function(Y) 
-      {
-          step_index = currentCaseData.GetStepIndexById(currentStepId);
-          var isValid = true;
-          
-        for(var widg in groups[step_index])
+    if ($("#next_btn").attr("disabled")!="disabled")
+    {
+        //Производим валидацию шага
+
+        YUI().use('inputex', function(Y) 
         {
-            if(!groups[step_index][widg].validate()) 
+            step_index = currentCaseData.GetStepIndexById(currentStepId);
+            SetWidgetValueForPredicatesOnStep(step_index);
+
+            // Проверка введённых данных на пустые значения.
+            var emptyWidgetCount = 0;   // Кол-во виджетов, от которых зависит переход на след. шаг, но которые при этом не заполнены.
+            var emptyInputFailedMessage = "";
+            
+            // Поиск виджетов, от которых зависит переход на следующий шаг.
+            var nextInfo = solutionData.steps[step_index].next;
+            var nextPredicateWidgets = {"step_id" : [], "widget_id": []};
+            SearchNextPredicateWidgets(nextInfo, nextPredicateWidgets);
+
+            // Составление списка названий виджетов.
+            for (i in nextPredicateWidgets.step_id)
             {
-                isValid = false; break;
+                if(nextPredicateWidgets.step_id[i] != undefined)
+                    var nextPredicateWidgetsStepId = nextPredicateWidgets.step_id[i];
+                else var nextPredicateWidgetsStepId = step_index;
+                
+                //var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
+                var value = groups[nextPredicateWidgetsStepId][nextPredicateWidgets.widget_id[i]].getValue();
+
+                if(value instanceof Object && value.value != undefined)
+                    value = value.value;
+
+                if(value == undefined || (typeof(value) == "string" && value == ""))
+                {
+                    var widgetInfo = GetWidgetById(solutionData, nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i])
+                    if(widgetInfo != undefined)
+                    {
+                        var widgetName = widgetInfo.label;
+                        if(widgetName instanceof Object && widgetName.name != undefined)
+                            widgetName = widgetName.name;
+                        
+                        if(emptyWidgetCount == 0)
+                            emptyInputFailedMessage = "\"" + widgetName + "\"";
+                        else emptyInputFailedMessage = emptyInputFailedMessage + ", \"" + widgetName + "\"";
+                        
+                        emptyWidgetCount++;
+                    }
+                }
             }
-        }
-        if (isValid) FindNextStep(step_index);
-        else //Радуем пользователя сообщением о неправильном заполнении формы
-        {
-            $("#validationFailedMessage").show("slow");
-        }
-      });
-  }
-} 
+            
+            if(emptyWidgetCount > 0)
+            {
+                $("#emptyInputFailedMessage").text("");
+                
+                if(emptyWidgetCount == 1)
+                    $("#emptyInputFailedMessage").text("Для выбора следующего шага необходимо указать данные в полe " + emptyInputFailedMessage);
+                else $("#emptyInputFailedMessage").text("Для выбора следующего шага необходимо указать данные в полях: " + emptyInputFailedMessage);
+                
+                // Если сообщение уже не показано, покажем его.
+                if(!$("#emptyInputFailedMessage").is(":visible"))
+                    $("#emptyInputFailedMessage").show("slow");
+            }
+            else
+            {
+                $("#emptyInputFailedMessage").hide("fast");
+            }
+
+            // Проверка введённых данных на валидность.
+            var isValid = true;
+            for(var widg in groups[step_index])
+            {
+                if(!groups[step_index][widg].validate()) 
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            // Если всё ОК, ищем следующий шаг.
+            if (isValid)
+            {
+                $("#validationFailedMessage").hide("fast");
+                
+                // Если не заполнены поля, участвующие в расчёте предикатов перехода,
+                // то не будем искать следующий шаг.
+                if(emptyWidgetCount == 0)
+                    FindNextStep(step_index);
+            }
+            else // Иначе радуем пользователя сообщением о неправильном заполнении формы.
+            {
+                $("#validationFailedMessage").show("slow");
+            }
+        });
+    }
+}
 
 function FindNextStep(step_index)
 {
@@ -193,7 +257,7 @@ function FindNextStep(step_index)
                 }
                 else
                 {
-                    previousStepId = currentStepId;      
+                    previousStepId = currentStepId;
                     currentStepId = nextStepId;
                     ShowProperStep();
                     OnWidgetChanged();
@@ -342,7 +406,9 @@ function getPreviousStepId ( currentStepId )
 
 function PrevStep()
 {
-
+  $("#validationFailedMessage").hide("fast"); 
+  $("#emptyInputFailedMessage").hide("fast");
+        
   if ( checkStepExists ( getPreviousStepId ( currentStepId ) ) ) {
     previousStepId = getPreviousStepId ( currentStepId );
     currentStepId = previousStepId;
@@ -377,17 +443,20 @@ function HideInvisible(stepnum)
         {
             for (var j in solutionData.steps[tcs].widget_groups[i].widgets)
             {
+                /*
                 if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == undefined)
                     && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "MapsWidget"
                     && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "TimerFromDateWidget"
-                    && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "StaticTextWidget" )
+                    && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type != "StaticTextWidget"
+                    && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                 {
                     YUI().use('inputex', function(Y) 
                     {
                         window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
                     });
                 }
-
+                */
+                
                 $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
             }
         }
@@ -397,33 +466,39 @@ function HideInvisible(stepnum)
             {
                 if (solutionData.steps[tcs].widget_groups[i].widgets[j].visible == false)
                 {
+                    /*
                     if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired == true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="MapsWidget"
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="TimerFromDateWidget"
-                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget")
+                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type!="StaticTextWidget"
+                    && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                     {
                         YUI().use('inputex', function(Y) 
                         {
                             window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: false});
                         });
                     }
-
+                    */
+                    
                     $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").hide();
                 }
                 else
                 {
+                    /*
                     if ((solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==true || solutionData.steps[tcs].widget_groups[i].widgets[j].IsRequired==undefined)
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="MapsWidget"
                         && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="TimerFromDateWidget"
-                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="StaticTextWidget")
+                        && solutionData.steps[tcs].widget_groups[i].widgets[j].widget_type !="StaticTextWidget"
+                        && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
                     {
                         YUI().use('inputex', function(Y) 
                         {
                             window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widget_groups[i].widgets[j].id].setOptions({required: true});
                         });
                     }
+                    */
 
-                   $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
+                    $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widget_groups[i].widgets[j].id + "_wrapper").show();
                 }
             }
         }
@@ -432,24 +507,30 @@ function HideInvisible(stepnum)
     {
         if (solutionData.steps[tcs].widgets[i].visible == false)
         {
+            /*
             if ((solutionData.steps[tcs].widgets[i].IsRequired == true || solutionData.steps[tcs].widgets[i].IsRequired==undefined)
                 && solutionData.steps[tcs].widgets[i].widget_type != "MapsWidget"
                 && solutionData.steps[tcs].widgets[i].widget_type != "TimerFromDateWidget"
-                && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget")
+                && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget"
+                && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
             {
                 YUI().use('inputex', function(Y) 
                 {
                     window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: false});
                 });
             }
+            */
+            
             $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").hide();
         }
         else
         {
+            /*
             if ((solutionData.steps[tcs].widgets[i].IsRequired == true || solutionData.steps[tcs].widgets[i].IsRequired == undefined)
             && solutionData.steps[tcs].widgets[i].widget_type != "MapsWidget"
             && solutionData.steps[tcs].widgets[i].widget_type != "TimerFromDateWidget"
-            && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget")
+            && solutionData.steps[tcs].widgets[i].widget_type != "StaticTextWidget"
+                && solutionData.steps[tcs].widgets[i].widget_type != "HouseYardComplaintView")
             {
                 YUI().use('inputex', function(Y) 
                 {
@@ -460,8 +541,9 @@ function HideInvisible(stepnum)
                     window["step"+tcs+"FieldsList"][solutionData.steps[tcs].widgets[i].id].setOptions({required: true});
                 });
             }
+            */
+            
             $("#"+"step_"+tcs+"_widget_"+solutionData.steps[tcs].widgets[i].id + "_wrapper").show();
-
         }
     }
 }

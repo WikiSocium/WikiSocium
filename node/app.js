@@ -41,9 +41,8 @@ var crypto = require('crypto');
 var im = require('imagemagick');
 var url = require('url');
 var mime = require('mime');
-//    ,Settings = { development: {}, test: {}, production: {} }
-//    ,emails
-;
+var iconv = require('iconv-lite');
+var rtf = require('./rtf');
 
 var app = module.exports = express.createServer();
 
@@ -672,6 +671,9 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     '/javascripts/jquery.valid8/jquery.valid8.source.js',
                     '/javascripts/CaseDataController.js',
                     '/javascripts/stepsController/StepsController.js',
+                    '/javascripts/stepsController/CountVisibility.js',
+                    '/javascripts/stepsController/SetWidgetValueForPredicatesOnStep.js',
+                    '/javascripts/stepsController/WidgetHelpers.js',
                     '/javascripts/customWidgets/timer.js',
                     '/javascripts/runtime.min.js',
                     '/javascripts/jquery.watch-2.0.min.js',
@@ -1055,16 +1057,17 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
 	}; 
 });
 
+app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, res) {
+    var html = req.body.text;
+    var rtfText = rtf.generate(html);
+    var buffer = iconv.encode(rtfText, 'win1251');
 
-app.post('/OpenDocument', loadUser, generateMenu, getHeaderStats, function(req, res){
-    var text=req.body.text;
-    var html='<html><head><title>Документ</title><meta charset="utf-8"/></head><body><p>'+text+'</body></html>';
-    fs.writeFile('public/Doc.html', html, function (err) {
+    fs.writeFile('public/Claim.rtf', buffer, 'binary', function (err) {
         if (err) console.log(err);
     });
-    res.send('Doc.html');
+    
+    res.send('Claim.rtf');
 });
-
 
 // Users
 app.get('/users/new', loadUser, generateMenu, getHeaderStats, function(req, res) {
@@ -1546,6 +1549,7 @@ app.post('/fileUpload', loadUser, function(req, res) {
               fileWriteStream.write(data);
             }).on('error', function(e) {
               fileWriteStream.end();
+              fs.unlink(uploadPath);
               res.send({"error": e.message});
             }).on('end', function() {
               fileWriteStream.end();
@@ -1572,8 +1576,11 @@ app.post('/fileUpload', loadUser, function(req, res) {
                     }
                     im.convert([uploadPath, '-resize', '150x150', thumbnailPath], 
                     function(err, stdout){
-                      if (err) throw err;
-                      res.send(response);
+                      if (err) {
+                        fs.unlink(uploadPath);
+                        res.send({"error": "imagemagick_error"});
+                      }
+                      else res.send(response);
                     });
                   }
                 break;
@@ -1589,8 +1596,12 @@ app.post('/fileUpload', loadUser, function(req, res) {
                     }
                     im.convert([uploadPath, '-resize', '150x150', uploadPath], 
                     function(err, stdout){
-                      if (err) throw err;
-                      res.send(response);
+                      if (err) {
+                        fs.unlink(uploadPath);
+                        console.log(err);
+                        res.send({"error": "imagemagick_error"});
+                      }
+                      else res.send(response);
                     });
                   }
                 break;
@@ -1599,6 +1610,7 @@ app.post('/fileUpload', loadUser, function(req, res) {
           );
         }).on('error', function(e) {
           fileWriteStream.end();
+          fs.unlink(uploadPath);
           res.send({"error": e.message});
       });
     break;

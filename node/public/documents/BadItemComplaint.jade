@@ -6,10 +6,10 @@ div(align="right")
 div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
-  #{data.BuyDate} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
-  if data.IsItemDelivered && data.IsDeliveryCost.value == 1
+  #{data.BuyDate.value} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
+  if data.IsItemDelivered && data.IsDeliveryCost.value == 0
     , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
-  Товар должен был быть доставлен мне #{data.DeliveryDate}, но 
+  Товар должен был быть доставлен мне #{data.DeliveryDate.value}, но 
   if data.IsItemDelivered && data.IsDeliveryProblems.value == 1
     фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
   else if data.IsItemDelivered && data.IsDeliveryProblems.value == 0
@@ -18,7 +18,7 @@ div
 
 div
   if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value != 0
-    #{data.ItemProblemsDate} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
+    #{data.ItemProblemsDate.value} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
     if data.IsProblemsHealth
       Кроме того, мне был нанесён вред здоровью: #{data.ItemProblemsHealth}.
     if data.IsProblemsMoney
@@ -42,7 +42,7 @@ div
         DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
       }
       
-      //console.log(DeliveryBaseStr);
+      $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
       
       if(#{data.IsDeliveryProblems.value} == 1)
       {
@@ -51,17 +51,17 @@ div
       else
       {
         var Current = new Date();
-        //console.log('#{data.DeliveryDate}');
-        var ToBe = new Date('#{data.DeliveryDate}','dd.mm.yyyy');
+        //console.log(#{data.DeliveryDate.UTC});
+        //var ToBe = new Date();
         //console.log(Current.toString());
         //console.log(ToBe.toString());
         
         var one_day=1000*60*60*24;
-        DeliveryBase *= Math.floor((Current.getTime() - ToBe.getTime())/one_day);
+        DeliveryBase *= Math.floor((Current.getTime() - #{data.DeliveryDate.UTC})/one_day);
       }  
       //console.log(DeliveryBase);
 
-      DeliveryBaseStr = DeliveryBaseStr + Math.round(DeliveryBase*0.03) + ' руб.';  
+      DeliveryBaseStr = Math.round(DeliveryBase*0.03) + ' руб.';  
       $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
       
 if data.IsDeliveryProblems.value == 0
@@ -85,7 +85,6 @@ if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value == 1
 if data.IsDeliveryProblems.value != 0 && data.IsProblemsHealth == 1
   li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
        
-
 if data.IsDeliveryProblems.value != 0 && data.IsProblemsMoney == 1
   li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data.RequestDamage} руб.
    

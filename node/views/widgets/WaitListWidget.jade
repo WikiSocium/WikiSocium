@@ -8,7 +8,7 @@ block content
     var contentFunction = function()
     {
         $("#WaitList_#{widget.id}").children().remove();
-        var allWidgetsDataArgument = CollectFormData();//!{JSON.stringify(all_values)};
+        var allWidgetsDataArgument = CollectFormData();
         var widgetArgument = !{JSON.stringify(widget)};
         // for(var v in allWidgetsDataArgument)
             if(typeof(allWidgetsDataArgument[widgetArgument.doc_id]) != "undefined")

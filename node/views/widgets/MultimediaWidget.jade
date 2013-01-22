@@ -14,47 +14,6 @@ block content
   script(type="text/javascript")
     var initialWidgetValue = !{JSON.stringify(value)};
     step#{step_id}FieldsList['!{widget.id}'] = new MultimediaWidget(initialWidgetValue);
-    function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
-      var thumbnailBlock = $('<div>').attr('id', id);      
-      var thumbnail = $('<a>').attr({
-        href: ""+imageSrc,
-        rel: "prettyPhoto[pp_gal]"
-        });
-      thumbnail.append('<img src="'+thumbnailSrc+'" />');
-      thumbnailBlock.append(thumbnail);
-      thumbnailBlock.append(
-        '<br /><a class="inpage_link" href="#" onclick="' + 
-        "removeValue('"+id+"','"+thumbnailSrc+"'); return false;" + 
-        '">удалить</a>'
-        );
-      return thumbnailBlock;
-    }
-    function addNewValue(value) {
-      var thumb_i;
-      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(value);
-      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, value.path, value.thumbnail));
-      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
-    }
-    function removeValue(thumb_id, path) {
-      var removedValue = step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
-      if ( removedValue.storage == 'local' ) {
-        sendRemoveFileQuery (removedValue.path, function() {
-          sendRemoveFileQuery (removedValue.thumbnail, function() {          
-            $('#'+thumb_id).remove();
-            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
-          });
-        });
-      }
-      else {
-        sendRemoveFileQuery (removedValue.thumbnail, function() {          
-          $('#'+thumb_id).remove();
-        });
-      }
-    }
-    $(document).ready(function(){
-      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
-    });
-  script(type="text/javascript", src="/javascripts/upload.js")
 
   div#addMultimediaForm
 
@@ -96,9 +55,45 @@ block content
       - each pic, i in value
         mixin thumbnailElement("thumb-"+i, pic.path, pic.thumbnail)
 
-
-
+  script(type="text/javascript", src="/javascripts/upload.js")
   script(type="text/javascript")
+    function constructThumbnailElement(id, imageSrc, thumbnailSrc) {
+      var thumbnailBlock = $('<div>').attr('id', id);      
+      var thumbnail = $('<a>').attr({
+        href: ""+imageSrc,
+        rel: "prettyPhoto[pp_gal]"
+        });
+      thumbnail.append('<img src="'+thumbnailSrc+'" />');
+      thumbnailBlock.append(thumbnail);
+      thumbnailBlock.append(
+        '<br /><a class="inpage_link" href="#" onclick="' + 
+        "removeValue('"+id+"','"+thumbnailSrc+"'); return false;" + 
+        '">удалить</a>'
+        );
+      return thumbnailBlock;
+    }
+    function addNewValue(value) {
+      var thumb_i;
+      thumb_i = step#{step_id}FieldsList['!{widget.id}'].addValue(value);
+      $('#multimediaWidgetThumbnails').append(constructThumbnailElement('thumb-'+thumb_i, value.path, value.thumbnail));
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+    }
+    function removeValue(thumb_id, path) {
+      var removedValue = step#{step_id}FieldsList['!{widget.id}'].removeValue(path);
+      if ( removedValue.storage == 'local' ) {
+        sendRemoveFileQuery (removedValue.path, function() {
+          sendRemoveFileQuery (removedValue.thumbnail, function() {          
+            $('#'+thumb_id).remove();
+            $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+          });
+        });
+      }
+      else {
+        sendRemoveFileQuery (removedValue.thumbnail, function() {          
+          $('#'+thumb_id).remove();
+        });
+      }
+    }
     function uploadProgress(evt, progressBarId) {
       if(evt.lengthComputable) {
         var percentComplete = Math.round(evt.loaded * 100 / evt.total);
@@ -137,8 +132,7 @@ block content
       $('#UploadQueue').css('display', 'block');
       return progressBarId;
     };
-    JS_upload_handler("inputFile", "uploadFotoSubmit", "MultimediaWidget", progressInitFunc);
-    $('#photoLinkSubmit').on('click', function() {
+    var photoLinkHandler = function() {
       requestFileDownload($('#photoLink').val(), 'picture', function(evt) {
         var response = JSON.parse(evt.target.responseText);
         if ( response.error == "" ) {
@@ -158,14 +152,22 @@ block content
             break;
             case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
             break;
+            case 'imagemagick_error': errorMessage = 'Не найден ImageMagick или не удалось изменить размер картинки';
+            break;
             default: errorMessage = response.error;
           }
           var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
-          $('#MultimediaForms').prepend(errorAlertBlock);
+          if ($('#!{widget.id}_error').length == 0) {
+            $('#MultimediaForms').prepend($('<div>').attr('id', '!{widget.id}_error'));
+            $('#!{widget.id}_error').html(errorAlertBlock);
+          }
+          else {
+            $('#!{widget.id}_error').html(errorAlertBlock);
+          }
         }
       });
-    });
-    $('#videoLinkSubmit').on('click', function() {
+    };
+    var videoLinkHandler = function() {
       var videoURL = $('#videoLink').val();
       function parseUrl( url ) {
         var a = document.createElement('a');
@@ -175,14 +177,34 @@ block content
       function addVideo( videoLink, pathToVideoThumb, storage_id ) {
         requestFileDownload(pathToVideoThumb, 'thumbnail', function(evt) {
           var response = JSON.parse(evt.target.responseText);
-          var value = {
-            'type': 'video',
-            'storage': storage_id,
-            'path': videoLink,
-            'thumbnail': response.thumbnail
+          if ( response.error == "" ) {
+            var value = {
+              'type': 'video',
+              'storage': storage_id,
+              'path': videoLink,
+              'thumbnail': response.thumbnail
+            }
+            addNewValue(value);
+            $('#videoLink').val('');
           }
-          addNewValue(value);
-          $('#videoLink').val('');
+          else {
+            var errorMessage = '';
+            switch(response.error) {
+              case 'getaddrinfo ENOENT': errorMessage = 'Запрошенный сервер не отвечает';
+              break;
+              case 'imagemagick_error': errorMessage = 'Не найден ImageMagick или не удалось изменить размер картинки';
+              break;
+              default: errorMessage = response.error;
+            }
+            var errorAlertBlock = $('<div class="alert alert-block alert-error"><button type="button" class="close" data-dismiss="alert">×</button><h4>Ошибка!</h4>'+errorMessage+'</div>');
+            if ($('#!{widget.id}_error').length == 0) {
+              $('#MultimediaForms').prepend($('<div>').attr('id', '!{widget.id}_error'));
+              $('#!{widget.id}_error').html(errorAlertBlock);
+            }
+            else {
+              $('#!{widget.id}_error').html(errorAlertBlock);
+            }
+          }
         });
       }
       var hoster = parseUrl(videoURL).hostname;
@@ -209,11 +231,15 @@ block content
           });
         break;
       }
-    });
-
-  script(type="text/javascript")
-    $('input[id=inputFile]').change(function() {
-      var value = $(this).val();
-      value = value.replace(unescape("C:%5Cfakepath%5C"),"");
-      $('input[id=bootstrapFileForm]').val(value);
+    };
+    $(document).ready(function(){
+      $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:''});
+      JS_upload_handler("inputFile", "uploadFotoSubmit", "MultimediaWidget", progressInitFunc);
+      $('#photoLinkSubmit').on('click', photoLinkHandler);
+      $('#videoLinkSubmit').on('click', videoLinkHandler);
+      $('input[id=inputFile]').change(function() {
+        var value = $(this).val();
+        value = value.replace(unescape("C:%5Cfakepath%5C"),"");
+        $('input[id=bootstrapFileForm]').val(value);
+      });
     });
