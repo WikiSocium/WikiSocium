@@ -22,7 +22,11 @@ block content
                     var cDate = new Date();
                     var left = Math.ceil((cDate.getTime() - bDate.getTime()) / one_day - 1);
                     var interval = orgData.interval;
-                    $("#WaitList_#{widget.id}").append($("<div/>").text(i + " : осталось ждать " + (parseInt(interval)-parseInt(left)) + " дней"));
+                    
+                    var recTimer = $('<div/>').addClass("documentOrganizationTimerResponseReceived");
+                    var orgTimer = $('<div/>').addClass("documentOrganizationTimerActivated");
+                    
+                    $("#WaitList_#{widget.id}").append($("<div/>").css({"display":"inline-block"}).text(i + " : осталось ждать " + (parseInt(interval)-parseInt(left)) + " дней")).append(recTimer).append(orgTimer);
                 }
                 if(anyTimers == 0)
                     $("#WaitList_#{widget.id}").append($("<div/>").addClass("waitListNoTimersError").text("Чтобы идти дальше, нужно отправить документ хоть куда-нибудь!"));

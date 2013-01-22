@@ -81,9 +81,15 @@ block content
                   var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[k] + " дней)"));
                   var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
                   if(typeof(savedValue[title]) != "undefined")
+                  {
+                      // var recTimer = $('<div/>').attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimerResponseReceived");
                       var orgTimer = $('<div/>').attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimerActivated");
+                  }
                   else
+                  {
+                      // var recTimer = $('<div/>');
                       var orgTimer = $("<div/>").attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimer");
+                  }
                   $(orgTimer).click(function(){
                       if($(this).hasClass("documentOrganizationTimer"))
                       {
