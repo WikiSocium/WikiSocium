@@ -1,57 +1,23 @@
 extends layout
 
 block content
-  .row.sortlinks
-    .span11.offsethalf
-      Сортировать по: 
-      a(href="#") названию дела
-      | | 
-      a(href="#") дате создания
-      | | 
-      a(href="#") дате обновления
+  script(type='text/javascript')
+    function dynamicSort(property) { 
+      return function (a,b) {
+        return (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+      }
+    }
+    function sortList(property, direction) {
+      userCasesList.sort(dynamicSort(property));
+      if (direction == 'desc') userCasesList.reverse();
+      $('#userCasesList').html(casesListTamplate({'userCasesList':userCasesList, 'sort':property, 'direction':direction}));
+    }
+    var userCasesList = !{JSON.stringify(userCasesList)};
+    var casesListTamplate =!{casesListTamplate};
+    $(document).ready(function() {
+      userCasesList.sort(dynamicSort("updateDate"));
+      userCasesList.reverse();
+      $('#userCasesList').html(casesListTamplate({'userCasesList':userCasesList, 'sort':"updateDate", 'direction':"desc"}));
+    });
 
-  mixin formatDate(date)
-    - date = new Date(date);
-    - var d = date.getDate(); if (d < 10) d = '0'+d;
-    - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
-    - var y = date.getFullYear();
-    |#{d + '.' + m + '.' + y}
-      
-  - each aCase in userData.cases
-    - if (aCase.state == 'active')
-      hr
-      .row.user-case-list-item
-        .span8.offsethalf
-          p.status
-            a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} > #{aCase.stepName} (#{aCase.stepInSection}/#{aCase.sectionLength})
-          p(style="margin-top: 15px;")
-            - if ( aCase.problemName != undefined)
-              a(href="/Problems/" + aCase.problemName.replace(/ /g,"_")) #{aCase.problemName}
-              |: 
-            |#{aCase.caseId} 
-            - if ( aCase.createDate != undefined)
-              |(создано 
-              mixin formatDate(aCase.createDate)
-              |)
-          .row(style="margin-bottom: 25px; margin-top: 25px;")
-            .span3
-              p.stat-figures
-               img(src="/images/solved.png")
-               span.mainStatValue.to-var 6
-               img(src="/images/inprocess.png")
-               span.mainStatValue.to-var 15
-               img(src="/images/notsolved.png")
-               span.mainStatValue.to-var 8
-            .span4
-              a(href="#"): span.to-var ЖКХ
-              |, 
-              a(href="#"): span.to-var Защита прав потребителей
-          p.todo
-            img(src="/images/status-icon-info.png")
-            span.to-var Осталось ждать 2 дня
-              
-        .span2.offset1
-          - if ( aCase.updateDate != undefined)
-            p.updated
-              |обновлено 
-              mixin formatDate(aCase.updateDate)
+  #userCasesList
