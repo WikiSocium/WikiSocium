@@ -1,7 +1,7 @@
 {
 	"id"		:	"BadService",
 	"name"		:	"Составление претензии по некачественной услуге",
-	"description"	:	"<P>Представленное решение поможет быстро и правильно составить претензию, подсказывая, что и как Вы имеете право требовать. Но даже если придётся судиться, не расстраивайтесь: суды стоят на стороне пострадавших потребителей, главное - научиться правильно отстаивать свои интересы. <BR><BR> Пожалуйста, убедитесь в том, что не истёк срок предъявления Вашей претензии. Претензии по качеству работы/услуги можно предъявлять: <OL> <LI> В течение гарантийного срока, если он установлен и доведён до Вашего сведения; </LI> <LI>Если его нет, то в пределах 2 лет с момента принятия Вами работы (услуги), или 5 лет для недвижимости </LI> </OL> Помните, что при покупке товара через Интернет, по почте, посредством каталогов и иным дистанционным способом сроки исчисляются с момента доставки товара Вам.</P>",	
+	"description"	:	"<P>Представленное решение поможет быстро и правильно составить претензию, подсказывая, что и как Вы имеете право требовать. Но даже если придётся судиться, не расстраивайтесь: суды стоят на стороне пострадавших потребителей, главное - научиться правильно отстаивать свои интересы. <BR><BR> Пожалуйста, убедитесь в том, что не истёк срок предъявления Вашей претензии. Претензии по качеству работы/услуги можно предъявлять: <OL> <LI> В течение гарантийного срока, если он установлен и доведён до Вашего сведения; </LI> <LI>Если его нет, то в пределах 2 лет с момента принятия Вами работы (услуги), или 5 лет для недвижимости </LI> </OL> </P>",	
 	"data"		:
 	{
 		"documents"	: ["BadServiceComplaint"]		
@@ -29,7 +29,6 @@
 						{
 							"widget_type"	:	"TextFieldWidget",
 							"id"		:	"ServiceName",
-							"IsRequired"    : "true",
 							"label"		:	
 							{
 							  "name"  : "Что Вы заказывали?", 
@@ -39,13 +38,13 @@
 						},
 						
 						{
-							"widget_type"	:	"TextFieldWidget",
+							"widget_type"	:	"NumberTextFieldWidget",
 							"id"		:	"ServicePrice",
 							"label"		:	"Полная стоимость услуги, руб.",
 							"type"		:	"number" 
 						},
 						{
-							"widget_type"	:	"TextFieldWidget",
+							"widget_type"	:	"DatePickerWidget",
 							"id"		:	"BuyDate",
 							"label"		:	"Дата заключения договора об оказании услуг",
 							"type"		:	"date"		 
@@ -72,15 +71,15 @@
 							{	
 							    "name"        : "Название исполнителя",
 							    "comment"     : "например, ООО \"Начало\" , ЗАО \"Движение\"  или ИП В.Н. Иванов",
-							    "description" : ""
+							    "description" : "Информацию можно найти в договоре на оказание услуг, чеке, квитанции"
 							}		
 						},
 						{
-							"widget_type" : "MapsWidget",
+							"widget_type" : "YandexMapsWidget",
                                               		"id" : "SellerAddress",
                                               		"label" : "Адрес",
 							"initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
-                                              		"type" : "WSMaps"
+							"type" : "WSMaps"
 						}
 					]
 				},
@@ -89,7 +88,7 @@
 					"widgets":
 					[
 						{
-							"widget_type"	:	"TextFieldWidget",
+							"widget_type"	:	"FullNameTextFieldWidget",
 							"id"		      :	"UserName",
 							"label"       :  
 							{	
@@ -99,22 +98,19 @@
 							}		
 						},
 						{
-							"widget_type" : "MapsWidget",
-              "id"          : "UserAddress",
-              "IsRequired"  : false,
+							"widget_type" : "YandexMapsWidget",
+							"id"          : "UserAddress",
 							"label"       :  
 							{	
 							    "name"        : "Ваш домашний адрес",
-							    "comment"     : "Мы сохраняем Вашу конфиденциальную информацию втайне, но Вы можете не заполнять это поле - тогда позже надо будет внести эти данные в документы вручную",
+							    "comment"     : "Мы сохраняем Вашу конфиденциальную информацию втайне. Более того, Вы можете не заполнять это поле - тогда позже надо будет внести эти данные в документы вручную",
 							    "description" : ""
 							},
-							"initial"     : {"lat": "55.690725", "lng": "37.413179", "address": ""},
-              "type"        : "WSMaps"
+							"initial"     : {"lat": "55.690725", "lng": "37.413179", "address": ""}
 						}
 					]		
 				}
 			],
-			
 			"next"		: [{ "id": "1"}]					
 		},
 		{
@@ -145,7 +141,7 @@
 					]
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"DatePickerWidget",
 					"id"		:	"WorkFinishedDate",
 					"label"		:	"Дата завершения работ по договору",
 					"type"		:	"date",
@@ -163,7 +159,7 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"DeliveryDelayDays",
 					"label"		:	"На сколько дней опоздали с завершением работ?",
 					"type"		:	"number",
@@ -233,7 +229,7 @@
 					]	
 				},
 				{
-				 "widget_type"	:	"TextFieldWidget",
+				 "widget_type"	:	"DatePickerWidget",
 					"id"		:	"ServiceProblemsDate",
 					"label"		:	"Дата обнаружения недостатков",
 					"type"    : "date",
@@ -401,7 +397,7 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"RequestsNewServiceDate",
 					"label"		:	"Новый срок завершения работ",
 					"isVisible"	:
@@ -489,10 +485,9 @@
 					}		
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"PriceDiscountMoney",
 					"label"		:	"На сколько, Вы считаете, нужно снизить цену работы (руб.)?",
-					"type"		:	"number",
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -507,10 +502,9 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"SelfRepairMoney",
-					"label"		:	"Размер ущерба из-за возмещения недостатков своими силами",
-					"type"		:	"number",
+					"label"		:	"Укажите размер ущерба из-за возмещения недостатков своими силами (руб.)",
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -525,10 +519,9 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"RequestHealthProblems",						
 					"label"		:	"Во сколько Вы оцениваете вред, нанесённый Вашему здоровью (руб.)?",
-					"type"		:	"number",
 					"isVisible"	:
 					{
 						"predicates"	:
@@ -543,10 +536,9 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"NumberTextFieldWidget",
 					"id"		:	"RequestDamage",
 					"label"		:	"Во сколько Вы оцениваете ущерб из-за недостатков исполнения работ (руб.)?",
-					"type"		:	"number",
 					"isVisible"	:
 					{
 						"predicates"	:

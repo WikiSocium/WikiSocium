@@ -7,17 +7,16 @@ div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
   #{data.BuyDate.value} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
-  if data.IsItemDelivered && data.IsDeliveryCost.value == 0
-    , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
-  Товар должен был быть доставлен мне #{data.DeliveryDate.value}, но 
-  if data.IsItemDelivered && data.IsDeliveryProblems.value == 1
-    фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
-  else if data.IsItemDelivered && data.IsDeliveryProblems.value == 0
-    до настоящего времени доставлен не был.  
-         
-
+  if data.IsItemDelivered
+    if data.IsDeliveryCost.value == 0
+      , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
+    Товар должен был быть доставлен мне #{data.DeliveryDate.value}, но 
+    if data.IsDeliveryProblems.value == 1
+      фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
+    else if data.IsDeliveryProblems.value == 0
+      до настоящего времени доставлен не был.  
 div
-  if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value != 0
+  if data.IsItemProblems.value != 0
     #{data.ItemProblemsDate.value} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
     if data.IsProblemsHealth
       Кроме того, мне был нанесён вред здоровью: #{data.ItemProblemsHealth}.
@@ -64,15 +63,17 @@ div
       DeliveryBaseStr = Math.round(DeliveryBase*0.03) + ' руб.';  
       $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
       
-if data.IsDeliveryProblems.value == 0
+if data.IsItemDelivered && data.IsDeliveryProblems.value == 0
   if data.RequestsNotDelivered.value == 0
     li #{data.RequestsNotDelivered.label} &#58; #{data.RequestsNewDeliveryDate}
   else
     li #{data.RequestsNotDelivered.label}
 
-if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value == 1
+if (data.IsItemDelivered == 0 || data.IsDeliveryProblems.value != 0) && data.IsItemProblems.value == 1
   if data.IsTechComplicated            
     li #{data.RequestsTechComplicated.label}
+    if data.RequestsTechComplicated.value==2
+      . Прошу заменить товар с недостатками на  #{data.SubstituteItemName}.
   else
     li #{data.RequestsNonComplicated.label}    
       if data.RequestsNonComplicated.value == 3
@@ -82,10 +83,10 @@ if data.IsDeliveryProblems.value != 0 && data.IsItemProblems.value == 1
       else if data.RequestsNonComplicated.value == 2
         . Прошу заменить товар с недостатками на  #{data.SubstituteItemName}.  
         
-if data.IsDeliveryProblems.value != 0 && data.IsProblemsHealth == 1
+if (data.IsItemDelivered == 0 || data.IsDeliveryProblems.value != 0) && data.IsProblemsHealth == 1
   li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
        
-if data.IsDeliveryProblems.value != 0 && data.IsProblemsMoney == 1
+if (data.IsItemDelivered == 0 || data.IsDeliveryProblems.value != 0) && data.IsProblemsMoney == 1
   li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data.RequestDamage} руб.
    
 
