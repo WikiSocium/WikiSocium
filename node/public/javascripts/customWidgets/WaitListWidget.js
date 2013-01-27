@@ -9,18 +9,15 @@ function WaitListWidget(value)
   {
       this.options = param;
       this.IsRequired = param.required;
+      console.log(param);
   };  
   
-  // if(typeof(value) != "undefined" && typeof(value) != "string")
-  //     this.timersValues = value;
-  // else
-  //     this.timersValues = {};
+  this.passable = value;
 };
 
 WaitListWidget.prototype.getValue = function()
 {
-  // return this.timersValues;
-  return "not passable";
+  return this.passable;
 };
 
 WaitListWidget.prototype.validate = function()

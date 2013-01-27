@@ -212,32 +212,7 @@
                     ]
                 }
             ]
-            },
-        {           
-            "id"         : "5",
-            "title"      : "Тут нужно сделать виджет WaitList",     
-            "type"       : "time",    
-            "widget_groups": 
-            [
-                  {
-                        "widgets": 
-                        [
-                              {
-                                "widget_type" : "TimerFromDateWidget",
-                                "id" : "timer2",
-                                "initial": 
-                                {
-                                  "startDate": "0",
-                                  "pauseDate": "0",
-                                  "workingPeriod": {"days": "2", "hours": "0", "leftover": "0"},
-                                  "state": "stopped"
-                                } 
-                              }
-                        ]
-                  }
-            ],
-            "next" : [{"id":"6"}]
-        },
+        },        
         {           
             "id"         : "6",
             "title"      : "Все удалось?",     
