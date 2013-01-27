@@ -217,31 +217,6 @@
         },
         {           
             "id"         : "5",
-            "title"      : "Тут нужно сделать виджет WaitList",     
-            "type"       : "time",    
-            "widget_groups": 
-            [
-                {
-                    "widgets": 
-                    [
-                          {
-                            "widget_type" : "TimerFromDateWidget",
-                            "id" : "timer2",
-                            "initial": 
-                            {
-                              "startDate": "0",
-                              "pauseDate": "0",
-                              "workingPeriod": {"days": "2", "hours": "0", "leftover": "0"},
-                              "state": "stopped"
-                            } 
-                          }
-                    ]
-                }
-            ],
-            "next" : [{"id":"6"}]
-        },
-        {           
-            "id"         : "6",
             "title"      : "Все удалось?",     
             "type"       : "general_data", 
             "widget_groups": 
@@ -263,7 +238,7 @@
                     ]
                 }
             ],
-            "next" : [{ "id" : "7",
+            "next" : [{ "id" : "6",
                               "predicates":
                               [
                                   {
@@ -273,7 +248,7 @@
                                   }
                               ]
                             },
-                            { "id" : "8",
+                            { "id" : "6",
                               "predicates":
                               [
                                   {
@@ -285,7 +260,7 @@
                             }]
         },
         {           
-            "id"         : "7",
+            "id"         : "6",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
             "next" : [{
@@ -306,7 +281,7 @@
             ]
         },
         {           
-            "id"         : "8",
+            "id"         : "7",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
             "next" : [{
