@@ -12,13 +12,13 @@
     
     "initialStep" :"0",
     
-    "sections"	:
-	[
-		{
-			"name": "Описываем ситуацию",
-			"steps": ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
-		}
-	],
+    "sections"    :
+    [
+        {
+            "name": "Описываем ситуацию",
+            "steps": ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+        }
+    ],
     
     "steps"       :
     [
@@ -28,68 +28,70 @@
             "type"       : "general_data",
             "widget_groups": 
             [
-                  {
+                {
                         "title": "Первая группа",
                         "widgets":
                         [
-                              {
-                                  "widget_type" : "RegionsListWidget",
-                                  "id" : "UserRegion",
-                                  "InfoText" : {"name" : "Регион",
-                                                "comment" : "Выберите ваш регион",
-                                                "description" : "Выберите <b>ВАШ</b> регион!"}
-                              },                        
-                              {
-                                    "widget_type" : "DatePickerWidget",
-                                    "id" : "date",
-                                    "label" : "Дата нарушения",
-                                    "type" : "string"
-                              },
-                              {
-                                    "widget_type" : "FullNameTextFieldWidget",
-                                    "id" : "fullname",
-                                    "label" : "ФИО",
-                                    "type" : "string"
-                              },
-                              {
-                                    "widget_type" : "TimeTextFieldWidget",
-                                    "id" : "time",
-                                    "label" : "Время нарушения",
-                                    "type" : "string"
-                              }                              
-                        ]
-                  },
-                  {
-                        "title": "Вторая группа",
-                        "widgets":
-                        [
                             {
-                                "widget_type" : "CarNumberTextFieldWidget",
-                                "id" : "car_id",
-                                "label" : "ГРН автомобиля-нарушителя",
-                                "type" : "string"
-                            },
-                            {       
-                                "widget_type" : "YandexMapsWidget",
-                                "id" : "place",
-                                "label" : "Адрес нарушения",
-                                "initial": {}
+                                "widget_type": "RegionsListWidget",
+                                "id": "UserRegion",
+                                "label": {
+                                    "name": "Регион",
+                                    "comment": "Выберите ваш регион",
+                                    "description": "Выберите <b>ВАШ</b> регион!"
+                                }
+                            },                        
+                            {
+                                  "widget_type" : "DatePickerWidget",
+                                  "id" : "date",
+                                  "label" : "Дата нарушения",
+                                  "type" : "string"
                             },
                             {
-                                "widget_type" : "ListWidget",
-                                "label": "Тип правонарушения",
-                                "id": "violation_type",
-                                "initial": "red",
-                                "value_list":
-                                [
-                                    { "value": "red", "label": "проезд на красный" },
-                                    { "value": "lines", "label": "выезд на полосу встречного движения" },
-                                    { "value": "rules", "label": "неподчинение правилам разметки" },
-                                    { "value": "parking", "label": "нарушение правил парковки" }                              
-                                ]
-                            }
+                                  "widget_type" : "FullNameTextFieldWidget",
+                                  "id" : "fullname",
+                                  "label" : "ФИО",
+                                  "type" : "string"
+                            },
+                            {
+                                  "widget_type" : "TimeTextFieldWidget",
+                                  "id" : "time",
+                                  "label" : "Время нарушения",
+                                  "type" : "string"
+                            }                              
                         ]
-                  }
+                },
+                {
+                    "title": "Вторая группа",
+                    "widgets":
+                    [
+                        {
+                            "widget_type" : "CarNumberTextFieldWidget",
+                            "id": "car_id",
+                            "label" : "ГРН автомобиля-нарушителя",
+                            "type" : "string"
+                        },
+                        {       
+                            "widget_type" : "YandexMapsWidget",
+                            "id" : "place",
+                            "label" : "Адрес нарушения",
+                            "initial": {}
+                        },
+                        {
+                            "widget_type" : "ListWidget",
+                            "label": "Тип правонарушения",
+                            "id": "violation_type",
+                            "initial": "red",
+                            "value_list":
+                            [
+                                { "value": "red", "label": "проезд на красный" },
+                                { "value": "lines", "label": "выезд на полосу встречного движения" },
+                                { "value": "rules", "label": "неподчинение правилам разметки" },
+                                { "value": "parking", "label": "нарушение правил парковки" }                              
+                            ]
+                        }
+                    ]
+                }
             ],
             "next" : [ { "id" : "1" } ]        
         },
@@ -99,40 +101,40 @@
             "type"       : "selection",
             "widget_groups": 
             [
-                  {
-                        "widgets": 
-                        [
-                            {
-                                "widget_type" : "RadioGroupWidget",
-                                "id": "radio",
-                                "label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
-                                "initial": "witness",
-                                "value_list": 
+                {
+                      "widgets": 
+                      [
+                          {
+                              "widget_type" : "RadioGroupWidget",
+                              "id": "radio",
+                              "label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
+                              "initial": "witness",
+                              "value_list": 
+                                  [
+                                      { "value": "witness", "label": "я являюсь непосредственным свидетелем" },
+                                      { "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
+                                  ]
+                          },
+                          {
+                              "widget_type" : "TextAreaWidget",
+                              "id": "source",
+                              "label": "Опишите из каких источников вы узнали о проавонарушении, укажите ссылки на интернет-ресурсы.",
+                              "type" : "string",
+                              "isVisible" :
+                                {
+                                    "predicates" :
                                     [
-                                        { "value": "witness", "label": "я являюсь непосредственным свидетелем" },
-                                        { "value": "notwitness", "label": "я узнал о правонарушении из открытых источников" }
+                                        {
+                                            "step_id" : "1",
+                                            "widget_id": "radio",
+                                            "cond" : "==",
+                                            "value" : "notwitness"
+                                        }
                                     ]
-                            },
-                            {
-                                "widget_type" : "TextAreaWidget",
-                                "id": "source",
-                                "label": "Опишите из каких источников вы узнали о проавонарушении, укажите ссылки на интернет-ресурсы.",
-                                "type" : "string",
-                                "isVisible" :
-    							{
-    							    "predicates" :
-    							    [
-    							        {
-    							            "step_id" : "1",
-    							            "widget_id": "radio",
-    							            "cond" : "==",
-    							            "value" : "notwitness"
-    							        }
-    							    ]
-    						    }
-                            }                            
-                        ]
-                  }
+                                }
+                          }                            
+                      ]
+                }
             ],
             "next" : [{ "id" : "2" }]             
         },
@@ -160,21 +162,21 @@
             "type"       : "statement",    
             "widget_groups": 
             [
-                  {
-                        "widgets": 
-                            [
-                                {
-                                    "id" : "violation_doc",
-                                    "widget_type" : "DocumentViewWidget",
-                                    "InfoText" : {"name" : "Заявление",
-                                                  "comment" : "Отправка заявления",
-                                                  "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
-                                    "doc_name" : "ViolationStatement",
-                                    "organizations" : ["ГИБДД", "Главы регионов"],
-                                    "organizations_times" : [30, 10]
-                                }
-                            ]
-                  }
+                {
+                    "widgets": 
+                        [
+                            {
+                                "id" : "violation_doc",
+                                "widget_type" : "DocumentViewWidget",
+                                "label" : {"name" : "Заявление",
+                                              "comment" : "Отправка заявления",
+                                              "description" : "Вся информация для составления заявления готова. нажмите кнопочку, чтобы сгенерировать его. Сохраните его, оно понадобится на следующем шаге."},                                    
+                                "doc_name" : "ViolationStatement",
+                                "organizations" : ["ГИБДД", "Главы регионов"],
+                                "organizations_times" : [30, 10]
+                            }
+                        ]
+                }
             ],
             "next" : [{ "id" : "4" }]
         },
@@ -184,16 +186,16 @@
             "type"       : "offline_action",
             "widget_groups": 
             [
-                  {
-                        "widgets": 
-                        [
-                            {
-                                "id" : "violation_doc_waitlist",
-                                "widget_type" : "WaitListWidget",
-                                "doc_id" : "violation_doc"
-                            }
-                        ]
-                  }
+                {
+                    "widgets": 
+                    [
+                        {
+                            "id" : "violation_doc_waitlist",
+                            "widget_type" : "WaitListWidget",
+                            "doc_id" : "violation_doc"
+                        }
+                    ]
+                }
             ],
             "next" : [
                 { 
@@ -212,56 +214,31 @@
                     ]
                 }
             ]
-            },
-        {           
-            "id"         : "5",
-            "title"      : "Тут нужно сделать виджет WaitList",     
-            "type"       : "time",    
-            "widget_groups": 
-            [
-                  {
-                        "widgets": 
-                        [
-                              {
-                                "widget_type" : "TimerFromDateWidget",
-                                "id" : "timer2",
-                                "initial": 
-                                {
-                                  "startDate": "0",
-                                  "pauseDate": "0",
-                                  "workingPeriod": {"days": "2", "hours": "0", "leftover": "0"},
-                                  "state": "stopped"
-                                } 
-                              }
-                        ]
-                  }
-            ],
-            "next" : [{"id":"6"}]
         },
         {           
-            "id"         : "6",
+            "id"         : "5",
             "title"      : "Все удалось?",     
             "type"       : "general_data", 
             "widget_groups": 
             [
-                  {
-                        "widgets": 
-                        [
-                                {
-                                    "widget_type" : "RadioGroupWidget",
-                                                                    "label" : "Все получилось, злодеи наказаны?",
-                                                                        "id" : "radio_end",
-                                                                        "initial" : "yes",
-                                                                        "value_list":
-                                                                                            [
-                                                                                                { "value": "yes", "label": "Да" },
-                                                                                                { "value": "no", "label": "Нет" }                       
-                                                                                            ]
-                                                                }                           
-                        ]
-                  }
+                {
+                    "widgets": 
+                    [
+                        {
+                            "widget_type" : "RadioGroupWidget",
+                                                            "label" : "Все получилось, злодеи наказаны?",
+                                                                "id" : "radio_end",
+                                                                "initial" : "yes",
+                                                                "value_list":
+                                                                                    [
+                                                                                        { "value": "yes", "label": "Да" },
+                                                                                        { "value": "no", "label": "Нет" }                       
+                                                                                    ]
+                                                        }                           
+                    ]
+                }
             ],
-            "next" : [{ "id" : "7",
+            "next" : [{ "id" : "6",
                               "predicates":
                               [
                                   {
@@ -271,7 +248,7 @@
                                   }
                               ]
                             },
-                            { "id" : "8",
+                            { "id" : "6",
                               "predicates":
                               [
                                   {
@@ -283,7 +260,7 @@
                             }]
         },
         {           
-            "id"         : "7",
+            "id"         : "6",
             "title"      : "Поздравляем!",     
             "type"       : "ok_end",
             "next" : [{
@@ -304,7 +281,7 @@
             ]
         },
         {           
-            "id"         : "8",
+            "id"         : "7",
             "title"      : "Увы и ах, нужно подавать заявление в прокуратуру.",     
             "type"       : "not_ok_end",
             "next" : [{

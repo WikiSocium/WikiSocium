@@ -74,6 +74,8 @@
     margin-right: 5px;
 }
 
+.documentOrganizationTimerResponseReceived,
+.documentOrganizationTimerNoResponse,
 .documentOrganizationTimerActivated,
 .documentOrganizationTimer
 {
@@ -92,6 +94,15 @@
 .documentOrganizationTimerActivated
 {
     background-color: green;
+}
+
+.documentOrganizationTimerNoResponse,
+.documentOrganizationTimerResponseReceived,
+.documentOrganizationTimerResponseReallyReceived,
+.documentOrganizationTimerResponseNotReallyReceived
+{
+  width: auto;
+  margin: 5px;
 }
     
 .documentOrganizationsRecordDescription
