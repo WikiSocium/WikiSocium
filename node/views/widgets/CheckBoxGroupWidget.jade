@@ -1,21 +1,21 @@
-//- На входе:
-//- widget - данные о виджете из SolutionData (widget_type, id, label, value_list)
-//- step.id - идентификатор шага
-//- value - значение виджета
+//- РќР° РІС…РѕРґРµ:
+//- widget - РґР°РЅРЅС‹Рµ Рѕ РІРёРґР¶РµС‚Рµ РёР· SolutionData (widget_type, id, label, value_list)
+//- step.id - РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С€Р°РіР°
+//- value - Р·РЅР°С‡РµРЅРёРµ РІРёРґР¶РµС‚Р°
 
 extends BaseWidget
 
-//- Создание jade-блока (он не рендерится в html? => это не обязательно?)
+//- РЎРѕР·РґР°РЅРёРµ jade-Р±Р»РѕРєР° (РѕРЅ РЅРµ СЂРµРЅРґРµСЂРёС‚СЃСЏ РІ html? => СЌС‚Рѕ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ?)
 block content
-  //- Создаётся пустой блок с уникальным в рамках шага именем. К нему средствами jQuery будут приклеиваться остальные элементы разметки.
+  //- РЎРѕР·РґР°С‘С‚СЃСЏ РїСѓСЃС‚РѕР№ Р±Р»РѕРє СЃ СѓРЅРёРєР°Р»СЊРЅС‹Рј РІ СЂР°РјРєР°С… С€Р°РіР° РёРјРµРЅРµРј. Рљ РЅРµРјСѓ СЃСЂРµРґСЃС‚РІР°РјРё jQuery Р±СѓРґСѓС‚ РїСЂРёРєР»РµРёРІР°С‚СЊСЃСЏ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ СЂР°Р·РјРµС‚РєРё.
   <div id="CheckBoxGroupWidget_#{widget.id}">
   </div>
   script(type="text/javascript")
-      //- Создаём функцию, создающую виджет.
+      //- РЎРѕР·РґР°С‘Рј С„СѓРЅРєС†РёСЋ, СЃРѕР·РґР°СЋС‰СѓСЋ РІРёРґР¶РµС‚.
       var CheckBoxGroupWidgetBody_#{widget.id} = function()
       {
-          //- Пробуем распарсить переданное значение и создаём переменную, отвечающую за работу с виджетом.
-          //- Сохраняем эту переменную в списке FieldList этого шага.
+          //- РџСЂРѕР±СѓРµРј СЂР°СЃРїР°СЂСЃРёС‚СЊ РїРµСЂРµРґР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Рё СЃРѕР·РґР°С‘Рј РїРµСЂРµРјРµРЅРЅСѓСЋ, РѕС‚РІРµС‡Р°СЋС‰СѓСЋ Р·Р° СЂР°Р±РѕС‚Сѓ СЃ РІРёРґР¶РµС‚РѕРј.
+          //- РЎРѕС…СЂР°РЅСЏРµРј СЌС‚Сѓ РїРµСЂРµРјРµРЅРЅСѓСЋ РІ СЃРїРёСЃРєРµ FieldList СЌС‚РѕРіРѕ С€Р°РіР°.
           var jsonValue = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
           var jsonInitial = !{JSON.stringify(widget.initial) == null ? "undefined" : JSON.stringify(widget.initial)};
           if(jsonValue == undefined)
@@ -23,13 +23,13 @@ block content
           else
             var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonValue);    
           
-          //- Указываем виджету минимальное и максимальное разрешённое количество галочек.
+          //- РЈРєР°Р·С‹РІР°РµРј РІРёРґР¶РµС‚Сѓ РјРёРЅРёРјР°Р»СЊРЅРѕРµ Рё РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°Р·СЂРµС€С‘РЅРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РіР°Р»РѕС‡РµРє.
           wdgt.minSelection = (!{JSON.stringify(widget.min_selection)});
           wdgt.maxSelection = (!{JSON.stringify(widget.max_selection)});
             
-          //- Функция-обработчик, вызываемая при изменении значения виджета (щелчку по галочке)
+          //- Р¤СѓРЅРєС†РёСЏ-РѕР±СЂР°Р±РѕС‚С‡РёРє, РІС‹Р·С‹РІР°РµРјР°СЏ РїСЂРё РёР·РјРµРЅРµРЅРёРё Р·РЅР°С‡РµРЅРёСЏ РІРёРґР¶РµС‚Р° (С‰РµР»С‡РєСѓ РїРѕ РіР°Р»РѕС‡РєРµ)
           var selectionChangedHandler = function(){
-              //- $(this) - в данном случае объект, связанный с галочкой, по которой щёлкнул пользователь.
+              //- $(this) - РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ РѕР±СЉРµРєС‚, СЃРІСЏР·Р°РЅРЅС‹Р№ СЃ РіР°Р»РѕС‡РєРѕР№, РїРѕ РєРѕС‚РѕСЂРѕР№ С‰С‘Р»РєРЅСѓР» РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ.
               var checkBoxVal = $(this).find(".CheckBoxGroupWidgetItem").attr("value");
               var checkBoxLabel = $(this).find(".CheckBoxGroupWidgetItemLabel").text();
               var checked = $(this).find(".CheckBoxGroupWidgetItem").is(":checked");
@@ -37,7 +37,7 @@ block content
                 step#{step_id}FieldsList['#{widget.id}'].addValue(checkBoxVal, checkBoxLabel);
               else step#{step_id}FieldsList['#{widget.id}'].removeValue(checkBoxVal);
               
-              // Скрытие/отображение пункта "другое"
+              // РЎРєСЂС‹С‚РёРµ/РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РїСѓРЅРєС‚Р° "РґСЂСѓРіРѕРµ"
               var otherValue = "other";
               if(checkBoxVal == otherValue)
               {
@@ -48,34 +48,34 @@ block content
                   otherTextArea.hide();
               }
               
-              //- Обработчик изменения состояния виджета - для предикатов и т.п.
+              //- РћР±СЂР°Р±РѕС‚С‡РёРє РёР·РјРµРЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІРёРґР¶РµС‚Р° - РґР»СЏ РїСЂРµРґРёРєР°С‚РѕРІ Рё С‚.Рї.
               OnWidgetChanged();
           };              
           
-          //- Значение, которое нужно отметить в виджете как выбранное.
+          //- Р—РЅР°С‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РЅСѓР¶РЅРѕ РѕС‚РјРµС‚РёС‚СЊ РІ РІРёРґР¶РµС‚Рµ РєР°Рє РІС‹Р±СЂР°РЅРЅРѕРµ.
           var initial = wdgt.selection_list;
-          //- Список галочек (отображаемый текст + уникальное значение (имя) галочки)
+          //- РЎРїРёСЃРѕРє РіР°Р»РѕС‡РµРє (РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹Р№ С‚РµРєСЃС‚ + СѓРЅРёРєР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ (РёРјСЏ) РіР°Р»РѕС‡РєРё)
           var value_list = !{JSON.stringify(widget.value_list)};
           
-          //- Отобразить виджет
+          //- РћС‚РѕР±СЂР°Р·РёС‚СЊ РІРёРґР¶РµС‚
           for(var i in value_list)
           {
-              //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
+              //- РџРµСЂРµРјРµРЅРЅР°СЏ, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ С‡РµРєР±РѕРєСЃ СЃ РїСЂРѕСЃС‚Р°РІР»РµРЅРЅРѕР№ РёР»Рё РЅРµ РїСЂРѕСЃС‚Р°РІР»РµРЅРЅРѕР№ (РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РїР°СЂР°РјРµС‚СЂРѕРІ) РіР°Р»РѕС‡РєРѕР№.
               var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", value_list[i].value);
-              //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
+              //- РџРµСЂРµРјРµРЅРЅР°СЏ, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ Р±Р»РѕРє СЃ С‚РµРєСЃС‚РѕРј, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРј С‡РµРєР±РѕРєСЃСѓ.
               var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(value_list[i].label);
               
-              //- Если галочка в списке выделенных - выделить её.
+              //- Р•СЃР»Рё РіР°Р»РѕС‡РєР° РІ СЃРїРёСЃРєРµ РІС‹РґРµР»РµРЅРЅС‹С… - РІС‹РґРµР»РёС‚СЊ РµС‘.
               if(wdgt.checkValue(value_list[i].value))
                 inpt.attr("checked", true);
               
-              //- Контейнер с галочкой, текстом и обработчиком нажатия на галочку.
+              //- РљРѕРЅС‚РµР№РЅРµСЂ СЃ РіР°Р»РѕС‡РєРѕР№, С‚РµРєСЃС‚РѕРј Рё РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРј РЅР°Р¶Р°С‚РёСЏ РЅР° РіР°Р»РѕС‡РєСѓ.
               var container = $("<div/>").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).append("<br/>").click(selectionChangedHandler);
-              //- Контейнер добавляется на страницу.
+              //- РљРѕРЅС‚РµР№РЅРµСЂ РґРѕР±Р°РІР»СЏРµС‚СЃСЏ РЅР° СЃС‚СЂР°РЅРёС†Сѓ.
               $("#CheckBoxGroupWidget_#{widget.id}").append(container);
           }
           
-          //- Обработка поля "Другое"
+          //- РћР±СЂР°Р±РѕС‚РєР° РїРѕР»СЏ "Р”СЂСѓРіРѕРµ"
           
           var widgetData = !{JSON.stringify(widget)};
           var otherValue = "other";
@@ -90,15 +90,15 @@ block content
                 var otherText = wdgt.otherText;
               else var otherText = "";
           
-              //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
+              //- РџРµСЂРµРјРµРЅРЅР°СЏ, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ С‡РµРєР±РѕРєСЃ СЃ РїСЂРѕСЃС‚Р°РІР»РµРЅРЅРѕР№ РёР»Рё РЅРµ РїСЂРѕСЃС‚Р°РІР»РµРЅРЅРѕР№ (РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РїР°СЂР°РјРµС‚СЂРѕРІ) РіР°Р»РѕС‡РєРѕР№.
               var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", otherValue);
-              //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
+              //- РџРµСЂРµРјРµРЅРЅР°СЏ, РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ Р±Р»РѕРє СЃ С‚РµРєСЃС‚РѕРј, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРј С‡РµРєР±РѕРєСЃСѓ.
               var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(otherLabel);
               
-              //- Текстовое поле
+              //- РўРµРєСЃС‚РѕРІРѕРµ РїРѕР»Рµ
               var otherTextElement =  $("<textarea class='CheckBoxGroupWidgetOtherTextBox input-xlarge'/>").attr("value", otherText);
               
-              //- Если галочка в списке выделенных - выделить её.
+              //- Р•СЃР»Рё РіР°Р»РѕС‡РєР° РІ СЃРїРёСЃРєРµ РІС‹РґРµР»РµРЅРЅС‹С… - РІС‹РґРµР»РёС‚СЊ РµС‘.
               if(wdgt.checkValue(otherValue))
               {
                 inpt.attr("checked", true);
@@ -106,19 +106,19 @@ block content
               }
               else otherTextElement.hide();
               
-              //- Обновить объект при изменении текста
+              //- РћР±РЅРѕРІРёС‚СЊ РѕР±СЉРµРєС‚ РїСЂРё РёР·РјРµРЅРµРЅРёРё С‚РµРєСЃС‚Р°
               otherTextElement.change(
                 function()
                 {
                     wdgt.setOtherText($(this)[0].value);
                 })
               
-              //- Контейнер добавляется на страницу.
+              //- РљРѕРЅС‚РµР№РЅРµСЂ РґРѕР±Р°РІР»СЏРµС‚СЃСЏ РЅР° СЃС‚СЂР°РЅРёС†Сѓ.
               var container = $("<div/>").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).append("<br/>").click(selectionChangedHandler);
               container = container.append(otherTextElement).append("<br/>")
               $("#CheckBoxGroupWidget_#{widget.id}").append(container);
           }
       };
       
-      //- Создать виджет.
+      //- РЎРѕР·РґР°С‚СЊ РІРёРґР¶РµС‚.
       CheckBoxGroupWidgetBody_#{widget.id}();
