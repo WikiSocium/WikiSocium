@@ -11,7 +11,7 @@ function TextField(regexp, element, parentEl, value)
       this.IsRequired = param.required;
   };
 
-  $(this.element).val(value);
+  $(this.element).val(decodeURIComponent(value));
 
   // Страшная по синтаксису валидация через valid8 с помощью javascript-функции
   $(this.element).valid8(
@@ -48,7 +48,7 @@ function TextField(regexp, element, parentEl, value)
 
 TextField.prototype.getValue = function()
 {
-  return $(this.element).val();
+  return encodeURIComponent($(this.element).val());
 };
 
 TextField.prototype.validate = function()
