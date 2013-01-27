@@ -2,25 +2,25 @@ div(class="endCasePopup")
   form(method="post", action="#{caseName}/endCase", id="endCaseForm")
     fieldset
       legend Удалось ли решить проблему?
-      p
+      label.radio
         input(type="radio", name="isSolved", value="yes", onchange="EndCasePopupSelectionChanged()", checked)
-        &nbsp;Да
-        br
+        | Да
+      label.radio
         input(type="radio", name="isSolved", value="no", onchange="EndCasePopupSelectionChanged()")
-        &nbsp;Нет
+        | Нет
     fieldset(id="endCase1")
       legend Решение верное?
-      p
+      label.radio
         input(type="radio", name="isSolutionUsed", value="yes", checked)
-        &nbsp;Да, всё получилось благодаря этому решению
-        br
+        | Да, всё получилось благодаря этому решению
+      label.radio
         input(type="radio", name="isSolutionUsed", value="no")
-        &nbsp;Нет, я пошёл другим путем
+        | Нет, я пошёл другим путем
     fieldset(id="endCase2", style="display:none;")
       legend Решение верное?
-      p
+      label.radio
         input(type="radio", name="isSolutionCorrect", value="yes", checked)
-        &nbsp;Да, проблема не в описании решения
-        br
+        | Да, проблема не в описании решения
+      label.radio
         input(type="radio", name="isSolutionCorrect", value="no")
-        &nbsp;Нет, решение плохое
+        | Нет, решение плохое

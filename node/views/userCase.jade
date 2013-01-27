@@ -34,8 +34,10 @@ block content
   div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
   div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
   div
-    div(class="btn", id="prev_btn", onClick="PrevStep()") Предыдущий шаг
-    div(class="btn", id="next_btn", onClick="NextStep()") Следующий шаг
+    span.btn(id="prev_btn", onClick="PrevStep()") Предыдущий шаг
+    | &nbsp;
+    span.btn(id="next_btn", onClick="NextStep()") Следующий шаг
+    | &nbsp;
     a(href="/mycases") Перейти к списку кейсов
 
   #endCasePopup

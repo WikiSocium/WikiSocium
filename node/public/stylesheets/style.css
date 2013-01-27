@@ -324,22 +324,12 @@
     font-size: 14px;
 }
 
-.CommentText
-{
-    font-size: 10px;
-    font-style: italic;
+iref {
+  border-bottom: 1px dashed #6e6e6e;
+  cursor: pointer;
 }
-
-.DescriptionText
-{
-    font-size: 10px;
-}
-
-iref
-{
-    font-size: 10px;
-    cursor: pointer;
-    text-decoration: underline;
+iref:hover {
+  border-bottom: 0;
 }
 
 /* Radio Field */

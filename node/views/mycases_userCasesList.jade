@@ -23,7 +23,9 @@ mixin formatDate(date)
   - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
   - var y = date.getFullYear();
   |#{d + '.' + m + '.' + y}
-    
+
+- var completedCasesExist = false
+
 - each aCase in userCasesList
   - if (aCase.state == 'active')
     hr
@@ -48,9 +50,12 @@ mixin formatDate(date)
           p.updated
             |обновлено 
             mixin formatDate(aCase.updateDate)
+  - else
+    - if (aCase.state == 'completed') completedCasesExist = true
 
-.row(style="margin-top: 50px;")
-  h1.offsethalf Завершённые дела
+- if (completedCasesExist)
+  .row(style="margin-top: 50px;")
+    h1.offsethalf Завершённые дела
 
 - each aCase in userCasesList
   - if (aCase.state == 'completed')

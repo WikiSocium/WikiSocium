@@ -52,10 +52,15 @@ a.btn-primary, a.btn-warning, a.btn-danger, a.btn-success, a.btn-info, a.btn-inv
   color: white;
 }
 
+span.btn {
+  margin-top: -3px;
+}
+
 h1 {
   font-size: 12pt;
-  margin-bottom: 5px;
-  margin-top: 30px;
+  line-height: 160%;
+  margin-bottom: 16px;
+  margin-top: 36px;
 }
 h1:first-child { margin-top: 0; }
 h2 { font-size: 11pt; }

@@ -1,4 +1,16 @@
-div(class="baseWidget "+widget.widget_type, id="step_"+step_id+"_widget_"+widget.id+"_wrapper")
-    - if (widget.label!=undefined)
-        !=partial("InfoText", {InfoText:widget.label})
-    block content
+div(class="row-fluid baseWidget "+widget.widget_type, id="step_"+step_id+"_widget_"+widget.id+"_wrapper")
+  .span7.control-group
+    - if (widget.label != undefined)
+      label.control-label(style="text-align: left")
+        - if (widget.label.name == undefined)
+          | !{widget.label}
+        - else
+          | !{widget.label.name}
+    .controls
+      block content
+      span.help-block
+        - if (widget.label != undefined && widget.label.comment != undefined)
+          !{widget.label.comment}
+  .span5(style="max-width: 300px")
+    - if (widget.label != undefined) 
+      !=partial("InfoText", {InfoText:widget.label})

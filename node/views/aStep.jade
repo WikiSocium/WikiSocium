@@ -28,8 +28,10 @@ div(class="step", id="step_" + step_index + "")
         - if(widget_group.no_group == "true") //-if widgets are meant to be shown outside group (only CSS magic)
           - groupDivClass = "";
         //-div(class="#{groupDivClass}")
-        form(class="form-vertical")
-          fieldset #{widget_group.title}
+        form.form-horizontal
+          fieldset
+            .row-fluid
+              legend #{widget_group.title}
             - each widget in widget_group.widgets
               - if (stepData == null)
                 //- console.log("init")
@@ -39,7 +41,7 @@ div(class="step", id="step_" + step_index + "")
                 //- console.log("Widget " + widget.id + " initialization with data loading");
                 !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id], all_values:stepsData})
     - else //- Else render all widgets in one implicit group
-      form(class="form-vertical")
+      form.form-horizontal
         fieldset
           //- console.log("---------TYPEOF STEP WIDGETS----------")
           //- console.log(typeof(step.widgets))
