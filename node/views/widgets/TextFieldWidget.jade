@@ -5,6 +5,7 @@ block content
     div(class='controls')
       input(type='text', id='step#{step_id}_#{widget.id}')
   script(type='text/javascript', src='/javascripts/customWidgets/text_field.js')
+  - if (value == undefined) value = ""
   script(type='text/javascript')
     step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
       document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "!{value.replace(/"/g, '\"')}");
