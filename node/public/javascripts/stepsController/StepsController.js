@@ -376,8 +376,8 @@ function ShowEndCasePopup()
 {
   var modal_title = "Завершение дела";
   var buttons = [];
-  buttons.push(new modalButton ( "Продолжить решение проблемы", 'cancel' ) );
-  buttons.push(new modalButton ( "Завершить дело", function() { $( "#endCaseForm" ).submit(); } ) );
+  buttons.push(new modalButton ( "Отменить", 'cancel' ) );
+  buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
   showModalWindow ( modal_title, "", buttons, "endCasePopup" );
 }
 
