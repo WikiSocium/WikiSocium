@@ -1,0 +1,78 @@
+mixin sortByMixin(system_name, human_name, default_direction, width)
+  - if (sort == system_name)
+    - if (direction == 'asc') var new_direction = 'desc'
+    - else var new_direction = 'asc'
+    a.inpage_link(href="#", onclick="sortList('"+system_name+"', '"+new_direction+"');")
+      b #{human_name}
+    img(src="images/sort_"+direction+".png", style="margin-left: 6px; width: 13px")
+  - else 
+    a.inpage_link(href="#", onclick="sortList('"+system_name+"', '"+default_direction+"');") #{human_name}
+
+.row.sortlinks
+  .span11.offsethalf
+    Сортировать по: 
+    mixin sortByMixin("caseId", "названию дела", "asc")
+    |  | 
+    mixin sortByMixin("createDate", "дате создания", "desc")
+    |  | 
+    mixin sortByMixin("updateDate", "дате обновления", "desc")
+
+mixin formatDate(date)
+  - date = new Date(date);
+  - var d = date.getDate(); if (d < 10) d = '0'+d;
+  - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
+  - var y = date.getFullYear();
+  |#{d + '.' + m + '.' + y}
+    
+- each aCase in userCasesList
+  - if (aCase.state == 'active')
+    hr
+    .row.user-case-list-item
+      .span8.offsethalf
+        p
+          a.caseName(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.caseId}
+
+          |  (создано 
+          mixin formatDate(aCase.createDate)
+          | )
+          // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} > 
+        p(style="margin-top: 15px;")
+          
+        p.status Текущий шаг: #{aCase.stepName}
+        p.message
+          img(src="/images/status-icon-info.png")
+          span.to-var Осталось ждать 2 дня
+
+      .span2.offset1
+        - if ( aCase.updateDate != undefined)
+          p.updated
+            |обновлено 
+            mixin formatDate(aCase.updateDate)
+
+.row(style="margin-top: 50px;")
+  h1.offsethalf Завершённые дела
+
+- each aCase in userCasesList
+  - if (aCase.state == 'completed')
+    hr
+    .row.user-case-list-item
+      .span8.offsethalf
+        p
+          a.caseName(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.caseId}
+
+          |  (создано 
+          mixin formatDate(aCase.createDate)
+          | )
+          // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} > 
+        p(style="margin-top: 15px;")
+          
+        p.status Текущий шаг: #{aCase.stepName}
+        p.message
+          img(src="/images/status-icon-info.png")
+          span.to-var Осталось ждать 2 дня
+
+      .span2.offset1
+        - if ( aCase.updateDate != undefined)
+          p.updated
+            |обновлено 
+            mixin formatDate(aCase.updateDate)

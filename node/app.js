@@ -958,13 +958,15 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
         {
           if(err0==null)
           {
+            var file = fs.readFileSync('views/mycases_userCasesList.jade', 'utf8');
             res.render('mycases', {
                 'title':  'Мои дела',
                 'user':   req.currentUser,
                 'menu':   res.menu, 
                 'headerStats': res.headerStats,
-                'userData': userData,
-                'scripts': [],
+                'userCasesList': userData.cases,
+                'casesListTamplate': jade.compile(file, { client: true }),
+                'scripts': ['/javascripts/runtime.min.js'],
                 'styles': []
             });
           }

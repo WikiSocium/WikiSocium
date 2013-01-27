@@ -437,14 +437,14 @@ hr {
   padding-top: 15px;
 }
 
-.user-case-list-item .status a {
+.user-case-list-item a.caseName {
   border-bottom: 1px solid #6e6e6e;
   color: #6e6e6e;
   font-size: 13.5pt;
   text-decoration: none;
 }
 
-.user-case-list-item .status a:hover {
+.user-case-list-item a.caseName:hover {
   border-bottom: 0;
 }
 
@@ -453,8 +453,10 @@ hr {
 }
 
 
-.user-case-list-item .todo img {
+.user-case-list-item .message img {
+  margin-bottom: 8px;
   margin-right: 20px;
+  margin-top: 8px;
 }
 
 .team-faces,
