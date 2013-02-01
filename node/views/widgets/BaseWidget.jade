@@ -11,6 +11,6 @@ div(class="row-fluid baseWidget "+widget.widget_type, id="step_"+step_id+"_widge
       span.help-block
         - if (widget.label != undefined && widget.label.comment != undefined)
           !{widget.label.comment}
-  .span5(style="max-width: 300px")
-    - if (widget.label != undefined) 
+  - if (widget.label != undefined && widget.label.description != undefined && widget.label.description != "")
+    .span5(style="max-width: 300px;")
       !=partial("InfoText", {InfoText:widget.label})

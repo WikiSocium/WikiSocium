@@ -1,8 +1,8 @@
 extends BaseWidget
 
 block content
-  div(id="CheckBoxWidget_#{widget.id}")
-    input(type='checkbox', class="CheckBoxWidgetItem", style='float:left')
+  label.checkbox(id="CheckBoxWidget_#{widget.id}")
+    input(type='checkbox', class="CheckBoxWidgetItem")
     div(class='CheckBoxWidgetItemLabel', style='float:left')
 
   script(type="text/javascript")

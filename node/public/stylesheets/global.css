@@ -577,3 +577,13 @@ hr {
 .form-search .submit {
   padding: 3px;
 }
+
+
+
+
+/* Additions to Bootstrap base CSS */
+
+.controls > div > .radio:first-child,
+.controls > div > .checkbox:first-child {
+  padding-top: 5px;
+}

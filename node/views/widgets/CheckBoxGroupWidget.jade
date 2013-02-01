@@ -8,8 +8,7 @@ extends BaseWidget
 //- Создание jade-блока (он не рендерится в html? => это не обязательно?)
 block content
   //- Создаётся пустой блок с уникальным в рамках шага именем. К нему средствами jQuery будут приклеиваться остальные элементы разметки.
-  <div id="CheckBoxGroupWidget_#{widget.id}">
-  </div>
+  div(id="CheckBoxGroupWidget_#{widget.id}")
   script(type="text/javascript")
       //- Создаём функцию, создающую виджет.
       var CheckBoxGroupWidgetBody_#{widget.id} = function()
@@ -59,16 +58,16 @@ block content
           for(var i in value_list)
           {
               //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
-              var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", value_list[i].value);
+              var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' selected/>").attr("value", value_list[i].value);
               //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
-              var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(value_list[i].label);
+              var label = $("<div class='CheckBoxGroupWidgetItemLabel'/>").text(value_list[i].label);
               
               //- Если галочка в списке выделенных - выделить её.
               if(wdgt.checkValue(value_list[i].value))
                 inpt.attr("checked", true);
               
               //- Контейнер с галочкой, текстом и обработчиком нажатия на галочку.
-              var container = $("<div/>").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).append("<br/>").click(selectionChangedHandler);
+              var container = $("<label/>").addClass("checkbox").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).click(selectionChangedHandler);
               //- Контейнер добавляется на страницу.
               $("#CheckBoxGroupWidget_#{widget.id}").append(container);
           }
@@ -89,9 +88,9 @@ block content
               else var otherText = "";
           
               //- Переменная, описывающая чекбокс с проставленной или не проставленной (в зависимости от параметров) галочкой.
-              var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' style='float:left' selected/>").attr("value", otherValue);
+              var inpt = $("<input type='checkbox' class='CheckBoxGroupWidgetItem' selected/>").attr("value", otherValue);
               //- Переменная, описывающая блок с текстом, соответствующем чекбоксу.
-              var label = $("<div class='CheckBoxGroupWidgetItemLabel' style='float:left'/>").text(otherLabel);
+              var label = $("<div class='CheckBoxGroupWidgetItemLabel' />").text(otherLabel);
               
               //- Текстовое поле
               var otherTextElement =  $("<textarea class='CheckBoxGroupWidgetOtherTextBox input-xlarge'/>").attr("value", otherText);
@@ -112,8 +111,8 @@ block content
                 })
               
               //- Контейнер добавляется на страницу.
-              var container = $("<div/>").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).append("<br/>").click(selectionChangedHandler);
-              container = container.append(otherTextElement).append("<br/>")
+              var container = $("<label/>").addClass("checkbox").addClass("CheckBoxGroupWidgetItemContainer").append(inpt).append(label).click(selectionChangedHandler);
+              container = container.append(otherTextElement)
               $("#CheckBoxGroupWidget_#{widget.id}").append(container);
           }
       };
