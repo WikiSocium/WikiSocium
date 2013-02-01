@@ -2,29 +2,48 @@
 Класс группы чекбоксов.
 */
 
-// Типа конструктор.
-function CheckBoxGroupWidget(value)
+// Конструктор.
+// value: выбранное значение
+// value_list: список выбранных значений
+function CheckBoxGroupWidget(value, value_list)
 { 
+    // значение по умолчанию
     this.minSelection = 0;
-    this.options = {};
-    this.IsRequired = true;
-    this.setOptions = function(param)
-    {
-        this.options = param;
-        this.IsRequired = param.required;
-    };  
+    this.selectedValues = [];
+    this.selectedLabels = [];
+    this.otherText = "";
 
-    if(value == undefined)
+    if(value.value != undefined && value.label != undefined)
     {
-        this.selectedValues = [];
-        this.selectedLabels = [];
-        this.otherText = "";
-    }
-    else
-    {
-        this.selectedValues = value.value;
-        this.selectedLabels = value.label;
+        // заданы value и label
+        this.selectedValues.push(value.value);
+        this.selectedLabels.push(value.label);
         this.otherText = value.otherText;
+        
+        return;
+    }
+    
+    if(value != undefined)
+    {
+        // задано только value, label не задан (получим его из списка value_list)
+        var label = undefined;
+        for(i in value_list)
+        {
+            if(value_list[i].value == value)
+            {
+                label = value_list[i].label;
+                break;
+            }
+        }
+
+        if(label != undefined)
+        {
+            this.selectedValues.push(value);
+            this.selectedLabels.push(label);
+            this.otherText = "";
+
+            return;
+        }
     }
 };
 

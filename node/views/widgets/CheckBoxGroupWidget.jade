@@ -18,10 +18,11 @@ block content
           //- Сохраняем эту переменную в списке FieldList этого шага.
           var jsonValue = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
           var jsonInitial = !{JSON.stringify(widget.initial) == null ? "undefined" : JSON.stringify(widget.initial)};
+          var value_list = !{JSON.stringify(widget.value_list)}; //- Список галочек (отображаемый текст + уникальное значение (имя) галочки)
           if(jsonValue == undefined)
-            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonInitial);    
+            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonInitial, value_list);    
           else
-            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonValue);    
+            var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxGroupWidget(jsonValue, value_list);    
           
           //- Указываем виджету минимальное и максимальное разрешённое количество галочек.
           wdgt.minSelection = (!{JSON.stringify(widget.min_selection)});
@@ -54,9 +55,6 @@ block content
           
           //- Значение, которое нужно отметить в виджете как выбранное.
           var initial = wdgt.selection_list;
-          //- Список галочек (отображаемый текст + уникальное значение (имя) галочки)
-          var value_list = !{JSON.stringify(widget.value_list)};
-          
           //- Отобразить виджет
           for(var i in value_list)
           {

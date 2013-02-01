@@ -1,9 +1,44 @@
 extends BaseWidget
 
 block content
+  div(id="ListWidget_#{widget.id}")
+    select(class="ListWidget")
+      each value in widget.value_list
+        option(class="ListWidgetItem", value=value.value) #{value.label}
+  
   script(type="text/javascript")
-    YUI().use('inputex', 'inputex-select'
-    , function(Y) 
+    var ListWidget_#{widget.id} = function()
     {
-    step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({name: 'step#{step_id}_#{widget.id}', choices: !{JSON.stringify(widget.value_list)}, value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
-    });
+      //- Создадим объект виджета
+      var value_list = !{JSON.stringify(widget.value_list)};
+      var jsonValue = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
+      var jsonInitial = !{JSON.stringify(widget.initial) == null ? "undefined" : JSON.stringify(widget.initial)};
+      if(jsonValue == undefined)
+        var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new ListWidget(jsonInitial, value_list);    
+      else
+        var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new ListWidget(jsonValue, value_list);    
+      
+      //- Выберем нужный элемент
+      var selectedValue = wdgt.getValue().value;
+      if(selectedValue != undefined && selectedValue != [])
+      {
+        $("#ListWidget_#{widget.id}").find("option:[value='" + selectedValue + "']").attr("selected", "true");
+      }
+      
+      //- Функция-обработчик, вызываемая при изменении значения виджета (щелчку по галочке)
+      var selectionChangedHandler = function()
+      {
+        var selectedValue = $("#ListWidget_#{widget.id}").find("option:[selected='selected']").val();
+        var selectedLabel = $("#ListWidget_#{widget.id}").find("option:[selected='selected']").text();
+        
+        step#{step_id}FieldsList['!{widget.id}'].setValue(selectedValue, selectedLabel);
+                  
+        //- Обработчик изменения состояния виджета - для предикатов и т.п.
+        OnWidgetChanged();
+      };
+
+      $("#ListWidget_#{widget.id}").find(".ListWidget").change(selectionChangedHandler);
+    }
+    
+    //- Создать виджет.
+    ListWidget_#{widget.id}();

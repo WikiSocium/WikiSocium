@@ -45,6 +45,7 @@
                     "label"         :   "Претензии",
                     "min_selection" :   "2",
                     "max_selection" :   "5",
+                    "initial"       :   "1",
                     "enableOther"   :   "true",
                     "otherLabel"    :   "Другой вариант",
                     "otherText"     :   "Разное прочее",

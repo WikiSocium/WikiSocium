@@ -1,33 +1,39 @@
 extends BaseWidget
 
 block content
+  div(id="RegionsListWidget_#{widget.id}")
+    select(class="RegionsListWidget")
+  
   script(type="text/javascript")
-    $.ajax({
-    url: '/GetRegions'
-    , type:'POST'
-    , success: function(res) {
-    YUI().use('inputex', 'inputex-select', function(Y) 
+    $.ajax(
     {
-        step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.SelectField({name: 'step#{step_id}_#{widget.id}', choices: [], value: '#{value}', required:false, parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
-        for (reg in res)
+        url: '/GetRegions', type:'POST', success: function(result)
         {
-            if(res[reg] == "#{value}")
+            // Заполним список значениями
+            var container = $("#RegionsListWidget_#{widget.id}").find(".RegionsListWidget");
+            for (i in result)
             {
-                userRegion = "#{value}";
-                step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg], selected: true});
+                container.append($("<option></option>").attr("value", result[i]).text(result[i]));
             }
-            else
-                step#{step_id}FieldsList['#{widget.id}'].addChoice({value: res[reg]});            
+            
+            // Выделим выбранный по умолчанию объект
+            var initial = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
+            $("#RegionsListWidget_#{widget.id}").find("option:[value='" + initial + "']").attr("selected", "true");
+
+            // Создадим объект виджета
+            step#{step_id}FieldsList['#{widget.id}'] = new RegionsListWidget(initial);
+
+            //- Добавим обработчик изменения значения виджета
+            var selectionChangedHandler = function()
+            {
+                var selectedValue = $("#RegionsListWidget_#{widget.id}").find("option:[selected='selected']").val();
+
+                step#{step_id}FieldsList['!{widget.id}'].setValue(selectedValue);
+                userRegion = selectedValue;
+                      
+                //- Обработчик изменения состояния виджета - для предикатов и т.п.
+                OnWidgetChanged();
+            };
+            $("#RegionsListWidget_#{widget.id}").find(".RegionsListWidget").change(selectionChangedHandler);
         }
-        step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
-        {
-            userRegion = step#{step_id}FieldsList['#{widget.id}'].getValue();
-            OnWidgetChanged();
-        });
-    });
-    }
-    , error: function(jqXHR, textStatus, errorThrown) {
-    // [TODO]
-    console.log("regions list widget failed");
-    }
     });

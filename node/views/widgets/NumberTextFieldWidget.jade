@@ -1,0 +1,7 @@
+extends BaseWidget
+
+block content
+  input(type='text', id='step#{step_id}_#{widget.id}')
+  script(type='text/javascript')
+    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/^\d*[0-9]$/, 
+      document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "#{value}");

@@ -343,11 +343,4 @@ iref:hover {
   border-bottom: 0;
 }
 
-/* Radio Field */
-label.inputEx-RadioField-rightLabel
-{
-	cursor: pointer;
-	display: inline;
-}
-
 }

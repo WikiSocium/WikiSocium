@@ -81,7 +81,7 @@
                             "widget_type" : "ListWidget",
                             "label": "Тип правонарушения",
                             "id": "violation_type",
-                            "initial": "red",
+                            "initial": "parking",
                             "value_list":
                             [
                                 { "value": "red", "label": "проезд на красный" },
@@ -107,7 +107,7 @@
                           {
                               "widget_type" : "RadioGroupWidget",
                               "id": "radio",
-                              "label": "Являетесь ли вы непосредственным свидетелм правонарушения, или вам стало известно о нем из открытых источников?",
+                              "label": "Являетесь ли вы непосредственным свидетелем правонарушения, или вам стало известно о нем из открытых источников?",
                               "initial": "witness",
                               "value_list": 
                                   [

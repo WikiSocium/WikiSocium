@@ -6,51 +6,48 @@
 // Ничего не возвращает
 function SetWidgetValueForPredicatesOnStep(stepnum)
 {
-    YUI().use('inputex', function(Y)
-    {
-        var tcp = solutionData.steps[stepnum];
+    var tcp = solutionData.steps[stepnum];
 
-        // Обработка массива виджетов
-        if (tcp.widgets != undefined)
+    // Обработка массива виджетов
+    if (tcp.widgets != undefined)
+    {
+        for (var i in tcp.widgets)
         {
-            for (var i in tcp.widgets)
+            var iv = tcp.widgets[i].isVisible;  // Условие на видимость этого виджета
+            if (iv != undefined && iv.predicates != undefined)
             {
-                var iv = tcp.widgets[i].isVisible;  // Условие на видимость этого виджета
-                if (iv != undefined && iv.predicates != undefined)
-                {
-                    SetWidgetValueForPredicateArray(stepnum, iv.predicates);
-                }
+                SetWidgetValueForPredicateArray(stepnum, iv.predicates);
             }
         }
-        
-        // Обработка массива групп виджетов
-        if (tcp.widget_groups != undefined)
+    }
+    
+    // Обработка массива групп виджетов
+    if (tcp.widget_groups != undefined)
+    {
+        for (var i in tcp.widget_groups)
         {
-            for (var i in tcp.widget_groups)
+            var iv = tcp.widget_groups[i].isVisible;
+            if (iv != undefined && iv.predicates != undefined)
             {
-                var iv = tcp.widget_groups[i].isVisible;
-                if (iv != undefined && iv.predicates != undefined)
+                SetWidgetValueForPredicateArray(stepnum, iv.predicates[j])
+            }
+            
+            if (tcp.widget_groups[i].widgets != undefined)
+            {    
+                for (var j in tcp.widget_groups[i].widgets)
                 {
-                    SetWidgetValueForPredicateArray(stepnum, iv.predicates[j])
-                }
-                
-                if (tcp.widget_groups[i].widgets != undefined)
-                {    
-                    for (var j in tcp.widget_groups[i].widgets)
+                    var iv = tcp.widget_groups[i].widgets[j].isVisible;
+                    if (iv != undefined && iv.predicates != undefined)
                     {
-                        var iv = tcp.widget_groups[i].widgets[j].isVisible;
-                        if (iv != undefined && iv.predicates != undefined)
+                        for (var j in iv.predicates)
                         {
-                            for (var j in iv.predicates)
-                            {
-                               SetWidgetValueForPredicate(stepnum, iv.predicates[j]);
-                            }
+                           SetWidgetValueForPredicate(stepnum, iv.predicates[j]);
                         }
                     }
                 }
-            }    
-        }
-    }); 
+            }
+        }    
+    }
 }
 
 // Установить значения в soludtionData для виджетов из массива предикатов predicates.

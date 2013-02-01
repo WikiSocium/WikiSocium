@@ -1,13 +1,46 @@
 extends BaseWidget
 
 block content
+  div(id="CheckBoxWidget_#{widget.id}")
+    input(type='checkbox', class="CheckBoxWidgetItem", style='float:left')
+    div(class='CheckBoxWidgetItemLabel', style='float:left')
+
   script(type="text/javascript")
-    YUI().use('inputex', 'inputex-checkbox'
-    , function(Y) 
+    var CheckBoxWidget_#{widget.id} = function()
     {
-      step#{step_id}FieldsList['#{widget.id}'] = new Y.inputEx.CheckBox({name: 'step#{step_id}_#{widget.id}', value: '#{value}', parentEl: 'step_#{step_id}_widget_#{widget.id}_wrapper'});
-      step#{step_id}FieldsList['#{widget.id}'].on('updated', function(value)
+      // Создадим виджет
+      var jsonValue = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
+      var jsonInitial = !{JSON.stringify(widget.initial) == null ? "undefined" : JSON.stringify(widget.initial)};
+      if(jsonValue == undefined)
+        var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxWidget(jsonInitial);
+      else
+        var wdgt = step#{step_id}FieldsList['!{widget.id}'] = new CheckBoxWidget(jsonValue);
+      
+      var checkBoxWidgetItem = $("#CheckBoxWidget_#{widget.id}").find(".CheckBoxWidgetItem");
+      var checkBoxWidgetItemLabel = $("#CheckBoxWidget_#{widget.id}").find(".CheckBoxWidgetItemLabel");
+      
+      // Установим label
+      var label = !{JSON.stringify(widget.label)};
+      if(label.name != undefined)
+        checkBoxWidgetItemLabel.text(label.name);
+      else checkBoxWidgetItemLabel.text(label);
+      
+      // Установим или снимем галочку
+      if(wdgt.selectedValue == true)
+        checkBoxWidgetItem.attr("checked", true);
+      else checkBoxWidgetItemLabel.attr("checked", false);
+      
+      //- Функция-обработчик, вызываемая при изменении значения виджета (щелчку по галочке)
+      var selectionChangedHandler = function()
       {
-       OnWidgetChanged();
-      });
-    });
+        var checked = $(this).find(".CheckBoxWidgetItem").is(":checked");
+        step#{step_id}FieldsList['#{widget.id}'].setValue(checked);
+            
+        //- Обработчик изменения состояния виджета - для предикатов и т.п.
+        OnWidgetChanged();
+      };
+      
+      $("#CheckBoxWidget_#{widget.id}").click(selectionChangedHandler);
+    }
+
+    CheckBoxWidget_#{widget.id}();
