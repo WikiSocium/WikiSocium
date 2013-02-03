@@ -693,9 +693,9 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                         scriptsToInject.push("/javascripts/customWidgets/WaitListWidget.js");                        
                     }
                     scriptsToInject.push("/javascripts/nicEdit.js");
-					scriptsToInject.push("/javascripts/customWidgets/text_field.js");
+					          scriptsToInject.push("/javascripts/customWidgets/TextField.js");
                     scriptsToInject.push("/javascripts/customWidgets/ListWidget.js");
-					scriptsToInject.push("/javascripts/customWidgets/RegionsListWidget.js");
+					          scriptsToInject.push("/javascripts/customWidgets/RegionsListWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/RadioGroupWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/CheckBoxWidget.js");
                     scriptsToInject.push("/javascripts/customWidgets/CheckBoxGroupWidget.js");
