@@ -48,7 +48,7 @@ function TextField(regexp, element, parentEl, value)
 
 TextField.prototype.getValue = function()
 {
-  return encodeURIComponent($(this.element).val());
+  return $(this.element).val();
 };
 
 TextField.prototype.validate = function()
