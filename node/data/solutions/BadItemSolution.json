@@ -556,7 +556,7 @@
 					}
 				},
 				{
-					"widget_type"	:	"TextFieldWidget",
+					"widget_type"	:	"DatePickerWidget",
 					"id"		:	"RequestsNewDeliveryDate",
 					"label"		:	"Новый срок доставки товара",
 					"isVisible"	:
