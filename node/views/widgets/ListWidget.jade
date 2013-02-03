@@ -1,10 +1,9 @@
 extends BaseWidget
 
 block content
-  div(id="ListWidget_#{widget.id}")
-    select(class="ListWidget")
-      each value in widget.value_list
-        option(class="ListWidgetItem", value=value.value) #{value.label}
+  select(id="ListWidget_#{widget.id}", class="ListWidget")
+    each value in widget.value_list
+      option(class="ListWidgetItem", value=value.value) #{value.label}
   
   script(type="text/javascript")
     var ListWidget_#{widget.id} = function()
@@ -37,7 +36,7 @@ block content
         OnWidgetChanged();
       };
 
-      $("#ListWidget_#{widget.id}").find(".ListWidget").change(selectionChangedHandler);
+      $("#ListWidget_#{widget.id}").change(selectionChangedHandler);
     }
     
     //- Создать виджет.

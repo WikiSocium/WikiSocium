@@ -1,39 +1,38 @@
 extends BaseWidget
 
 block content
-  div(id="RegionsListWidget_#{widget.id}")
-    select(class="RegionsListWidget")
+  select(id="RegionsListWidget_#{widget.id}", class="RegionsListWidget")
   
   script(type="text/javascript")
     $.ajax(
     {
-        url: '/GetRegions', type:'POST', success: function(result)
+      url: '/GetRegions', type:'POST', success: function(result)
+      {
+        // Заполним список значениями
+        var container = $("#RegionsListWidget_#{widget.id}");
+        for (i in result)
         {
-            // Заполним список значениями
-            var container = $("#RegionsListWidget_#{widget.id}").find(".RegionsListWidget");
-            for (i in result)
-            {
-                container.append($("<option></option>").attr("value", result[i]).text(result[i]));
-            }
-            
-            // Выделим выбранный по умолчанию объект
-            var initial = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
-            $("#RegionsListWidget_#{widget.id}").find("option:[value='" + initial + "']").attr("selected", "true");
+            container.append($("<option></option>").attr("value", result[i]).text(result[i]));
+        }
+        
+        // Выделим выбранный по умолчанию объект
+        var initial = !{JSON.stringify(value) == null ? "undefined" : JSON.stringify(value)};
+        $("#RegionsListWidget_#{widget.id}").find("option:[value='" + initial + "']").attr("selected", "true");
 
-            // Создадим объект виджета
-            step#{step_id}FieldsList['#{widget.id}'] = new RegionsListWidget(initial);
+        // Создадим объект виджета
+        step#{step_id}FieldsList['#{widget.id}'] = new RegionsListWidget(initial);
 
-            //- Добавим обработчик изменения значения виджета
-            var selectionChangedHandler = function()
-            {
-                var selectedValue = $("#RegionsListWidget_#{widget.id}").find("option:[selected='selected']").val();
+        //- Добавим обработчик изменения значения виджета
+        var selectionChangedHandler = function()
+        {
+            var selectedValue = $("#RegionsListWidget_#{widget.id}").find("option:[selected='selected']").val();
 
-                step#{step_id}FieldsList['!{widget.id}'].setValue(selectedValue);
-                userRegion = selectedValue;
-                      
-                //- Обработчик изменения состояния виджета - для предикатов и т.п.
-                OnWidgetChanged();
-            };
-            $("#RegionsListWidget_#{widget.id}").find(".RegionsListWidget").change(selectionChangedHandler);
+            step#{step_id}FieldsList['!{widget.id}'].setValue(selectedValue);
+            userRegion = selectedValue;
+                  
+            //- Обработчик изменения состояния виджета - для предикатов и т.п.
+            OnWidgetChanged();
+        };
+        $("#RegionsListWidget_#{widget.id}").change(selectionChangedHandler);
         }
     });
