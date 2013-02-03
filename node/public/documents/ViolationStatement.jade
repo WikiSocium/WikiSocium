@@ -1,11 +1,11 @@
 if data.radio.value != "witness"
-  Из открытых источников (#{data.source}) я узнал, что #{data.date} около #{data.time} часов адресу #{data.place.address}
+  Из открытых источников (#{data.source}) я узнал, что #{data.date.value} около #{data.time} часов адресу #{data.place.address}
   было совершено правонарушение правонарушения со стороны водителя автомобиля с ГРЗ #{data.car_id}, который
 else
-  #{data.date} около #{data.time} часов адресу #{data.place.address} я стал свидетелем правонарушения со стороны водителя
-  автомобиля с ГРЗ #{data.car_id}, который
+  !{data.date.value} около #{data.time} часов адресу #{data.place.address} я стал свидетелем правонарушения со стороны водителя
+  автомобиля с ГРЗ #{data.car_id}, который&nbsp;
   
-case data.violation_type
+case data.violation_type.value
   when "red": выехал на красный.
   when "lines": выехал на полосу встречного движения.
   when "rules": не подчинился правилам разметки.
