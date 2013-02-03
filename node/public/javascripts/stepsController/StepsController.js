@@ -91,11 +91,14 @@ function CollectFormData()
       for(var widg in groups[i])
       {
           if(typeof(groups[i][widg].getDocumentValue) != "undefined")
-              // data[solutionData.steps[i].id][widg] = groups[i][widg].getDocumentValue();
-              data[widg] = groups[i][widg].getDocumentValue();
+              var tmp = groups[i][widg].getDocumentValue();
           else
-              // data[solutionData.steps[i].id][widg] = groups[i][widg].getValue();
-              data[widg] = groups[i][widg].getValue();
+              var tmp = groups[i][widg].getValue();
+              
+          if(typeof(tmp) == "object")
+              data[widg] = tmp.value;
+          else
+              data[widg] = tmp;
       }
   }
 
