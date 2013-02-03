@@ -102,7 +102,8 @@ DatePickerWidget.prototype.validate = function()
 {
   var val = $(this.element).val();
   var res = this.regexp.test(val) || val == '';
-  if(!res)
-    $(this.parentEl).attr('class', 'baseWidget error');
+  if(!res) {
+    $(this.parentEl).children(".control-group").addClass("error");
+  }
   return res;
 };

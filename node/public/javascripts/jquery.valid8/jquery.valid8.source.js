@@ -220,7 +220,7 @@
 	}
 	
 	function setParentClass(el,className) {
-		var parent = $(el).parent();
+		var parent = $(el).parent().parent();
 		parent[0].className = (parent[0].className.replace(/(^\s|(\s*(loading|error|valid)))/g,'') + ' ' + className).replace(/^\s/,'');
 	}
 	
@@ -229,7 +229,7 @@
 		var elementId = el.id + "ValidationMessage";
 		var elementClass = 'validationMessage';		
 		if(!$('#'+elementId).length > 0){
-			parent.append('<span id="' + elementId + '" class="' + elementClass + '"></span>');
+			parent.find(".help-inline").append('<span id="' + elementId + '" class="' + elementClass + '"></span>');
 		}
 	
 		$('#'+elementId).html("");

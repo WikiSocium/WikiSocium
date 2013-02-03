@@ -8,8 +8,9 @@ div(class="row-fluid baseWidget "+widget.widget_type, id="step_"+step_id+"_widge
           | !{widget.label.name}
     .controls
       block content
-      span.help-block
-        - if (widget.label != undefined && widget.label.comment != undefined)
+      span.help-inline
+      - if (widget.label != undefined && widget.label.comment != undefined)
+        span.help-block
           !{widget.label.comment}
   - if (widget.label != undefined && widget.label.description != undefined && widget.label.description != "")
     .span5(style="max-width: 300px;")
