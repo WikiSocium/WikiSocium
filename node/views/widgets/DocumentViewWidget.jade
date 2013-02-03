@@ -9,8 +9,16 @@ block content
   </div>
   //- <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom($('#documentView_#{widget.doc_name}'))">RTF</div>
   <div id="rtf_btn" class="btn btn-primary documentButtons">RTF</div>
-  <input type="button" id="print_btn" value="Распечатать" id="print_btn"/>
+  <input type="button" id="print_btn" value="Распечатать" class="btn print_btn"/>
   script(type="text/javascript")
+  
+    function checkValue(value)
+    {
+      if(typeof(value) != "undefined")
+        return value;
+      else
+        return "No value was found";    
+    }
   
     $("#rtf_btn").click(function()
     {
@@ -125,7 +133,7 @@ block content
                       }
                   }
                   rec.append(cont);
-                  $("#documentOrganizationsView_#{widget.doc_name}").append(rec);                  
+                  $("#documentOrganizationsView_#{widget.doc_name}").append(rec);
               }
           }
         }
@@ -135,6 +143,10 @@ block content
         $(".documentOrganizationsRecord").click(function(){
             $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
             $(this).children(".documentOrganizationsRecordDescription").show();
+            
+            // Re-generate document
+            // [TODO]
+            // GenerateDocument_#{widget.doc_name}();            
         });
     });
     };

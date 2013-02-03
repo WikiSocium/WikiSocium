@@ -23,7 +23,7 @@ function RadioGroupWidget(value)
 RadioGroupWidget.prototype.getValue = function()
 {
   return {value : this.selection_value,
-        label : this.selection_label};
+          label : this.selection_label};
 };
 
 RadioGroupWidget.prototype.validate = function()

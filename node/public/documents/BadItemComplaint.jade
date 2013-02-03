@@ -6,7 +6,7 @@ div(align="right")
 div(align="center")
   <b>ПРЕТЕНЗИЯ</b> <br><br>
 div
-  !{data.BuyDate} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
+  !{data.BuyDate.value} я приобрёл у Вас #{data.ItemName} полной стоимостью #{data.ItemPrice} руб.
   if data.IsItemDelivered
     if data.IsDeliveryCost.value == 0
       , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.

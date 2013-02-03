@@ -94,11 +94,8 @@ function CollectFormData()
               var tmp = groups[i][widg].getDocumentValue();
           else
               var tmp = groups[i][widg].getValue();
-              
-          if(typeof(tmp) == "object")
-              data[widg] = tmp.value;
-          else
-              data[widg] = tmp;
+
+          data[widg] = tmp;
       }
   }
 
