@@ -832,31 +832,28 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
   });
 });
 
-//save to file
-//Завершение кейса
-app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
+app.post('/MyCases/:CaseName/endCase', loadUser, generateMenu, getHeaderStats, function(req, res) {
   var userName = req.currentUser.user_id;
-  var caseId = req.param('CaseId', null).replace(/_/g," ");
+  var CaseName = req.param('CaseName', null).replace(/_/g," ");
     
-  // [TODO]
-  // 0. Проверить, что пользователь аутентифицирован
   if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
-  else {	
-		var solution_name = "";
-  	fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data){
-  	  if (!err) {		        
-	      var userData = JSON.parse(data);
-	      for(var i = 0; i < userData.cases.length; i++)
-	      {
-	        if ( userData.cases[i].caseId == caseId ) {
-	          
-	          // Меняем статус кейса и записываем это
-	          userData.cases[i].state = "completed";
-	          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userData, null, "\t"), encoding='utf8',
-	            function (err) { if (err) throw err; } );
-	          
-	          solution_name = userData.cases[i].solutionId;
-	                
+  else {
+    var solution_name = "";
+    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
+      if (!err) {
+        var userData = JSON.parse(data);
+        for(var i = 0; i < userData.cases.length; i++)
+        {
+          if ( userData.cases[i].caseId == CaseName ) {
+            
+            // Меняем статус кейса и записываем это
+            userData.cases[i].state = "completed";
+            userData.cases[i].updateDate = getCurrentDateTime();
+            fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userData, null, "\t"), encoding='utf8',
+              function (err) { if (err) throw err; } );
+            
+            solution_name = userData.cases[i].solutionId;
+                  
             // Записываем статистику
 
             if ( req.body.isSolved == 'yes' ) {
@@ -869,15 +866,45 @@ app.post('/MyCases/:CaseId/endCase', loadUser, generateMenu, getHeaderStats, fun
               if ( req.body.isSolutionCorrect == 'yes' ) increaseSolutionStatistics ( solution_name, 'finished_good_solution' );
               else increaseSolutionStatistics ( solution_name, 'finished_bad_solution' ); 
             }      
-	          break;
+            break;
           }
         }
-	    }
-	    else console.log("Error at case finish: " + err);
-	  });
-    // 3. Отправить на главную страницу
+      }
+      else console.log("Error at case finish: " + err);
+    });
+    res.redirect('/MyCases');    
+  }
+});
+
+app.post('/MyCases/:CaseName/reopen', loadUser, function(req, res) {
+  var userName = req.currentUser.user_id;
+  var CaseName = req.param('CaseName', null).replace(/_/g," ");
+
+  if (req.currentUser.guest == 1 ) res.redirect('/sessions/new?return_to='+req.url);
+  else {
+    fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
+      if (!err) {
+        var userData = JSON.parse(data);
+        for(var i = 0; i < userData.cases.length; i++)
+        {
+          if ( userData.cases[i].caseId == CaseName ) {
+            
+            // Меняем статус кейса и записываем это
+            userData.cases[i].state = "active";
+            userData.cases[i].updateDate = getCurrentDateTime();
+            fs.writeFile(
+              'data/UserData/' + userName + '/user.json',
+              JSON.stringify(userData, null, "\t"),
+              encoding='utf8',
+              function (err) { if (err) throw err; }
+            );   
+            break;
+          }
+        }
+      }
+      else console.log("Error at case reopen: " + err);
+    });
     res.redirect('/MyCases');
-    
   }
 });
 
@@ -969,7 +996,10 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
                 'headerStats': res.headerStats,
                 'userCasesList': userData.cases,
                 'casesListTamplate': jade.compile(file, { client: true }),
-                'scripts': ['/javascripts/runtime.min.js'],
+                'scripts': [
+                  '/javascripts/runtime.min.js',
+                  '/javascripts/modal_window.js'
+                ],
                 'styles': []
             });
           }

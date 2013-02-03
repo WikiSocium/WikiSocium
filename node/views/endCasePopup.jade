@@ -1,5 +1,5 @@
 div(class="endCasePopup")
-  form(method="post", action="#{caseName}/endCase", id="endCaseForm")
+  form#endCaseForm(method="post", action="")
     fieldset
       legend Удалось ли решить проблему?
       label.radio
@@ -24,3 +24,17 @@ div(class="endCasePopup")
       label.radio
         input(type="radio", name="isSolutionCorrect", value="no")
         | Нет, решение плохое
+
+script
+  function ShowEndCasePopup(caseName) {
+    $("#endCaseForm").attr("action", "/MyCases/"+caseName.replace(/ /g,"_")+"/endCase");
+    var modal_title = "Завершение дела";
+    var buttons = [];
+    buttons.push(new modalButton ( "Отменить", 'cancel' ) );
+    buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
+    showModalWindow ( modal_title, "", buttons, "endCasePopup" );
+  }
+  function EndCasePopupSelectionChanged() {
+    $("#endCase1").toggle();
+    $("#endCase2").toggle();
+  }        

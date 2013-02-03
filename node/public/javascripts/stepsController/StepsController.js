@@ -341,26 +341,6 @@ function CheckNextInfo(nextInfo)
     }
 }
 
-function ShowEndCasePopup()
-{
-  var modal_title = "Завершение дела";
-  var buttons = [];
-  buttons.push(new modalButton ( "Отменить", 'cancel' ) );
-  buttons.push(new modalButton ( "Завершить", function() { $( "#endCaseForm" ).submit(); } ) );
-  showModalWindow ( modal_title, "", buttons, "endCasePopup" );
-}
-
-function HideEndCasePopup()
-{
-  $("#endCasePopup").fadeOut(100);
-}
-
-function EndCasePopupSelectionChanged()
-{
-  $("#endCase1").toggle();
-  $("#endCase2").toggle();
-}
-
 function getPreviousStepId ( currentStepId )
 {
   if ( stepsHistory !== null ) {

@@ -35,3 +35,7 @@
 
 .MultimediaWidget #multimediaWidgetThumbnails {
 }
+
+.DescriptionText {
+  padding-bottom: 16px;
+}

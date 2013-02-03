@@ -427,7 +427,7 @@ hr {
 }
 
 .offsethalf {
-  margin-left: 75px;
+  padding-left: 33px;
 }
 
 .sortlinks {
@@ -442,10 +442,13 @@ hr {
   padding-top: 15px;
 }
 
-.user-case-list-item a.caseName {
-  border-bottom: 1px solid #6e6e6e;
+.user-case-list-item .caseName {
   color: #6e6e6e;
   font-size: 13.5pt;
+}
+
+.user-case-list-item a.caseName {
+  border-bottom: 1px solid #6e6e6e;
   text-decoration: none;
 }
 

@@ -21,7 +21,7 @@ block content
     p
       !{solutionData.description}
 
-  div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup()") Завершить
+  div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup('"+caseName+"')") Завершить
 
   div(class = "steps", id = "stepsWrapper")
     - each step, i in solutionData.steps

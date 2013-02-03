@@ -24,60 +24,51 @@ mixin formatDate(date)
   - var y = date.getFullYear();
   |#{d + '.' + m + '.' + y}
 
-- var completedCasesExist = false
+mixin caseRow(aCase)
+  .row-fluid.user-case-list-item
+    .span8
+      .offsethalf
+        p
+          case aCase.state
+            when "active"
+              a.caseName(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.caseId}
+            when "completed"
+              span.caseName #{aCase.caseId}
+            
+          |  (создано 
+          mixin formatDate(aCase.createDate)
+          | )
+          // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} >       
+        p.status Текущий шаг: #{aCase.stepName}
+        p.message
+          img(src="/images/status-icon-info.png")
+          span.to-var Осталось ждать 2 дня
+    .span3
+      - if ( aCase.updateDate != undefined)
+        p.updated(style="text-align: right;")
+          | обновлено 
+          mixin formatDate(aCase.updateDate)        
+        case aCase.state
+          when "active"
+            p.hiddenbutton(style="text-align: right;")
+              button.btn(onClick="ShowEndCasePopup('"+aCase.caseId+"')") Завершить дело
+          when "completed"
+            form(method="post", action="/MyCases/"+aCase.caseId.replace(/ /g,"_")+"/reopen")
+              p.hiddenbutton(style="text-align: right;")
+                button.btn(type="submit") Открыть заново
 
+- var completedCasesExist = false
 - each aCase in userCasesList
   - if (aCase.state == 'active')
     hr
-    .row.user-case-list-item
-      .span8.offsethalf
-        p
-          a.caseName(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.caseId}
-
-          |  (создано 
-          mixin formatDate(aCase.createDate)
-          | )
-          // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} > 
-        p(style="margin-top: 15px;")
-          
-        p.status Текущий шаг: #{aCase.stepName}
-        p.message
-          img(src="/images/status-icon-info.png")
-          span.to-var Осталось ждать 2 дня
-
-      .span2.offset1
-        - if ( aCase.updateDate != undefined)
-          p.updated
-            |обновлено 
-            mixin formatDate(aCase.updateDate)
-  - else
-    - if (aCase.state == 'completed') completedCasesExist = true
+    mixin caseRow(aCase)
+  - else if (aCase.state == 'completed') completedCasesExist = true
 
 - if (completedCasesExist)
   .row(style="margin-top: 50px;")
-    h1.offsethalf Завершённые дела
+    h1.offsethalf.span8 Завершённые дела
 
-- each aCase in userCasesList
-  - if (aCase.state == 'completed')
-    hr
-    .row.user-case-list-item
-      .span8.offsethalf
-        p
-          a.caseName(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.caseId}
-
-          |  (создано 
-          mixin formatDate(aCase.createDate)
-          | )
-          // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} > 
-        p(style="margin-top: 15px;")
-          
-        p.status Текущий шаг: #{aCase.stepName}
-        p.message
-          img(src="/images/status-icon-info.png")
-          span.to-var Осталось ждать 2 дня
-
-      .span2.offset1
-        - if ( aCase.updateDate != undefined)
-          p.updated
-            |обновлено 
-            mixin formatDate(aCase.updateDate)
+  - each aCase in userCasesList
+    - if (aCase.state == 'completed')
+      hr   
+      mixin caseRow(aCase)

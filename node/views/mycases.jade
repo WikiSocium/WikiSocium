@@ -19,5 +19,16 @@ block content
       userCasesList.reverse();
       $('#userCasesList').html(casesListTamplate({'userCasesList':userCasesList, 'sort':"updateDate", 'direction':"desc"}));
     });
+  // script
+  //   $(function() {
+  //     $(".user-case-list-item").mouseenter(function(){
+  //       $(this).find(".hiddenbutton").css("display", "block");
+  //     }).mouseleave(function(){
+  //       $(this).find(".hiddenbutton").css("display", "none");
+  //     });
+  //   });
 
   #userCasesList
+
+  #endCasePopup
+    != partial('endCasePopup', {caseName: ""})
