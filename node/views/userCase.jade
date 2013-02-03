@@ -21,7 +21,7 @@ block content
     p
       !{solutionData.description}
 
-  div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup('"+caseName+"')") Завершить
+  div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup('"+caseName+"')") Завершить дело
 
   div(class = "steps", id = "stepsWrapper")
     - each step, i in solutionData.steps
@@ -34,11 +34,8 @@ block content
   div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
   div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
   div
-    span.btn(id="prev_btn", onClick="PrevStep()") Предыдущий шаг
-    | &nbsp;
-    span.btn(id="next_btn", onClick="NextStep()") Следующий шаг
-    | &nbsp;
-    a(href="/mycases") Перейти к списку кейсов
+    span.btn(id="prev_btn", onClick="PrevStep()") Назад
+    span.btn.btn-success(id="next_btn", onClick="NextStep()", style="margin-left: 15px;")
 
   #endCasePopup
     != partial('endCasePopup', {caseName: caseName})
