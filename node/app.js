@@ -800,7 +800,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
       if (caseContents == null) var caseContents = {};
       caseContents.name = caseId;
     }
-    caseContents.data = JSON.parse(req.body.jsonData);
+    caseContents.data = JSON.parse(decodeURIComponent(req.body.jsonData));
 
     var curStep = req.body.curStep;
     var nextStep = req.body.nextStep;
