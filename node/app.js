@@ -402,7 +402,9 @@ function getTopProblem ( problemsList, callback ) {
     callback(err, problemsList[0]);
   });
 }
-
+function pad(value) {
+  return value < 10 ? '0' + value : value;
+}
 function getCurrentDateTime() {
   date = new Date();  
   var d = date.getDate(); if (d < 10) d = '0'+d;
@@ -411,7 +413,14 @@ function getCurrentDateTime() {
   var h = date.getHours(); if (h < 10) h = '0'+h;
   var min = date.getMinutes(); if (min < 10) min = '0'+min;
   var s = date.getSeconds(); if (s < 10) s = '0'+s;
-  return y+'-'+m+'-'+d+' '+h+':'+min+':'+s;
+
+  var sign = (date.getTimezoneOffset() > 0) ? "-" : "+";
+  var offset = Math.abs(date.getTimezoneOffset());
+  var hours = pad(Math.floor(offset / 60));
+  var minutes = pad(offset % 60);
+  var gmt_offset = sign + hours + ":" + minutes;
+
+  return y+'-'+m+'-'+d+'T'+h+':'+min+':'+s+gmt_offset;
 }
 
 

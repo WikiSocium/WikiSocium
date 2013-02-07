@@ -17,8 +17,8 @@ mixin sortByMixin(system_name, human_name, default_direction, width)
     |  | 
     mixin sortByMixin("updateDate", "дате обновления", "desc")
 
-mixin formatDate(date)
-  - date = new Date(date);
+mixin formatDate(date_str)
+  - var date = new Date(Date.parse(date_str));
   - var d = date.getDate(); if (d < 10) d = '0'+d;
   - var m = date.getMonth()+1; if (m < 10) m = '0'+m;
   - var y = date.getFullYear();
