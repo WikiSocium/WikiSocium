@@ -1,6 +1,6 @@
 extends BaseWidget
 
-block content  
+block widget  
   div(class="WaitListTimers", id="WaitList_#{widget.id}")
   script
     step#{step_id}FieldsList['!{widget.id}'] = new WaitListWidget(!{JSON.stringify(value)});
