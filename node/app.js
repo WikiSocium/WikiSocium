@@ -312,7 +312,6 @@ function updateSolutionsCollection () {
               if (err != null) console.log(err);
               callback(err);
             });
-            callback(err);
           });          
         }
         else callback(err);
