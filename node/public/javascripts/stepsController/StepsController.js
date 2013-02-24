@@ -125,15 +125,10 @@ function NextStep()
         {
             if(nextPredicateWidgets.step_id[i] != undefined)
                 var nextPredicateWidgetsStepId = nextPredicateWidgets.step_id[i];
-            else var nextPredicateWidgetsStepId = step_index;
+            else
+                var nextPredicateWidgetsStepId = step_index;
             
-            //var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
-            console.log("nextPredicateWidgetsStepId: " + nextPredicateWidgetsStepId);
-            console.log("nextPredicateWidgets.widget_id[i]; " + nextPredicateWidgets.widget_id[i]);
-            var objForVal = groups[nextPredicateWidgetsStepId][nextPredicateWidgets.widget_id[i]];
-            // if(typeof objForVal == "undefined")
-            //     continue;
-            var value = objForVal.getValue();
+            var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
 
             if(value instanceof Object && value.value != undefined)
                 value = value.value;
