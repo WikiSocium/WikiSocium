@@ -54,7 +54,6 @@ block widget
     var initDocumentWidgetFunction = function()
     {          
     var times = !{JSON.stringify(widget.organizations_times)};
-    GenerateDocument_#{widget.doc_name}(); // [TODO] pass here currently selected function
     RegionalizedData.GetDataFromDBWithRegion(GetUserRegion(), 'organizations', !{JSON.stringify(widget.organizations)}, function(fetchedData) {
         $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
         
@@ -85,6 +84,8 @@ block widget
               for(var j = 0; j < data[i].length; j++)
               {                           
                   var title = data[i][j]["title"];
+                  if(k == 0 && i == 0 && j == 0)                  
+                      GenerateDocument_#{widget.doc_name}(title);
                   var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[k] + " дней)"));
                   var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
                   if(typeof(savedValue[title]) != "undefined")
