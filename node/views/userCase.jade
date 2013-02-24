@@ -22,35 +22,19 @@ block content-block
         else currentStepId = "#{solutionData.initialStep}";
         stepsHistory = !{JSON.stringify(stepsHistory)};
 
-      .row-fluid(style="background: white; height: 30px; padding: 25px 0 0 0; position: relative; z-index: 1;")
+      .row-fluid.StepsNavigatorHead
         .span8
           h1
             span(style="color: #ddd") #{solutionData.name}&nbsp;/
             span  #{caseName}
         .span2
           span.btn.showEndCasePopupButton(onClick="ShowEndCasePopup('"+caseName+"')") Завершить дело
-      //
-        h1
-          #{solutionData.name}: #{caseName} > #{currentStep}
-          - if (solutionData.sections!=undefined)
-            - each section, i in solutionData.sections
-              - each id, j in section.steps
-                - if (id=="#{currentStep}")
-                  #{section.name}
-                  #{j+1}/#{section.steps.length}
-
-      //
-        div(class="caseDescription")
-          p
-            !{solutionData.description}
 
     div#stepsWrapper.steps
       - each step, i in solutionData.steps
         - if (caseData == null)
-          //- console.log(step)
           !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:null, stepsData:caseData, step_index:i, sectionData:solutionData.sections})
-        - else
-          //- console.log(step)   
+        - else  
           !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], stepsData:caseData, step_index:i, sectionData:solutionData.sections})
     div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
     div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей

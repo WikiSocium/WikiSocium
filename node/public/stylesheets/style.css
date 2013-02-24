@@ -176,6 +176,14 @@
     margin-bottom: 10px;
 }
 
+.StepsNavigatorHead {
+  background: white;
+  height: 30px;
+  padding: 25px 0 0 0;
+  position: relative;
+  z-index: 1;
+}
+
 .steps
 {
 }
