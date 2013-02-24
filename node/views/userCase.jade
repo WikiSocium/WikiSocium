@@ -1,43 +1,61 @@
 extends layout
 
-block content
-  script(type='text/javascript')
-    var solutionData = !{JSON.stringify(solutionData)};
-    if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
-    else currentStepId = "#{solutionData.initialStep}";
-    stepsHistory = !{JSON.stringify(stepsHistory)};
-    
-  //h1 
-      #{solutionData.name}: #{caseName} > #{currentStep}
-      - if (solutionData.sections!=undefined)
-        - each section, i in solutionData.sections
-          - each id, j in section.steps
-            - if (id=="#{currentStep}")
-              #{section.name}
-              #{j+1}/#{section.steps.length}
+block header
+  div#heading-block(style="height: 50px; min-height: 50px;")
+    div#heading.container-fluid
+      .row-fluid
+        .span9(style="line-height: 50px;")
+          a(href="/", style="font-size: 24pt;") ВикиСоциум
+          span(style="font-size: 16pt;") &nbsp;/ 
+            a(href="/MyCases") Мои дела
+        #heading-login-form.span3(style="margin: 13px;")
+          div.formline
+            |#{user.name} &nbsp;
+            a(href='/Logout').btn(type='submit') Выйти
 
+block content-block
+  #content-block.StepsNavigator
+    .container-fluid
+      script(type='text/javascript')
+        var solutionData = !{JSON.stringify(solutionData)};
+        if ( checkStepExists ( "#{currentStep}" ) ) currentStepId = "#{currentStep}";
+        else currentStepId = "#{solutionData.initialStep}";
+        stepsHistory = !{JSON.stringify(stepsHistory)};
 
-  div(class="caseDescription")
-    p
-      !{solutionData.description}
+      .row-fluid(style="background: white; height: 30px; padding: 25px 0 0 0; position: relative; z-index: 1;")
+        .span8
+          h1
+            span(style="color: #ddd") #{solutionData.name}&nbsp;/
+            span  #{caseName}
+        .span2
+          span.btn.showEndCasePopupButton(onClick="ShowEndCasePopup('"+caseName+"')") Завершить дело
+      //
+        h1
+          #{solutionData.name}: #{caseName} > #{currentStep}
+          - if (solutionData.sections!=undefined)
+            - each section, i in solutionData.sections
+              - each id, j in section.steps
+                - if (id=="#{currentStep}")
+                  #{section.name}
+                  #{j+1}/#{section.steps.length}
 
-  div(class="btn showEndCasePopupButton", onClick="ShowEndCasePopup('"+caseName+"')") Завершить дело
+      //
+        div(class="caseDescription")
+          p
+            !{solutionData.description}
 
-  div(class = "steps", id = "stepsWrapper")
-    - each step, i in solutionData.steps
-      - if (caseData == null)
-        //- console.log(step)
-        !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:null, stepsData:caseData, step_index:i, sectionData:solutionData.sections})
-      - else
-        //- console.log(step)   
-        !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], stepsData:caseData, step_index:i, sectionData:solutionData.sections})
-  div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
-  div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
-  div
-    span.btn(id="prev_btn", onClick="PrevStep()") Назад
-    span.btn.btn-success(id="next_btn", onClick="NextStep()", style="margin-left: 15px;")
+    div#stepsWrapper.steps
+      - each step, i in solutionData.steps
+        - if (caseData == null)
+          //- console.log(step)
+          !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:null, stepsData:caseData, step_index:i, sectionData:solutionData.sections})
+        - else
+          //- console.log(step)   
+          !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], stepsData:caseData, step_index:i, sectionData:solutionData.sections})
+    div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
+    div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
 
-  #endCasePopup
-    != partial('endCasePopup', {caseName: caseName})
-    
-  #descriptionPopup
+    #endCasePopup
+      != partial('endCasePopup', {caseName: caseName})
+      
+    #descriptionPopup

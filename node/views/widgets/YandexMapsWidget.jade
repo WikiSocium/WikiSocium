@@ -4,8 +4,8 @@ block content
   div()
     div(style="margin-bottom: 4px;")
       input.input-xlarge.organization_name(type="text", class="YandexMapsWidgetInputWS", id="YandexMapsWidgetInputWS_#{widget.id}", data-provide="typeahead", data-source="[]")
-      div(id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link link")
-        Показать карту      
+      span.help-inline
+        a(href="#", onclick="return false", id="YandexMapsWidget_#{widget.id}_link", class="YandexMapsWidget_link inpage_link") Показать карту      
   div
     div(id="YandexMapsWidget_mapContainer_#{widget.id}", class="YandexMapsWidget_mapContainer")
       div(class="YandexMapsWidget_loadingIndicator")
@@ -13,38 +13,40 @@ block content
   script(type="text/javascript")
       $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
         $("#YandexMapsWidget_mapContainer_#{widget.id}").toggle();
-        $("#YandexMapsWidget_#{widget.id}").toggle();        
+        $("#YandexMapsWidget_#{widget.id}").toggle();
         
         // [TODO] determine type of object and select proper zoom
-        var myPlacemark = new ymaps.Placemark(
-            window["#{widget.id}_map_coords"][0],
-            {},
-            {
-                draggable: true, // метку должно быть можно перемещать, но при этом должны сохраняться новые координаты (!!!)
-                preset: 'twirl#whiteStretchyIcon'
-            }
-        );
-        myPlacemark.events.add("dragend", function(e){
-            var newBounds = e.originalEvent.target.geometry.getBounds();
-            
-            var myGeocoder = ymaps.geocode(newBounds[0]);
-            myGeocoder.then(function(res){
-              var names = [];
-              res.geoObjects.each(function(obj){
-                names.push(obj.properties.get("name"));
-              });
+        if (window["#{widget.id}_map_coords"] != undefined) {
+          var myPlacemark = new ymaps.Placemark(
+              window["#{widget.id}_map_coords"][0],
+              {},
+              {
+                  draggable: true, // метку должно быть можно перемещать, но при этом должны сохраняться новые координаты (!!!)
+                  preset: 'twirl#whiteStretchyIcon'
+              }
+          );
+          myPlacemark.events.add("dragend", function(e){
+              var newBounds = e.originalEvent.target.geometry.getBounds();
               
-              var anotherGeocoder = ymaps.geocode(names.join(", "));
-              anotherGeocoder.then(function(res){                
-                $("#YandexMapsWidgetInputWS_#{widget.id}").val(res.geoObjects.get(0).properties.get('text'));
-                window["#{widget.id}_map_coords"] = newBounds;                
-              });              
-            });            
-        });
-        YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
-        YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
-      
-        YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
+              var myGeocoder = ymaps.geocode(newBounds[0]);
+              myGeocoder.then(function(res){
+                var names = [];
+                res.geoObjects.each(function(obj){
+                  names.push(obj.properties.get("name"));
+                });
+                
+                var anotherGeocoder = ymaps.geocode(names.join(", "));
+                anotherGeocoder.then(function(res){                
+                  $("#YandexMapsWidgetInputWS_#{widget.id}").val(res.geoObjects.get(0).properties.get('text'));
+                  window["#{widget.id}_map_coords"] = newBounds;                
+                });              
+              });            
+          });
+          YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
+          YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
+        
+          YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
+        }
       });
       $('html').keyup(function(e){
           if(e.keyCode == 27)

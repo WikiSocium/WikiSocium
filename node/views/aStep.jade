@@ -1,74 +1,75 @@
 div(class="step", id="step_" + step_index + "")
-  h2.stepTitle
-    - if (name != undefined)
-      span #{name}: 
-    - if (caseName != undefined)
-      span #{caseName}
-    &nbsp;> 
-    - if (sectionData == undefined)
-      span #{step.title}
-    - else
-      - each section, i in sectionData
-        - each id, j in section.steps
-          - if (id==step.id)
-            span #{section.name} > #{step.title} (#{j+1}/#{section.steps.length})
-  br
-  
-  #widgets
-    script(type = 'text/javascript')
-      var step#{step_index}FieldsList = [];
-      var notEmptyStep = false;
-    //- If groups are defined, render widgets in them
-    //- console.log("init")
-    //- console.log("---------TYPEOF----------")
-    //- console.log(typeof(step.widget_groups))
-    - if(typeof(step.widget_groups) != 'undefined')
-      - each widget_group in step.widget_groups
-        - var groupDivClass = "widgetGroup";
-        - if(widget_group.no_group == "true") //-if widgets are meant to be shown outside group (only CSS magic)
-          - groupDivClass = "";
-        //-div(class="#{groupDivClass}")
+  .container-fluid
+    .row-fluid
+      .span12
+        div.btn.prev_btn(onClick="PrevStep()", style="float: left;") &uarr;&nbsp;Назад
+        h2.stepTitle(style="margin-left: 160px; margin-top: -5px")
+          - if (sectionData == undefined)
+            span #{step.title}
+          - else
+            - each section, i in sectionData
+              - each id, j in section.steps
+                - if (id==step.id)
+                  span #{section.name}: #{step.title} (#{j+1} из #{section.steps.length})
+
+    #widgets
+      script(type = 'text/javascript')
+        var step#{step_index}FieldsList = [];
+        var notEmptyStep = false;
+      //- If groups are defined, render widgets in them
+      //- console.log("init")
+      //- console.log("---------TYPEOF----------")
+      //- console.log(typeof(step.widget_groups))
+      - if(typeof(step.widget_groups) != 'undefined')
+        - each widget_group in step.widget_groups
+          - var groupDivClass = "widgetGroup";
+          - if(widget_group.no_group == "true") //-if widgets are meant to be shown outside group (only CSS magic)
+            - groupDivClass = "";
+          //-div(class="#{groupDivClass}")
+          form.form-horizontal
+            fieldset
+              .row-fluid
+                legend #{widget_group.title}
+              - each widget in widget_group.widgets
+                - if (stepData == null)
+                  //- console.log("init")
+                  //- console.log(widget.initial)
+                  !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial, all_values:stepsData})
+                - else
+                  //- console.log("Widget " + widget.id + " initialization with data loading");
+                  !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id], all_values:stepsData})
+      - else //- Else render all widgets in one implicit group
         form.form-horizontal
           fieldset
-            .row-fluid
-              legend #{widget_group.title}
-            - each widget in widget_group.widgets
+            //- console.log("---------TYPEOF STEP WIDGETS----------")
+            //- console.log(typeof(step.widgets))
+            - each widget in step.widgets
+              //- console.log("---------------Widget" + widget.id + "----------------")
               - if (stepData == null)
                 //- console.log("init")
                 //- console.log(widget.initial)
-                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial, all_values:stepsData})
+                //- console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
+                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial})
               - else
-                //- console.log("Widget " + widget.id + " initialization with data loading");
-                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id], all_values:stepsData})
-    - else //- Else render all widgets in one implicit group
-      form.form-horizontal
-        fieldset
-          //- console.log("---------TYPEOF STEP WIDGETS----------")
-          //- console.log(typeof(step.widgets))
-          - each widget in step.widgets
-            //- console.log("---------------Widget" + widget.id + "----------------")
-            - if (stepData == null)
-              //- console.log("init")
-              //- console.log(widget.initial)
-              //- console.log("Widget " + widget.id + " initialization with: " + widget.initial);              
-              !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:widget.initial})
-            - else
-              //- console.log("Widget " + widget.id + " initialization with data loading. StepData: " + JSON.stringify(stepData));
-              !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id]})
-    script(type = 'text/javascript')
-      groups[#{step_index}] = step#{step_index}FieldsList;
-    !="<script type = 'text/javascript'>"
-    - if(typeof(step.widget_groups) != 'undefined')
-      - each widget_group in step.widget_groups
-        - each widget in widget_group.widgets
+                //- console.log("Widget " + widget.id + " initialization with data loading. StepData: " + JSON.stringify(stepData));
+                !=partial("widgets/" + widget.widget_type + ".jade", {widget:widget, step_id:step_index, value:stepData[widget.id]})
+      script(type = 'text/javascript')
+        groups[#{step_index}] = step#{step_index}FieldsList;
+      !="<script type = 'text/javascript'>"
+      - if(typeof(step.widget_groups) != 'undefined')
+        - each widget_group in step.widget_groups
+          - each widget in widget_group.widgets
+            - if (!(typeof(widget.change_visibility) == "undefined"))
+              !="groups[" + step_index + "][\"" + widget.id + "\"].on(\"updated\", function() { var to_change = currentCaseData.ChangeVisibility(" + step_index + ", \"" + widget.id + "\", groups[" + step_index + "][\"" + widget.id + "\"].getValue()); for (var i = 0; i < to_change.length; i ++) { if (to_change[i].show == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].show(); } else if (to_change[i].hide == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].hide(); }}});"
+            - if (widget.hidden == true)
+              !="groups[" + step_index + "][\"" + widget.id + "\"].hide();"
+      - else
+        - each widget in step.widgets
           - if (!(typeof(widget.change_visibility) == "undefined"))
             !="groups[" + step_index + "][\"" + widget.id + "\"].on(\"updated\", function() { var to_change = currentCaseData.ChangeVisibility(" + step_index + ", \"" + widget.id + "\", groups[" + step_index + "][\"" + widget.id + "\"].getValue()); for (var i = 0; i < to_change.length; i ++) { if (to_change[i].show == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].show(); } else if (to_change[i].hide == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].hide(); }}});"
           - if (widget.hidden == true)
             !="groups[" + step_index + "][\"" + widget.id + "\"].hide();"
-    - else
-      - each widget in step.widgets
-        - if (!(typeof(widget.change_visibility) == "undefined"))
-          !="groups[" + step_index + "][\"" + widget.id + "\"].on(\"updated\", function() { var to_change = currentCaseData.ChangeVisibility(" + step_index + ", \"" + widget.id + "\", groups[" + step_index + "][\"" + widget.id + "\"].getValue()); for (var i = 0; i < to_change.length; i ++) { if (to_change[i].show == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].show(); } else if (to_change[i].hide == true) { groups[currentCaseData.GetStepIndexById(to_change[i].step_id)][to_change[i].widget_id].hide(); }}});"
-        - if (widget.hidden == true)
-          !="groups[" + step_index + "][\"" + widget.id + "\"].hide();"
-    !="</script>"
+      !="</script>"
+
+    .row-fluid(style="border-top: 1px solid #e5e5e5; margin-top: -22px; padding-top: 10px;")
+      span.btn.btn-success.next_btn(onClick="NextStep()") Дальше&nbsp;&darr;
