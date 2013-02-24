@@ -25,14 +25,20 @@ block widget
                     var waitTimeLeft = (parseInt(interval)-parseInt(left));
                     
                     var buttonsVisibilityUpdate = function(arg){
-                        if(step#{step_id}FieldsList['!{widget.id}'].passable == "passable")
+                        if(step#{step_id}FieldsList['!{widget.id}'].value == "passable")
                         {
                             noResponseButton.css({"display" : "none"});
                             responseReceivedButton.css({"display" : "none"});
-                            if(arg == 1)                            
+                            if(arg == 1)
+                            {                    
                                 responseNotReallyReceived.css({"display" : "inline-block"});
+                                responseReallyReceived.css({"display" : "none"});
+                            }
                             if(arg == 2)                                
-                                responseReallyReceived.css({"display" : "inline-block"});                                                                        
+                            {
+                                responseNotReallyReceived.css({"display" : "none"});
+                                responseReallyReceived.css({"display" : "inline-block"});
+                            }
                         }
                         else
                         {
@@ -52,32 +58,32 @@ block widget
                     var noResponseButton = $('<div/>').addClass("btn documentOrganizationTimerNoResponse").text("Ответ так и не пришел").click(function(){
                         if(typeof($(this).attr("disabled")) == "undefined")
                         {                        
-                            step#{step_id}FieldsList['!{widget.id}'].passable = "passable";
+                            step#{step_id}FieldsList['!{widget.id}'].value = "passable";
                             buttonsVisibilityUpdate(2);
                         }
                     });
                     var responseReceivedButton = $('<div/>').addClass("btn documentOrganizationTimerResponseReceived").text("Ответ пришел").click(function(){
                         if(typeof($(this).attr("disabled")) == "undefined")
                         {                        
-                            step#{step_id}FieldsList['!{widget.id}'].passable = "passable";
+                            step#{step_id}FieldsList['!{widget.id}'].value = "passable";
                             buttonsVisibilityUpdate(1);                        
                         }
                     });
                     var responseNotReallyReceived = $('<div/>').addClass("btn documentOrganizationTimerResponseNotReallyReceived").text("А, нет, ответ все же не пришел").click(function(){    
                         if(typeof($(this).attr("disabled")) == "undefined")
                         {                        
-                            step#{step_id}FieldsList['!{widget.id}'].passable = "not passable";
+                            step#{step_id}FieldsList['!{widget.id}'].value = "not passable";
                             buttonsVisibilityUpdate(1);                        
                         }
                     });
                     var responseReallyReceived = $('<div/>').addClass("btn documentOrganizationTimerResponseReallyReceived").text("А, нет, ответ все же пришел").click(function(){
                         if(typeof($(this).attr("disabled")) == "undefined")
                         {
-                            step#{step_id}FieldsList['!{widget.id}'].passable = "not passable";
+                            step#{step_id}FieldsList['!{widget.id}'].value = "not passable";
                             buttonsVisibilityUpdate(2);                        
                         }
                     });           
-                    buttonsVisibilityUpdate();           
+                    buttonsVisibilityUpdate(step#{step_id}FieldsList['!{widget.id}'].isok);
                     
                     $("#WaitList_#{widget.id}").append($("<div/>").css({"display":"inline-block", "margin-right":"5px"}).text(i + " : осталось ждать " + waitTimeLeft + " дней")).append(responseReceivedButton).append(responseReallyReceived).append(noResponseButton).append(responseNotReallyReceived);
                 }

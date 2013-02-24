@@ -128,7 +128,12 @@ function NextStep()
             else var nextPredicateWidgetsStepId = step_index;
             
             //var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
-            var value = groups[nextPredicateWidgetsStepId][nextPredicateWidgets.widget_id[i]].getValue();
+            console.log("nextPredicateWidgetsStepId: " + nextPredicateWidgetsStepId);
+            console.log("nextPredicateWidgets.widget_id[i]; " + nextPredicateWidgets.widget_id[i]);
+            var objForVal = groups[nextPredicateWidgetsStepId][nextPredicateWidgets.widget_id[i]];
+            // if(typeof objForVal == "undefined")
+            //     continue;
+            var value = objForVal.getValue();
 
             if(value instanceof Object && value.value != undefined)
                 value = value.value;
