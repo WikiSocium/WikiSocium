@@ -82,10 +82,9 @@ block widget
           for(var i = 0; i < data.length; i++)
           {    
               for(var j = 0; j < data[i].length; j++)
-              {                           
+              {            
+                  var aData = data[i][j];               
                   var title = data[i][j]["title"];
-                  if(k == 0 && i == 0 && j == 0)                  
-                      GenerateDocument_#{widget.doc_name}(title);
                   var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[k] + " дней)"));
                   var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
                   if(typeof(savedValue[title]) != "undefined")
@@ -112,6 +111,14 @@ block widget
                       }
                   });
                   var rec = $("<div class='documentOrganizationsRecord'></div>").append(orgTitle).append(orgTimer);
+                  if(k == 0 && i == 0 && j == 0)                  
+                      GenerateDocument_#{widget.doc_name}(data[i][j]);
+                  $(rec).click((function(aData){
+                      return function(event){
+                          console.log(aData);
+                          GenerateDocument_#{widget.doc_name}(aData);  
+                      };
+                  })(aData));
                   var cont = $("<div class='documentOrganizationsRecordDescription'></div>");
                   for(var key in data[i][j]["description"])
                   {
@@ -143,11 +150,7 @@ block widget
             $(".documentOrganizationsRecordDescription").show();
         $(".documentOrganizationsRecord").click(function(){
             $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
-            $(this).children(".documentOrganizationsRecordDescription").show();
-            
-            // Re-generate document
-            var title = $(this).find("div[class^='documentOrganizationTimer']").attr("org_title");
-            GenerateDocument_#{widget.doc_name}(title);
+            $(this).children(".documentOrganizationsRecordDescription").show();            
         });
     });
     };

@@ -105,7 +105,7 @@ app.dynamicHelpers({
 
 
 function authenticateFromLoginToken(req, res, next) {
-  var cookie = JSON.parse(req.cookies.logintoken);
+  var cookie = JSONParseSafe(req.cookies.logintoken);
 
   LoginToken.findOne({ user_id: cookie.user_id,
                        series: cookie.series,
@@ -293,7 +293,7 @@ function updateSolutionsCollection () {
     async.forEach(solutions, function(solution, callback) {
       fs.readFile('data/solutions/'+solution.filename, "utf-8", function(err, data) {
         if(!err) {
-          var solutionData = JSON.parse(data);
+          var solutionData = JSONParseSafe(data);
           solution.name = solutionData.name;
           solution.description = solutionData.description;
           Solution.findOne ({ name: solution.name }, function(err, document) {
@@ -321,7 +321,7 @@ function updateSolutionsCollection () {
       Solution.find({}, function(err,documents) {
         async.forEach(documents, function(document,callback) {
           fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
-            if(!err) var solutionData = JSON.parse(data);
+            if(!err) var solutionData = JSONParseSafe(data);
             if (err || solutionData.name != document.name) {
               document.remove();
             }
@@ -650,7 +650,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
     var caseId = req.param('CaseId', null).replace(/_/g," ");
     fs.readFile('data/UserData/' + user_id + '/user.json', "utf-8", function(err, data){
       if (!err) {
-        var userJSON = JSON.parse(data);
+        var userJSON = JSONParseSafe(data);
         var solutionName = false;
         for (var key in userJSON.cases) {
             if (userJSON.cases[key].caseId == caseId) {
@@ -664,7 +664,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
               fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
                 if(!err) 
                 {
-                  var solutionData = JSON.parse(data);
+                  var solutionData = JSONParseSafe(data);
                   var stylesToInject = [
                     '/stylesheets/widgets.css'
                   ];
@@ -717,7 +717,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                       err = false;
                     }
                     else {
-                      var caseContents = JSON.parse(caseContentsJson);
+                      var caseContents = JSONParseSafe(caseContentsJson);
                       if (caseContents == null) var caseContents = {};
                     }
 
@@ -751,7 +751,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
 //Запрос списка регионов
 app.post('/GetRegions', function(req, res) {
     var regions_list = fs.readFileSync('data/regions.json', "utf-8");
-    res.send(JSON.parse(regions_list));
+    res.send(JSONParseSafe(regions_list));
 });
 
 //
@@ -804,11 +804,11 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
       err = false;
     }
     else {
-      var caseContents = JSON.parse(caseContentsJson);
+      var caseContents = JSONParseSafe(caseContentsJson);
       if (caseContents == null) var caseContents = {};
       caseContents.name = caseId;
     }
-    caseContents.data = JSON.parse(decodeURIComponent(req.body.jsonData));
+    caseContents.data = JSONParseSafe(decodeURIComponent(req.body.jsonData));
 
     var curStep = req.body.curStep;
     var nextStep = req.body.nextStep;
@@ -829,7 +829,7 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
           console.log(err);
         }
         else {
-          var userFileContents = JSON.parse( userJson );
+          var userFileContents = JSONParseSafe( userJson );
           for (var key in userFileContents.cases)
             if ( userFileContents.cases[key].caseId == caseId ) userFileContents.cases[key].updateDate = getCurrentDateTime();
           fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userFileContents, null, "\t"), function (err) {});
@@ -849,7 +849,7 @@ app.post('/MyCases/:CaseName/endCase', loadUser, generateMenu, getHeaderStats, f
     var solution_name = "";
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
-        var userData = JSON.parse(data);
+        var userData = JSONParseSafe(data);
         for(var i = 0; i < userData.cases.length; i++)
         {
           if ( userData.cases[i].caseId == CaseName ) {
@@ -892,7 +892,7 @@ app.post('/MyCases/:CaseName/reopen', loadUser, function(req, res) {
   else {
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
-        var userData = JSON.parse(data);
+        var userData = JSONParseSafe(data);
         for(var i = 0; i < userData.cases.length; i++)
         {
           if ( userData.cases[i].caseId == CaseName ) {
@@ -928,7 +928,7 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
     fs.readFile('data/UserData/'+req.currentUser.user_id+'/user.json', "utf-8", function(err, data){
       if(!err) 
       {
-        var userData=JSON.parse(data);
+        var userData=JSONParseSafe(data);
         async.forEach (userData.cases, function (curCase, callback)
         {
           console.log(curCase.caseId);
@@ -937,7 +937,7 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
             if (!err1)
             {
               console.log(data1);
-              var caseData=JSON.parse(data1);
+              var caseData=JSONParseSafe(data1);
               console.log(caseData.currentStep);
               Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
               {
@@ -948,7 +948,7 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
                   {
                     if (!err2)
                     {
-                      var solutionData=JSON.parse(data2);
+                      var solutionData=JSONParseSafe(data2);
                       var currentStepNum=0;
                       for (var cs in solutionData.steps)
                       {
@@ -1018,6 +1018,19 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
   }
 });
 
+function JSONParseSafe(JSONToParse)
+{
+    try
+    {
+        return JSON.parse(JSONToParse);
+    }
+    catch(e)
+    {
+        console.log("FAILED TO PARSE JSON: " + e);
+        return {};
+    }
+}
+
 function parseReturnTo ( req_query_return_to ) {
   if (req_query_return_to == undefined) return '/';
   else return req_query_return_to;
@@ -1029,7 +1042,7 @@ function createCaseFile ( userName, caseId, solutionName ) {
     if (document) {
       fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
         if(!err) {
-          var solutionData = JSON.parse(data);
+          var solutionData = JSONParseSafe(data);
           
           var caseContents = {};
           caseContents.name = caseId;
@@ -1074,7 +1087,7 @@ app.post('/MyCases/AddCase', loadUser, generateMenu, getHeaderStats, function(re
     
     fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, data) {
       if (!err) {
-        var userJSON = JSON.parse(data);
+        var userJSON = JSONParseSafe(data);
         var case_obj = {
           problemName: ProblemName,
           solutionId: solutionName,
@@ -1219,7 +1232,7 @@ function checkUserEnv ( user_id ) {
         
   data = fs.readFileSync('data/UserData/' + user_id + '/user.json', "utf-8");
   if ( data == "" ) throw "Empty user.json file"; 
-  var userData = JSON.parse(data);
+  var userData = JSONParseSafe(data);
   if ( userData.id == null ) throw "Incorrect user.json file";
 }
 
@@ -1374,14 +1387,14 @@ app.get('/social/:social_name', function(req, res) {
           function (error, response, body) {
             if (!error && response.statusCode == 200) {
               console.log(body);
-              body = JSON.parse(body);
+              body = JSONParseSafe(body);
               
               request('https://api.vk.com/method/users.get?uids=' + body.user_id + 
                 '&fields=uid,first_name,last_name&access_token='+body.access_token,
                 function (error, response, body) {
                   if (!error && response.statusCode == 200) {
                     console.log(body);
-                    var answer = JSON.parse(body).response[0];
+                    var answer = JSONParseSafe(body).response[0];
                     var user = {
                       'uid' : answer.uid,
                       'name' : answer.first_name+' '+answer.last_name
@@ -1410,7 +1423,7 @@ app.get('/social/:social_name', function(req, res) {
               request('https://graph.facebook.com/me?'+body ,
                 function(error, response, body) {
                   if (!error && response.statusCode == 200) {
-                    var answer = JSON.parse(body);
+                    var answer = JSONParseSafe(body);
                     var user = {
                       'uid' : answer.id,
                       'name' : answer.name
@@ -1720,7 +1733,7 @@ app.get('/admin/organizations/add', loadUser, generateMenu, getHeaderStats, func
         'headerStats': res.headerStats,
         'scripts':  ['/javascripts/admin.js'],
         'styles':   [],
-        'regions_list': JSON.parse(regions_list),
+        'regions_list': JSONParseSafe(regions_list),
         'existing_organization_names': organizations,
         'adding_result': req.query.adding_result
       })
@@ -2115,8 +2128,8 @@ for(var i = 0; i < documents.length; i++)
             var fn = jade.compile(file, { client: true, pretty: true });
             // Well, this is a fragile place. We utilize an info, that CollectFormData and #documentViewDOCNAME exist
             var doc_code = "function GenerateDocument_" + lines[0] +
-                           "(org_id){$('#documentView_" + lines[0] +
-                           "').html((" + fn + ")({'data':CollectFormData(), 'org_id':org_id}));}"
+                           "(org){$('#documentView_" + lines[0] +
+                           "').html((" + fn + ")({'data':CollectFormData(), 'org':org}));}"
             fs.writeFileSync('public/documents/' + lines[0] + '.js', doc_code);
         }
         catch(err)
