@@ -1,6 +1,12 @@
 extends BaseWidget
 
-block widget  
+block widget
+  - if (widget.label != undefined)
+    label
+      - if (widget.label.name == undefined)
+        | !{widget.label}
+      - else
+        | !{widget.label.name}
   <div class="document_container">
   <div class="document_textarea">
   <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
