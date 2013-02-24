@@ -2115,8 +2115,8 @@ for(var i = 0; i < documents.length; i++)
             var fn = jade.compile(file, { client: true, pretty: true });
             // Well, this is a fragile place. We utilize an info, that CollectFormData and #documentViewDOCNAME exist
             var doc_code = "function GenerateDocument_" + lines[0] +
-                           "(){$('#documentView_" + lines[0] +
-                           "').html((" + fn + ")({'data':CollectFormData()}));}"
+                           "(org_id){$('#documentView_" + lines[0] +
+                           "').html((" + fn + ")({'data':CollectFormData(), 'org_id':org_id}));}"
             fs.writeFileSync('public/documents/' + lines[0] + '.js', doc_code);
         }
         catch(err)

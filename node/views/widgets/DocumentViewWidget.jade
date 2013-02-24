@@ -54,7 +54,7 @@ block widget
     var initDocumentWidgetFunction = function()
     {          
     var times = !{JSON.stringify(widget.organizations_times)};
-    GenerateDocument_#{widget.doc_name}();
+    GenerateDocument_#{widget.doc_name}(); // [TODO] pass here currently selected function
     RegionalizedData.GetDataFromDBWithRegion(GetUserRegion(), 'organizations', !{JSON.stringify(widget.organizations)}, function(fetchedData) {
         $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
         
@@ -145,8 +145,8 @@ block widget
             $(this).children(".documentOrganizationsRecordDescription").show();
             
             // Re-generate document
-            // [TODO]
-            // GenerateDocument_#{widget.doc_name}();            
+            var title = $(this).find("div[class^='documentOrganizationTimer']").attr("org_title");
+            GenerateDocument_#{widget.doc_name}(title);
         });
     });
     };
