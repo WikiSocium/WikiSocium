@@ -36,7 +36,7 @@
 .YandexMapsWidget_mapContainer
 {
     display: none;
-    position: absolute;
+    position: fixed;
   
     top: 0px;
     left: 0px;
@@ -52,17 +52,14 @@
 
 .YandexMapsWidget_map
 {
-  position: fixed;
   display: block;
+  position: fixed;
   
-  top:50%;
-  left:50%;
-  
-  margin-left: -30%;
-  margin-top: -30%;
+  top: 15%;
+  left: 15%;
     
-  width: 60%;
-  height: 60%;
+  width: 70%;
+  height: 70%;
   
   z-index: 1004;
   
@@ -164,13 +161,41 @@
     margin-right: 10px;    
 }
 
+.StepsNavigator {
+    bottom: 40px;
+    overflow-x: auto;
+    overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 51px;
+    width: 100%;
+}
+
+.StepsNavigator .container-fluid {
+    margin-bottom: 10px;
+}
+
+.StepsNavigatorHead {
+  background: white;
+  height: 30px;
+  padding: 25px 0 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+.steps
+{
+}
+
 .step
 {
-    margin-top: 10px;
-    margin-bottom: 10px;
     background-color: #fff;
-    
-    display: block;    
+    display: block;
+    margin: 65px 0 0 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
 }
 
 .step.isInvisible
@@ -333,14 +358,4 @@
 .NameText
 {
     font-size: 14px;
-}
-
-iref {
-  border-bottom: 1px dashed #6e6e6e;
-  cursor: pointer;
-}
-iref:hover {
-  border-bottom: 0;
-}
-
 }

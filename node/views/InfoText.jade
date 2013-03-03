@@ -3,7 +3,7 @@ block content
     div(class="DescriptionText")
       !{InfoText.description}   
       script(type="text/javascript")
-        $("iref").click(function()
+        $("iref").addClass("inpage_link").click(function()
         {
           var dataIds=[];
           dataIds.push($(this).attr("dataId"));

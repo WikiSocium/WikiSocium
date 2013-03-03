@@ -29,14 +29,36 @@ function checkStepExists (step_id)
   return false;
 }
 
-function ShowProperStep()
+function ShowProperStep(direction)
 {
-  var temporaryCurrentStep = currentCaseData.GetStepIndexById (currentStepId);
-  if(temporaryCurrentStep <= currentCaseData.GetNumberOfSteps()) 
-  { 
-      $(".step").hide().toggleClass("isInvisible");
-      $("#"+"step_"+temporaryCurrentStep).fadeToggle(300);//.toggleClass("isInvisible");
+  // direction = null;
+  var stepToShowIndex = currentCaseData.GetStepIndexById (currentStepId);
+  if (direction == null) {
+    if(stepToShowIndex <= currentCaseData.GetNumberOfSteps()) { 
+      $(".step:visible").hide();
+      $("#"+"step_"+stepToShowIndex).fadeToggle(300);//.toggleClass("isInvisible");
+    }
   }
+  else {
+    var stepToHide = $(".step:visible");
+    var stepToShow = $("#"+"step_"+stepToShowIndex);
+    switch(direction) {
+      case "backward":
+        stepToShow.css('top','-100%').show();
+        stepToHide.animate({top: '100%'}, 500, function(){
+          $(this).hide();
+        });
+        stepToShow.animate({top: '0%'}, 500);
+        break;
+      case "forward":
+        stepToShow.css('top','100%').show();
+        stepToHide.animate({top: '-100%'}, 500, function(){
+          $(this).hide();
+        });
+        stepToShow.animate({top: '0%'}, 500);
+        break;
+    }
+  }  
 }
 
 function SaveFormData( curStep, nextStep, callback )
@@ -104,7 +126,7 @@ function CollectFormData()
 
 function NextStep() 
 {
-    if ($("#next_btn").attr("disabled")!="disabled")
+    if ($(".next_btn").attr("disabled")!="disabled")
     {
         //Производим валидацию шага
 
@@ -226,7 +248,7 @@ function FindNextStep(step_index)
             {
                 previousStepId = currentStepId;
                 currentStepId = nextStepId;
-                ShowProperStep();
+                ShowProperStep("forward");
                 OnWidgetChanged();
             }
         });
@@ -362,7 +384,7 @@ function PrevStep()
     
     //Сохраняем на сервере введенные данные
     SaveFormData( previousStepId, currentStepId, function(){
-        ShowProperStep();
+        ShowProperStep("backward");
         OnWidgetChanged();
     });    
   }
@@ -434,7 +456,7 @@ function CheckButtonNext (stepnum)
     }
     if (endExists == false)
     {
-        $("#next_btn").text("Следующий шаг");
+        $("#next_btn").text("Далее");
     }
     if (disableExists == false)
     {
@@ -500,7 +522,7 @@ function CheckButtonNext (stepnum)
         }
         else
         {
-           $("#next_btn").text("Следующий шаг");
+           $("#next_btn").text("Далее");
         }
         if (dis == true)
         {

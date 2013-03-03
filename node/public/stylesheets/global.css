@@ -4,9 +4,8 @@ html {
 
 body {
 	margin: 0;
-	min-height:100%;
-  padding-bottom: 1px;
-	position:relative;
+	min-height: 100%;
+	position: relative;
 }
 
 body, p, div {
@@ -16,12 +15,12 @@ body, p, div {
   line-height: 16pt;
 }
 
-#heading, #menu, #submenu, #content-block, #footer {
+.container-fluid {
   margin: 0 3%;
 }
 
-a:link, a:visited, div.link {
-  cursor: pointer;  
+a:link, a:visited, div.link, iref {
+  cursor: pointer;
   color: #34b0bf;
   text-decoration: underline;
 }
@@ -30,12 +29,12 @@ a:hover, a:active, div.link:hover, div.link:active {
   text-decoration: none;
 }
 
-a.inpage_link:link, a.inpage_link:visited {
+a.inpage_link:link, a.inpage_link:visited, iref.inpage_link {
   border-bottom: 1px dashed #34b0bf;
   text-decoration: none;
 }
 
-a.inpage_link:hover, a.inpage_link:active {
+a.inpage_link:hover, a.inpage_link:active, iref.inpage_link:hover {
   border-bottom: 0;
   text-decoration: none;
 }
@@ -111,7 +110,7 @@ ul.orangedot {
 }
 
 #content-block {
-  margin-bottom: 100px;
+  padding-bottom: 100px;
 }
 
 #footer-block {
@@ -252,7 +251,7 @@ ul.orangedot {
 }
 
 #heading-login-form {
-  margin-top: 32px;
+  margin-top: 33px;
 }
 
 #heading-login-form * {
@@ -265,6 +264,9 @@ ul.orangedot {
 #heading-login-form .formline {
   padding-right: 5px;
   position: absolute;
+}
+#heading-login-form .formline a.btn {
+  margin-top: -2px;
 }
 #heading-login-form input {
   margin-right: 2px;

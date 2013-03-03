@@ -22,132 +22,134 @@ html
       script(type='text/javascript', src=script)
        
   body
-    #heading-block
-      #heading.container-fluid
-        .row-fluid
-          .span5
-            h1#logo
-              a(href="/") ВикиСоциум
-          #heading-stat.span4
-            mixin getProblemWordEnding ( number )
-              - var mod10 = number % 10;
-              - if ( number < 10 || number > 20 )
-                - if ( mod10 == 1 )
-                  |а
-                - if ( mod10 >= 2 && mod10 <= 4 )
-                  |ы
-            mixin getSolutionWordEnding ( number )
-              - var mod10 = number % 10;
-              - if ( number <= 10 || number > 20 )
-                - if ( mod10 == 1 )
-                  |е
-                - if ( mod10 >= 2 && mod10 <= 4 )
-                  |я
+    block header
+      #heading-block
+        #heading.container-fluid
+          .row-fluid
+            .span5
+              h1#logo
+                a(href="/") ВикиСоциум
+            #heading-stat.span4
+              mixin getProblemWordEnding ( number )
+                - var mod10 = number % 10;
+                - if ( number < 10 || number > 20 )
+                  - if ( mod10 == 1 )
+                    |а
+                  - if ( mod10 >= 2 && mod10 <= 4 )
+                    |ы
+              mixin getSolutionWordEnding ( number )
+                - var mod10 = number % 10;
+                - if ( number <= 10 || number > 20 )
+                  - if ( mod10 == 1 )
+                    |е
+                  - if ( mod10 >= 2 && mod10 <= 4 )
+                    |я
+                  - else
+                    |й
                 - else
-                  |й
-              - else
-                |ий
-            mixin getCaseWordEnding ( number )
-              - var mod10 = number % 10;
-              - if ( number < 10 || number > 20 )
-                - if ( mod10 == 1 )
-                  |о
-                - if ( mod10 >= 2 && mod10 <= 4 )
-                  |а
-            mixin getUserWordEnding ( number )
-              - var mod10 = number % 10;
-              - if ( number < 10 || number > 20 )
-                - if ( mod10 == 1 )
-                  |ь
-                - if ( mod10 >= 2 && mod10 <= 4 )
-                  |я
+                  |ий
+              mixin getCaseWordEnding ( number )
+                - var mod10 = number % 10;
+                - if ( number < 10 || number > 20 )
+                  - if ( mod10 == 1 )
+                    |о
+                  - if ( mod10 >= 2 && mod10 <= 4 )
+                    |а
+              mixin getUserWordEnding ( number )
+                - var mod10 = number % 10;
+                - if ( number < 10 || number > 20 )
+                  - if ( mod10 == 1 )
+                    |ь
+                  - if ( mod10 >= 2 && mod10 <= 4 )
+                    |я
+                  - else
+                    |ей
                 - else
                   |ей
-              - else
-                |ей
-            b #{headerStats.problems_number}
-            |&nbsp;проблем
-            mixin getProblemWordEnding ( headerStats.problems_number )
-            |, 
-            b #{headerStats.solutions_number}
-            |&nbsp;решени
-            mixin getSolutionWordEnding ( headerStats.solutions_number )
-            |,<br />
-            b #{headerStats.cases_number}
-            |&nbsp;дел
-            mixin getCaseWordEnding ( headerStats.cases_number )
-            |, 
-            b #{headerStats.users_number}
-            |&nbsp;пользовател
-            mixin getUserWordEnding ( headerStats.users_number )
-          #heading-login-form.span3
-            div.formline
-              - if (user.guest)
-                form.form-inline(method='post', action='/sessions')
-                  input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Адрес e-mail')
-                  input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
-                  button.btn.btn-success(type='submit')Войти
-                div.social-network-buttons
-                  a.social-link.social-icon.social-icon-vk(onclick="window.open('/social/vk','','width=600,height=500')")
-                  a.social-link.social-icon.social-icon-fb(onclick="window.open('/social/fb','','width=600,height=500')")
-                  a.social-link.social-icon.social-icon-tw(onclick="window.open('/social/tw','','width=600,height=500')")
-                div.register-link
-                  a(href='/users/new') Регистрация
-              - else
-                |#{user.name} &nbsp;
-                a(href='/Logout').btn(type='submit') Выйти
-                
-    - var submenu; var submenu_parent;
-    #menu-block
-      #menu.container-fluid
-        .row-fluid
-          .span12.navbar
-            ul.nav
-              - each item in menu
-                - if (item.active)
-                  li.active: a(href="/#{item.id}") #{item.name}
-                    - submenu = item.submenu; submenu_parent = item.id;
-                    - if (submenu != undefined && submenu.length > 0)
-                      #submenu.visible-phone
-                        ul.nav              
-                          - each subitem in submenu
-                            - if (subitem.active)
-                              li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
-                            - else
-                              li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+              b #{headerStats.problems_number}
+              |&nbsp;проблем
+              mixin getProblemWordEnding ( headerStats.problems_number )
+              |, 
+              b #{headerStats.solutions_number}
+              |&nbsp;решени
+              mixin getSolutionWordEnding ( headerStats.solutions_number )
+              |,<br />
+              b #{headerStats.cases_number}
+              |&nbsp;дел
+              mixin getCaseWordEnding ( headerStats.cases_number )
+              |, 
+              b #{headerStats.users_number}
+              |&nbsp;пользовател
+              mixin getUserWordEnding ( headerStats.users_number )
+            #heading-login-form.span3
+              div.formline
+                - if (user.guest)
+                  form.form-inline(method='post', action='/sessions')
+                    input#user-email.input-small(name='user[email]', value=user.email || '', type='text', placeholder='Адрес e-mail')
+                    input#user-password.input-small(name='user[password]', value=user.password || '', type='password', placeholder='Пароль')
+                    button.btn.btn-success(type='submit')Войти
+                  div.social-network-buttons
+                    a.social-link.social-icon.social-icon-vk(onclick="window.open('/social/vk','','width=600,height=500')")
+                    a.social-link.social-icon.social-icon-fb(onclick="window.open('/social/fb','','width=600,height=500')")
+                    a.social-link.social-icon.social-icon-tw(onclick="window.open('/social/tw','','width=600,height=500')")
+                  div.register-link
+                    a(href='/users/new') Регистрация
                 - else
-                  li: a(href="/#{item.id}") #{item.name}
+                  |#{user.name} &nbsp;
+                  a(href='/Logout').btn(type='submit') Выйти
                   
-    - if (submenu != undefined && submenu.length > 0)
-      #submenu-block.hidden-phone
-        #submenu.container-fluid
+      - var submenu; var submenu_parent;
+      #menu-block
+        #menu.container-fluid
           .row-fluid
             .span12.navbar
-              ul.nav              
-                - each subitem in submenu
-                  - if (subitem.active)
-                    li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+              ul.nav
+                - each item in menu
+                  - if (item.active)
+                    li.active: a(href="/#{item.id}") #{item.name}
+                      - submenu = item.submenu; submenu_parent = item.id;
+                      - if (submenu != undefined && submenu.length > 0)
+                        #submenu.visible-phone
+                          ul.nav              
+                            - each subitem in submenu
+                              - if (subitem.active)
+                                li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                              - else
+                                li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
                   - else
-                    li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                    li: a(href="/#{item.id}") #{item.name}
+                    
+      - if (submenu != undefined && submenu.length > 0)
+        #submenu-block.hidden-phone
+          #submenu.container-fluid
+            .row-fluid
+              .span12.navbar
+                ul.nav              
+                  - each subitem in submenu
+                    - if (subitem.active)
+                      li.active: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
+                    - else
+                      li: a(href="/#{submenu_parent}/#{subitem.id}") #{subitem.name}
     
     
-    #content-block.container-fluid      
-      block content
+    block content-block
+      #content-block.container-fluid
+        block content
     
     //
       !{flashMessages}
       script(type='text/javascript', src='/javascripts/flash.js')
     
-    #footer-block
-      #footer.container-fluid
-        .row-fluid
-          .span3 © ВикиСоциум 2011&ndash;2012
-          .span5
-            a(href="mailto:feedback@wikisocium.ru") feedback@wikisocium.ru
-          .span3
-            a(href="/About") О проекте
-            &nbsp;
-            a(href="/About/Help") Помочь
+    block footer
+      #footer-block
+        #footer.container-fluid
+          .row-fluid
+            .span3 © ВикиСоциум 2011&ndash;2012
+            .span5
+              a(href="mailto:feedback@wikisocium.ru") feedback@wikisocium.ru
+            .span3
+              a(href="/About") О проекте
+              &nbsp;
+              a(href="/About/Help") Помочь
             
-    script(type='text/javascript', src='/javascripts/reformal.js')
-           
+    script(type='text/javascript', src='/javascripts/reformal.js')      
