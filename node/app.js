@@ -929,89 +929,91 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
       if(!err) 
       {
         var userData=JSONParseSafe(data);
-        async.forEach (userData.cases, function (curCase, callback)
-        {
-          console.log(curCase.caseId);
-          fs.readFile('data/UserData/'+req.currentUser.user_id+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
+        if (userData.cases != undefined) {
+          async.forEach (userData.cases, function (curCase, callback)
           {
-            if (!err1)
+            console.log(curCase.caseId);
+            fs.readFile('data/UserData/'+req.currentUser.user_id+'/cases/'+curCase.caseId+'.json', "utf-8", function(err1, data1)
             {
-              console.log(data1);
-              var caseData=JSONParseSafe(data1);
-              console.log(caseData.currentStep);
-              Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
+              if (!err1)
               {
-                if (document) 
+                console.log(data1);
+                var caseData=JSONParseSafe(data1);
+                console.log(caseData.currentStep);
+                Solution.findOne ({ name: curCase.solutionId }, function(err3, document) 
                 {
-                  console.log(document.filename);
-                  fs.readFile('data/solutions/'+document.filename, "utf-8", function(err2, data2) 
+                  if (document) 
                   {
-                    if (!err2)
+                    console.log(document.filename);
+                    fs.readFile('data/solutions/'+document.filename, "utf-8", function(err2, data2) 
                     {
-                      var solutionData=JSONParseSafe(data2);
-                      var currentStepNum=0;
-                      for (var cs in solutionData.steps)
+                      if (!err2)
                       {
-                        if (solutionData.steps[cs].id==caseData.currentStep)
+                        var solutionData=JSONParseSafe(data2);
+                        var currentStepNum=0;
+                        for (var cs in solutionData.steps)
                         {
-                          currentStepNum=cs;
-                          break;
-                        }
-                      }
-                      console.log(solutionData.steps[currentStepNum].title);
-                      var sectionNum=-1;
-                      var stepInSection=-1;
-                      for (var s in solutionData.sections)
-                      {
-                        for (var s0 in solutionData.sections[s].steps)
-                        {
-                          if (solutionData.sections[s].steps[s0]==caseData.currentStep)
+                          if (solutionData.steps[cs].id==caseData.currentStep)
                           {
-                            sectionNum=s;
-                            stepInSection=s0;
-                            stepInSection++;
+                            currentStepNum=cs;
                             break;
                           }
                         }
+                        console.log(solutionData.steps[currentStepNum].title);
+                        var sectionNum=-1;
+                        var stepInSection=-1;
+                        for (var s in solutionData.sections)
+                        {
+                          for (var s0 in solutionData.sections[s].steps)
+                          {
+                            if (solutionData.sections[s].steps[s0]==caseData.currentStep)
+                            {
+                              sectionNum=s;
+                              stepInSection=s0;
+                              stepInSection++;
+                              break;
+                            }
+                          }
+                        }
+                        curCase.sectionName=solutionData.sections[sectionNum].name;
+                        curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
+                        curCase.stepInSection=stepInSection;
+                        curCase.stepName=solutionData.steps[currentStepNum].title;
+                        callback(err2);
                       }
-                      curCase.sectionName=solutionData.sections[sectionNum].name;
-                      curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
-                      curCase.stepInSection=stepInSection;
-                      curCase.stepName=solutionData.steps[currentStepNum].title;
-                      callback(err2);
-                    }
-                    else 
-                      callback(err2);
-                  });
-                }
-                else
-                  callback(err3);
+                      else 
+                        callback(err2);
+                    });
+                  }
+                  else
+                    callback(err3);
+                });
+              }
+              else
+                callback(err1);
+            });
+          },
+          function(err0)
+          {
+            if(err0==null)
+            {
+              var file = fs.readFileSync('views/mycases_userCasesList.jade', 'utf8');
+              res.render('mycases', {
+                  'title':  'Мои дела',
+                  'user':   req.currentUser,
+                  'menu':   res.menu, 
+                  'headerStats': res.headerStats,
+                  'userCasesList': userData.cases,
+                  'casesListTamplate': jade.compile(file, { client: true }),
+                  'scripts': [
+                    '/javascripts/runtime.min.js',
+                    '/javascripts/modal_window.js'
+                  ],
+                  'styles': []
               });
             }
-            else
-              callback(err1);
           });
-        },
-        function(err0)
-        {
-          if(err0==null)
-          {
-            var file = fs.readFileSync('views/mycases_userCasesList.jade', 'utf8');
-            res.render('mycases', {
-                'title':  'Мои дела',
-                'user':   req.currentUser,
-                'menu':   res.menu, 
-                'headerStats': res.headerStats,
-                'userCasesList': userData.cases,
-                'casesListTamplate': jade.compile(file, { client: true }),
-                'scripts': [
-                  '/javascripts/runtime.min.js',
-                  '/javascripts/modal_window.js'
-                ],
-                'styles': []
-            });
-          }
-        });        
+        }
       }
       else RenderError(req,res, err);
     });
