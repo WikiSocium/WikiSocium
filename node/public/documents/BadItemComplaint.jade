@@ -69,7 +69,7 @@ if data.IsItemDelivered.value==1 && data.IsDeliveryProblems.value == 0
   else
     li #{data.RequestsNotDelivered.label}
 
-if (data.IsItemDelivered == 2 || data.IsDeliveryProblems.value != 0) && data.IsItemProblems.value == 1
+if (data.IsItemDelivered.value == 2 || data.IsDeliveryProblems.value != 0) && data.IsItemProblems.value == 1
   if data.IsTechComplicated.value==1            
     li #{data.RequestsTechComplicated.label}
     if data.RequestsTechComplicated.value==2
@@ -83,10 +83,10 @@ if (data.IsItemDelivered == 2 || data.IsDeliveryProblems.value != 0) && data.IsI
       else if data.RequestsNonComplicated.value == 2
         . Прошу заменить товар с недостатками на  #{data.SubstituteItemName}.  
         
-if (data.IsItemDelivered == 2 || data.IsDeliveryProblems.value != 0) && data.IsProblemsHealth.value == 1
+if (data.IsItemDelivered.value == 2 || data.IsDeliveryProblems.value != 0) && data.IsProblemsHealth.value == 1
   li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
        
-if (data.IsItemDelivered == 0 || data.IsDeliveryProblems.value != 0) && data.IsProblemsMoney.value == 1
+if (data.IsItemDelivered.value == 0 || data.IsDeliveryProblems.value != 0) && data.IsProblemsMoney.value == 1
   li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data.RequestDamage} руб.
    
 

@@ -344,178 +344,203 @@
 			"id"		:	"2",
 			"title"		:	"Недостатки товара и другие неприятности",
 			"type"		:	"general_data",
-			"widgets"	:
+			"widget_groups":
 			[
 				{
-					"widget_type"	:	"RadioGroupWidget",
-					"id"		:	"IsItemProblems",
-					"label"		:	"Есть ли у товара недостатки?",
-					"value_list"	:
+					"title": "Описание недостатков товара",
+					"widgets"	:
 					[
 						{
-							"label"	:	"Недостатков нет",
-							"value"	:	"0"
+							"widget_type"	:	"RadioGroupWidget",
+							"id"		:	"IsItemProblems",
+							"label"		:	"Есть ли у товара недостатки?",
+							"value_list"	:
+							[
+								{
+									"label"	:	"Недостатков нет",
+									"value"	:	"0"
+								},
+								{
+														
+									"label"	:	"Найдены недостатки",
+									"value"	:	"1"
+								}
+							]	
 						},
 						{
-												
-							"label"	:	"Найдены недостатки",
-							"value"	:	"1"
-						}
-					]	
-				},
-				{
-				 "widget_type"	:	"DatePickerWidget",
-					"id"		:	"ItemProblemsDate",
-					"label"		:	"Дата обнаружения недостатков",
-					"type"    : "date",
-					"isVisible"	:
-					{
-						"predicates"	:
-						[
+						 "widget_type"	:	"DatePickerWidget",
+							"id"		:	"ItemProblemsDate",
+							"label"		:	"Дата обнаружения недостатков",
+							"type"    : "date",
+							"isVisible"	:
 							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
-						]
-					}
-				},
-				{
-					"widget_type"	:	"TextAreaWidget",
-					"id"		:	"ItemProblems",
-					"label"		:	
-					{
-					    "name"        : "Опишите, что не так",
-					    "comment"     : "Например: в йогурте был шуруп, телефон перезагружается каждые 5 минут",
-					    "description" : "Постарайтесь заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
-					},
-					"isVisible"	:
-					{
-						"predicates"	:
-						[
-							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
-						]
-					}
-				},
-				{
-					"widget_type"	:	"RadioGroupWidget",
-					"id"		:	"IsProblemsHealth",
-					"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)?",
-					"value_list"	:
-					[
-						{
-							"label"	:	"Да",
-							"value"	:	"1"
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
 						},
 						{
-												
-							"label"	:	"Нет",
-							"value"	:	"2"
-						}
-					],	
-					"isVisible"	:
-					{
-						"predicates"	:
-						[
+							"widget_type"	:	"TextAreaWidget",
+							"id"		:	"ItemProblems",
+							"label"		:	
 							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
-						]
-					}
-				},
-				{
-					"widget_type"	:	"TextAreaWidget",
-					"id"		:	"ItemProblemsHealth",
-					"label"		:	
-					{
-					    "name"        : "Напишите, в чём выразился вред здоровью",
-					    "comment"     : "Например: Вы отравились",
-					    "description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
-					},
-					"isVisible"	:
-					{
-						"predicates"	:
-						[
-							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
+									"name"        : "Опишите, что не так",
+									"comment"     : "Например: в йогурте был шуруп, телефон перезагружается каждые 5 минут",
+									"description" : "Постарайтесь заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
 							},
+							"isVisible"	:
 							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsProblemsHealth",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
-						]
-					}
-				},
-				{
-					"widget_type"	:	"RadioGroupWidget",
-					"id"		:	"IsProblemsMoney",
-					"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара?",
-					"value_list"	:
-					[
-						{
-							"label"	:	"Да",
-							"value"	:	"1"
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
 						},
 						{
-												
-							"label"	:	"Нет",
-							"value"	:	"2"
+							"widget_type"	:	"RadioGroupWidget",
+							"id"		:	"IsProblemsHealth",
+							"label"		:	"Вашему здоровью был нанесён вред (в т.ч. моральный)?",
+							"value_list"	:
+							[
+								{
+									"label"	:	"Да",
+									"value"	:	"1"
+								},
+								{
+														
+									"label"	:	"Нет",
+									"value"	:	"2"
+								}
+							],	
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
+						},
+						{
+							"widget_type"	:	"TextAreaWidget",
+							"id"		:	"ItemProblemsHealth",
+							"label"		:	
+							{
+									"name"        : "Напишите, в чём выразился вред здоровью",
+									"comment"     : "Например: Вы отравились",
+									"description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
+							},
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									},
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsProblemsHealth",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
+						},
+						{
+							"widget_type"	:	"RadioGroupWidget",
+							"id"		:	"IsProblemsMoney",
+							"label"		:	"Вашему имуществу нанесён ущерб из-за недостатков товара?",
+							"value_list"	:
+							[
+								{
+									"label"	:	"Да",
+									"value"	:	"1"
+								},
+								{
+														
+									"label"	:	"Нет",
+									"value"	:	"2"
+								}
+							],
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
+						},
+						{
+							"widget_type"	:	"TextAreaWidget",
+							"id"		:	"ItemProblemsMoney",
+							"label"		:	
+							{
+									"name"        : "Напишите, в чём выразился ущерб",
+									"comment"     : "Например: у Вас сломался двигатель из-за некачественного масла",
+									"description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
+							},
+							"isVisible"	:
+							{
+								"predicates"	:
+								[
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsItemProblems",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									},
+									{
+										"step_id"	:	"2",
+										"widget_id"	:	"IsProblemsMoney",
+										"cond"		:	"==",								
+										"value"		:	"1"
+									}						
+								]
+							}
 						}
 					],
-					"isVisible"	:
-					{
-						"predicates"	:
+					"predicates" :
+					[
 						[
 							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
-						]
-					}
-				},
-				{
-					"widget_type"	:	"TextAreaWidget",
-					"id"		:	"ItemProblemsMoney",
-					"label"		:	
-					{
-					    "name"        : "Напишите, в чём выразился ущерб",
-					    "comment"     : "Например: у Вас сломался двигатель из-за некачественного масла",
-					    "description" : "Необходимо заручиться доказательствами - см.  <iref dataId=\"Рекомендации по фиксации недостатков\" baseId=\"texts\"> Рекомендации по фиксации недостатков и другого ущерба</iref>)"
-					},
-					"isVisible"	:
-					{
-						"predicates"	:
+								"step_id"	:	"0",
+								"widget_id"	:	"IsItemDelivered",
+								"cond"	:	"==",
+								"value"	:	"2"
+							}
+						],
 						[
 							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							},
-							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsProblemsMoney",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							}						
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"	:	">",
+								"value"	:	"0"	
+							}
 						]
-					}
+					]
 				}
 			],
 			"next"		:	[ { "id" : "3" } ] 					
@@ -874,12 +899,6 @@
 								"widget_id"	:	"IsProblemsHealth",
 								"cond"		:	"==",								
 								"value"		:	"1"
-							},
-							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	">=",								
-								"value"		:	"1"
 							}
 						]
 					}
@@ -897,12 +916,6 @@
 								"step_id"	:	"2",
 								"widget_id"	:	"IsProblemsMoney",
 								"cond"		:	"==",								
-								"value"		:	"1"
-							},
-							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	">=",								
 								"value"		:	"1"
 							}
 						]
