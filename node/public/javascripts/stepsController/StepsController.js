@@ -32,16 +32,24 @@ function checkStepExists (step_id)
 function ShowProperStep(direction)
 {
   // direction = null;
+  // if ( checkStepExists ( getPreviousStepId ( currentStepId ) ) )
   var stepToShowIndex = currentCaseData.GetStepIndexById (currentStepId);
+  var stepToShow = $("#step_"+stepToShowIndex);
+
+  if ( !checkStepExists(getPreviousStepId (currentStepId)) ) {
+    stepToShow.find('button.prev_btn').attr('disabled','disabled');
+  } else {
+    stepToShow.find('button.prev_btn').removeAttr('disabled');
+  }
+
   if (direction == null) {
     if(stepToShowIndex <= currentCaseData.GetNumberOfSteps()) { 
       $(".step:visible").hide();
-      $("#"+"step_"+stepToShowIndex).fadeToggle(300);//.toggleClass("isInvisible");
+      stepToShow.fadeToggle(300);//.toggleClass("isInvisible");
     }
   }
   else {
     var stepToHide = $(".step:visible");
-    var stepToShow = $("#"+"step_"+stepToShowIndex);
     switch(direction) {
       case "backward":
         stepToShow.css('top','-100%').show();
