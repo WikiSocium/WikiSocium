@@ -7,4 +7,4 @@ block content
   block textWidgetScript
     script(type='text/javascript')
       step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
-        document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "!{value.replace(/"/g, '\"')}");
+        document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "!{value.replace(/(['"])/g, "\\$1")}");
