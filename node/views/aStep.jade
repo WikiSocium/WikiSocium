@@ -72,4 +72,6 @@ div(class="step", id="step_" + step_index + "")
       !="</script>"
 
     .row-fluid.stepNextButton
-      span.btn.btn-success.next_btn(onClick="NextStep()") Дальше&nbsp;&darr;
+      div.alert.alert-error.emptyInputFailMessage(style="display: none")
+      div.alert.alert-error.validationFailMessage(style="display: none") Проверьте правильность заполнения всех полей
+      div.btn.btn-success.next_btn(onClick="NextStep()") Дальше&nbsp;&darr;

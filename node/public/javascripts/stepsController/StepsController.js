@@ -173,29 +173,29 @@ function NextStep()
                         widgetName = widgetName.name;
                     
                     if(emptyWidgetCount == 0)
-                        emptyInputFailedMessage = "\"" + widgetName + "\"";
-                    else emptyInputFailedMessage = emptyInputFailedMessage + ", \"" + widgetName + "\"";
+                        emptyInputFailedMessage = "«" + widgetName + "»";
+                    else emptyInputFailedMessage = emptyInputFailedMessage + ", «" + widgetName + "»";
                     
                     emptyWidgetCount++;
                 }
             }
         }
-        
+        var emptyInputFailMessageContainer = $(".step:visible").find(".emptyInputFailMessage");
         if(emptyWidgetCount > 0)
         {
-            $("#emptyInputFailedMessage").text("");
+            emptyInputFailMessageContainer.text("");
             
             if(emptyWidgetCount == 1)
-                $("#emptyInputFailedMessage").text("Для выбора следующего шага необходимо указать данные в полe " + emptyInputFailedMessage);
-            else $("#emptyInputFailedMessage").text("Для выбора следующего шага необходимо указать данные в полях: " + emptyInputFailedMessage);
+                emptyInputFailMessageContainer.text("Для перехода к следующему шагу необходимо указать данные в полe " + emptyInputFailedMessage);
+            else emptyInputFailMessageContainer.text("Для перехода к следующему шагу необходимо указать данные в полях: " + emptyInputFailedMessage);
             
             // Если сообщение уже не показано, покажем его.
-            if(!$("#emptyInputFailedMessage").is(":visible"))
-                $("#emptyInputFailedMessage").show("slow");
+            if(!emptyInputFailMessageContainer.is(":visible"))
+                emptyInputFailMessageContainer.show("slow");
         }
         else
         {
-            $("#emptyInputFailedMessage").hide("fast");
+            emptyInputFailMessageContainer.hide("fast");
         }
 
         // Проверка введённых данных на валидность.
@@ -209,10 +209,11 @@ function NextStep()
             }
         }
 
+        var validationFailMessageContainer = $(".step:visible").find(".validationFailMessage");
         // Если всё ОК, ищем следующий шаг.
         if (isValid)
         {
-            $("#validationFailedMessage").hide("fast");
+            validationFailMessageContainer.hide("fast");
             
             // Если не заполнены поля, участвующие в расчёте предикатов перехода,
             // то не будем искать следующий шаг.
@@ -221,7 +222,7 @@ function NextStep()
         }
         else // Иначе радуем пользователя сообщением о неправильном заполнении формы.
         {
-            $("#validationFailedMessage").show("slow");
+            validationFailMessageContainer.show("slow");
         }
     }
 }
@@ -382,8 +383,8 @@ function getPreviousStepId ( currentStepId )
 
 function PrevStep()
 {
-  $("#validationFailedMessage").hide("fast"); 
-  $("#emptyInputFailedMessage").hide("fast");
+  $(".step:visible").find(".validationFailMessage").hide("fast"); 
+  $(".step:visible").find(".emptyInputFailMessage").hide("fast");
         
   if ( checkStepExists ( getPreviousStepId ( currentStepId ) ) ) {
     previousStepId = getPreviousStepId ( currentStepId );

@@ -36,8 +36,6 @@ block content-block
           !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:null, stepsData:caseData, step_index:i, sectionData:solutionData.sections})
         - else  
           !=partial('aStep', {name:solutionData.name, caseName:caseName, step:step, stepData:caseData[step.id], stepsData:caseData, step_index:i, sectionData:solutionData.sections})
-    div.alert.alert-error(id="emptyInputFailedMessage", style="display:none") 
-    div.alert.alert-error(id="validationFailedMessage", style="display:none") Проверьте правильность заполнения всех полей
 
     #endCasePopup
       != partial('endCasePopup', {caseName: caseName})
