@@ -1,3 +1,8 @@
 extends BaseWidget
 
 block widget
+  .span12.control-group
+    - if (widget.label.name == undefined)
+      | !{widget.label}
+    - else
+      | !{widget.label.name}
