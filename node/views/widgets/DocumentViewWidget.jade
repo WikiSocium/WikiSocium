@@ -7,15 +7,26 @@ block widget
         | !{widget.label}
       - else
         | !{widget.label.name}
-  <div class="document_container">
-  <div class="document_textarea">
-  <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
-  </div>
-  <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
-  </div>
-  //- <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom($('#documentView_#{widget.doc_name}'))">RTF</div>
-  <div id="rtf_btn" class="btn btn-primary documentButtons">RTF</div>
-  <input type="button" id="print_btn" value="Распечатать" class="btn print_btn"/>
+  //
+  .document_container
+    .span7.document_textarea
+      .document_view(id="documentView_"+widget.doc_name)
+    .span5
+      .document_organizations.gray-rounded-corners.gray-rounded-block2(id="documentOrganizationsView_"+widget.doc_name)
+      div
+        span#rtf_btn.btn.btn-primary.documentButtons Скачать копию
+        span#print_btn.btn.print_btn Распечатать
+
+  //
+    <div class="document_container">
+    <div class="document_textarea">
+    <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
+    </div>
+    <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
+    </div>
+    //- <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom($('#documentView_#{widget.doc_name}'))">RTF</div>
+    <div id="rtf_btn" class="btn btn-primary documentButtons">RTF</div>
+    <input type="button" id="print_btn" value="Распечатать" class="btn print_btn"/>
   script(type="text/javascript")
   
     function checkValue(value)

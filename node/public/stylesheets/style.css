@@ -1,5 +1,21 @@
 /* Steps styles */
 
+.stepsNavigatorForm {
+  margin-bottom: 0px;
+}
+
+.stepWidgets {
+    margin-top: 18px;
+}
+
+.stepNextButton {
+  border-top: 1px solid #e5e5e5;
+}
+
+.stepNextButton .btn {
+  margin-top: 5px;
+}
+
 #steps
 {}
   
@@ -133,32 +149,28 @@
 
 .document_view
 {
-    bgcolor: #fff;
+    border: 1px solid black;
+    padding: 10px;
 }
 
-.document_container
-{
-    display: inline-block;
+.document_view, .document_view * {
+    color: black;
+    font-family: Arial;    
+}
+
+.document_container > div {
+    margin-bottom: 18px;
 }
 
 .document_organizations
 {
     background-color: #f5f5ea;
-
-    display: block;
-    
-    margin-left: 65%;
+    margin-bottom: 18px;
+    max-width: 300px;
 }
 
 .document_textarea
 {
-    float: left;
-    display: block;    
-    width: 64%;
-    height: auto;
-    
-    margin-bottom: 10px;
-    margin-right: 10px;    
 }
 
 .StepsNavigator {
