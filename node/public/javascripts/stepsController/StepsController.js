@@ -158,6 +158,7 @@ function NextStep()
             else
                 var nextPredicateWidgetsStepId = step_index;
             
+            SetWidgetValueForWidget(undefined, nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
             var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
 
             if(value instanceof Object && value.value != undefined)
