@@ -952,7 +952,16 @@
 								{
 									"address" : "SellerAddress"
 					      }
+							},
+							{
+								"widget_id" : "UserName",
+								"wait_time" : "27",
+					      "description" : 
+								{
+									"address" : "UserAddress"
+					      }
 							}
+							
 					]
 				}
 			],
