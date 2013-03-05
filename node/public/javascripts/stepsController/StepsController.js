@@ -154,19 +154,19 @@ function NextStep()
         for (i in nextPredicateWidgets.step_id)
         {
             if(nextPredicateWidgets.step_id[i] != undefined)
-                var nextPredicateWidgetsStepId = nextPredicateWidgets.step_id[i];
+                var nextPredicateWidgetsStepIndex = currentCaseData.GetStepIndexById(nextPredicateWidgets.step_id[i]);
             else
-                var nextPredicateWidgetsStepId = step_index;
+                var nextPredicateWidgetsStepIndex = step_index;
             
-            SetWidgetValueForWidget(undefined, nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
-            var value = GetWidgetValue(nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i]);
+            SetWidgetValueForWidget(nextPredicateWidgetsStepIndex, undefined, nextPredicateWidgets.widget_id[i]);
+            var value = GetWidgetValue(nextPredicateWidgetsStepIndex, nextPredicateWidgets.widget_id[i]);
 
             if(value instanceof Object && value.value != undefined)
                 value = value.value;
 
             if(value == undefined || (typeof(value) == "string" && value == ""))
             {
-                var widgetInfo = GetWidgetById(solutionData, nextPredicateWidgetsStepId, nextPredicateWidgets.widget_id[i])
+                var widgetInfo = GetWidgetById(solutionData, nextPredicateWidgetsStepIndex, nextPredicateWidgets.widget_id[i])
                 if(widgetInfo != undefined)
                 {
                     var widgetName = widgetInfo.label;
