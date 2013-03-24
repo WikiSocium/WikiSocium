@@ -274,7 +274,7 @@
                         [
                                 {
                                     "widget_type" : "StaticTextWidget",
-                                                                    "text" : "Ура! Поздравляем."
+                                                                    "label" : "Ура! Поздравляем."
                                 }
                         ]
                   }
@@ -295,7 +295,7 @@
                         [
                                 {
                                 "widget_type" : "StaticTextWidget",
-                                                            "text" : "Ура! Поздравляем."
+                                                            "label" : "Ура! Поздравляем."
                                 }
                         ]
                   }

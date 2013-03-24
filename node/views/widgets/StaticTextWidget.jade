@@ -2,7 +2,7 @@ extends BaseWidget
 
 block widget
   .span12.control-group
-    - if (widget.label.name == undefined)
+    - if (typeof widget.label == "string")
       | !{widget.label}
     - else
       | !{widget.label.name}
