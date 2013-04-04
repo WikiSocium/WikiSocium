@@ -1,24 +1,4 @@
 block content
   - if (InfoText.description != undefined)
     div(class="DescriptionText")
-      !{InfoText.description}   
-      script(type="text/javascript")
-        $("iref").addClass("inpage_link").click(function()
-        {
-          var dataIds=[];
-          dataIds.push($(this).attr("dataId"));
-          RegionalizedData.GetDataFromDBWithRegion('myRegion', $(this).attr("baseId"), dataIds, function(data)
-          {
-            var d=data[0];
-            var modal_title = "Подсказка!";
-            var html="";
-            if (d.title!=undefined)
-              html=html+"<h1>"+d.title+"</h1>";
-            if (d.short_descr!=undefined)
-              html=html+"<p>"+d.short_descr;
-            if (d.text!=undefined)
-              html=html+"<p>"+d.text;
-            var buttons = [];
-            showModalWindow ( modal_title, html, buttons, "descriptionPopup");
-          });
-        });
+      !{InfoText.description}
