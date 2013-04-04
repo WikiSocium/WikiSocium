@@ -11,12 +11,11 @@ block content
       div(class="YandexMapsWidget_loadingIndicator")
     div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
   script(type="text/javascript")
-      $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
-        $("#YandexMapsWidget_mapContainer_#{widget.id}").toggle();
-        $("#YandexMapsWidget_#{widget.id}").toggle();
-        
+      function RedrawMarkOnMap()
+      {
         // [TODO] determine type of object and select proper zoom
-        if (window["#{widget.id}_map_coords"] != undefined) {
+        if (window["#{widget.id}_map_coords"] != undefined)
+        {
           var myPlacemark = new ymaps.Placemark(
               window["#{widget.id}_map_coords"][0],
               {},
@@ -26,37 +25,54 @@ block content
               }
           );
           myPlacemark.events.add("dragend", function(e){
-              var newBounds = e.originalEvent.target.geometry.getBounds();
-              
-              var myGeocoder = ymaps.geocode(newBounds[0]);
-              myGeocoder.then(function(res){
-                var names = [];
-                res.geoObjects.each(function(obj){
-                  names.push(obj.properties.get("name"));
-                });
-                
-                var anotherGeocoder = ymaps.geocode(names.join(", "));
-                anotherGeocoder.then(function(res){                
-                  $("#YandexMapsWidgetInputWS_#{widget.id}").val(res.geoObjects.get(0).properties.get('text'));
-                  window["#{widget.id}_map_coords"] = newBounds;                
-                });              
-              });            
+              SaveNewBounds(e.originalEvent.target.geometry.getBounds(), function(){});
           });
           YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
           YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
         
-          YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);
-        }
+          // YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11); 
+        }        
+      }
+      function SaveNewBounds(bounds, callback)
+      {
+        var newBounds = bounds;
+        console.log(newBounds[0]);
+        
+        var myGeocoder = ymaps.geocode(newBounds[0]);
+        myGeocoder.then(function(res){
+          var names = [];
+          res.geoObjects.each(function(obj){
+            names.push(obj.properties.get("name"));
+          });
+          
+          var anotherGeocoder = ymaps.geocode(names.join(", "));
+          anotherGeocoder.then(function(res){                
+            $("#YandexMapsWidgetInputWS_#{widget.id}").val(res.geoObjects.get(0).properties.get('text'));
+            window["#{widget.id}_map_coords"] = newBounds;   
+            callback();             
+          });              
+        });
+      };
+      $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
+        YandexMapsWidgetBody_#{widget.id}();
+        RedrawMarkOnMap();
+        YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);         
       });
       $('html').keyup(function(e){
           if(e.keyCode == 27)
           {
+            $("#YandexMapsWidget_#{widget.id}").children().remove();
             $("#YandexMapsWidget_#{widget.id}").hide();
+            $("#YandexMapsWidget_mapContainer_#{widget.id}").children().remove();
             $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
+            event.stopPropagation();            
           }
       });
-      $("#YandexMapsWidget_mapContainer_#{widget.id}").on("click", function(event){
+      $("#YandexMapsWidget_mapContainer_#{widget.id}").on("click", function(event){      
+        
+        $("#YandexMapsWidget_#{widget.id}").children().remove();
         $("#YandexMapsWidget_#{widget.id}").hide();
+        $("#YandexMapsWidget_mapContainer_#{widget.id}").children().remove();
         $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();
         event.stopPropagation();
       });
@@ -71,6 +87,18 @@ block content
               center: [55.76, 37.64],
               zoom: 7
           }); 
+          
+          // [FIXME] this should not fire on dbl click
+          YandexMapsWidgetObject_#{widget.id}.events.add('click', function (e) {
+            SaveNewBounds([e.get('coordPosition')], function(){
+              RedrawMarkOnMap();
+              YandexMapsWidgetObject_#{widget.id}.geoObjects.each(function (geoObject) {
+                YandexMapsWidgetObject_#{widget.id}.geoObjects.remove(geoObject);
+              });
+              YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});              
+            });
+          });
+
           YandexMapsWidgetObjectsCollection_#{widget.id} = new ymaps.GeoObjectCollection({}, {
                               preset: 'twirl#brownStretchyIcon',
                               geoObjectCursor: 'point',
@@ -78,7 +106,6 @@ block content
                               balloonCloseButton: true
           });                     
           YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});                       
-          $("#YandexMapsWidget_#{widget.id}").hide();
           YandexMapsWidgetObject_#{widget.id}.controls.add('zoomControl');
           YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());          
           var updateGeodata = function(e){            
@@ -94,7 +121,7 @@ block content
                                var dataSource = [];
                                for(var i = 0; i < res.geoObjects.getLength(); i++)
                                    dataSource.push(res.geoObjects.get(i).properties.get('text'));
-
+          
                               $("#YandexMapsWidgetInputWS_#{widget.id}").attr("data-source", JSON.stringify(dataSource));                              
                               $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').source = dataSource;                              
                               // $("#YandexMapsWidgetInputWS_#{widget.id}").data('typeahead').onselect = function(obj){alert(obj);};
@@ -125,15 +152,29 @@ block content
                        );
                    }
                };
-
+          
           // $("ul.typeahead.dropdown-menu").find('li.active').data('value');
           
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
-          $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata);
+          $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata); 
+          
+          $("#YandexMapsWidget_#{widget.id}").show();
+          $("#YandexMapsWidget_#{widget.id}").children().show();
+          $("#YandexMapsWidget_mapContainer_#{widget.id}").show();        
+          $("#YandexMapsWidget_mapContainer_#{widget.id}").children().show();
+                   
       };
       // if($("#YandexMapsWidget_#{widget.id}").closest(".step").is(":visible"))
       //    setTimeout(function(){
-             ymaps.ready(YandexMapsWidgetBody_#{widget.id});                 
+        $(document).ready(function(){
+          ymaps.ready(function(){
+            // YandexMapsWidgetBody_#{widget.id}();            
+            $("#YandexMapsWidget_#{widget.id}").children().hide();            
+            $("#YandexMapsWidget_#{widget.id}").hide();
+            $("#YandexMapsWidget_mapContainer_#{widget.id}").children().hide();            
+            $("#YandexMapsWidget_mapContainer_#{widget.id}").hide();        
+          });                    
+        });
              // YandexMapsWidgetBody_#{widget.id}();
              // OnWidgetChanged();
       // }, 1000);
