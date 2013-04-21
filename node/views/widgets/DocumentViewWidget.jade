@@ -7,7 +7,6 @@ block widget
         | !{widget.label}
       - else
         | !{widget.label.name}
-  //
   .document_container
     .span7.document_textarea
       .document_view(id="documentView_"+widget.doc_name)
@@ -17,37 +16,33 @@ block widget
         span#rtf_btn.btn.btn-primary.documentButtons Скачать копию
         span#print_btn.btn.print_btn Распечатать
 
-  //
-    <div class="document_container">
-    <div class="document_textarea">
-    <div id="documentView_#{widget.doc_name}" class="gray-rounded-corners document_view"></div>
-    </div>
-    <div id="documentOrganizationsView_#{widget.doc_name}" class="document_organizations gray-rounded-corners gray-rounded-block2"></div>
-    </div>
-    //- <div class="btn btn-primary documentButtons" onclick="GeneratePDFFrom($('#documentView_#{widget.doc_name}'))">RTF</div>
-    <div id="rtf_btn" class="btn btn-primary documentButtons">RTF</div>
-    <input type="button" id="print_btn" value="Распечатать" class="btn print_btn"/>
-  script(type="text/javascript")
-  
+  // Organization record template
+  script#documentOrganizationTemplate(type="text/x-jquery-tmpl")
+    div.documentOrganizationsRecord
+      div.documentOrganizationsRecordTitle
+        span ${Organization_Name} (ответа ждать ${Waiting_time} дней)
+      div.documentOrganizationTimer(org_title="${Organization_Id}", org_time="${Waiting_time}")
+      div.documentOrganizationsRecordDescription
+        div(style="position:relative;") ${Description}
+
+  // Print- and save- buttons behaviour
+  script(type="text/javascript")  
     function checkValue(value)
     {
       if(typeof(value) != "undefined")
         return value;
       else
         return "No value was found";    
-    }
-  
+    }  
     $("#rtf_btn").click(function()
     {
-        var html=$("#documentView_#{widget.doc_name}").html();
-        
+        var html=$("#documentView_#{widget.doc_name}").html();        
         // Отправляем html на сервер, получаем rtf в ответ.
         $.post('/OpenDocument', '&text=' + encodeURIComponent(html), function(res) {
                 //- Добавляем невидимый фрейм для скачивания документа без редиректа.
                 $("body").append("<iframe src='" + "./../" + res + "' style='display: none;' ></iframe>");
             });
-    });
-    
+    });    
     $("#print_btn").click(function()
     {
         var modal_title = "Документ!";
@@ -58,129 +53,144 @@ block widget
         printWin.document.close();
     });
 
-  - if(typeof(widget.user_organizations) != "undefined")
-      script
-        var user_organizations = !{JSON.stringify(widget.user_organizations)};
+  - if (typeof(widget.user_organizations) != "undefined")
+    script
+      var user_organizations = !{JSON.stringify(widget.user_organizations)};
   - else
-      script
-        var user_organizations = [];    
-  
-  script
+    script
+      var user_organizations = []; 
+
+  script    
     step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget(!{JSON.stringify(value)});
-    (function(){
-    var initDocumentWidgetFunction = function()
-    {          
-    var times = !{JSON.stringify(widget.organizations_times)};
-    RegionalizedData.GetDataFromDBWithRegion(GetUserRegion(), 'organizations', !{JSON.stringify(widget.organizations)}, function(fetchedData) {
-        $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
-        
-        for(var yauo in user_organizations)
+    ( function()
+      {
+        var initDocumentWidgetFunction = function()
         {
-          var yauo_obj = { short_description : "user organization",
-                           description       : {} };
-          
-          var allWidgetsDataArgument = CollectFormData();
-          
-          if(typeof(user_organizations[yauo].description) != "undefined")
-            for(var d in user_organizations[yauo].description)
-              if(typeof(allWidgetsDataArgument[user_organizations[yauo].description[d]]) != "undefined")          
-                yauo_obj.description[d] = allWidgetsDataArgument[user_organizations[yauo].description[d]];
-                
-          if(typeof(allWidgetsDataArgument[user_organizations[yauo].widget_id]) != "undefined")          
-            yauo_obj.title = allWidgetsDataArgument[user_organizations[yauo].widget_id];
-          
-          fetchedData.push([[yauo_obj]]);     
-          times.push(user_organizations[yauo].wait_time);
-        }        
-        
-        for(var k = 0; k < fetchedData.length; k++)
-        {
-          var data = fetchedData[k];
-          for(var i = 0; i < data.length; i++)
-          {    
-              for(var j = 0; j < data[i].length; j++)
-              {            
-                  var aData = data[i][j];               
-                  var title = data[i][j]["title"];
-                  var orgTitle = $("<div class='documentOrganizationsRecorTitle'></div>").append($("<span/>").html(data[i][j]["title"] + " (ответа ждать " + times[k] + " дней)"));
-                  var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
-                  if(typeof(savedValue[title]) != "undefined")
-                  {
-                      // var recTimer = $('<div/>').attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimerResponseReceived");
-                      var orgTimer = $('<div/>').attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimerActivated");
-                  }
-                  else
-                  {
-                      // var recTimer = $('<div/>');
-                      var orgTimer = $("<div/>").attr("org_title", title).attr("org_time", times[k]).addClass("documentOrganizationTimer");
-                  }
-                  $(orgTimer).click(function(){
-                      if($(this).hasClass("documentOrganizationTimer"))
-                      {
-                          $(this).addClass("documentOrganizationTimerActivated").removeClass("documentOrganizationTimer");
-                          step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")] = {beginDate : new Date(),
-                                                                                                              interval  : $(this).attr("org_time")};                                            
+          var times = !{JSON.stringify(widget.organizations_times)};
+          RegionalizedData.GetDataFromDBWithRegion (
+              GetUserRegion(),
+              'organizations',
+              !{JSON.stringify(widget.organizations)},
+              function(fetchedData) {
+                $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
+                //
+                for (var yauo in user_organizations) {
+                  var yauo_obj = {
+                    short_description : "user organization",
+                    description: {}
+                  };
+                  //   
+                  var allWidgetsDataArgument = CollectFormData();              
+                  if ( typeof(user_organizations[yauo].description) != "undefined" ) {
+                    for ( var d in user_organizations[yauo].description ) {
+                      if ( typeof(allWidgetsDataArgument[user_organizations[yauo].description[d]]) != "undefined" ) {       
+                        yauo_obj.description[d] = allWidgetsDataArgument[user_organizations[yauo].description[d]];
                       }
-                      else
+                    }
+                  }
+                  //
+                  if(typeof(allWidgetsDataArgument[user_organizations[yauo].widget_id]) != "undefined") {
+                    yauo_obj.title = allWidgetsDataArgument[user_organizations[yauo].widget_id];
+                  }
+                  //
+                  fetchedData.push([[yauo_obj]]);
+                  times.push(user_organizations[yauo].wait_time);
+                }
+                //
+                //
+                //
+                for (var k = 0; k < fetchedData.length; k++)
+                {
+                  var data = fetchedData[k];
+                  for (var i = 0; i < data.length; i++)
+                  {    
+                      for (var j = 0; j < data[i].length; j++)
                       {
-                          $(this).addClass("documentOrganizationTimer").removeClass("documentOrganizationTimerActivated");
-                          delete step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")];
-                      }
-                  });
-                  var rec = $("<div class='documentOrganizationsRecord'></div>").append(orgTitle).append(orgTimer);
-                  if(k == 0 && i == 0 && j == 0)                  
-                      GenerateDocument_#{widget.doc_name}(data[i][j]);
-                  $(rec).click((function(aData){
-                      return function(event){
-                          console.log(aData);
-                          GenerateDocument_#{widget.doc_name}(aData);  
-                      };
-                  })(aData));
-                  var cont = $("<div class='documentOrganizationsRecordDescription'></div>");
-                  for(var key in data[i][j]["description"])
-                  {
-                      if(typeof(data[i][j]["description"][key]) == "object")
-                      {
-                          for(var key2 in data[i][j]["description"][key])
-                          {
-                              cont.append($("<div style='position:relative;'></div>").html(key2 + " = " + data[i][j]["description"][key][key2]));
+                          var aData = data[i][j];
+                          var title = data[i][j]["title"];
+                          //
+                          var org_data = {
+                              "Organization_Name": title,
+                              "Organization_Id": escape(title),
+                              "Waiting_time": times[k]
+                          };
+                          for(var key in data[i][j]["description"]) {
+                            if (typeof(data[i][j]["description"][key]) == "object") {
+                              for(var key2 in data[i][j]["description"][key]) {
+                                  org_data["Description"] = key2 + " = " + data[i][j]["description"][key][key2]
+                              }
+                            } else {
+                              if(data[i][j]["description"][key] != "") {
+                                if(key == "web") {
+                                  org_data["Description"] = "<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>";
+                                } else {
+                                  org_data["Description"] = key + " = " + data[i][j]["description"][key];
+                                }
+                              }
+                            }
                           }
-                      }
-                      else
-                      {
-                          if(data[i][j]["description"][key] != "")
-                          {
-                              if(key == "web")
-                                  cont.append($("<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>"));
-                              else
-                                  cont.append($("<div style='position:relative;'></div>").html(key + " = " + data[i][j]["description"][key]));
+                          //
+                          if(k == 0 && i == 0 && j == 0) {
+                            GenerateDocument_#{widget.doc_name}(data[i][j]);
                           }
+                          //
+                          var rec = $("#documentOrganizationTemplate").tmpl(org_data);
+                          $(rec).click(
+                            ( function(aData) {
+                              return function(event) {
+                                GenerateDocument_#{widget.doc_name}(aData);  
+                              };
+                            } )(aData)
+                          );
+                          //                          
+                          var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
+                          if ( typeof(savedValue[escape(title)]) != "undefined" ) {
+                            rec.find('.documentOrganizationTimer').addClass("timer-activated");
+                          }
+                          $("#documentOrganizationsView_#{widget.doc_name}").append(rec);
                       }
                   }
-                  rec.append(cont);
-                  $("#documentOrganizationsView_#{widget.doc_name}").append(rec);
+                }
+                //
+                $(".documentOrganizationTimer").click(function() {
+                  if ($(this).hasClass("timer-activated")) {
+                    $(this).removeClass("timer-activated");
+                    delete step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")];
+                  } else {
+                    $(this).addClass("timer-activated");
+                    step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")] = {
+                      beginDate: new Date(),
+                      interval: $(this).attr("org_time")
+                    };
+                    console.log( step#{step_id}FieldsList['!{widget.id}'].timersValues );
+                    console.log( JSON.stringify ( step#{step_id}FieldsList['!{widget.id}'].timersValues ) );
+                  }
+                });
+                //
+                // If there is only one organization, keep it shown
+                if ( $(".documentOrganizationsRecordDescription").length == 1 ) {
+                  $(".documentOrganizationsRecordDescription").show();
+                }
+                $(".documentOrganizationsRecord").click(function() {
+                  $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
+                  $(this).children(".documentOrganizationsRecordDescription").show();            
+                });
               }
-          }
-        }
-        // If there is only one organization, keep it shown
-        if($(".documentOrganizationsRecordDescription").length == 1)
-            $(".documentOrganizationsRecordDescription").show();
-        $(".documentOrganizationsRecord").click(function(){
-            $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
-            $(this).children(".documentOrganizationsRecordDescription").show();            
-        });
-    });
-    };
-    $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function(){     
-            // Only regenerate document, organizations should be leaved unchanged
-            // GenerateDocument_#{widget.doc_name}();
-            
-            // No, organizations list may change too
+          );
+        };
+        //
+        $("#documentView_#{widget.doc_name}").closest(".step").watch("display", function() {     
+          // Only regenerate document, organizations should be leaved unchanged
+          // GenerateDocument_#{widget.doc_name}();
+          
+          // No, organizations list may change too
+          initDocumentWidgetFunction();
+        }, 100, "");
+        //
+        if ( $("#documentView_#{widget.doc_name}").closest(".step").is(":visible") ) {
+          setTimeout (function() {
             initDocumentWidgetFunction();
-       }, 100, "");
-    if($("#documentView_#{widget.doc_name}").closest(".step").is(":visible"))
-       setTimeout(function(){
-           initDocumentWidgetFunction();
-       }, 1000); // [TODO] #(document).ready() doesn't workk properly
-    })();
-    
+          }, 1000); // [TODO] #(document).ready() doesn't work properly
+        }
+      }
+    )();
