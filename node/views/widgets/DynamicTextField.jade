@@ -1,0 +1,25 @@
+extends SimpleWidget
+
+block content
+  input(type='text', id='step#{step_id}_#{widget.id}')
+  span.help-inline
+  - if (value == undefined) value = ""
+  block textWidgetScript
+    script(type='text/javascript')
+      $(document).ready(function(){
+        var allWidgetsDataArgument = CollectFormData();  
+        var functionText = "(" + "#{widget.function_inline}" + ")(" + JSON.stringify(allWidgetsDataArgument) + ")";
+
+        if(("#{widget.function_inline}").length == 0)
+        {
+          step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
+            document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), DynamicFunctions["#{widget.function}"]());
+          $("#step#{step_id}_#{widget.id}").attr("disabled", "disabled");          
+        }
+        else
+        {
+          step#{step_id}FieldsList['!{widget.id}'] = new TextField(/.*/, 
+            document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), eval(functionText));
+          $("#step#{step_id}_#{widget.id}").attr("disabled", "disabled");          
+        }
+      });

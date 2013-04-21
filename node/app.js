@@ -668,6 +668,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                   var stylesToInject = [
                     '/stylesheets/widgets.css'
                   ];
+                  
                   var scriptsToInject = [
                     'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js',
                     //'http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-ru.js',
@@ -687,7 +688,8 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     '/javascripts/jquery.prettyPhoto.js',
                     '/javascripts/jquery.tmpl.min.js',
                     '/javascripts/modal_window.js',
-                    '/javascripts/RegionalizedData.js'
+                    '/javascripts/RegionalizedData.js',
+                    '/javascripts/solutionsDynamicScripts/' + document.filename.split(".")[0] + '.js'
                   ];
                   
                   // Для каждого документа, который нужен кейсу, вставляем скрипт с генерацией этого документа
