@@ -79,7 +79,9 @@ app.configure('production', function(){
   app.set('db-uri', 'mongodb://localhost/wikisocium-production');
 });
 
-var db = mongoose.connect(app.set('db-uri'));
+var db = mongoose.connect(app.set('db-uri'), function(err) {
+  if (err) throw err;
+});
 
 models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
@@ -1045,7 +1047,6 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 function createCaseFile ( userName, caseId, solutionName ) {
-
   Solution.findOne ({ name: solutionName }, function(err, document) {
     if (document) {
       fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {
