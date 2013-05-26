@@ -93,6 +93,13 @@ function SaveFormData( curStep, nextStep, callback )
       }
   }
 
+  // Call dynamic widgets
+  if(typeof dynamicWidgetsFunctions == "undefined")
+    dynamicWidgetsFunctions = {};
+  for(var yadf in dynamicWidgetsFunctions)
+    dynamicWidgetsFunctions[yadf]();
+
+  // Send request to server
   $.ajax(
   {
       url: window.location.pathname + '/submitForm',

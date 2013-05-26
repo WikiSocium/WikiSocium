@@ -1,5 +1,6 @@
 DynamicFunctions = {
-  "MyFunctionName" : function(data){
-    return 99+121;
+  "MyFunctionName" : function(data) {
+    console.log(data);
+    return data.time;
   }
 };

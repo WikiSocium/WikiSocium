@@ -61,8 +61,15 @@
                             },
                             {
 								  "widget_type" : "DynamicTextField",
-								  "id" : "temp_dynamic_textfield",
-								  "label" : "temp_dynamic_textfield",
+								  "id" : "temp_dynamic_textfield_1",
+								  "label" : "temp_dynamic_textfield_1",
+								
+								  "function_inline" : "function(data){ return 99+32-55; }"
+							},
+                            {
+								  "widget_type" : "DynamicTextField",
+								  "id" : "temp_dynamic_textfield_2",
+								  "label" : "temp_dynamic_textfield_2",
 								
 								  "function" : "MyFunctionName"
 							}
