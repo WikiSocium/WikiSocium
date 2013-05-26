@@ -105,7 +105,6 @@ function SaveFormData( curStep, nextStep, callback )
     "nextStep": nextStep,
     "jsonData": data
   };
-
   $.ajax(
   {
       url: window.location.pathname + '/submitForm',
