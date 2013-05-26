@@ -79,7 +79,9 @@ app.configure('production', function(){
   app.set('db-uri', 'mongodb://localhost/wikisocium-production');
 });
 
-var db = mongoose.connect(app.set('db-uri'));
+var db = mongoose.connect(app.set('db-uri'), function(err) {
+  if (err) throw err;
+});
 
 models.defineModels(mongoose, function() {
   //app.Document = Document = mongoose.model('Document');
@@ -686,6 +688,7 @@ app.get('/MyCases/:CaseId', loadUser, generateMenu, getHeaderStats, function(req
                     '/javascripts/runtime.min.js',
                     '/javascripts/jquery.watch-2.0.min.js',
                     '/javascripts/jquery.prettyPhoto.js',
+                    '/javascripts/jquery.tmpl.min.js',
                     '/javascripts/modal_window.js',
                     '/javascripts/RegionalizedData.js',
                     '/javascripts/solutionsDynamicScripts/' + document.filename.split(".")[0] + '.js'
@@ -810,11 +813,11 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
       if (caseContents == null) var caseContents = {};
       caseContents.name = caseId;
     }
-    caseContents.data = JSONParseSafe(decodeURIComponent(req.body.jsonData));
 
+    caseContents.data = req.body.jsonData;
     var curStep = req.body.curStep;
     var nextStep = req.body.nextStep;
-    
+
     for (var key in caseContents.steps) {
       if (caseContents.steps[key].id == nextStep) {
         caseContents.steps[key].prevStep = curStep;
@@ -823,21 +826,24 @@ app.post('/MyCases/:CaseId/submitForm', loadUser, function(req, res) {
     }
     caseContents.currentStep = nextStep;
     
-    //console.log(req.body.jsonData);
-    fs.writeFile('data/UserData/' + userName + '/cases/' + caseId + '.json', JSON.stringify(caseContents, null, "\t"), function (err) {
-      if (err) console.log(err);
-      else fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, userJson) {
-        if (err) {
-          console.log(err);
-        }
-        else {
-          var userFileContents = JSONParseSafe( userJson );
-          for (var key in userFileContents.cases)
-            if ( userFileContents.cases[key].caseId == caseId ) userFileContents.cases[key].updateDate = getCurrentDateTime();
-          fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userFileContents, null, "\t"), function (err) {});
-        }
-      });
-    });
+    fs.writeFile(
+      'data/UserData/' + userName + '/cases/' + caseId + '.json',
+      JSON.stringify(caseContents, null, "\t"),
+      function (err) {
+        if (err) console.log(err);
+        else fs.readFile('data/UserData/' + userName + '/user.json', "utf-8", function(err, userJson) {
+          if (err) {
+            console.log(err);
+          }
+          else {
+            var userFileContents = JSONParseSafe( userJson );
+            for (var key in userFileContents.cases)
+              if ( userFileContents.cases[key].caseId == caseId ) userFileContents.cases[key].updateDate = getCurrentDateTime();
+            fs.writeFile('data/UserData/' + userName + '/user.json', JSON.stringify(userFileContents, null, "\t"), function (err) {});
+          }
+        });
+      }
+    );
     res.send(req.body);
   });
 });
@@ -1041,7 +1047,6 @@ function parseReturnTo ( req_query_return_to ) {
 }
 
 function createCaseFile ( userName, caseId, solutionName ) {
-
   Solution.findOne ({ name: solutionName }, function(err, document) {
     if (document) {
       fs.readFile('data/solutions/'+document.filename, "utf-8", function(err, data) {

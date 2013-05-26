@@ -104,7 +104,7 @@
     background-color: red;
 }
 
-.documentOrganizationTimerActivated
+.timer-activated
 {
     background-color: green;
 }
@@ -124,18 +124,17 @@
     display: none;
 }
 
-.documentOrganizationsRecorTitle,
-.documentOrganizationsRecorTitle:hover
+.documentOrganizationsRecordTitle,
+.documentOrganizationsRecordTitle:hover
 {
-    font-style: italic;
 }
 
-.documentOrganizationsRecorTitle span
+.documentOrganizationsRecordTitle span
 {
     border-bottom: 1px dashed;
 }
 
-.documentOrganizationsRecorTitle:hover span
+.documentOrganizationsRecordTitle:hover span
 {
     border-bottom: 1px dashed;
     cursor: pointer;    

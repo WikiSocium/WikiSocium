@@ -100,11 +100,18 @@ function SaveFormData( curStep, nextStep, callback )
     dynamicWidgetsFunctions[yadf]();
 
   // Send request to server
+  var dataToSend = {
+    "curStep": curStep,
+    "nextStep": nextStep,
+    "jsonData": data
+  };
+
   $.ajax(
   {
       url: window.location.pathname + '/submitForm',
-      type: 'POST',
-      data: 'curStep=' + encodeURIComponent(curStep) + '&nextStep=' + encodeURIComponent(nextStep) + '&jsonData=' + encodeURIComponent($.toJSON(data)),
+      type: "POST",
+      data: dataToSend,
+      dataType: "json",
       success: function(res)
       {
           callback();
