@@ -169,11 +169,11 @@ block widget
                 //
                 // If there is only one organization, keep it shown
                 if ( $(".documentOrganizationsRecordDescription").length == 1 ) {
-                  $(".documentOrganizationsRecordDescription").show();
+                  $(".documentOrganizationsRecordDescription").show('slow');
                 }
                 $(".documentOrganizationsRecord").click(function() {
-                  $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide();
-                  $(this).children(".documentOrganizationsRecordDescription").show();            
+                  $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide('slow');
+                  $(this).children(".documentOrganizationsRecordDescription").show('slow');            
                 });
               }
           );

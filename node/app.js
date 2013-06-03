@@ -983,10 +983,13 @@ app.get('/MyCases', loadUser, generateMenu, getHeaderStats, function(req, res){
                             }
                           }
                         }
-                        curCase.sectionName=solutionData.sections[sectionNum].name;
-                        curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
-                        curCase.stepInSection=stepInSection;
-                        curCase.stepName=solutionData.steps[currentStepNum].title;
+                        if(typeof solutionData.sections[sectionNum] != "undefined")
+                        {
+                          curCase.sectionName=solutionData.sections[sectionNum].name;
+                          curCase.sectionLength=solutionData.sections[sectionNum].steps.length;
+                          curCase.stepInSection=stepInSection;
+                          curCase.stepName=solutionData.steps[currentStepNum].title;
+                        }
                         callback(err2);
                       }
                       else 
