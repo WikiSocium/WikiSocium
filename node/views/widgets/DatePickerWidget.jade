@@ -10,7 +10,7 @@ block content
   input(type='text', id='step#{step_id}_#{widget.id}');
 
   //- Связываем поле ввода с jQuery-объектом
-  script(
+  script(type='text/javascript')
     $(function() {
       $("#step#{step_id}_#{widget.id}").datepicker({ dateFormat: "dd.mm.yy" });
     })
