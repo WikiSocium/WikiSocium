@@ -72,6 +72,7 @@ block widget
               'organizations',
               !{JSON.stringify(widget.organizations)},
               function(fetchedData) {
+                $("#documentOrganizationsView_#{widget.doc_name}").hide();
                 $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
                 //
                 for (var yauo in user_organizations) {
@@ -99,6 +100,10 @@ block widget
                 //
                 //
                 //
+                if(fetchedData.length > 0)
+                  $("#documentOrganizationsView_#{widget.doc_name}").show();
+                else
+                  GenerateDocument_#{widget.doc_name}();
                 for (var k = 0; k < fetchedData.length; k++)
                 {
                   var data = fetchedData[k];
