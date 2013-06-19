@@ -1,9 +1,9 @@
-﻿{
+{
   "id"  : "HotWater",
   "name"  : "Подача жалобы в управляющую компанию и жилинспекцию",
   "description": "<p>Ваша управляющая компания обязана предоставлять Вам услуги надлежащего качества - в том числе и и горячую воду, температуры не ниже 60 градусов. Если этого не происходит, Вы имеете право требовать устранения нарушений, снижения платы за воду, а также выплаты неустойки. Решение поможет Вам быстро составить заявление в управляющую компанию, а если этого окажется недостаточно - в ЖилИнспекцию. Если же и это не поможет - смело обращайтесь в суд: решение подскажет, что для этого нужно сделать. </p>",
     "data": {
-        "documents": []
+        "documents": ["HotWaterManagingCoComplaint","HotWaterTempFixAct"]
     },
     "initialStep": "0",
     "sections": [
@@ -59,10 +59,147 @@
                                 "comment": "Например, ООО \"ЖилСтройКомплекс\"",
                                 "description": "Эту информацию Вы можете найти на любой своей платёжке."
                             }
+                        },
+                        {
+                          "widget_type" : "YandexMapsWidget",
+                          "id" : "ManagingCoAddress",
+                          "label" : "Адрес управляющей компании",
+                          "initial": {"lat": "55.690725", "lng": "37.413179", "address": ""},
+                          "type" : "WSMaps"
+                        },
+                        {
+                          "widget_type": "TextFieldWidget",
+                          "id": "ManagingCoIndex",
+                          "label": "Индекс управляющей компании"
                         }
                     ]
+                },
+                {
+                  "title": "Информация о себе",
+                  "widgets": [
+                    {
+                      "widget_type"	:	"FullNameTextFieldWidget",
+                      "id"		      :	"UserName",
+                      "label"       :  
+                      {	
+                        "name"        : "Ваши фамилия, имя и отчество",
+                        "comment"     : "Например: Сидоров Пётр Иванович",
+                        "description" : "Пишите, как в паспорте"
+                      }		
+                    },
+                    {
+                      "widget_type" : "YandexMapsWidget",
+                      "id"          : "UserAddress",
+                      "IsRequired"  : "false",
+                      "label"       :  
+                      {	
+                        "name"        : "Ваш домашний адрес",
+                        "comment"     : "Например: Москва, Моховая, 1",
+                        "description" : "Мы сохраняем Вашу конфиденциальную информацию втайне. Более того, Вы можете не заполнять эти поля - тогда позже надо будет внести эти данные в документы вручную"
+                      },
+                      "initial"     : {"lat": "55.690725", "lng": "37.413179", "address": ""},
+                      "type"        : "WSMaps"
+                    },
+                    {
+                      "widget_type": "TextFieldWidget",
+                      "id": "UserIndex",
+                      "label": "Ваш Индекс"
+                    },
+                    {
+                      "widget_type": "TextFieldWidget",
+                      "id": "FlatNumber",
+                      "label": "Номер Вашей квартиры"
+                    }
+                  ]
                 }
-            ]
+            ],
+            "next"  : [{"id" : "1"}]
+        },
+        {
+          "id"		:	"1",
+          "title"		:	"Текст претензии в управляющую компанию",
+          "type"		:	"document_text",
+          "widgets"	:
+          [
+            {
+              "widget_type"	:	"StaticTextWidget",
+              "id"		:	"SendCompaintInfo",
+              "label"		: "<div> Перед Вами - текст претензии. Теперь нужно сделать следующее: <li> Распечатайте и подпишите претензию <li> Отнесите претензию в управляющую компанию лично (так быстрее и проще) или отправьте претензию по почте, лучше <iref dataId=\"Отправка заказного письма с уведомлением\" baseId=\"texts\"> заказным письмом с уведомлением о вручении </iref>. <li> Укажите здесь, когда у Вас примут заявление или придёт уведомление о доставке письма. Тогда мы запустим отсчёт времени, в течение которого Вам должны будут ответить. </div>"	
+            },
+            {
+              "widget_type"	: 	"DocumentViewWidget",
+              "id"		:	"HotWaterManagingCoComplaintView",
+              "label"		: 	"Претензия управляющей компании",
+              "doc_name"	:	"HotWaterManagingCoComplaint",
+              "organizations" : [],
+              "organizations_times" :  [],
+              "user_organizations" : 
+              [
+                {
+                  "widget_id" : "ManagingCoName",
+                  "wait_time" : "10",
+                  "description" : 
+                  {
+                    "address" : "ManagingCoAddress"
+                  }
+                } 
+              ]
+            }
+          ],
+          "next"		:	[ { "id" : "2" } ] 					
+        },
+        {
+          "id"		:	"2",
+          "title"		:	"Ждём ответа от управляющей компании",
+          "type"		:	"timer",
+          "widgets"	:
+          [
+						{
+              "id" : "hotwater_waitlist_1",
+              "widget_type" : "WaitListWidget",
+              "doc_id" : "HotWaterManagingCoComplaintView"
+            }	
+				
+          ],
+          "next" : [
+            { 
+                    "id" : "3"
+            },
+            {
+              "id": "disableNext",
+              "predicates":
+              [
+                {
+                  "step_id": "2",
+                  "widget_id": "hotwater_waitlist_1",
+                  "cond": "==",
+                  "value": "not passable"
+                }
+              ]
+            }
+          ] 					
+        },
+        {
+          "id"  : "3",
+          "title" : "Составляем свой акт замера температуры",
+          "type"		:	"document_text",
+          "widgets"	:
+          [
+            {
+              "widget_type"	:	"StaticTextWidget",
+              "id"		:	"ActPrintInfo",
+              "label"		: "<div> Если управляющая компания не хочет фиксировать нарушения, нам нужно самостоятельно составить акт замера температур.  Пожалуйста, распечатайте акт и попросите не менее двух своих соседей поставить свои подписи с расшифровкой. </div>"	
+            },
+            {
+              "widget_type"	: 	"DocumentViewWidget",
+              "id"		:	"HotWaterTempFixActView",
+              "label"		: 	"Акт замера температуры",
+              "doc_name"	:	"HotWaterTempFixAct",
+              "organizations" : [],
+              "organizations_times" :  [],
+              "user_organizations" : []
+            }
+          ]
         }
     ]
 }
