@@ -10,18 +10,65 @@
         "documents" : ["ViolationStatement"]
     },
     
-    "initialStep" :"0",
+    "initialStep" :"test",
     
     "sections"    :
     [
         {
             "name": "Описываем ситуацию",
-            "steps": ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+            "steps": ["test", "0", "1", "2", "3", "4", "5", "6", "7", "8"]
         }
     ],
     
     "steps"       :
     [
+    	{
+	        "id"         : "test",
+	        "title"      : "тестовый шаг",
+	        "type"       : "selection",
+	        "widget_groups": 
+	        [
+	            {
+	                  "widgets": 
+	                  [
+						{
+							"widget_type" : "YandexMapsWidget",
+							"id" : "map1",
+							"label" : "карта 1",
+							"initial": {}
+						},
+						{       
+							"widget_type" : "YandexMapsWidget",
+							"id" : "map2",
+							"label" : "карта 2",
+							"initial": {}
+						},
+						{       
+							"widget_type" : "YandexMapsWidget",
+							"id" : "map3",
+							"label" : "карта 3",
+							"initial": {}
+						},	
+						{
+							"widget_type" : "DynamicTextField",
+							"id" : "temp_dynamic_textfield_1",
+							"label" : "temp_dynamic_textfield_1",
+
+							"function_inline" : "function(data){ return 99+32-55; }"
+						},
+						{
+							"widget_type" : "DynamicTextField",
+							"id" : "temp_dynamic_textfield_2",
+							"label" : "temp_dynamic_textfield_2",
+
+							"function" : "MyFunctionName"
+						}                       
+	                  ]
+	            }
+	        ],
+	        "next" : [{ "id" : "0" }]             
+	    },
+
         {
             "id"         : "0",
             "title"      : "Место правонарушения и действующие лица",
@@ -58,21 +105,7 @@
                                   "id" : "time",
                                   "label" : "Время нарушения",
                                   "type" : "string"
-                            },
-                            {
-								  "widget_type" : "DynamicTextField",
-								  "id" : "temp_dynamic_textfield_1",
-								  "label" : "temp_dynamic_textfield_1",
-								
-								  "function_inline" : "function(data){ return 99+32-55; }"
-							},
-                            {
-								  "widget_type" : "DynamicTextField",
-								  "id" : "temp_dynamic_textfield_2",
-								  "label" : "temp_dynamic_textfield_2",
-								
-								  "function" : "MyFunctionName"
-							}
+                            }
                         ]
                 },
                 {

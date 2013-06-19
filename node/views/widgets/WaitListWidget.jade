@@ -84,8 +84,7 @@ block widget
                         }
                     });           
                     buttonsVisibilityUpdate(step#{step_id}FieldsList['!{widget.id}'].isok);
-                    
-                    $("#WaitList_#{widget.id}").append($("<div/>").css({"display":"inline-block", "margin-right":"5px"}).text(i + " : осталось ждать " + waitTimeLeft + " дней")).append(responseReceivedButton).append(responseReallyReceived).append(noResponseButton).append(responseNotReallyReceived);
+                    $("#WaitList_#{widget.id}").append($("<div/>").css({"display":"inline-block", "margin-right":"5px"}).text(unescape(i) + " : осталось ждать " + waitTimeLeft + " дней")).append(responseReceivedButton).append(responseReallyReceived).append(noResponseButton).append(responseNotReallyReceived);
                 }
                 if(anyTimers == 0)
                     $("#WaitList_#{widget.id}").append($("<div/>").addClass("waitListNoTimersError").text("Чтобы идти дальше, нужно отправить документ хоть куда-нибудь!"));

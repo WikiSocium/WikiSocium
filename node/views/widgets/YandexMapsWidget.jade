@@ -11,7 +11,7 @@ block content
       div(class="YandexMapsWidget_loadingIndicator")
     div(id="YandexMapsWidget_#{widget.id}", class="YandexMapsWidget_map")
   script(type="text/javascript")
-      function RedrawMarkOnMap()
+      function #{widget.id}_RedrawMarkOnMap()
       {
         // [TODO] determine type of object and select proper zoom
         if (window["#{widget.id}_map_coords"] != undefined)
@@ -25,7 +25,7 @@ block content
               }
           );
           myPlacemark.events.add("dragend", function(e){
-              SaveNewBounds(e.originalEvent.target.geometry.getBounds(), function(){});
+              #{widget.id}_SaveNewBounds(e.originalEvent.target.geometry.getBounds(), function(){});
           });
           YandexMapsWidgetObjectsCollection_#{widget.id}.removeAll();                           
           YandexMapsWidgetObjectsCollection_#{widget.id}.add(myPlacemark);
@@ -33,7 +33,7 @@ block content
           // YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11); 
         }        
       }
-      function SaveNewBounds(bounds, callback)
+      function #{widget.id}_SaveNewBounds(bounds, callback)
       {
         var newBounds = bounds;
         console.log(newBounds[0]);
@@ -55,7 +55,7 @@ block content
       };
       $("#YandexMapsWidget_#{widget.id}_link").on("click", function(){
         YandexMapsWidgetBody_#{widget.id}();
-        RedrawMarkOnMap();
+        #{widget.id}_RedrawMarkOnMap();
         YandexMapsWidgetObject_#{widget.id}.setCenter(window["#{widget.id}_map_coords"][0], 11);         
       });
       $('html').keyup(function(e){
@@ -90,8 +90,8 @@ block content
           
           // [FIXME] this should not fire on dbl click
           YandexMapsWidgetObject_#{widget.id}.events.add('click', function (e) {
-            SaveNewBounds([e.get('coordPosition')], function(){
-              RedrawMarkOnMap();
+            #{widget.id}_SaveNewBounds([e.get('coordPosition')], function(){
+              #{widget.id}_RedrawMarkOnMap();
               YandexMapsWidgetObject_#{widget.id}.geoObjects.each(function (geoObject) {
                 YandexMapsWidgetObject_#{widget.id}.geoObjects.remove(geoObject);
               });
@@ -108,7 +108,7 @@ block content
           YandexMapsWidgetObject_#{widget.id}.geoObjects.add(YandexMapsWidgetObjectsCollection_#{widget.id});                       
           YandexMapsWidgetObject_#{widget.id}.controls.add('zoomControl');
           YandexMapsWidgetObject_#{widget.id}.controls.add(new ymaps.control.ScaleLine());          
-          var updateGeodata = function(e){            
+          var #{widget.id}_updateGeodata = function(e){            
                   if(e.keyCode == 38 || e.keyCode == 40) // || e.keyCode == 13)
                     return;
                                   
@@ -156,7 +156,7 @@ block content
           // $("ul.typeahead.dropdown-menu").find('li.active').data('value');
           
           $("#YandexMapsWidgetInputWS_#{widget.id}").typeahead();
-          $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", updateGeodata); 
+          $("#YandexMapsWidgetInputWS_#{widget.id}").on("keyup", #{widget.id}_updateGeodata); 
           
           $("#YandexMapsWidget_#{widget.id}").show();
           $("#YandexMapsWidget_#{widget.id}").children().show();

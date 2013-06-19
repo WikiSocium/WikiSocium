@@ -2,5 +2,5 @@ extends TextFieldWidget
 
 block textWidgetScript
   script(type='text/javascript')
-    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/^[ \t]*([А-Яа-я][\x27а-я]{1,}|[А-Яа-я][\x27а-я]{1,}\-[А-Яа-я][\x27а-я]{1,})[ \t]*[А-Яа-я][\x27а-я]{1,}[ \t]*[А-Яа-я][\x27а-я]{1,}[ \t]*$/, 
+    step#{step_id}FieldsList['!{widget.id}'] = new TextField(/^[ \t]*([А-ЯЁа-яё][\x27а-яё]{1,}|[А-ЯЁа-яё][\x27а-яё]{1,}\-[А-ЯЁа-яё][\x27а-яё]{1,})[ \t]*[А-ЯЁа-яё][\x27а-яё]{1,}[ \t]*[А-ЯЁа-яё][\x27а-яё]{1,}[ \t]*$/, 
       document.getElementById("step#{step_id}_#{widget.id}"), document.getElementById("step_#{step_id}_widget_#{widget.id}_wrapper"), "#{value}");
