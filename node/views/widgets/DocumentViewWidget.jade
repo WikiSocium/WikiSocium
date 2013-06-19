@@ -64,7 +64,7 @@ block widget
     step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget(!{JSON.stringify(value)});
     ( function()
       {
-        var initDocumentWidgetFunction = function()
+        var #{widget.doc_name}_initDocumentWidgetFunction = function()
         {
           var times = !{JSON.stringify(widget.organizations_times)};
           RegionalizedData.GetDataFromDBWithRegion (
@@ -189,12 +189,12 @@ block widget
           // GenerateDocument_#{widget.doc_name}();
           
           // No, organizations list may change too
-          initDocumentWidgetFunction();
+          #{widget.doc_name}_initDocumentWidgetFunction();
         }, 100, "");
         //
         if ( $("#documentView_#{widget.doc_name}").closest(".step").is(":visible") ) {
           setTimeout (function() {
-            initDocumentWidgetFunction();
+            #{widget.doc_name}_initDocumentWidgetFunction();
           }, 1000); // [TODO] #(document).ready() doesn't work properly
         }
       }
