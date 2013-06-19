@@ -39,6 +39,7 @@ mixin caseRow(aCase)
           mixin formatDate(aCase.createDate)
           | )
           // a(href="/MyCases/" + aCase.caseId.replace(/ /g,"_")) #{aCase.sectionName} >       
+        p.solution-name #{aCase.solutionId}
         p.status Текущий шаг: #{aCase.stepName}
         p.message
           img(src="/images/status-icon-info.png")
