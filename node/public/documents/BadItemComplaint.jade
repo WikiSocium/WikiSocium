@@ -16,7 +16,7 @@ div
     else if data.IsDeliveryProblems.value == 0
       до настоящего времени доставлен не был.  
 div
-  if data.IsItemProblems.value != 0
+  if data.IsDeliveryProblems.value > 0 && data.IsItemProblems.value != 0
     !{data.ItemProblemsDate.value} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
     if data.IsProblemsHealth.value == 1
       Кроме того, мне был нанесён вред здоровью: #{data.ItemProblemsHealth}.
@@ -25,44 +25,10 @@ div
 div
   Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
   if data.IsItemDelivered.value==1 && data.RequestsDeliveryDelayMoney
-    li(id="Delivery") Уплаты неустойки в размере 3% 
-    script(type='text/javascript')
-      var DeliveryBaseStr;
-      var DeliveryBase;
-      
-      if(#{data.IsDeliveryCost.value} == 0)
-      { 
-        DeliveryBase = #{data.ItemDeliveryCost};
-        DeliveryBaseStr = ' от стоимости доставки за каждый день просрочки в размере ';
-      }
-      else
-      {
-        DeliveryBase = #{data.ItemPrice};
-        DeliveryBaseStr = ' от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере ';
-      }
-      
-      $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
-      
-      if(#{data.IsDeliveryProblems.value} == 1)
-      {
-        DeliveryBase *= #{data.DeliveryDelayDays};
-      }
-      else
-      {
-        var Current = new Date();
-        //console.log(#{data.DeliveryDate.UTC});
-        //var ToBe = new Date();
-        //console.log(Current.toString());
-        //console.log(ToBe.toString());
-        
-        var one_day=1000*60*60*24;
-        DeliveryBase *= Math.floor((Current.getTime() - #{data.DeliveryDate.UTC})/one_day);
-      }  
-      //console.log(DeliveryBase);
-
-      DeliveryBaseStr = Math.round(DeliveryBase*0.03) + ' руб.';  
-      $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
-      
+    if(data.IsDeliveryCost.value == 0)
+      li Уплаты неустойки: 3% от стоимости доставки за каждый день просрочки в размере #{data.DelayPenaltyAmount} руб. 
+    else
+      li Уплаты неустойки: 3% от стоимости заказа (т.к. стоимость доставки не указана) за каждый день просрочки в размере #{data.DelayPenaltyAmount} руб.     
 if data.IsItemDelivered.value==1 && data.IsDeliveryProblems.value == 0
   if data.RequestsNotDelivered.value == 0
     li #{data.RequestsNotDelivered.label} &#58; #{data.RequestsNewDeliveryDate.value}

@@ -610,7 +610,7 @@
 					{
 						"name"		: "Требуем уплаты неустойки за задержку доставки",
 						"comment"	:	"",	
-						"description"	:	"Неустойка исчисляется в размере 3% за каждый день задержки доставки. А если товар не привезли - за каждый день от даты доставки по договору до текущего дня."
+						"description"	:	"Неустойка исчисляется в размере 3% от стоимости доставки (или от полной стоимости заказа, если стоимость доставки не указана) за каждый день задержки доставки. А если товар не привезли - за каждый день от даты доставки по договору до текущего дня."
 					},
 					"value_list"	:
 					[
@@ -643,6 +643,30 @@
 						]
 					}
 				},
+        {
+          "widget_type" : "DynamicTextField",
+					"id" : "DelayPenaltyAmount",
+					"label" : "Размер неустойки в Вашем случае, руб.",
+					"function" : "DelayPenalty",
+          "isVisible"	:
+					{
+						"predicates"	:
+						[
+							{
+								"step_id"	:	"0",
+								"widget_id"	:	"IsItemDelivered",
+								"cond"		:	"==",								
+								"value"		:	"1"
+							},
+							{
+								"step_id"	:	"1",
+								"widget_id"	:	"IsDeliveryProblems",
+								"cond"		:	"!=",								
+								"value"		:	"2"
+							}
+						]
+					}
+        },
 				{
 					"widget_type"	:	"RadioGroupWidget",
 					"id"		:	"Prerequisite4TechComplicated",
