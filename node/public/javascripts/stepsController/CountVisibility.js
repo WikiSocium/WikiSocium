@@ -22,6 +22,11 @@ function CountVisibility(stepnum)
                 CountObjectVisibility(w);
             }
         }
+        else
+        {
+            for (var i in group.widgets)
+                group.widgets[i].visible = false;
+        }
     }
     
     // Обработка массива виджетов (не входящих в группы или если группы не заданы)
@@ -50,7 +55,7 @@ function IsPredicateOfTypeOR(predicates)
 function CountObjectVisibility(obj)
 {
     // если предикаты не заданы или тождественно равны истине, то виджет видим и так
-    if (obj.isVisible == undefined || obj.isVisible == "true")
+    if (typeof obj.isVisible == 'undefined' || obj.isVisible == "true")
         obj.visible = true;
     // если предикат тождественно равен лжи, виджет естественно невидим
     else if (obj.isVisible == "false")
@@ -106,6 +111,8 @@ function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
     }
     else // Иначе проверяем предикат. Предикаты объединены логической операцией И.
     {
+        // console.log("predicate:");
+        // console.log(predicate);
         currentVisibility = currentVisibility && CheckPredicate(predicate);
     }
     
@@ -119,7 +126,14 @@ function CheckPredicate(predicate)
 {
     var value;
     if (predicate.step_id != undefined)
+    {
+        // console.log("p.s_id: " + predicate.step_id);
+        // console.log("p.w_id: " + predicate.widget_id);        
+        
+        // [TODO] get .visible of widget from predicate
+        
         value = GetWidgetValue(currentCaseData.GetStepIndexById(predicate.step_id), predicate.widget_id);
+    }
     else
         value = GetWidgetValue(currentCaseData.GetStepIndexById(currentStepId), predicate.widget_id);
         
@@ -129,7 +143,7 @@ function CheckPredicate(predicate)
     }
 
     if(value instanceof Object && value.value != undefined)
-		value = value.value;
+  		value = value.value;
   
     switch(predicate.cond) 
     {

@@ -57,12 +57,16 @@ function GetWidgetValue(sn, wid)
 {
     var st = solutionData.steps[sn];
     var value = "undefined";
+    var widget_itself = {};
     
     for (var i in st.widgets)
     {
         var w = st.widgets[i];
         if (w.id == wid)
+        {
             value = w.widget_value;
+            widget_itself = w;
+        }        
     }
     
     for (var i in st.widget_groups)
@@ -72,11 +76,23 @@ function GetWidgetValue(sn, wid)
         {
             var w = wg.widgets[j];
             if (w.id == wid)
+            {
                 value = w.widget_value;
+                widget_itself = w;
+            }
         }
     }
 
-    return value;
+    var w_v_v = true;
+    
+    if(typeof widget_itself.isVisible != 'undefined' && typeof widget_itself.isVisible.predicates != 'undefined')    
+      for(p in widget_itself.isVisible.predicates)
+        w_v_v &= CheckPredicate(widget_itself.isVisible.predicates[p]);
+
+    if(w_v_v)    
+      return value;
+    else
+      return 'undefined';
 }
 
 // Установить в solutionData для виджета wid на шаге sn значение data.
