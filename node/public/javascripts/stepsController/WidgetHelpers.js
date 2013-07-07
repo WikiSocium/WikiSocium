@@ -89,10 +89,12 @@ function GetWidgetValue(sn, wid)
       for(p in widget_itself.isVisible.predicates)
         w_v_v &= CheckPredicate(widget_itself.isVisible.predicates[p]);
 
+    console.log("for " + wid + " w_v_v = " + w_v_v);
+
     if(w_v_v)    
       return value;
     else
-      return 'undefined';
+      return undefined;
 }
 
 // Установить в solutionData для виджета wid на шаге sn значение data.

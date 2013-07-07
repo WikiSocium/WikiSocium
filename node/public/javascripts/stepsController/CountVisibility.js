@@ -54,6 +54,8 @@ function IsPredicateOfTypeOR(predicates)
 // Ќичего не возвращает.
 function CountObjectVisibility(obj)
 {
+    var resultVisible = true;
+          
     // если предикаты не заданы или тождественно равны истине, то виджет видим и так
     if (typeof obj.isVisible == 'undefined' || obj.isVisible == "true")
         obj.visible = true;
@@ -62,7 +64,7 @@ function CountObjectVisibility(obj)
         obj.visible = false;
     else // в противном случае будем вычисл€ть предикаты
     {
-        var resultVisible = true;
+        resultVisible = true;
         
         // Ёмпирически определим формат записи предиката
         var formatOR = IsPredicateOfTypeOR(obj.isVisible.predicates);
@@ -97,6 +99,7 @@ function CountObjectVisibility(obj)
         
         obj.visible = resultVisible;
     }
+    return resultVisible;
 }
 
 function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
@@ -119,18 +122,43 @@ function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
     return currentVisibility;
 }
 
+function CheckGroupPredicatesForWidget(stepnum, wid)
+{  
+  // var tcp = solutionData.steps[stepnum];
+ 
+   // looks like incorrect tcp returned
+  console.log("CheckGroupPredicatesForWidget: " + stepnum + ", " + wid);
+  console.log(tcp);
+  
+  for (var sn in solutionData.steps)
+  {
+    var tcp = solutionData.steps[sn];
+    for (var i in tcp.widget_groups)
+    {
+        var group = tcp.widget_groups[i];      
+        for (var i in group.widgets)
+        {
+            if(group.widgets[i].id == wid)
+            {
+              console.log("group visibility for " + wid + " = " + CountObjectVisibility(group));
+              return CountObjectVisibility(group);
+            }
+        }
+    }
+  }  
+  return true;
+}
+
 // ѕровер€ет выполнение 1 предиката
 // Ќа входе 1 предикат
 // Ќа выходе bool
 function CheckPredicate(predicate) 
 {
     var value;
-    if (predicate.step_id != undefined)
+    if (typeof predicate.step_id != 'undefined')
     {
-        // console.log("p.s_id: " + predicate.step_id);
-        // console.log("p.w_id: " + predicate.widget_id);        
-        
-        // [TODO] get .visible of widget from predicate
+        if(!CheckGroupPredicatesForWidget(predicate.step_id, predicate.widget_id))
+          return false;
         
         value = GetWidgetValue(currentCaseData.GetStepIndexById(predicate.step_id), predicate.widget_id);
     }
