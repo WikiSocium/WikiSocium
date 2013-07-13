@@ -64,7 +64,7 @@ block widget
     step#{step_id}FieldsList['!{widget.id}'] = new DocumentViewWidget(!{JSON.stringify(value)});
     ( function()
       {
-        var initDocumentWidgetFunction = function()
+        var #{widget.doc_name}_initDocumentWidgetFunction = function()
         {
           var times = !{JSON.stringify(widget.organizations_times)};
           RegionalizedData.GetDataFromDBWithRegion (
@@ -72,6 +72,7 @@ block widget
               'organizations',
               !{JSON.stringify(widget.organizations)},
               function(fetchedData) {
+                $("#documentOrganizationsView_#{widget.doc_name}").hide();
                 $("#documentOrganizationsView_#{widget.doc_name}").children().remove();
                 //
                 for (var yauo in user_organizations) {
@@ -99,6 +100,10 @@ block widget
                 //
                 //
                 //
+                if(fetchedData.length > 0)
+                  $("#documentOrganizationsView_#{widget.doc_name}").show();
+                else
+                  GenerateDocument_#{widget.doc_name}();
                 for (var k = 0; k < fetchedData.length; k++)
                 {
                   var data = fetchedData[k];
@@ -184,12 +189,12 @@ block widget
           // GenerateDocument_#{widget.doc_name}();
           
           // No, organizations list may change too
-          initDocumentWidgetFunction();
+          #{widget.doc_name}_initDocumentWidgetFunction();
         }, 100, "");
         //
         if ( $("#documentView_#{widget.doc_name}").closest(".step").is(":visible") ) {
           setTimeout (function() {
-            initDocumentWidgetFunction();
+            #{widget.doc_name}_initDocumentWidgetFunction();
           }, 1000); // [TODO] #(document).ready() doesn't work properly
         }
       }

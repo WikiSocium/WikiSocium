@@ -22,6 +22,11 @@ function CountVisibility(stepnum)
                 CountObjectVisibility(w);
             }
         }
+        else
+        {
+            for (var i in group.widgets)
+                group.widgets[i].visible = false;
+        }
     }
     
     // Обработка массива виджетов (не входящих в группы или если группы не заданы)
@@ -49,18 +54,36 @@ function IsPredicateOfTypeOR(predicates)
 // Ничего не возвращает.
 function CountObjectVisibility(obj)
 {
+    // var resultVisible = true;
+          
     // если предикаты не заданы или тождественно равны истине, то виджет видим и так
-    if (obj.isVisible == undefined || obj.isVisible == "true")
+    // typeof obj.isVisible == 'undefined' || 
+    if (obj.isVisible == "true")
+    {
         obj.visible = true;
+    }
     // если предикат тождественно равен лжи, виджет естественно невидим
     else if (obj.isVisible == "false")
+    {
         obj.visible = false;
+    }
     else // в противном случае будем вычислять предикаты
     {
-        var resultVisible = true;
+        resultVisible = true;
+        
+        if(typeof obj.isVisible != 'undefined')
+          var predicatesArray = obj.isVisible.predicates;
+        else
+          var predicatesArray = obj.predicates;
+          
+        if(typeof predicatesArray == 'undefined')
+        {
+          obj.visible = true;
+          return true;
+        }
         
         // Эмпирически определим формат записи предиката
-        var formatOR = IsPredicateOfTypeOR(obj.isVisible.predicates);
+        var formatOR = IsPredicateOfTypeOR(predicatesArray);
         
         // Условие представляет собой массив массивов предикатов.
         // Массивы предикатов объединены логической операцией ИЛИ, предикаты объединены логической операцией И.
@@ -68,12 +91,12 @@ function CountObjectVisibility(obj)
         {
             resultVisible = false;
         
-            for (var j in obj.isVisible.predicates)
+            for (var j in predicatesArray)
             {
                 var massVisible = true;
-                for(var k in obj.isVisible.predicates[j])
+                for(var k in predicatesArray[j])
                 {
-                    massVisible = CheckPredicateAndUpdateVisibility(obj.isVisible.predicates[j][k], massVisible);
+                    massVisible = CheckPredicateAndUpdateVisibility(predicatesArray[j][k], massVisible);
                 }
                 
                 resultVisible = resultVisible || massVisible;
@@ -84,14 +107,15 @@ function CountObjectVisibility(obj)
             resultVisible = true;
             
             // Пройдём по массиву предикатов
-            for (var k in obj.isVisible.predicates)
+            for (var k in predicatesArray)
             {
-                resultVisible = CheckPredicateAndUpdateVisibility(obj.isVisible.predicates[k], resultVisible);
+                resultVisible = CheckPredicateAndUpdateVisibility(predicatesArray[k], resultVisible);
             }
         }
         
         obj.visible = resultVisible;
     }
+    return obj.visible;
 }
 
 function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
@@ -106,10 +130,39 @@ function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
     }
     else // Иначе проверяем предикат. Предикаты объединены логической операцией И.
     {
+        // console.log("predicate:");
+        // console.log(predicate);
         currentVisibility = currentVisibility && CheckPredicate(predicate);
     }
     
     return currentVisibility;
+}
+
+function CheckGroupPredicatesForWidget(stepnum, wid)
+{  
+  // var tcp = solutionData.steps[stepnum];
+ 
+   // looks like incorrect tcp returned
+  console.log("CheckGroupPredicatesForWidget: " + stepnum + ", " + wid);
+  
+  for (var sn in solutionData.steps)
+  {
+    var tcp = solutionData.steps[sn];
+    for (var i in tcp.widget_groups)
+    {
+        var group = tcp.widget_groups[i];      
+        for (var i in group.widgets)
+        {
+            if(group.widgets[i].id == wid)
+            {
+              var groupVisibility = CountObjectVisibility(group);              
+              console.log("group visibility for " + wid + " = " + groupVisibility);        
+              return groupVisibility;
+            }
+        }
+    }
+  }  
+  return true;
 }
 
 // Проверяет выполнение 1 предиката
@@ -118,8 +171,13 @@ function CheckPredicateAndUpdateVisibility(predicate, currentVisibility)
 function CheckPredicate(predicate) 
 {
     var value;
-    if (predicate.step_id != undefined)
+    if (typeof predicate.step_id != 'undefined')
+    {
+        if(!CheckGroupPredicatesForWidget(predicate.step_id, predicate.widget_id))
+          return false;
+        
         value = GetWidgetValue(currentCaseData.GetStepIndexById(predicate.step_id), predicate.widget_id);
+    }
     else
         value = GetWidgetValue(currentCaseData.GetStepIndexById(currentStepId), predicate.widget_id);
         
@@ -129,7 +187,7 @@ function CheckPredicate(predicate)
     }
 
     if(value instanceof Object && value.value != undefined)
-		value = value.value;
+  		value = value.value;
   
     switch(predicate.cond) 
     {

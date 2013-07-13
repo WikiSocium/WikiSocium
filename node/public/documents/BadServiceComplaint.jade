@@ -1,0 +1,61 @@
+div(align="right")
+  В: #{data.SellerName} <br> 
+  Адрес: #{data.SellerAddress} <br>     
+  От: #{data.UserName} <br>
+  Адрес: #{data.UserAddress} <br>
+div(align="center")
+  <b>ПРЕТЕНЗИЯ</b> <br><br>
+div
+  #{data.BuyDate.value} я заказал у Вас работу (услугу) #{data.ServiceName} полной стоимостью #{data.ServicePrice} руб.
+  if data.IsTimeProblems
+    Работа должна была быть выполнена #{data.WorkFinishedDate.value}, но 
+    if data.IsTimeProblems.value == 1
+      фактически была завершена c опозданием на #{data.DeliveryDelayDays} дней.
+    else if data.IsTimeProblems.value == 0
+      до настоящего времени не была выполнена.  
+div
+  if data.IsServiceProblems.value != 0
+    #{data.ServiceProblemsDate.value} были найдены следующие недостатки: #{data.ServiceProblems}. 
+    if data.IsProblemsHealth
+      Кроме того, мне был нанесён вред здоровью: #{data.ServiceProblemsHealth}.
+    if data.IsProblemsMoney
+      Дополнительно, мне был нанесён имущественный ущерб: #{data.ServiceProblemsMoney}.  
+div
+  Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
+  if data.IsTimeProblems.value != 2 && data.RequestsServiceDelayMoney
+    li(id="Delivery") Уплаты неустойки в размере 3% от стоимости заказа за каждый день просрочки в размере 
+    script(type='text/javascript')
+      var DeliveryBase = #{data.ServicePrice};
+      if(#{data.IsTimeProblems.value} == 1)
+      {
+        DeliveryBase *= #{data.DeliveryDelayDays};
+      }
+      else
+      {
+        var Current = new Date();
+        var one_day=1000*60*60*24;
+        DeliveryBase *= Math.floor((Current.getTime() - #{data.WorkFinishedDate.UTC})/one_day);
+      }  
+      var DeliveryBaseStr = Math.round(DeliveryBase*0.03) + ' руб.';  
+      $("#Delivery").text($("#Delivery").text() + DeliveryBaseStr);
+      
+if data.IsTimeProblems.value == 0
+  if data.RequestsNotServiced.value == 0
+    li #{data.RequestsNotServiced.label} &#58; #{data.RequestsNewServiceDate}
+  else
+    li #{data.RequestsNotServiced.label}
+
+if data.IsTimeProblems.value != 0 && data.IsServiceProblems.value == 1
+    li #{data.Requests.label}    
+      if data.Requests.value == 3
+        в размере #{data.PriceDiscountMoney} руб. 
+      else if data.Requests.value == 4
+        в размере #{data.SelfRepairMoney} руб.
+        
+if data.IsTimeProblems.value != 0 && data.IsProblemsHealth == 1
+  li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
+       
+if data.IsTimeProblems.value != 0 && data.IsProblemsMoney == 1
+  li Возмещения ущерба, возникшего вследствие выявленных недостатков, в размере #{data.RequestDamage} руб.
+   
+
