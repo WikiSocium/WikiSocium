@@ -11,19 +11,22 @@ block widget
     .span7.document_textarea
       .document_view(id="documentView_"+widget.doc_name)
     .span5
-      .document_organizations.gray-rounded-corners.gray-rounded-block2(id="documentOrganizationsView_"+widget.doc_name)
+      .document_organizations(id="documentOrganizationsView_" + widget.doc_name).accordion
       div
-        span#rtf_btn.btn.btn-primary.documentButtons Скачать копию
+        span#rtf_btn.btn.btn-primary.documentButtons Скачать документ
         span#print_btn.btn.print_btn Распечатать
 
   // Organization record template
   script#documentOrganizationTemplate(type="text/x-jquery-tmpl")
-    div.documentOrganizationsRecord
-      div.documentOrganizationsRecordTitle
-        span ${Organization_Name} (ответа ждать ${Waiting_time} дней)
-      div.documentOrganizationTimer(org_title="${Organization_Id}", org_time="${Waiting_time}")
-      div.documentOrganizationsRecordDescription
-        div(style="position:relative;") ${Description}
+    div.accordion-group
+      div.accordion-heading
+        a.accordion-toggle(data-toggle="collapse", data-parent="#documentOrganizationsView_" + widget.doc_name, href="#collapse-${Collapse_Index}") ${Organization_Name}
+      div.accordion-body.collapse(id="collapse-${Collapse_Index}")
+        .accordion-inner
+          p Время ответа: ${Waiting_time} дней
+          p ${Description}
+          p
+            div.documentOrganizationTimer(org_title="${Organization_Id}", org_time="${Waiting_time}")  
 
   // Print- and save- buttons behaviour
   script(type="text/javascript")  
@@ -104,6 +107,7 @@ block widget
                   $("#documentOrganizationsView_#{widget.doc_name}").show();
                 else
                   GenerateDocument_#{widget.doc_name}();
+                var collapse_index = 0;
                 for (var k = 0; k < fetchedData.length; k++)
                 {
                   var data = fetchedData[k];
@@ -117,8 +121,10 @@ block widget
                           var org_data = {
                               "Organization_Name": title,
                               "Organization_Id": escape(title),
-                              "Waiting_time": times[k]
+                              "Waiting_time": times[k],
+                              "Collapse_Index": collapse_index
                           };
+                          collapse_index++;
                           for(var key in data[i][j]["description"]) {
                             if (typeof(data[i][j]["description"][key]) == "object") {
                               for(var key2 in data[i][j]["description"][key]) {
