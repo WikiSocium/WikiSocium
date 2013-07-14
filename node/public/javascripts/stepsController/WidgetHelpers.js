@@ -83,12 +83,11 @@ function GetWidgetValue(sn, wid)
         }
     }
 
-    var w_v_v = CountObjectVisibility(widget_itself);
+    var w_v_v = true;
     
-    // if(typeof widget_itself.isVisible != 'undefined' && typeof widget_itself.isVisible.predicates != 'undefined')    
-    //   w_v_v = CountObjectVisibility(widget_itself);
-      // for(p in widget_itself.isVisible.predicates)
-      //   w_v_v &= CountObjectVisibility(widget_itself);
+    if(typeof widget_itself.isVisible != 'undefined' && typeof widget_itself.isVisible.predicates != 'undefined')    
+      for(p in widget_itself.isVisible.predicates)
+        w_v_v &= CountObjectVisibility(widget_itself);
 
     console.log("for " + wid + " w_v_v = " + w_v_v);
 
