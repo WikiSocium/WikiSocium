@@ -10,11 +10,13 @@ div
   if data.IsItemDelivered.value == 1
     if data.IsDeliveryCost.value == 0
       , в том числе стоимость доставки составила #{data.ItemDeliveryCost} руб.
-    Товар должен был быть доставлен мне #{data.DeliveryDate.value}, но 
-    if data.IsDeliveryProblems.value == 1
-      фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
-    else if data.IsDeliveryProblems.value == 0
-      до настоящего времени доставлен не был.  
+    
+    if data.IsDeliveryProblems.value < 2
+      Товар должен был быть доставлен мне #{data.DeliveryDate.value}, но 
+      if data.IsDeliveryProblems.value == 1
+        фактически доставка была выполнена c опозданием на #{data.DeliveryDelayDays} дней.
+      else if data.IsDeliveryProblems.value == 0
+        до настоящего времени доставлен не был.  
 div
   if data.IsDeliveryProblems.value > 0 && data.IsItemProblems.value != 0
     !{data.ItemProblemsDate.value} в товаре были найдены следующие недостатки: #{data.ItemProblems}. 
@@ -24,7 +26,7 @@ div
       Дополнительно, мне был нанесён имущественный ущерб: #{data.ItemProblemsMoney}.  
 div
   Руководствуясь нормами Закона Российской Федерации о Защите прав потребителей, ТРЕБУЮ:
-  if data.IsItemDelivered.value==1 && data.RequestsDeliveryDelayMoney
+  if data.IsItemDelivered.value==1 && data.IsDeliveryProblems.value < 2 && data.RequestsDeliveryDelayMoney
     if(data.IsDeliveryCost.value == 0)
       li Уплаты неустойки: 3% от стоимости доставки за каждый день просрочки в размере #{data.DelayPenaltyAmount} руб. 
     else
@@ -52,7 +54,7 @@ if (data.IsItemDelivered.value == 2 || data.IsDeliveryProblems.value != 0) && da
 if (data.IsItemDelivered.value == 2 || data.IsDeliveryProblems.value != 0) && data.IsProblemsHealth.value == 1
   li Возмещения нанесённого мне вреда здоровью в размере #{data.RequestHealthProblems} руб.
        
-if (data.IsItemDelivered.value == 0 || data.IsDeliveryProblems.value != 0) && data.IsProblemsMoney.value == 1
+if (data.IsItemDelivered.value == 2 || data.IsDeliveryProblems.value != 0) && data.IsProblemsMoney.value == 1
   li Возмещения ущерба, возникшего вследствие выявленных недостатков товара в размере #{data.RequestDamage} руб.
    
 
