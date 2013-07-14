@@ -451,12 +451,6 @@
 								[
 									{
 										"step_id"	:	"2",
-										"widget_id"	:	"IsItemProblems",
-										"cond"		:	"==",								
-										"value"		:	"1"
-									},
-									{
-										"step_id"	:	"2",
 										"widget_id"	:	"IsProblemsHealth",
 										"cond"		:	"==",								
 										"value"		:	"1"
@@ -506,12 +500,6 @@
 							{
 								"predicates"	:
 								[
-									{
-										"step_id"	:	"2",
-										"widget_id"	:	"IsItemProblems",
-										"cond"		:	"==",								
-										"value"		:	"1"
-									},
 									{
 										"step_id"	:	"2",
 										"widget_id"	:	"IsProblemsMoney",
@@ -589,12 +577,6 @@
 						"predicates"	:
 						[
 							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"==",								
-								"value"		:	"0"
-							},
-							{
 								"step_id"	:	"3",
 								"widget_id"	:	"RequestsNotDelivered",
 								"cond"		:	"==",								
@@ -629,12 +611,6 @@
 						"predicates"	:
 						[
 							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsItemDelivered",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							},
-							{
 								"step_id"	:	"1",
 								"widget_id"	:	"IsDeliveryProblems",
 								"cond"		:	"!=",								
@@ -652,12 +628,6 @@
 					{
 						"predicates"	:
 						[
-							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsItemDelivered",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							},
 							{
 								"step_id"	:	"1",
 								"widget_id"	:	"IsDeliveryProblems",
@@ -699,12 +669,6 @@
 								"value"		:	"1"
 							},
 							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"!=",								
-								"value"		:	"0"
-							},
-							{
 								"step_id"	:	"2",
 								"widget_id"	:	"IsItemProblems",
 								"cond"		:	"==",								
@@ -736,25 +700,7 @@
 					"isVisible"	:
 					{
 						"predicates"	:
-						[
-							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsTechComplicated",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							},
-							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"!=",								
-								"value"		:	"0"
-							},
-							{
-								"step_id"	:	"2",
-								"widget_id"	:	"IsItemProblems",
-								"cond"		:	"==",								
-								"value"		:	"1"
-							},							
+						[						
 							{
 								"step_id"	:	"3",
 								"widget_id"	:	"Prerequisite4TechComplicated",
@@ -807,12 +753,6 @@
 								"value"		:	"2"
 							},
 							{
-								"step_id"	:	"1",
-								"widget_id"	:	"IsDeliveryProblems",
-								"cond"		:	"!=",								
-								"value"		:	"0"
-							},
-							{
 								"step_id"	:	"2",
 								"widget_id"	:	"IsItemProblems",
 								"cond"		:	"==",								
@@ -832,12 +772,6 @@
 						[
 							[
 								{
-									"step_id"	:	"0",
-									"widget_id"	:	"IsTechComplicated",
-									"cond"		:	"==",								
-									"value"		:	"2"
-								},
-								{
 									"step_id"	:	"3",
 									"widget_id"	:	"RequestsNonComplicated",
 									"cond"		:	"==",								
@@ -845,12 +779,6 @@
 								}
 							],
 							[
-								{
-									"step_id"	:	"0",
-									"widget_id"	:	"IsTechComplicated",
-									"cond"		:	"==",								
-									"value"		:	"1"
-								},
 								{
 									"step_id"	:	"3",
 									"widget_id"	:	"RequestsTechComplicated",
@@ -871,12 +799,6 @@
 						"predicates"	:
 						[
 							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsTechComplicated",
-								"cond"		:	"==",								
-								"value"		:	"2"
-							},
-							{
 								"step_id"	:	"3",
 								"widget_id"	:	"RequestsNonComplicated",
 								"cond"		:	"==",								
@@ -894,12 +816,6 @@
 					{
 						"predicates"	:
 						[
-							{
-								"step_id"	:	"0",
-								"widget_id"	:	"IsTechComplicated",
-								"cond"		:	"==",								
-								"value"		:	"2"
-							},
 							{
 								"step_id"	:	"3",
 								"widget_id"	:	"RequestsNonComplicated",

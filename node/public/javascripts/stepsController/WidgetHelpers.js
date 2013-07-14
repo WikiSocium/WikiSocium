@@ -87,7 +87,6 @@ function GetWidgetValue(sn, wid)
     
     if(typeof widget_itself.isVisible != 'undefined' && typeof widget_itself.isVisible.predicates != 'undefined')    
       for(p in widget_itself.isVisible.predicates)
-        //.isVisible.predicates[p]
         w_v_v &= CountObjectVisibility(widget_itself);
 
     console.log("for " + wid + " w_v_v = " + w_v_v);
