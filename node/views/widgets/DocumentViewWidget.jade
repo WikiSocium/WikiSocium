@@ -17,16 +17,30 @@ block widget
         span#print_btn.btn.print_btn Распечатать
 
   // Organization record template
+  // 
   script#documentOrganizationTemplate(type="text/x-jquery-tmpl")
     div.accordion-group
       div.accordion-heading
-        a.accordion-toggle(data-toggle="collapse", data-parent="#documentOrganizationsView_" + widget.doc_name, href="#collapse-${Collapse_Index}") ${Organization_Name}
+        div(style="float: right; padding: 4px 5px 3px; width: 115px")
+          a.btn.documentOrganizationTimer(
+            href="#",
+            rel="tooltip",
+            data-toggle="tooltip",
+            data-placement="right",
+            org_title="${Organization_Id}",
+            org_time="${Waiting_time}",
+            style="width: 93px;"
+            )
+        a.accordion-toggle(
+          data-toggle="collapse",
+          data-parent="#documentOrganizationsView_" + widget.doc_name,
+          href="#collapse-${Collapse_Index}",
+          style="padding-right: 130px"
+          ) ${Organization_Name}
       div.accordion-body.collapse(id="collapse-${Collapse_Index}")
         .accordion-inner
           p Время ответа: ${Waiting_time} дней
-          p ${Description}
-          p
-            div.documentOrganizationTimer(org_title="${Organization_Id}", org_time="${Waiting_time}")  
+          p {{html Description}}
 
   // Print- and save- buttons behaviour
   script(type="text/javascript")  
@@ -36,7 +50,32 @@ block widget
         return value;
       else
         return "No value was found";    
-    }  
+    }
+    function changeTimerButtonState ( selector, action ) {
+      switch( action )
+      {
+        case "start-timer":
+          selector.addClass("timer-activated");
+          selector.html("отправлено");
+          selector.addClass("btn-success");
+          selector.tooltip('hide').data('tooltip', false);
+          selector.tooltip( {
+              title: ''
+          } );
+          break;
+        case "stop-timer":
+          selector.removeClass("timer-activated");
+          selector.html("не отправлено");
+          selector.removeClass("btn-success");
+          selector.tooltip('hide').data('tooltip', false);
+          selector.tooltip( {
+              title: 'Нажмите на эту кнопку после отправки документа'
+          } );
+          break;
+        case "toggle":
+          break;
+      }
+    }
     $("#rtf_btn").click(function()
     {
         var html=$("#documentView_#{widget.doc_name}").html();        
@@ -125,21 +164,46 @@ block widget
                               "Collapse_Index": collapse_index
                           };
                           collapse_index++;
-                          for(var key in data[i][j]["description"]) {
-                            if (typeof(data[i][j]["description"][key]) == "object") {
-                              for(var key2 in data[i][j]["description"][key]) {
-                                  org_data["Description"] = key2 + " = " + data[i][j]["description"][key][key2]
+                          console.log( data[i][j]["description"] );                          
+                          var description = data[i][j]["description"]
+                          var fields = [ "text", "postal_address", "electronic_address" ];
+                          org_data["Description"] = "";
+                          for( var key in fields ) {
+                            if (typeof description[fields[key]] != 'undefined' && description[fields[key]] != "" ) {
+                              switch( fields[key] ) {
+                                case "postal_address":
+                                  text = "Почтовый адрес: " + description[fields[key]];
+                                  break;
+                                case "electronic_address":
+                                  text = "";
+                                  if (typeof description[fields[key]]["webform"] != 'undefined' && description[fields[key]]["webform"] != "" ) {
+                                    text += "<a href=\"" + description[fields[key]]["webform"] + "\">Интернет-приёмная</a>";
+                                  }
+                                  break;
+                                default:
+                                  text = description[fields[key]];
                               }
-                            } else {
-                              if(data[i][j]["description"][key] != "") {
-                                if(key == "web") {
-                                  org_data["Description"] = "<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>";
-                                } else {
-                                  org_data["Description"] = key + " = " + data[i][j]["description"][key];
-                                }
-                              }
+                              org_data["Description"] += "<p>" + text + "</p>";
                             }
                           }
+                          
+                          // org_data["Description"] = "";
+                          // for(var key in data[i][j]["description"]) {
+                          //   if (typeof(data[i][j]["description"][key]) == "object") {
+                          //     for(var key2 in data[i][j]["description"][key]) {
+                          //         org_data["Description"] += key2 + " = " + data[i][j]["description"][key][key2]
+                          //     }
+                          //   } else {
+                          //     if(data[i][j]["description"][key] != "") {
+                          //       if(key == "web") {
+                          //         org_data["Description"] += "<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>";
+                          //       } else {
+                          //         org_data["Description"] += key + " = " + data[i][j]["description"][key];
+                          //       }
+                          //     }
+                          //   }
+                          //   org_data["Description"] += "";
+                          // }
                           //
                           if(k == 0 && i == 0 && j == 0) {
                             GenerateDocument_#{widget.doc_name}(data[i][j]);
@@ -156,19 +220,24 @@ block widget
                           //                          
                           var savedValue = step#{step_id}FieldsList['!{widget.id}'].getValue();
                           if ( typeof(savedValue[escape(title)]) != "undefined" ) {
-                            rec.find('.documentOrganizationTimer').addClass("timer-activated");
+                            // rec.find('.documentOrganizationTimer').addClass("timer-activated");
+                            changeTimerButtonState( rec.find('.documentOrganizationTimer'), 'start-timer' );
+                          } else {                            
+                            changeTimerButtonState( rec.find('.documentOrganizationTimer'), 'stop-timer' );
                           }
                           $("#documentOrganizationsView_#{widget.doc_name}").append(rec);
+                          $("[rel='tooltip']").tooltip();
+                          $("#documentOrganizationsView_#{widget.doc_name}").find("#collapse-0").addClass('in');
                       }
                   }
                 }
                 //
-                $(".documentOrganizationTimer").click(function() {
-                  if ($(this).hasClass("timer-activated")) {
-                    $(this).removeClass("timer-activated");
+                $(".documentOrganizationTimer").click( function() {
+                  if ( $(this).hasClass( "timer-activated" ) ) {
+                    changeTimerButtonState( $(this), 'stop-timer' );
                     delete step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")];
                   } else {
-                    $(this).addClass("timer-activated");
+                    changeTimerButtonState( $(this), 'start-timer' );
                     step#{step_id}FieldsList['!{widget.id}'].timersValues[$(this).attr("org_title")] = {
                       beginDate: new Date(),
                       interval: $(this).attr("org_time")
@@ -179,13 +248,13 @@ block widget
                 });
                 //
                 // If there is only one organization, keep it shown
-                if ( $(".documentOrganizationsRecordDescription").length == 1 ) {
-                  $(".documentOrganizationsRecordDescription").show('slow');
-                }
-                $(".documentOrganizationsRecord").click(function() {
-                  $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide('slow');
-                  $(this).children(".documentOrganizationsRecordDescription").show('slow');            
-                });
+                // if ( $(".documentOrganizationsRecordDescription").length == 1 ) {
+                //   $(".documentOrganizationsRecordDescription").show('slow');
+                // }
+                // $(".documentOrganizationsRecord").click(function() {
+                //   $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide('slow');
+                //   $(this).children(".documentOrganizationsRecordDescription").show('slow');            
+                // });
               }
           );
         };

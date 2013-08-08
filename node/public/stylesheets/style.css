@@ -92,21 +92,14 @@
 .documentOrganizationTimerActivated,
 .documentOrganizationTimer
 {
-    display: inline-block;
-    
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
 }
 
 .documentOrganizationTimer
 {
-    background-color: red;
 }
 
 .timer-activated
 {
-    background-color: green;
 }
 
 .documentOrganizationTimerNoResponse,
