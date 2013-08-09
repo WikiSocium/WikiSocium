@@ -186,24 +186,6 @@ block widget
                               org_data["Description"] += "<p>" + text + "</p>";
                             }
                           }
-                          
-                          // org_data["Description"] = "";
-                          // for(var key in data[i][j]["description"]) {
-                          //   if (typeof(data[i][j]["description"][key]) == "object") {
-                          //     for(var key2 in data[i][j]["description"][key]) {
-                          //         org_data["Description"] += key2 + " = " + data[i][j]["description"][key][key2]
-                          //     }
-                          //   } else {
-                          //     if(data[i][j]["description"][key] != "") {
-                          //       if(key == "web") {
-                          //         org_data["Description"] += "<a href='" + data[i][j]["description"][key] + "' style='position:relative;'>" + data[i][j]["description"][key] + "</a>";
-                          //       } else {
-                          //         org_data["Description"] += key + " = " + data[i][j]["description"][key];
-                          //       }
-                          //     }
-                          //   }
-                          //   org_data["Description"] += "";
-                          // }
                           //
                           if(k == 0 && i == 0 && j == 0) {
                             GenerateDocument_#{widget.doc_name}(data[i][j]);
@@ -246,15 +228,6 @@ block widget
                     console.log( JSON.stringify ( step#{step_id}FieldsList['!{widget.id}'].timersValues ) );
                   }
                 });
-                //
-                // If there is only one organization, keep it shown
-                // if ( $(".documentOrganizationsRecordDescription").length == 1 ) {
-                //   $(".documentOrganizationsRecordDescription").show('slow');
-                // }
-                // $(".documentOrganizationsRecord").click(function() {
-                //   $(".documentOrganizationsRecord").children(".documentOrganizationsRecordDescription").hide('slow');
-                //   $(this).children(".documentOrganizationsRecordDescription").show('slow');            
-                // });
               }
           );
         };
