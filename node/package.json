@@ -7,7 +7,7 @@
     , "connect": ">= 1.8.1"
     , "jade": ">= 0.18.0"
     , "jquery": ">= 1.6.3"
-    , "mongoose": "= 2.7.4"
+    , "mongoose": "= 5.8.0"
     , "connect-mongodb": ">= 1.1.1"
     , "async": ">= 0.1.15"
     , "request": ">=1.9.6"
